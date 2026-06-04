@@ -9,13 +9,17 @@
         MinHeight="480"
         FontFamily="Segoe UI" Background="#FF222222">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="171*"/>
+            <ColumnDefinition Width="649*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0"
-            Padding="10,8" Background="#FF2D2D2D">
+            Padding="10,8" Background="#FF2D2D2D" Grid.ColumnSpan="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="70" />
@@ -142,7 +146,7 @@
         <Border
             Padding="10,5"
             BorderThickness="0,0,0,1"
-            BorderBrush="{StaticResource AppBorderBrush}" Margin="0,127,0,0">
+            BorderBrush="{StaticResource AppBorderBrush}" Margin="0,127,0,0" Grid.ColumnSpan="2">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Client:"
                    Foreground="#FFC1C1C1"
@@ -186,77 +190,77 @@
                    Margin="8,0,0,0" />
             </StackPanel>
         </Border>
-        <TabControl Grid.Row="2" Margin="0,5,0,0">
+        <TabControl Margin="0,3,0,2" Grid.Row="2" Grid.ColumnSpan="2">
             <TabItem Header="Autopot HP" Background="#FF232323">
                 <Border Padding="16">
                     <TextBlock Text="Autopot HP - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,-6,-6" />
+                     FontStyle="Italic" Margin="-6,-6,-6,-8" />
                 </Border>
             </TabItem>
             <TabItem Header="Autopot SP">
                 <Border Padding="16">
                     <TextBlock Text="Autopot SP - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,0,0" />
                 </Border>
             </TabItem>
             <TabItem Header="Skill Timer">
                 <Border Padding="16">
                     <TextBlock Text="Skill Timer - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,0,0" />
                 </Border>
             </TabItem>
             <TabItem Header="Skill Spammer">
                 <Border Padding="16">
                     <TextBlock Text="Skill Spammer - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,0,0" />
                 </Border>
             </TabItem>
             <TabItem Header="Debuffs">
                 <Border Padding="16">
                     <TextBlock Text="Debuffs - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Auto Off">
                 <Border Padding="16">
                     <TextBlock Text="Auto Off - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Autobuff">
                 <Border Padding="16">
                     <TextBlock Text="Autobuff - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Transfer">
                 <Border Padding="16">
                     <TextBlock Text="Transfer Helper - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="ATK/DEF">
                 <Border Padding="16">
                     <TextBlock Text="ATK/DEF - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Macro Switch">
                 <Border Padding="16">
                     <TextBlock Text="Macro Switch - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Songs">
                 <Border Padding="16">
                     <TextBlock Text="Songs - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Settings">
                 <Border Padding="16">
                     <TextBlock Text="Settings - Phase 2"
-                     FontStyle="Italic" />
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
         </TabControl>
