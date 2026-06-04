@@ -2,22 +2,20 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
-        Title="OSRO Tools"
+        Title="OSRO Tools v1.99.0/HR"
         Width="820"
         Height="620"
         MinWidth="640"
         MinHeight="480"
-        Background="{StaticResource AppBaseBrush}"
-        FontFamily="Segoe UI">
-    <Grid Background="{StaticResource AppBaseBrush}">
+        FontFamily="Segoe UI" Background="#FF222222">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Border Grid.Row="0"
-            Background="{StaticResource AppSurfaceBrush}"
-            Padding="10,8">
+            Padding="10,8" Background="#FF2D2D2D">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="70" />
@@ -122,8 +120,7 @@
                     Height="26"
                     FontSize="12"
                     Background="{StaticResource AppInputBrush}"
-                    Foreground="{StaticResource AppTextBrush}"
-                    BorderBrush="{StaticResource AppInputBorderBrush}" />
+                    BorderBrush="{StaticResource AppInputBorderBrush}" Foreground="Black" />
                     <StackPanel Orientation="Horizontal"
                       HorizontalAlignment="Center"
                       Margin="0,6,0,0">
@@ -143,13 +140,12 @@
             </Grid>
         </Border>
         <Border
-            Background="{StaticResource AppSurfaceAltBrush}"
             Padding="10,5"
             BorderThickness="0,0,0,1"
-            BorderBrush="{StaticResource AppBorderBrush}" Margin="0,129,0,0" Grid.RowSpan="2">
+            BorderBrush="{StaticResource AppBorderBrush}" Margin="0,127,0,0">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Client:"
-                   Foreground="{StaticResource AppMutedBrush}"
+                   Foreground="#FFC1C1C1"
                    FontSize="12"
                    VerticalAlignment="Center"
                    Margin="0,0,8,0" />
@@ -190,101 +186,76 @@
                    Margin="8,0,0,0" />
             </StackPanel>
         </Border>
-        <TabControl Grid.Row="2"
-                Background="{StaticResource AppPanelBrush}">
-            <TabItem Header="Autopot HP">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+        <TabControl Grid.Row="2" Margin="0,5,0,0">
+            <TabItem Header="Autopot HP" Background="#FF232323">
+                <Border Padding="16">
                     <TextBlock Text="Autopot HP - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" Margin="-6,-6,-6,-6" />
                 </Border>
             </TabItem>
             <TabItem Header="Autopot SP">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Autopot SP - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Skill Timer">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Skill Timer - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Skill Spammer">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Skill Spammer - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Debuffs">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Debuffs - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Auto Off">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Auto Off - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Autobuff">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Autobuff - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Transfer">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Transfer Helper - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="ATK/DEF">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="ATK/DEF - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Macro Switch">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Macro Switch - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Songs">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Songs - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>
             <TabItem Header="Settings">
-                <Border Padding="16"
-                Background="{StaticResource AppPanelBrush}">
+                <Border Padding="16">
                     <TextBlock Text="Settings - Phase 2"
-                     Foreground="#555577"
                      FontStyle="Italic" />
                 </Border>
             </TabItem>

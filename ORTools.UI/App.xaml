@@ -5,17 +5,17 @@
   <Application.Resources>
     <SolidColorBrush x:Key="AppBaseBrush" Color="#1E1E2E" />
     <SolidColorBrush x:Key="AppSurfaceBrush" Color="#252535" />
-    <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#1C1C2C" />
-    <SolidColorBrush x:Key="AppPanelBrush" Color="#1A1A2A" />
-    <SolidColorBrush x:Key="AppTextBrush" Color="#E0E0FF" />
-    <SolidColorBrush x:Key="AppMutedBrush" Color="#606080" />
-    <SolidColorBrush x:Key="AppSubtleBrush" Color="#8080A0" />
-    <SolidColorBrush x:Key="AppBorderBrush" Color="#2A2A4A" />
-    <SolidColorBrush x:Key="AppInputBrush" Color="#2A2A3E" />
-    <SolidColorBrush x:Key="AppInputBorderBrush" Color="#3A3A5A" />
-    <SolidColorBrush x:Key="AppPrimaryBrush" Color="#5865F2" />
-    <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#4752C4" />
-    <SolidColorBrush x:Key="AppPrimaryPressedBrush" Color="#3C46A0" />
+    <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#222222" />
+    <SolidColorBrush x:Key="AppPanelBrush" Color="#111111" />
+    <SolidColorBrush x:Key="AppTextBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="AppMutedBrush" Color="#606060" />
+    <SolidColorBrush x:Key="AppSubtleBrush" Color="#808080" />
+    <SolidColorBrush x:Key="AppBorderBrush" Color="#2A2A2A" />
+    <SolidColorBrush x:Key="AppInputBrush" Color="#2A2A2A" />
+    <SolidColorBrush x:Key="AppInputBorderBrush" Color="#3A3A3A" />
+    <SolidColorBrush x:Key="AppPrimaryBrush" Color="#585858" />
+    <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#474747" />
+    <SolidColorBrush x:Key="AppPrimaryPressedBrush" Color="#3C3C3C" />
     <SolidColorBrush x:Key="AppDangerBrush" Color="#ED4245" />
     <SolidColorBrush x:Key="AppDangerHoverBrush" Color="#D73A3D" />
     <SolidColorBrush x:Key="AppSuccessBrush" Color="#4CAF50" />
@@ -99,7 +99,7 @@
     </Style>
 
     <Style TargetType="{x:Type TabItem}">
-      <Setter Property="Foreground" Value="#9090B0" />
+      <Setter Property="Foreground" Value="#909090" />
       <Setter Property="Padding" Value="12,6" />
       <Setter Property="Margin" Value="0,0,2,0" />
       <Setter Property="Background" Value="{StaticResource AppSurfaceAltBrush}" />
@@ -119,15 +119,12 @@
                                 ContentSource="Header" />
             </Border>
             <ControlTemplate.Triggers>
-              <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource AppPanelBrush}" />
-                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource AppPrimaryBrush}" />
-              </Trigger>
-              <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="#232334" />
-              </Trigger>
-            </ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
+                                <Setter TargetName="Border" Property="Background" Value="{StaticResource AppPanelBrush}" />
+                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource AppPrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
           </ControlTemplate>
         </Setter.Value>
       </Setter>
