@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ORTools.Shared</AssemblyName>
+    <RootNamespace>ORTools.Shared</RootNamespace>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,313 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ORTools.UI.ViewModels"
+        x:Class="ORTools.UI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="ORTools"
+        Width="820"
+        Height="620"
+        MinWidth="640"
+        MinHeight="480"
+        Background="#1E1E2E"
+        FontFamily="{StaticResource InterFont}">
+
+  <Window.Styles>
+
+    <Style Selector="TabControl">
+      <Setter Property="Background" Value="#1A1A2A"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style Selector="TabItem">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="Foreground" Value="#9090B0"/>
+    </Style>
+
+    <Style Selector="TabItem:selected">
+      <Setter Property="Foreground" Value="#E0E0FF"/>
+    </Style>
+
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#5865F2"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Padding" Value="14,6"/>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#4752C4"/>
+    </Style>
+
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="#ED4245"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Padding" Value="14,6"/>
+    </Style>
+
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="#606080"/>
+      <Setter Property="FontSize" Value="11"/>
+    </Style>
+
+    <Style Selector="ComboBox">
+      <Setter Property="Background" Value="#2A2A3E"/>
+      <Setter Property="Foreground" Value="#C0C0E0"/>
+      <Setter Property="BorderBrush" Value="#3A3A5A"/>
+      <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+  </Window.Styles>
+
+  <DockPanel LastChildFill="True">
+
+    <!-- ══ HEADER ══════════════════════════════════════════════════════════ -->
+    <Border DockPanel.Dock="Top"
+            Background="#252535"
+            Padding="10,8">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+
+        <!-- Left: app name + version tag -->
+        <StackPanel Grid.Column="0"
+                    Orientation="Vertical"
+                    VerticalAlignment="Center"
+                    Margin="0,0,16,0">
+          <TextBlock Text="ORTools"
+                     FontSize="15"
+                     FontWeight="Bold"
+                     Foreground="#E0E0FF"/>
+        </StackPanel>
+
+        <!-- Centre: character name, map, info line, HP/SP/Weight bars -->
+        <StackPanel Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Spacing="3">
+
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding CharacterName}"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="#E0E0FF"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding MapName}"
+                       FontSize="11"
+                       Foreground="#6868A0"
+                       VerticalAlignment="Center"
+                       Margin="8,0,0,0"/>
+          </Grid>
+
+          <TextBlock Text="{Binding InfoLine}"
+                     FontSize="11"
+                     Foreground="#6868A0"/>
+
+          <!-- HP bar -->
+          <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+            <ProgressBar Value="{Binding HpPercent}"
+                         Minimum="0" Maximum="100"
+                         Height="11"
+                         CornerRadius="2"
+                         Foreground="{Binding HpBarBrush}"
+                         Background="#2A2A3E"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding HpText}"
+                       FontSize="10"
+                       Foreground="#8080A0"
+                       VerticalAlignment="Center"
+                       Margin="6,0,0,0"
+                       MinWidth="140"/>
+          </Grid>
+
+          <!-- SP bar -->
+          <Grid ColumnDefinitions="*,Auto">
+            <ProgressBar Value="{Binding SpPercent}"
+                         Minimum="0" Maximum="100"
+                         Height="11"
+                         CornerRadius="2"
+                         Foreground="{Binding SpBarBrush}"
+                         Background="#2A2A3E"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding SpText}"
+                       FontSize="10"
+                       Foreground="#8080A0"
+                       VerticalAlignment="Center"
+                       Margin="6,0,0,0"
+                       MinWidth="140"/>
+          </Grid>
+
+          <!-- Weight bar -->
+          <Grid ColumnDefinitions="*,Auto">
+            <ProgressBar Value="{Binding WtPercent}"
+                         Minimum="0" Maximum="100"
+                         Height="11"
+                         CornerRadius="2"
+                         Foreground="#CD7F32"
+                         Background="#2A2A3E"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding WtText}"
+                       FontSize="10"
+                       Foreground="#8080A0"
+                       VerticalAlignment="Center"
+                       Margin="6,0,0,0"
+                       MinWidth="140"/>
+          </Grid>
+        </StackPanel>
+
+        <!-- Right: profile selector, connection dot, toggle button -->
+        <StackPanel Grid.Column="2"
+                    Orientation="Vertical"
+                    Spacing="6"
+                    VerticalAlignment="Center"
+                    Margin="12,0,0,0">
+
+          <ComboBox ItemsSource="{Binding ProfileList}"
+                    SelectedItem="{Binding CurrentProfile}"
+                    Width="130"
+                    Height="26"
+                    FontSize="12"/>
+
+          <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+
+            <!-- Connection indicator dot -->
+            <Ellipse Width="10" Height="10"
+                     VerticalAlignment="Center"
+                     Fill="{Binding ConnectionDotBrush}"/>
+
+            <!-- Main toggle button -->
+            <Button Content="{Binding ToggleButtonText}"
+                    Command="{Binding ToggleApplicationCommand}"
+                    IsEnabled="{Binding IsClientConnected}"
+                    Classes="primary"
+                    Height="26"
+                    FontSize="12"/>
+          </StackPanel>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ══ PROCESS BAR ═════════════════════════════════════════════════════ -->
+    <Border DockPanel.Dock="Top"
+            Background="#1C1C2C"
+            Padding="10,5"
+            BorderThickness="0,0,0,1"
+            BorderBrush="#2A2A4A">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+
+        <TextBlock Text="Client:"
+                   Foreground="#606080"
+                   FontSize="12"
+                   VerticalAlignment="Center"/>
+
+        <ComboBox ItemsSource="{Binding ProcessList}"
+                  SelectedItem="{Binding SelectedProcess}"
+                  Width="200" Height="26" FontSize="12"
+                  PlaceholderText="Select process..."/>
+
+        <Button Content="↺"
+                Command="{Binding RefreshProcessListCommand}"
+                Width="28" Height="26"
+                ToolTip.Tip="Refresh process list"
+                FontSize="14"/>
+
+        <Button Content="Connect"
+                Command="{Binding ConnectToProcessCommand}"
+                Height="26" FontSize="12"
+                IsEnabled="{Binding SelectedProcess, Converter={x:Static ObjectConverters.IsNotNull}}"
+                Padding="10,0"/>
+
+        <Button Content="Disconnect"
+                Command="{Binding DisconnectClientCommand}"
+                Height="26" FontSize="12"
+                IsEnabled="{Binding IsClientConnected}"
+                Classes="danger"
+                Padding="10,0"/>
+
+        <TextBlock Text="{Binding ConnectionLabel}"
+                   Foreground="#606080"
+                   FontSize="11"
+                   VerticalAlignment="Center"
+                   Margin="4,0,0,0"/>
+
+      </StackPanel>
+    </Border>
+
+    <!-- ══ TABS ════════════════════════════════════════════════════════════ -->
+    <TabControl Background="#1A1A2A">
+
+      <TabItem Header="Autopot HP">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Autopot HP — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Autopot SP">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Autopot SP — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Skill Timer">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Skill Timer — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Skill Spammer">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Skill Spammer — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Debuffs">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Debuffs — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Auto Off">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Auto Off — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Autobuff">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Autobuff — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Transfer">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Transfer Helper — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="ATK/DEF">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="ATK/DEF — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Macro Switch">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Macro Switch — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Songs">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Songs — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+      <TabItem Header="Settings">
+        <Border Padding="16" Background="#1A1A2A">
+          <TextBlock Text="Settings — Phase 2" Foreground="#555577" FontStyle="Italic"/>
+        </Border>
+      </TabItem>
+
+    </TabControl>
+
+  </DockPanel>
+</Window>
