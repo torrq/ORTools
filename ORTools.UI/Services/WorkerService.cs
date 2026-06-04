@@ -1,3 +1,4 @@
+using System.IO;
 using System.IO.Pipes;
 using ORTools.Shared.Protocol;
 
@@ -13,7 +14,7 @@ namespace ORTools.UI.Services;
 ///   - Provide SendAsync / Send for outbound commands
 ///
 /// All events are fired on the background thread that reads the pipe.
-/// ViewModels must marshal to the UI thread via Dispatcher.UIThread.Post.
+/// ViewModels must marshal to the UI thread via the WPF dispatcher.
 /// </summary>
 public sealed class WorkerService : IDisposable
 {

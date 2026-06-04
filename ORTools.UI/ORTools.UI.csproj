@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
@@ -10,16 +11,17 @@
     <RootNamespace>ORTools.UI</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia"                Version="11.1.0" />
-    <PackageReference Include="Avalonia.Desktop"        Version="11.1.0" />
-    <PackageReference Include="Avalonia.Themes.Fluent"  Version="11.1.0" />
-    <PackageReference Include="Avalonia.Fonts.Inter"    Version="11.1.0" />
-    <PackageReference Include="CommunityToolkit.Mvvm"   Version="8.2.2"  />
+    <None Remove="Views\ortools.png" />
+    <None Remove="Views\osro_tools_newlogo_v2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ORTools.Shared\ORTools.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
+    <Resource Include="Views\ortools.png" />
+    <Resource Include="Views\osro_tools_newlogo_v2.png" />
   </ItemGroup>
 </Project>

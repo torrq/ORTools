@@ -1,9 +1,10 @@
-using Avalonia.Media;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace ORTools.UI.ViewModels;
 
@@ -45,17 +46,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     public string ToggleButtonText => IsApplicationOn ? "Turn OFF" : "Turn ON";
 
-    public IBrush ConnectionDotBrush => IsConnected
-        ? new SolidColorBrush(Color.Parse("#4CAF50"))
-        : new SolidColorBrush(Color.Parse("#FF5252"));
+    public bool HasSelectedProcess => !string.IsNullOrWhiteSpace(SelectedProcess);
 
-    public IBrush HpBarBrush => HpPercent < 25
-        ? new SolidColorBrush(Color.Parse("#F44336"))
-        : new SolidColorBrush(Color.Parse("#4CAF50"));
+    public Brush ConnectionDotBrush => IsConnected
+        ? CreateBrush("#4CAF50")
+        : CreateBrush("#FF5252");
 
-    public IBrush SpBarBrush => SpPercent < 25
-        ? new SolidColorBrush(Color.Parse("#FF9800"))
-        : new SolidColorBrush(Color.Parse("#2196F3"));
+    public Brush HpBarBrush => HpPercent < 25
+        ? CreateBrush("#F44336")
+        : CreateBrush("#4CAF50");
+
+    public Brush SpBarBrush => SpPercent < 25
+        ? CreateBrush("#FF9800")
+        : CreateBrush("#2196F3");
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -112,6 +115,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     partial void OnIsConnectedChanged(bool value)       => OnPropertyChanged(nameof(ConnectionDotBrush));
     partial void OnHpPercentChanged(double value)       => OnPropertyChanged(nameof(HpBarBrush));
     partial void OnSpPercentChanged(double value)       => OnPropertyChanged(nameof(SpBarBrush));
+    partial void OnSelectedProcessChanged(string? value) => OnPropertyChanged(nameof(HasSelectedProcess));
 
     // ── Event handlers — all marshal to UI thread ─────────────────────────────
 
@@ -178,5 +182,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // Phase 3: show in a status bar or toast notification
 
     private static void Post(Action action)
-        => Dispatcher.UIThread.Post(action, DispatcherPriority.Normal);
+        => Application.Current?.Dispatcher.BeginInvoke(action, DispatcherPriority.Background);
+
+    private static SolidColorBrush CreateBrush(string hex)
+        => new((Color)ColorConverter.ConvertFromString(hex)!);
 }
