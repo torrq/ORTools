@@ -5,13 +5,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseWindowsForms>true</UseWindowsForms>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>ORTools.Worker</AssemblyName>
     <RootNamespace>ORTools.Worker</RootNamespace>
     <Optimize>true</Optimize>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Keep Newtonsoft for profile/config serialization (existing model code). -->
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
