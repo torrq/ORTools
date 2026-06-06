@@ -12,7 +12,7 @@ public static class DebugLogger
 {
     public static event Action<string, string>? LogMessageEmitted; // (level, message)
 
-    private static bool IsDebugMode =>
+    internal static bool IsDebugMode =>
         AppConfig.DebugMode;
 
     public static void Info(string message)     => Emit(AppConfig.INFO,    message);

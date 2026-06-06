@@ -32,4 +32,9 @@ public static class Constants
     // ── Memory / game constants ───────────────────────────────────────────────
     public const int  MAX_BUFF_LIST_INDEX_SIZE = 100;
     public const uint INVALID_STATUS           = uint.MaxValue;
+    public const int  MINIMUM_HP_TO_RECOVER    = 1;   // HP must be above this to use buff/recovery items
+
+    // ── Mouse button messages ─────────────────────────────────────────────────
+    public const int WM_RBUTTONDOWN = 0x0204;
+    public const int WM_RBUTTONUP   = 0x0205;
 }

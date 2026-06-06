@@ -154,18 +154,23 @@ namespace ORTools.Worker
 
     public sealed class ClientSingleton
     {
-        private static volatile Client client;
-        private ClientSingleton(Client client)
+        private static volatile Client? client;
+        private ClientSingleton(Client? client)
         {
             ClientSingleton.client = client;
         }
 
-        public static ClientSingleton Instance(Client client)
+        public static ClientSingleton Instance(Client? client)
         {
             return new ClientSingleton(client);
         }
 
-        public static Client GetClient()
+        public static void SetClient(Client? c)
+        {
+            client = c;
+        }
+
+        public static Client? GetClient()
         {
             return client;
         }

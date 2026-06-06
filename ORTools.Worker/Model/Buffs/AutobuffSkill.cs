@@ -251,21 +251,8 @@ namespace ORTools.Worker
                 if (shouldAutoOff)
                 {
                     DebugLogger.Info($"Overweight {(int)prefs.AutoOffOverweightMode}%, disable now");
-                    var frmStateSwitch = FormHelper.StateSwitchFormInstance;
-                    if (frmStateSwitch != null && !frmStateSwitch.IsDisposed)
-                    {
-                        // Marshal to UI thread — TurnOFF touches WinForms controls
-                        frmStateSwitch.BeginInvoke((System.Windows.Forms.MethodInvoker)(() =>
-                        {
-                            if (!frmStateSwitch.IsDisposed)
-                                frmStateSwitch.TurnOFF();
-                        }));
-                        WeightLimitMacro.SendOverweightMacro();
-                    }
-                    else
-                    {
-                        DebugLogger.Error("HandleOverweightStatus: Could not find StateSwitchForm to toggle status.");
-                    }
+                    WorkerNotifier.RequestTurnOff("AutobuffSkill_Overweight");
+                    WeightLimitMacro.SendOverweightMacro();
                 }
             }
             catch (Exception ex)
