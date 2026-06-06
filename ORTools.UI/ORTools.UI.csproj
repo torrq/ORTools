@@ -12,7 +12,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\ortools.png" />
-    <None Remove="Views\osro_tools_newlogo_v2.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
@@ -22,6 +21,5 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Views\ortools.png" />
-    <Resource Include="Views\osro_tools_newlogo_v2.png" />
   </ItemGroup>
 </Project>
