@@ -305,3 +305,43 @@ The `Elapsed` event fires on a thread-pool thread, which is fine for the Worker.
 | `ORTools.UI/ViewModels/MainWindowViewModel.cs` | All observable state for main window |
 | `ORTools.UI/Views/MainWindow.xaml` | Main window layout (WPF) |
 | `ORTools.UI/App.xaml` | Application resources and color palette |
+
+**8. `ClientSingleton` had no `SetClient` method**
+The legacy `ClientSingleton` only exposed `Instance(Client)` and `GetClient()`.
+`WorkerCore` needs `SetClient(Client? c)` to connect and disconnect cleanly.
+Added `SetClient` and made the backing `client` field nullable:
+```csharp
+private static volatile Client? client;
+public static void SetClient(Client? c) { client = c; }
+public static Client? GetClient()       { return client; }
+```
+
+**9. `Constants` missing `MINIMUM_HP_TO_RECOVER`, `WM_RBUTTONDOWN`, `WM_RBUTTONUP`**
+Referenced by `AutobuffSkill.cs`, `AutobuffItem.cs`, and `TransferHelper.cs`.
+Add to `Constants.cs`:
+```csharp
+public const int  MINIMUM_HP_TO_RECOVER = 1;
+public const int  WM_RBUTTONDOWN        = 0x0204;
+public const int  WM_RBUTTONUP          = 0x0205;
+```
+
+**10. `FormHelper.StateSwitchFormInstance` leftover in `AutobuffSkill.cs:254`**
+The sed pass missed a multi-line `BeginInvoke` block. Replace the entire
+`shouldAutoOff` block with:
+```csharp
+if (shouldAutoOff)
+{
+    WorkerNotifier.RequestTurnOff("AutobuffSkill_Overweight");
+    WeightLimitMacro.SendOverweightMacro();
+}
+```
+
+**11. `Process` not found in `KeyboardHook.cs`**
+Add `using System.Diagnostics` to `GlobalUsings.cs`.
+
+**12. `MouseHelper` stub was missing `TryClickAtCurrentPosition` and `TryClickAtWindowCenter`**
+The stub only had `GetCursorPosition` and `LeftClick`. Replace the entire file
+with the full legacy implementation from `Utils/MouseHelper.cs`.
+
+**13. `DebugLogger.IsDebugMode` was `private` — change to `internal`**
+`StatusEffectLogger` accesses it from the same assembly.
