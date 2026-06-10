@@ -2,10 +2,6 @@ using ORTools.Shared.Protocol;
 
 namespace ORTools.Worker.IPC;
 
-/// <summary>
-/// Routes incoming IPC commands to WorkerCore handlers.
-/// All logic lives in WorkerCore — this is just the switch.
-/// </summary>
 public sealed class CommandDispatcher
 {
     private readonly WorkerCore _core;
@@ -18,12 +14,10 @@ public sealed class CommandDispatcher
         switch (env.Type)
         {
             case MessageTypes.TurnOn:
-                await _core.HandleTurnOn();
-                break;
+                await _core.HandleTurnOn(); break;
 
             case MessageTypes.TurnOff:
-                await _core.HandleTurnOff();
-                break;
+                await _core.HandleTurnOff(); break;
 
             case MessageTypes.ConnectClient:
                 var cc = env.As<ConnectClientCommand>();
@@ -31,8 +25,7 @@ public sealed class CommandDispatcher
                 break;
 
             case MessageTypes.DisconnectClient:
-                await _core.HandleDisconnectClient();
-                break;
+                await _core.HandleDisconnectClient(); break;
 
             case MessageTypes.SwitchProfile:
                 var sp = env.As<SwitchProfileCommand>();
@@ -45,7 +38,26 @@ public sealed class CommandDispatcher
                 break;
 
             case MessageTypes.RequestFullState:
-                await _core.HandleFullStateRequest();
+                await _core.HandleFullStateRequest(); break;
+
+            case MessageTypes.UpdateAutopotHPSlot:
+                var hpSlot = env.As<UpdateAutopotHPSlotCommand>();
+                if (hpSlot != null) await _core.HandleUpdateAutopotHPSlot(hpSlot);
+                break;
+
+            case MessageTypes.UpdateAutopotHPSettings:
+                var hpSet = env.As<UpdateAutopotHPSettingsCommand>();
+                if (hpSet != null) await _core.HandleUpdateAutopotHPSettings(hpSet);
+                break;
+
+            case MessageTypes.UpdateAutopotSPSlot:
+                var spSlot = env.As<UpdateAutopotSPSlotCommand>();
+                if (spSlot != null) await _core.HandleUpdateAutopotSPSlot(spSlot);
+                break;
+
+            case MessageTypes.UpdateAutopotSPSettings:
+                var spSet = env.As<UpdateAutopotSPSettingsCommand>();
+                if (spSet != null) await _core.HandleUpdateAutopotSPSettings(spSet);
                 break;
 
             case MessageTypes.Shutdown:

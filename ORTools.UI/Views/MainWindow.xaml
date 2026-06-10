@@ -37,14 +37,15 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition/>
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding CharacterName}"
                        FontSize="13"
                        FontWeight="SemiBold"
-                       Foreground="{StaticResource AppTextBrush}" />
-                        <TextBlock Grid.Column="1"
+                       Foreground="{StaticResource AppTextBrush}" Grid.ColumnSpan="2" />
+                        <TextBlock Grid.Column="2"
                        Text="{Binding MapName}"
                        FontSize="11"
                        Foreground="#6868A0"
