@@ -154,20 +154,80 @@ All legacy model files have been ported into `ORTools.Worker/` with:
 `WorkerCore.cs` owns all model instances and wires them up.
 `StatePublisher` pushes `HpSpUpdate` every 50ms and `CharacterUpdate` every 1s.
 
-### Phase 3 — Implement each tab view (not started)
+## Phase 3 — Tab views
 
-One WPF view + ViewModel per feature. Suggested order:
+### Completed
 
-1. **AutopotHP/SP** — 5-row grid: key, percent threshold, enabled checkbox
-2. **StatusRecovery** — 3 cure-item lists (Panacea, Royal Jelly, Green Pot)
-3. **SkillTimer** — 10 lanes: key, delay, click mode, alt-key, enabled
-4. **SkillSpammer** — list of skill entries + delay + toggle mode
-5. **Autobuff (skills + items)** — buff slot list + interval
-6. **Songs**, **Debuffs**, **AutoOff**, **TransferHelper**
-7. **ATK/DEF**, **MacroSwitch**, **Settings**, **Profiles**
+#### Autopot HP + Autopot SP ✅
+- `ORTools.Shared/Protocol/AutopotData.cs` — `AutopotSlotData` record (wire format for one slot)
+- `ORTools.Shared/Protocol/MessageTypes.cs` — added `UpdateAutopotHPSlot`, `UpdateAutopotHPSettings`, `UpdateAutopotSPSlot`, `UpdateAutopotSPSettings`, `AutopotHPConfig`, `AutopotSPConfig`
+- `ORTools.Shared/Protocol/Commands.cs` — `UpdateAutopotHPSlotCommand`, `UpdateAutopotHPSettingsCommand`, `UpdateAutopotSPSlotCommand`, `UpdateAutopotSPSettingsCommand`
+- `ORTools.Shared/Protocol/Updates.cs` — `AutopotHPConfigUpdate`, `AutopotSPConfigUpdate`
+- `ORTools.Worker/WorkerCore.cs` — `HandleUpdateAutopotHPSlot/Settings`, `HandleUpdateAutopotSPSlot/Settings`, `BuildAutopotHPConfig`, `BuildAutopotSPConfig`; `HandleFullStateRequest` now includes autopot configs
+- `ORTools.Worker/IPC/CommandDispatcher.cs` — routes all four new commands
+- `ORTools.UI/Services/WorkerService.cs` — `AutopotHPConfigReceived` and `AutopotSPConfigReceived` events
+- `ORTools.UI/ViewModels/AutopotHPViewModel.cs` — `AutopotHPSlotViewModel` (per-slot) + `AutopotHPViewModel` (tab)
+- `ORTools.UI/ViewModels/AutopotSPViewModel.cs` — `AutopotSPSlotViewModel` + `AutopotSPViewModel`
+- `ORTools.UI/ViewModels/MainWindowViewModel.cs` — exposes `AutopotHP` and `AutopotSP` child VMs; wires `AutopotHPConfigReceived` → `AutopotHP.OnConfigUpdate`
+- `ORTools.UI/Views/AutopotHPView.xaml` + `.xaml.cs` — 5-slot grid, delay, Stop on Critical Wound checkbox, key capture, numeric-only percent
+- `ORTools.UI/Views/AutopotSPView.xaml` + `.xaml.cs` — same without Stop on Critical Wound
+- `ORTools.UI/Views/MainWindow.xaml` — added `xmlns:views`, replaced both Autopot stubs with real `<views:AutopotHPView>` / `<views:AutopotSPView>`
 
-Each view needs a corresponding `XxxCommand` / `XxxUpdate` IPC message pair
-in `ORTools.Shared/Protocol/` if the Worker needs to receive settings from UI.
+**Key capture pattern (WPF):**
+- TextBox is `IsReadOnly="True"` with `Mode=OneWay` binding
+- `GotFocus` highlights border with `AppSuccessBrush`; `LostFocus` clears it
+- `PreviewKeyDown` sets `slot.KeyText` and `tb.Text` directly; `e.Handled = true` prevents normal input
+- Escape resets to `"None"`; modifier-only keys (Shift, Ctrl, Alt, Win, Tab, CapsLock, NumLock) are ignored
+- The slot VM's `_syncing` flag prevents the change from echoing back to the Worker during `OnConfigUpdate`
+
+**Suppress-flag pattern:**
+- `_syncing = true` wraps all property sets in `OnConfigUpdate`/`SyncFrom`
+- `partial void OnXxxChanged` checks `!_syncing` before sending IPC commands
+- This prevents config echoes: Worker sends config → UI updates → UI would normally send command back → loop
+
+---
+
+### Still needed for Phase 3
+
+Tabs remaining (in suggested order):
+
+1. **Status Recovery** — 3 cure-item lists (Panacea, Royal Jelly, Green Potion), each with a key picker and a delay. Needs `UpdateStatusRecoveryCommand` / `StatusRecoveryConfigUpdate` IPC pair.
+
+2. **Skill Timer** — 10 lanes, each with: key picker, delay (ms), click mode (None/Current/Center radio), Alt-key toggle, enabled checkbox. Most complex layout in the app. Needs `UpdateSkillTimerLaneCommand` / `SkillTimerConfigUpdate`.
+
+3. **Skill Spammer** — list of named entries, each with: key picker, click active checkbox, indeterminate checkbox. Plus global delay and toggle mode. Needs `UpdateSkillSpammerCommand` / `SkillSpammerConfigUpdate`.
+
+4. **Autobuff Skills** — list of buff slots with key picker and interval. Grouped by class (Archer, Swordman, Mage, etc.) via `BuffService`. Needs `UpdateAutobuffSkillCommand` / `AutobuffSkillConfigUpdate`.
+
+5. **Autobuff Items** — same shape as Autobuff Skills but using item buff lists.
+
+6. **Debuff Recovery** — key picker per debuff type.
+
+7. **Songs** — song macro sequence editor.
+
+8. **Auto Off** — timer config, overweight threshold, macro keys.
+
+9. **Transfer Helper** — key pickers for transfer actions.
+
+10. **ATK/DEF** — equip config lanes.
+
+11. **Macro Switch** — hotkey-triggered profile/state switches.
+
+12. **Settings** — expose `Config` fields (DebugMode, DisableSystray, ClearAutoOffTimerOnDisable, etc.).
+
+13. **Profiles** — list of profiles with create/rename/delete/copy actions.
+
+**For each new tab, the pattern is always:**
+1. Add message type constants to `MessageTypes.cs`
+2. Add command record(s) to `Commands.cs`
+3. Add update record(s) to `Updates.cs`
+4. Add handler(s) to `WorkerCore`
+5. Route in `CommandDispatcher`
+6. Add event(s) to `WorkerService` and dispatch case
+7. Add child VM to `MainWindowViewModel`; wire event
+8. Create `XxxView.xaml` + `.xaml.cs`
+9. Replace stub in `MainWindow.xaml`
+10. Add to `HandleFullStateRequest` so config syncs on connect
 
 ### Phase 4 — Polish (not started)
 

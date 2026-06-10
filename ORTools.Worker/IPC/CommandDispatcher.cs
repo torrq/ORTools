@@ -48,6 +48,38 @@ public sealed class CommandDispatcher
                 await _core.HandleFullStateRequest();
                 break;
 
+            // ── Autopot HP ────────────────────────────────────────────────────
+            case MessageTypes.UpdateAutopotHPSlot:
+                var hpSlot = env.As<UpdateAutopotHPSlotCommand>();
+                if (hpSlot != null) await _core.HandleUpdateAutopotHPSlot(hpSlot);
+                break;
+
+            case MessageTypes.UpdateAutopotHPSettings:
+                var hpSettings = env.As<UpdateAutopotHPSettingsCommand>();
+                if (hpSettings != null) await _core.HandleUpdateAutopotHPSettings(hpSettings);
+                break;
+
+            case MessageTypes.ReorderAutopotHP:
+                var hpOrder = env.As<ReorderAutopotHPCommand>();
+                if (hpOrder != null) await _core.HandleReorderAutopotHP(hpOrder);
+                break;
+
+            // ── Autopot SP ────────────────────────────────────────────────────
+            case MessageTypes.UpdateAutopotSPSlot:
+                var spSlot = env.As<UpdateAutopotSPSlotCommand>();
+                if (spSlot != null) await _core.HandleUpdateAutopotSPSlot(spSlot);
+                break;
+
+            case MessageTypes.UpdateAutopotSPSettings:
+                var spSettings = env.As<UpdateAutopotSPSettingsCommand>();
+                if (spSettings != null) await _core.HandleUpdateAutopotSPSettings(spSettings);
+                break;
+
+            case MessageTypes.ReorderAutopotSP:
+                var spOrder = env.As<ReorderAutopotSPCommand>();
+                if (spOrder != null) await _core.HandleReorderAutopotSP(spOrder);
+                break;
+
             case MessageTypes.Shutdown:
                 DebugLogger.Info("[Dispatcher] Shutdown requested.");
                 await _core.HandleTurnOff();

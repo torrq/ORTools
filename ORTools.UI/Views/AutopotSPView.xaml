@@ -1,0 +1,101 @@
+<UserControl x:Class="ORTools.UI.Views.AutopotSPView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ORTools.UI.ViewModels">
+    <Border Padding="16"
+            Background="{StaticResource AppSurfaceBrush}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <TextBlock Text="Autopot SP"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource AppTextBrush}" />
+                <TextBlock Text="Five draggable potion rows, ordered top-to-bottom by priority."
+                           Margin="0,2,0,12"
+                           Foreground="{StaticResource AppSubtleBrush}" />
+
+                <Border Padding="12"
+                        Margin="0,0,0,12"
+                        Background="{StaticResource AppInputBrush}"
+                        BorderBrush="{StaticResource AppBorderBrush}"
+                        BorderThickness="1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="140" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Delay (ms)"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource AppTextBrush}" />
+                        <TextBox x:Name="DelayBox"
+                                 Grid.Column="1"
+                                 Margin="10,0,0,0"
+                                 Padding="6,3"
+                                 Text="{Binding Delay, Mode=OneWay}"
+                                 PreviewKeyDown="NumericTextBox_PreviewKeyDown"
+                                 PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                 TextChanged="NumericTextBox_TextChanged"
+                                 LostFocus="DelayBox_LostFocus" />
+                    </Grid>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Slots}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type vm:AutopotSPSlotViewModel}">
+                            <Border Margin="0,0,0,6"
+                                    Padding="10"
+                                    Background="{StaticResource AppInputBrush}"
+                                    BorderBrush="{StaticResource AppBorderBrush}"
+                                    BorderThickness="1"
+                                    AllowDrop="True"
+                                    PreviewMouseLeftButtonDown="Row_PreviewMouseLeftButtonDown"
+                                    PreviewMouseMove="Row_PreviewMouseMove"
+                                    Drop="Row_Drop"
+                                    DragOver="Row_DragOver">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="28" />
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="☰"
+                                               FontSize="14"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{StaticResource AppSubtleBrush}" />
+
+                                    <TextBox Grid.Column="1"
+                                             Margin="8,0,0,0"
+                                             Padding="6,3"
+                                             Text="{Binding KeyText, Mode=OneWay}"
+                                             IsReadOnly="True"
+                                             GotFocus="KeyBox_GotFocus"
+                                             LostFocus="KeyBox_LostFocus"
+                                             PreviewKeyDown="KeyBox_PreviewKeyDown" />
+
+                                    <TextBox Grid.Column="2"
+                                             Margin="8,0,0,0"
+                                             Padding="6,3"
+                                             Text="{Binding Percent, Mode=OneWay}"
+                                             PreviewTextInput="NumericTextBox_PreviewTextInput"
+                                             PreviewKeyDown="NumericTextBox_PreviewKeyDown"
+                                             TextChanged="NumericTextBox_TextChanged"
+                                             LostFocus="PercentBox_LostFocus" />
+
+                                    <CheckBox Grid.Column="3"
+                                              Margin="16,0,0,0"
+                                              VerticalAlignment="Center"
+                                              Content="Enabled"
+                                              IsChecked="{Binding Enabled}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

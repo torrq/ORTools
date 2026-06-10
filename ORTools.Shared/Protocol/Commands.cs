@@ -50,3 +50,53 @@ public sealed record ShutdownCommand : IIpcMessage
 {
     public string Type => MessageTypes.Shutdown;
 }
+
+// ── Autopot HP ────────────────────────────────────────────────────────────────
+
+/// <summary>User changed one HP slot (key, threshold, or enabled toggle).</summary>
+public sealed record UpdateAutopotHPSlotCommand(
+    int Id,
+    string Key,
+    int Percent,
+    bool Enabled) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutopotHPSlot;
+}
+
+/// <summary>User changed HP autopot global settings (delay or critical wound flag).</summary>
+public sealed record UpdateAutopotHPSettingsCommand(
+    int Delay,
+    bool StopOnCriticalInjury) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutopotHPSettings;
+}
+
+/// <summary>Persist the current HP slot order after a drag reorder.</summary>
+public sealed record ReorderAutopotHPCommand(List<int> SlotOrder) : IIpcMessage
+{
+    public string Type => MessageTypes.ReorderAutopotHP;
+}
+
+// ── Autopot SP ────────────────────────────────────────────────────────────────
+
+/// <summary>User changed one SP slot.</summary>
+public sealed record UpdateAutopotSPSlotCommand(
+    int Id,
+    string Key,
+    int Percent,
+    bool Enabled) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutopotSPSlot;
+}
+
+/// <summary>User changed SP autopot delay.</summary>
+public sealed record UpdateAutopotSPSettingsCommand(int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutopotSPSettings;
+}
+
+/// <summary>Persist the current SP slot order after a drag reorder.</summary>
+public sealed record ReorderAutopotSPCommand(List<int> SlotOrder) : IIpcMessage
+{
+    public string Type => MessageTypes.ReorderAutopotSP;
+}

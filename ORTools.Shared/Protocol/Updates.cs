@@ -81,3 +81,22 @@ public sealed record ErrorUpdate(string Message) : IIpcMessage
 {
     public string Type => MessageTypes.Error;
 }
+
+// ── Autopot config (Worker → UI) ──────────────────────────────────────────────
+
+/// <summary>Full HP autopot configuration — sent on connect and after any slot change.</summary>
+public sealed record AutopotHPConfigUpdate(
+    List<AutopotSlotData> Slots,
+    int Delay,
+    bool StopOnCriticalInjury) : IIpcMessage
+{
+    public string Type => MessageTypes.AutopotHPConfig;
+}
+
+/// <summary>Full SP autopot configuration.</summary>
+public sealed record AutopotSPConfigUpdate(
+    List<AutopotSlotData> Slots,
+    int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.AutopotSPConfig;
+}
