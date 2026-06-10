@@ -328,6 +328,7 @@ namespace ORTools.Worker
                 {
                     uint loginValue = ReadMemory(CurrentOnlineAddress);
                     isLoggedIn = loginValue > 0;
+                    System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] HR ReadLoginStatus: address=0x{CurrentOnlineAddress:X}, value={loginValue}, isLoggedIn={isLoggedIn}, hpBase=0x{CurrentHPBaseAddress:X}\n");
                     return isLoggedIn;
                 }
                 // MR
@@ -335,12 +336,14 @@ namespace ORTools.Worker
                 {
                     uint loginValue = ReadMemory(CurrentOnlineAddress);
                     isLoggedIn = loginValue == 3571961;
+                    System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] MR ReadLoginStatus: address=0x{CurrentOnlineAddress:X}, value={loginValue}, isLoggedIn={isLoggedIn}\n");
                     return isLoggedIn;
                 }
 
             }
             catch (Exception ex)
             {
+                System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] Error ReadLoginStatus: {ex.Message}\n");
                 DebugLogger.Debug($"Error reading login status for {ProcessName}: {ex.Message}");
                 return false; // Assume not logged in if we can't read the value
             }
@@ -394,7 +397,8 @@ namespace ORTools.Worker
         {
             PMR = new ProcessMemoryReader();
             string rawProcessName = processName.Split(new string[] { ".exe - " }, StringSplitOptions.None)[0];
-            int choosenPID = int.Parse(processName.Split(new string[] { ".exe - " }, StringSplitOptions.None)[1]);
+            string pidStr = processName.Split(new string[] { ".exe - " }, StringSplitOptions.None)[1].Split(' ')[0];
+            int choosenPID = int.Parse(pidStr);
 
             foreach (Process process in Process.GetProcessesByName(rawProcessName))
             {
@@ -406,17 +410,16 @@ namespace ORTools.Worker
 
                     try
                     {
-                        Client c = GetClientByProcess(rawProcessName) ?? throw new Exception();
-                        this.CurrentHPBaseAddress = c.CurrentHPBaseAddress;
-                        this.CurrentNameAddress = c.CurrentNameAddress;
-                        this.CurrentMapAddress = c.CurrentMapAddress;
-                        this.CurrentJobAddress = c.CurrentJobAddress;
-                        this.CurrentOnlineAddress = c.CurrentOnlineAddress;
-                        this.StatusBufferAddress = c.StatusBufferAddress;
+                        var dto = Server.GetLocalClients().FirstOrDefault(s => s.Name == rawProcessName) ?? throw new Exception();
+                        this.CurrentHPBaseAddress = dto.HPAddressPointer;
+                        this.CurrentNameAddress = dto.NameAddressPointer;
+                        this.CurrentMapAddress = dto.MapAddressPointer;
+                        this.CurrentJobAddress = dto.JobAddressPointer;
+                        this.CurrentOnlineAddress = dto.OnlineAddressPointer;
+                        // Status buffer address is set later or not needed for basic info
                     }
                     catch
                     {
-                        //MessageBox.Show("This client is not supported. Only Spammers and macro will works.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         this.CurrentHPBaseAddress = 0;
                         this.CurrentNameAddress = 0;
                         this.CurrentMapAddress = 0;
@@ -460,7 +463,11 @@ namespace ORTools.Worker
         {
             if (CurrentHPBaseAddress == 0) return default;
             byte[] bytes = PMR.ReadProcessMemory((IntPtr)CurrentHPBaseAddress, 16u, throwOnError: false);
-            if (bytes == null || bytes.Length < 16) return default;
+            if (bytes == null || bytes.Length < 16) 
+            {
+                System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadHpSp FAILED: bytes is null or length < 16. CurrentHPBaseAddress=0x{CurrentHPBaseAddress:X}\n");
+                return default;
+            }
             var snap = new HpSpSnapshot
             {
                 CurrentHp = BitConverter.ToUInt32(bytes, 0),
@@ -468,6 +475,7 @@ namespace ORTools.Worker
                 CurrentSp = BitConverter.ToUInt32(bytes, 8),
                 MaxSp     = BitConverter.ToUInt32(bytes, 12),
             };
+            System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadHpSp SUCCESS: HP={snap.CurrentHp}/{snap.MaxHp}, SP={snap.CurrentSp}/{snap.MaxSp}\n");
             HpSpCache.Push(snap);
             return snap;
         }
@@ -501,11 +509,17 @@ namespace ORTools.Worker
             if (CurrentJobAddress == 0) return null;
             // Need slots 0-12 → 13 uints → 52 bytes
             byte[] bytes = PMR.ReadProcessMemory((IntPtr)CurrentJobAddress, 52u, throwOnError: false);
-            if (bytes == null || bytes.Length < 52) return null;
+            if (bytes == null || bytes.Length < 52) 
+            {
+                System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadJobBlock FAILED: bytes is null or length < 52. CurrentJobAddress=0x{CurrentJobAddress:X}\n");
+                return null;
+            }
             var slots = new uint[13];
             for (int i = 0; i < 13; i++)
                 slots[i] = BitConverter.ToUInt32(bytes, i * 4);
-            return new JobSnapshot(slots, AppConfig.ServerMode);
+            var snap = new JobSnapshot(slots, AppConfig.ServerMode);
+            System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadJobBlock SUCCESS: Level={snap.Level}, JobLevel={snap.JobLevel}, Exp={snap.Exp}/{snap.ExpToLevel}\n");
+            return snap;
         }
 
 
@@ -533,10 +547,17 @@ namespace ORTools.Worker
         private string ReadMemoryAsString(int address)
         {
             // use the convenience overload (no out param)
-            byte[] bytes = PMR.ReadProcessMemory((IntPtr)address, 40u);
+            byte[] bytes = PMR.ReadProcessMemory((IntPtr)address, 40u, throwOnError: false);
+            if (bytes == null) 
+            {
+                System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadMemoryAsString FAILED: bytes is null. address=0x{address:X}\n");
+                return "";
+            }
             int len = Array.IndexOf(bytes, (byte)0);
             if (len < 0) len = bytes.Length;
-            return Encoding.Default.GetString(bytes, 0, len);
+            string val = Encoding.Default.GetString(bytes, 0, len);
+            System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadMemoryAsString SUCCESS: address=0x{address:X}, val='{val}'\n");
+            return val;
         }
 
         private uint ReadMemory(int address)
@@ -614,9 +635,14 @@ namespace ORTools.Worker
             int addr = AppConfig.MaxWeightAddress;
             if (addr == 0) return (0, 0);
             byte[] bytes = PMR.ReadProcessMemory((IntPtr)addr, 8u, throwOnError: false);
-            if (bytes == null || bytes.Length < 8) return (0, 0);
+            if (bytes == null || bytes.Length < 8) 
+            {
+                System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadWeight FAILED: bytes is null or length < 8. addr=0x{addr:X}\n");
+                return (0, 0);
+            }
             uint max     = BitConverter.ToUInt32(bytes, 0);
             uint current = BitConverter.ToUInt32(bytes, 4);
+            System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadWeight SUCCESS: weight={current}/{max}\n");
             return (current, max);
         }
 

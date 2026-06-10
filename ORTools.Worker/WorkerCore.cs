@@ -12,6 +12,7 @@ public sealed class WorkerCore
     private readonly PipeServer _server;
     private readonly CommandDispatcher _dispatcher;
     private readonly StatePublisher _statePublisher;
+    private readonly Thread _hookThread;
 
     private bool _isOn;
     private string _currentProfileName = "Default";
@@ -20,9 +21,25 @@ public sealed class WorkerCore
     {
         ConfigGlobal.Initialize();
         Server.Initialize();
+
+        // Load server configs into ClientListSingleton
+        foreach (var dto in Server.GetLocalClients())
+        {
+            ClientListSingleton.AddClient(new Client(dto));
+        }
+
         ProfileSingleton.Create("Default");
         ProfileSingleton.Load("Default");
-        KeyboardHook.Enable();
+
+        _hookThread = new Thread(() =>
+        {
+            KeyboardHook.Enable();
+            System.Windows.Forms.Application.Run();
+        });
+        _hookThread.SetApartmentState(ApartmentState.STA);
+        _hookThread.IsBackground = true;
+        _hookThread.Name = "KeyboardHookMessageLoop";
+        _hookThread.Start();
 
         WorkerNotifier.TurnOffRequested += reason =>
         {
@@ -36,6 +53,8 @@ public sealed class WorkerCore
         RefreshToggleHotkey();
 
         _statePublisher = new StatePublisher(msg => BroadcastAsync(msg));
+        _statePublisher.Start(); // Run continuously to keep UI synced even when OFF
+
         _dispatcher = new CommandDispatcher(this);
         _server = new PipeServer(PipeName, _dispatcher);
     }
@@ -70,8 +89,7 @@ public sealed class WorkerCore
         p.AutobuffItem.Start(); p.DebuffsRecovery.Start();
         p.MacroSwitch.Start(); p.SongMacro.Start();
         p.TransferHelper.Start();
-        _statePublisher.Start();
-        await BroadcastAsync(new AppStateUpdate(IsOn: true));
+        await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey));
         DebugLogger.Info("[WorkerCore] Turned ON");
     }
 
@@ -87,25 +105,84 @@ public sealed class WorkerCore
         p.AutobuffItem.Stop(); p.DebuffsRecovery.Stop();
         p.MacroSwitch.Stop(); p.SongMacro.Stop();
         p.TransferHelper.Stop();
-        _statePublisher.Stop();
-        await BroadcastAsync(new AppStateUpdate(IsOn: false));
+        await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey));
         DebugLogger.Info("[WorkerCore] Turned OFF");
     }
 
-    // ── Client ────────────────────────────────────────────────────────────────
+    public async Task HandleUpdateToggleKey(string key)
+    {
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        prefs.ToggleStateKey = key;
+        ProfileSingleton.SetConfiguration(prefs);
+        RefreshToggleHotkey();
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: key));
+    }
+
+    public async Task HandleRequestProcessList()
+    {
+        await BroadcastAsync(new ProcessListUpdate(ListLocalProcesses()));
+    }
+
+    private List<string> ListLocalProcesses()
+    {
+        var result = new List<string>();
+        foreach (var server in Server.GetLocalClients())
+        {
+            try
+            {
+                var processes = System.Diagnostics.Process.GetProcessesByName(server.Name);
+                foreach (var p in processes)
+                {
+                    string info = "";
+                    try
+                    {
+                        using var tempClient = new Client($"{p.ProcessName}.exe - {p.Id}");
+                        tempClient.RefreshLoginStatus();
+                        if (tempClient.IsLoggedIn)
+                        {
+                            string name = tempClient.ReadCharacterName();
+                            string map = tempClient.ReadCurrentMap();
+                            var jobSnap = tempClient.ReadJobBlock();
+                            uint level = jobSnap?.Level ?? 0;
+                            uint jobId = jobSnap?.JobId ?? 0;
+                            string jobName = ORTools.Shared.Protocol.JobList.GetNameById((int)jobId);
+                            
+                            if (!string.IsNullOrWhiteSpace(name))
+                            {
+                                info = $" ({name} / {map} / {jobName} Lv.{level})";
+                            }
+                        }
+                    }
+                    catch { }
+
+                    result.Add($"{p.ProcessName}.exe - {p.Id}{info}");
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Warning($"Failed to get processes for {server.Name}: {ex.Message}");
+            }
+        }
+        return result;
+    }
+
+    // ── Profile ───────────────────────────────────────────────────────────────
 
     public async Task HandleConnectClient(string processName)
     {
         if (_isOn) await HandleTurnOff();
-        var dto = Server.GetLocalClients()
-            .FirstOrDefault(c => string.Equals(c.Name, processName, StringComparison.OrdinalIgnoreCase));
-        if (dto == null)
-        {
-            await BroadcastAsync(new ErrorUpdate($"Server config not found: {processName}")); return;
-        }
+        
         try
         {
-            ClientSingleton.SetClient(new Client(processName));
+            var client = new Client(processName);
+            // Verify if client actually got memory addresses
+            if (client.CurrentHPBaseAddress == 0)
+            {
+                await BroadcastAsync(new ErrorUpdate($"Client is not supported or not fully loaded: {processName}")); 
+                return;
+            }
+
+            ClientSingleton.SetClient(client);
             await BroadcastAsync(new ClientStateUpdate(Connected: true, ProcessName: processName));
             DebugLogger.Info($"[WorkerCore] Client connected: {processName}");
         }
@@ -148,8 +225,10 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutopotHPSlot(UpdateAutopotHPSlotCommand cmd)
     {
         var hp = ProfileSingleton.GetCurrent().AutopotHP;
-        var slot = hp.HPSlots.FirstOrDefault(s => s.Id == cmd.Id);
+        if (cmd.Id < 1 || cmd.Id > hp.HPSlots.Count) return;
+        var slot = hp.HPSlots[cmd.Id - 1];
         if (slot == null) return;
+        slot.Id = cmd.Id; // ensure ID is correct
         if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key)) slot.Key = key;
         slot.HPPercent = Math.Clamp(cmd.Percent, 0, 100);
         slot.Enabled = cmd.Enabled;
@@ -181,8 +260,10 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutopotSPSlot(UpdateAutopotSPSlotCommand cmd)
     {
         var sp = ProfileSingleton.GetCurrent().AutopotSP;
-        var slot = sp.SPSlots.FirstOrDefault(s => s.Id == cmd.Id);
+        if (cmd.Id < 1 || cmd.Id > sp.SPSlots.Count) return;
+        var slot = sp.SPSlots[cmd.Id - 1];
         if (slot == null) return;
+        slot.Id = cmd.Id;
         if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key)) slot.Key = key;
         slot.SPPercent = Math.Clamp(cmd.Percent, 0, 100);
         slot.Enabled = cmd.Enabled;
@@ -207,20 +288,49 @@ public sealed class WorkerCore
             Delay: sp.Delay);
     }
 
+    // ── Status Recovery ───────────────────────────────────────────────────────
+
+    public async Task HandleUpdateStatusRecoveryItem(UpdateStatusRecoveryItemCommand cmd)
+    {
+        var sr = ProfileSingleton.GetCurrent().StatusRecovery;
+        if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
+        {
+            sr.SetKeyForList(cmd.Name, key);
+        }
+        ProfileSingleton.SetConfiguration(sr);
+        await BroadcastAsync(BuildStatusRecoveryConfig());
+    }
+
+    public async Task HandleUpdateStatusRecoverySettings(UpdateStatusRecoverySettingsCommand cmd)
+    {
+        var sr = ProfileSingleton.GetCurrent().StatusRecovery;
+        sr.Delay = Math.Max(1, cmd.Delay);
+        ProfileSingleton.SetConfiguration(sr);
+        await BroadcastAsync(BuildStatusRecoveryConfig());
+    }
+
+    private StatusRecoveryConfigUpdate BuildStatusRecoveryConfig()
+    {
+        var sr = ProfileSingleton.GetCurrent().StatusRecovery;
+        return new StatusRecoveryConfigUpdate(
+            Items: sr.statusLists.Select(kvp => new StatusRecoveryItemData(kvp.Key, kvp.Value.Key.ToString())).ToList(),
+            Delay: sr.Delay);
+    }
+
     // ── Full state ────────────────────────────────────────────────────────────
 
     public async Task HandleFullStateRequest()
     {
         var client = ClientSingleton.GetClient();
-        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn));
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey));
         await BroadcastAsync(new ClientStateUpdate(
             Connected: client != null,
             ProcessName: client != null ? _GetConnectedProcessName() : null));
         await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
-        await BroadcastAsync(new ProcessListUpdate(
-            Server.GetLocalClients().Select(c => c.Name).ToList()));
+        await BroadcastAsync(new ProcessListUpdate(ListLocalProcesses()));
         await BroadcastAsync(BuildAutopotHPConfig());
         await BroadcastAsync(BuildAutopotSPConfig());
+        await BroadcastAsync(BuildStatusRecoveryConfig());
     }
 
     // ── Broadcast ─────────────────────────────────────────────────────────────
@@ -245,6 +355,10 @@ public sealed class WorkerCore
                 else _ = HandleTurnOn();
                 return true;
             });
+        }
+        else
+        {
+            KeyboardHook.KeyDown = null;
         }
     }
 

@@ -7,7 +7,7 @@ public sealed record WorkerReadyUpdate(string Version = "1.0") : IIpcMessage
     public string Type => MessageTypes.WorkerReady;
 }
 
-public sealed record AppStateUpdate(bool IsOn) : IIpcMessage
+public sealed record AppStateUpdate(bool IsOn, string ToggleKey) : IIpcMessage
 {
     public string Type => MessageTypes.AppState;
 }
@@ -70,4 +70,13 @@ public sealed record AutopotSPConfigUpdate(
     int Delay) : IIpcMessage
 {
     public string Type => MessageTypes.AutopotSPConfig;
+}
+
+public sealed record StatusRecoveryItemData(string Name, string Key);
+
+public sealed record StatusRecoveryConfigUpdate(
+    List<StatusRecoveryItemData> Items,
+    int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.StatusRecoveryConfig;
 }

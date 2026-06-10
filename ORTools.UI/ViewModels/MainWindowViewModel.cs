@@ -18,6 +18,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     // ── App / client state ────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isApplicationOn;
+    [ObservableProperty] private string _toggleKey = "None";
     [ObservableProperty] private bool   _isClientConnected;
     [ObservableProperty] private string _connectedProcessName = "";
 
@@ -31,6 +32,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     // ── Character info ────────────────────────────────────────────────────────
     [ObservableProperty] private string _characterName = "—";
+    [ObservableProperty] private string _jobName       = "";
     [ObservableProperty] private string _mapName       = "";
     [ObservableProperty] private string _infoLine      = "";
 
@@ -42,6 +44,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _spText = "SP";
     [ObservableProperty] private string _wtText = "Weight";
 
+    // ── Child ViewModels ──────────────────────────────────────────────────────
+    public AutopotHPViewModel AutopotHP { get; }
+    public AutopotSPViewModel AutopotSP { get; }
+    public StatusRecoveryViewModel StatusRecovery { get; }
+
     // ── Derived display properties ────────────────────────────────────────────
 
     public string ToggleButtonText => IsApplicationOn ? "Turn OFF" : "Turn ON";
@@ -51,6 +58,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public Brush ConnectionDotBrush => IsConnected
         ? CreateBrush("#4CAF50")
         : CreateBrush("#FF5252");
+
+    public bool IsKeyInUse(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key) || key == "None") return false;
+        if (ToggleKey == key) return true;
+        
+        foreach (var slot in AutopotHP.Slots) if (slot.Key == key) return true;
+        foreach (var slot in AutopotSP.Slots) if (slot.Key == key) return true;
+        
+        foreach (var item in StatusRecovery.Items) if (item.Key == key) return true;
+        
+        return false;
+    }
 
     public Brush HpBarBrush => HpPercent < 25
         ? CreateBrush("#F44336")
@@ -65,6 +85,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(WorkerService worker)
     {
         _worker = worker;
+        
+        AutopotHP = new AutopotHPViewModel(_worker);
+        AutopotSP = new AutopotSPViewModel(_worker);
+        StatusRecovery = new StatusRecoveryViewModel(_worker);
 
         worker.ConnectionChanged   += OnConnectionChanged;
         worker.AppStateReceived    += OnAppState;
@@ -102,6 +126,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void RefreshProcessList()
         => _worker.Send(new RequestProcessListCommand());
 
+    [RelayCommand]
+    private void UpdateToggleKey(string key)
+        => _worker.Send(new UpdateToggleKeyCommand(key));
+
     // Triggered when user picks a different profile in the ComboBox
     private bool _suppressProfileCommand;
     partial void OnCurrentProfileChanged(string value)
@@ -115,7 +143,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     partial void OnIsConnectedChanged(bool value)       => OnPropertyChanged(nameof(ConnectionDotBrush));
     partial void OnHpPercentChanged(double value)       => OnPropertyChanged(nameof(HpBarBrush));
     partial void OnSpPercentChanged(double value)       => OnPropertyChanged(nameof(SpBarBrush));
-    partial void OnSelectedProcessChanged(string? value) => OnPropertyChanged(nameof(HasSelectedProcess));
+    partial void OnSelectedProcessChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasSelectedProcess));
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            ConnectToProcess();
+        }
+    }
 
     // ── Event handlers — all marshal to UI thread ─────────────────────────────
 
@@ -125,15 +160,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             IsConnected      = s == WorkerService.Status.Connected;
             ConnectionLabel  = s switch
             {
-                WorkerService.Status.Connected    => "Connected",
-                WorkerService.Status.Connecting   => "Connecting...",
-                WorkerService.Status.Disconnected => "Disconnected",
-                _                                 => "Unknown"
+                WorkerService.Status.Connected    => "LINKED",
+                WorkerService.Status.Connecting   => "LINKING...",
+                WorkerService.Status.Disconnected => "DISCONNECTED",
+                _                                 => "UNKNOWN"
             };
         });
 
     private void OnAppState(AppStateUpdate u) =>
-        Post(() => IsApplicationOn = u.IsOn);
+        Post(() => 
+        {
+            IsApplicationOn = u.IsOn;
+            ToggleKey       = u.ToggleKey ?? "None";
+        });
 
     private void OnClientState(ClientStateUpdate u) =>
         Post(() =>
@@ -155,6 +194,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Post(() =>
         {
             CharacterName = u.Name;
+            JobName       = JobList.GetNameById((int)u.JobId);
             MapName       = u.Map;
             WtPercent     = u.WeightMax > 0 ? (double)u.WeightCur / u.WeightMax * 100.0 : 0;
             WtText        = $"Weight  {u.WeightCur} / {u.WeightMax}";

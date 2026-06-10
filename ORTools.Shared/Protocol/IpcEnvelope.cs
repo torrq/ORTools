@@ -21,6 +21,7 @@ public sealed class IpcEnvelope
     public static readonly JsonSerializerOptions Options = new()
     {
         PropertyNamingPolicy        = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition      = JsonIgnoreCondition.WhenWritingNull,
         WriteIndented               = false
     };
@@ -31,7 +32,7 @@ public sealed class IpcEnvelope
         var envelope = new IpcEnvelope
         {
             Type    = message.Type,
-            Payload = JsonSerializer.SerializeToElement(message, typeof(T), Options)
+            Payload = JsonSerializer.SerializeToElement(message, message.GetType(), Options)
         };
         return JsonSerializer.Serialize(envelope, Options);
     }
@@ -49,6 +50,11 @@ public sealed class IpcEnvelope
     {
         if (Payload is null) return null;
         try   { return JsonSerializer.Deserialize<T>(Payload.Value.GetRawText(), Options); }
-        catch { return null; }
+        catch (Exception ex) 
+        { 
+            Console.WriteLine($"[IpcEnvelope] Failed to deserialize {typeof(T).Name}: {ex.Message}");
+            System.IO.File.AppendAllText("debug_json.txt", $"[{DateTime.Now:HH:mm:ss}] Failed to deserialize {typeof(T).Name}: {ex.Message}\nRaw JSON: {Payload.Value.GetRawText()}\n");
+            return null; 
+        }
     }
 }

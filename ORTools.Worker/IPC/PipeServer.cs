@@ -92,7 +92,9 @@ public sealed class PipeServer
         await _writeLock.WaitAsync(ct);
         try
         {
-            await _writer.WriteLineAsync(IpcEnvelope.Wrap(message));
+            string json = IpcEnvelope.Wrap(message);
+            System.IO.File.AppendAllText("debug_worker_sent.txt", $"[{DateTime.Now:HH:mm:ss}] SENT: {json}\n");
+            await _writer.WriteLineAsync(json);
         }
         catch
         {

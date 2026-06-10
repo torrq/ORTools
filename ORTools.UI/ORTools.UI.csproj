@@ -9,9 +9,13 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>ORTools</AssemblyName>
     <RootNamespace>ORTools.UI</RootNamespace>
+    <ApplicationIcon>Views\ortools.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\ortools.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ortools.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />

@@ -27,14 +27,18 @@ public sealed class CommandDispatcher
             case MessageTypes.DisconnectClient:
                 await _core.HandleDisconnectClient(); break;
 
+            case MessageTypes.UpdateToggleKey:
+                var utk = env.As<UpdateToggleKeyCommand>();
+                if (utk != null) await _core.HandleUpdateToggleKey(utk.Key);
+                break;
+
             case MessageTypes.SwitchProfile:
                 var sp = env.As<SwitchProfileCommand>();
                 if (sp != null) await _core.HandleSwitchProfile(sp.ProfileName);
                 break;
 
             case MessageTypes.RequestProcessList:
-                await _core.BroadcastAsync(new ProcessListUpdate(
-                    Server.GetLocalClients().Select(c => c.Name).ToList()));
+                await _core.HandleRequestProcessList();
                 break;
 
             case MessageTypes.RequestFullState:
@@ -56,8 +60,18 @@ public sealed class CommandDispatcher
                 break;
 
             case MessageTypes.UpdateAutopotSPSettings:
-                var spSet = env.As<UpdateAutopotSPSettingsCommand>();
-                if (spSet != null) await _core.HandleUpdateAutopotSPSettings(spSet);
+                var sps = env.As<UpdateAutopotSPSettingsCommand>();
+                if (sps != null) await _core.HandleUpdateAutopotSPSettings(sps);
+                break;
+
+            case MessageTypes.UpdateStatusRecoveryItem:
+                var sri = env.As<UpdateStatusRecoveryItemCommand>();
+                if (sri != null) await _core.HandleUpdateStatusRecoveryItem(sri);
+                break;
+
+            case MessageTypes.UpdateStatusRecoverySettings:
+                var srs = env.As<UpdateStatusRecoverySettingsCommand>();
+                if (srs != null) await _core.HandleUpdateStatusRecoverySettings(srs);
                 break;
 
             case MessageTypes.Shutdown:

@@ -5,8 +5,9 @@ public static class MessageTypes
     // ── UI → Worker (commands) ────────────────────────────────────────────────
     public const string TurnOn = "TurnOn";
     public const string TurnOff = "TurnOff";
-    public const string ConnectClient = "ConnectClient";
+    public const string ConnectClient    = "ConnectClient";
     public const string DisconnectClient = "DisconnectClient";
+    public const string UpdateToggleKey  = "UpdateToggleKey";
     public const string SwitchProfile = "SwitchProfile";
     public const string RequestProcessList = "RequestProcessList";
     public const string RequestFullState = "RequestFullState";
@@ -19,6 +20,9 @@ public static class MessageTypes
     // Autopot SP
     public const string UpdateAutopotSPSlot = "UpdateAutopotSPSlot";
     public const string UpdateAutopotSPSettings = "UpdateAutopotSPSettings";
+    
+    public const string UpdateStatusRecoveryItem = "UpdateStatusRecoveryItem";
+    public const string UpdateStatusRecoverySettings = "UpdateStatusRecoverySettings";
 
     // ── Worker → UI (state updates) ───────────────────────────────────────────
     public const string WorkerReady = "WorkerReady";
@@ -34,4 +38,5 @@ public static class MessageTypes
     // Autopot config pushes (Worker → UI)
     public const string AutopotHPConfig = "AutopotHPConfig";
     public const string AutopotSPConfig = "AutopotSPConfig";
+    public const string StatusRecoveryConfig = "StatusRecoveryConfig";
 }

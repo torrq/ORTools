@@ -158,7 +158,7 @@ All legacy model files have been ported into `ORTools.Worker/` with:
 
 One WPF view + ViewModel per feature. Suggested order:
 
-1. **AutopotHP/SP** — 5-row grid: key, percent threshold, enabled checkbox
+1. ~~**AutopotHP/SP** — 5-row grid: key, percent threshold, enabled checkbox~~ ✅
 2. **StatusRecovery** — 3 cure-item lists (Panacea, Royal Jelly, Green Pot)
 3. **SkillTimer** — 10 lanes: key, delay, click mode, alt-key, enabled
 4. **SkillSpammer** — list of skill entries + delay + toggle mode

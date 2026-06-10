@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace ORTools.Worker
+namespace ORTools.Shared.Protocol
 {
-    internal static class JobList
+    public static class JobList
     {
         public static readonly Dictionary<int, string> Jobs = new Dictionary<int, string>
         {

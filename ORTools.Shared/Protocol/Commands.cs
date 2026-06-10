@@ -22,6 +22,11 @@ public sealed record DisconnectClientCommand : IIpcMessage
     public string Type => MessageTypes.DisconnectClient;
 }
 
+public record UpdateToggleKeyCommand(string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateToggleKey;
+}
+
 public sealed record SwitchProfileCommand(string ProfileName) : IIpcMessage
 {
     public string Type => MessageTypes.SwitchProfile;
@@ -74,4 +79,14 @@ public sealed record UpdateAutopotSPSlotCommand(
 public sealed record UpdateAutopotSPSettingsCommand(int Delay) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateAutopotSPSettings;
+}
+
+public record UpdateStatusRecoveryItemCommand(string Name, string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateStatusRecoveryItem;
+}
+
+public record UpdateStatusRecoverySettingsCommand(int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateStatusRecoverySettings;
 }

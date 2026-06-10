@@ -35,6 +35,10 @@ public sealed class WorkerService : IDisposable
     public event Action<LogMessageUpdate>?   LogMessageReceived;
     public event Action<ErrorUpdate>?        ErrorReceived;
 
+    public event Action<AutopotHPConfigUpdate>? AutopotHPConfigReceived;
+    public event Action<AutopotSPConfigUpdate>? AutopotSPConfigReceived;
+    public event Action<StatusRecoveryConfigUpdate>? StatusRecoveryConfigReceived;
+
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
     private StreamWriter?          _writer;
@@ -189,6 +193,15 @@ public sealed class WorkerService : IDisposable
                 break;
             case MessageTypes.Error:
                 ErrorReceived?.Invoke(env.As<ErrorUpdate>()!);
+                break;
+            case MessageTypes.AutopotHPConfig:
+                AutopotHPConfigReceived?.Invoke(env.As<AutopotHPConfigUpdate>()!);
+                break;
+            case MessageTypes.AutopotSPConfig:
+                AutopotSPConfigReceived?.Invoke(env.As<AutopotSPConfigUpdate>()!);
+                break;
+            case MessageTypes.StatusRecoveryConfig:
+                StatusRecoveryConfigReceived?.Invoke(env.As<StatusRecoveryConfigUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");
