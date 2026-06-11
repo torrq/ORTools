@@ -148,6 +148,11 @@ public sealed record UpdateAutobuffSkillSettingsCommand(int Delay) : IIpcMessage
     public string Type => MessageTypes.UpdateAutobuffSkillSettings;
 }
 
+public sealed record UpdateAutobuffOrderCommand(List<string> OrderedStatusNames) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutobuffOrder;
+}
+
 // ── AutobuffItem ──────────────────────────────────────────────────────────────
 
 public sealed record UpdateAutobuffItemCommand(string StatusName, string Key) : IIpcMessage
@@ -197,4 +202,18 @@ public sealed record UpdateProfileSettingsCommand(
     bool SoundEnabled) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateProfileSettings;
+}
+
+public sealed record UpdateAutoOffSettingsCommand(
+    bool AutoOffOverweight,
+    int AutoOffOverweightMode,
+    string AutoOffKey1,
+    string AutoOffKey2,
+    bool AutoOffKillClient,
+    bool SwitchAmmo,
+    string Ammo1Key,
+    string Ammo2Key,
+    int AutoOffTime) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutoOffSettings;
 }

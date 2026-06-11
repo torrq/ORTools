@@ -28,9 +28,12 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _defaultToggleStateKey = "None";
     [ObservableProperty] private bool _startAutoOffTimerOnEnable;
 
-    public SettingsViewModel(WorkerService worker)
+    public AutobuffSkillViewModel AutobuffSkill { get; }
+
+    public SettingsViewModel(WorkerService worker, AutobuffSkillViewModel autobuffSkill)
     {
         _worker = worker;
+        AutobuffSkill = autobuffSkill;
         _worker.GlobalConfigReceived += OnGlobalConfigReceived;
         _worker.ProfileSettingsReceived += OnProfileSettingsReceived;
     }

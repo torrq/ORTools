@@ -35,6 +35,7 @@ public static class MessageTypes
 
     // Autobuff Skill
     public const string UpdateAutobuffSkillItem = "UpdateAutobuffSkillItem";
+    public const string UpdateAutobuffOrder = "UpdateAutobuffOrder";
     public const string UpdateAutobuffSkillSettings = "UpdateAutobuffSkillSettings";
     public const string AutobuffSkillConfigUpdate = "AutobuffSkillConfigUpdate";
 
@@ -50,6 +51,9 @@ public static class MessageTypes
     // Settings
     public const string UpdateGlobalConfig = "UpdateGlobalConfig";
     public const string UpdateProfileSettings = "UpdateProfileSettings";
+
+    // Auto Off
+    public const string UpdateAutoOffSettings = "UpdateAutoOffSettings";
 
     // ── Worker → UI (state updates) ───────────────────────────────────────────
     public const string WorkerReady = "WorkerReady";
@@ -69,7 +73,9 @@ public static class MessageTypes
     public const string SkillTimerConfig = "SkillTimerConfig";
     public const string DebuffRecoveryConfig = "DebuffRecoveryConfig";
     public const string AutobuffSkillConfig = "AutobuffSkillConfig";
-    public const string SkillSpammerConfig = "SkillSpammerConfig";
-    public const string GlobalConfig = "GlobalConfig";
-    public const string ProfileSettings = "ProfileSettings";
+    public const string AutobuffOrderConfig = "AutobuffOrderConfig";
+    public const string SkillSpammerConfigUpdate = "SkillSpammerConfigUpdate";
+    public const string GlobalConfigUpdate = "GlobalConfigUpdate";
+    public const string ProfileSettingsUpdate = "ProfileSettingsUpdate";
+    public const string AutoOffConfigUpdate = "AutoOffConfigUpdate";
 }

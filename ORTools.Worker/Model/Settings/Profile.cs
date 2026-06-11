@@ -19,6 +19,7 @@ public class Profile
     public MacroSwitch    MacroSwitch     { get; set; } = new MacroSwitch(MacroSwitch.ACTION_NAME_MACRO_SWITCH, MacroSwitchKey.TOTAL_MACRO_LANES);
     public TransferHelper TransferHelper  { get; set; } = new();
     public ATKDEF         ATKDEFMode      { get; set; } = new ATKDEF(AppConfig.ATKDEFLanes);
+    public List<string>   UnifiedAutobuffOrder { get; set; } = new();
 
     public Profile() { }
 
@@ -115,6 +116,9 @@ public static class ProfileSingleton
                 _profile.MacroSwitch    = JsonConvert.DeserializeObject<MacroSwitch>(Profile.GetByAction(rawObject, _profile.MacroSwitch));
                 _profile.TransferHelper = JsonConvert.DeserializeObject<TransferHelper>(Profile.GetByAction(rawObject, _profile.TransferHelper));
                 _profile.DebuffsRecovery = JsonConvert.DeserializeObject<DebuffRecovery>(Profile.GetByAction(rawObject, _profile.DebuffsRecovery));
+
+                // Run legacy profile migrations
+                ProfileMigrator.Migrate(_profile);
             }
         }
         catch (Exception ex)

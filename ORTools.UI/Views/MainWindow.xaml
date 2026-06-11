@@ -193,20 +193,14 @@
             </StackPanel>
         </Border>
         <TabControl Margin="0,3,0,2" Grid.Row="2" Grid.ColumnSpan="2">
-            <TabItem Header="Autopot HP" Background="#FF232323">
-                <views:AutopotHPView DataContext="{Binding AutopotHP}" />
-            </TabItem>
-            <TabItem Header="Autopot SP">
-                <views:AutopotSPView DataContext="{Binding AutopotSP}" />
+            <TabItem Header="Autopot">
+                <views:AutopotView DataContext="{Binding}" />
             </TabItem>
             <TabItem Header="Skill Timer">
                 <views:SkillTimerView DataContext="{Binding SkillTimer}" />
             </TabItem>
             <TabItem Header="Auto Off">
-                <Border Padding="16">
-                    <TextBlock Text="Auto Off - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:AutoOffView DataContext="{Binding AutoOff}" />
             </TabItem>
             <TabItem Header="Skill Spammer">
                 <views:SkillSpammerView DataContext="{Binding SkillSpammer}" />
@@ -214,11 +208,18 @@
             <TabItem Header="Debuffs">
                 <views:DebuffsView DataContext="{Binding Debuffs}" />
             </TabItem>
-            <TabItem Header="Autobuff Skills">
-                <views:AutobuffSkillView DataContext="{Binding AutobuffSkill}" />
-            </TabItem>
-            <TabItem Header="Autobuff Items">
-                <views:AutobuffItemView DataContext="{Binding AutobuffItem}" />
+            <TabItem Header="Autobuff">
+                <TabControl Background="Transparent" BorderThickness="0" Margin="0,-2,0,0">
+                    <TabItem Header="Skills">
+                        <views:AutobuffSkillView DataContext="{Binding AutobuffSkill}" />
+                    </TabItem>
+                    <TabItem Header="Items">
+                        <views:AutobuffItemView DataContext="{Binding AutobuffItem}" />
+                    </TabItem>
+                    <TabItem Header="Order">
+                        <views:AutobuffOrderView DataContext="{Binding AutobuffOrder}" />
+                    </TabItem>
+                </TabControl>
             </TabItem>
             <TabItem Header="ATK x DEF">
                 <Border Padding="16">

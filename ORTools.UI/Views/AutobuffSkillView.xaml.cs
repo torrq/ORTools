@@ -16,7 +16,7 @@ public partial class AutobuffSkillView : UserControl
     {
         if (sender is TextBox tb && tb.DataContext is AutobuffSkillItemViewModel vm)
         {
-            InputHelper.HandleKeyInput(tb, e, newKey => vm.Key = newKey);
+            InputHelper.HandleKeyInput(tb, e, newKey => vm.Key = newKey, vm);
         }
     }
 

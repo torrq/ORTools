@@ -29,7 +29,7 @@ public partial class SettingsView : UserControl
     {
         if (sender is TextBox tb && DataContext is ViewModels.SettingsViewModel vm)
         {
-            Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.DefaultToggleStateKey = newKey);
+            Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.DefaultToggleStateKey = newKey, "Settings_DefaultToggleKey");
         }
     }
 }

@@ -18,11 +18,11 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="YesButton" Content="Yes, continue" Width="100" Height="28" Margin="0,0,8,0"
-                    Background="{StaticResource AppDangerBrush}" Foreground="{StaticResource AppTextBrush}"
-                    BorderThickness="0" Cursor="Hand" Click="YesButton_Click" />
+                    Style="{StaticResource DangerButtonStyle}"
+                    Click="YesButton_Click" />
             <Button x:Name="NoButton" Content="No, cancel" Width="90" Height="28"
-                    Background="{StaticResource AppSurfaceBrush}" Foreground="{StaticResource AppTextBrush}"
-                    BorderThickness="0" Cursor="Hand" Click="NoButton_Click" IsCancel="True" IsDefault="True"/>
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Click="NoButton_Click" IsCancel="True" IsDefault="True"/>
         </StackPanel>
     </Grid>
 </Window>

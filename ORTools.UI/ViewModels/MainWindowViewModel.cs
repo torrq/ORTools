@@ -50,7 +50,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public AutopotSPViewModel AutopotSP { get; }
     public DebuffsViewModel Debuffs { get; }
     public SkillTimerViewModel SkillTimer { get; }
+    public AutoOffViewModel AutoOff { get; }
     public AutobuffSkillViewModel AutobuffSkill { get; }
+    public AutobuffOrderViewModel AutobuffOrder { get; }
     public AutobuffItemViewModel AutobuffItem { get; }
     public SkillSpammerViewModel SkillSpammer { get; }
     public SettingsViewModel Settings { get; }
@@ -69,31 +71,50 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool IsKeyInUse(string newKey, object? sourceVM = null)
     {
         if (string.IsNullOrWhiteSpace(newKey) || newKey == "None") return false;
-        if (ToggleKey == newKey && sourceVM != this) return true;
+        if ((sourceVM as string) == "Settings_DefaultToggleKey") return false;
         
+        if (ToggleKey == newKey && (sourceVM as string) != "ToggleKeyTextBox") return true;
+        
+        if (SkillSpammer.ToggleModeKey == newKey && (sourceVM as string) != "SkillSpammer_ToggleKey") return true;
+        foreach (var entry in SkillSpammer.AllKeys) if (entry.KeyName == newKey && entry.IsCheckedState != false && sourceVM != entry) return true;
+
         foreach (var slot in AutopotHP.Slots) if (slot.Key == newKey && sourceVM != slot) return true;
         foreach (var slot in AutopotSP.Slots) if (slot.Key == newKey && sourceVM != slot) return true;
         
-        // 3) Debuffs (Status Recovery row)
         foreach (var sr in Debuffs.StatusRecoveryItems)
         {
             if (sr.Key == "None") continue;
             if (sr.Key == newKey && sourceVM != sr) return true;
         }
 
-        // 4) Debuffs (Debuffs grid)
         foreach (var dr in Debuffs.DebuffItems)
         {
             if (dr.Key == "None") continue;
             if (dr.Key == newKey && sourceVM != dr) return true;
         }
 
-        // 5) Skill Timer
         foreach (var st in SkillTimer.Slots) if (st.Key == newKey && sourceVM != st) return true;
+
+        foreach (var group in AutobuffSkill.SkillGroups)
+        {
+            foreach (var item in group.Items)
+            {
+                if (item.Key == "None") continue;
+                if (item.Key == newKey && sourceVM != item) return true;
+            }
+        }
+
+        foreach (var group in AutobuffItem.ItemGroups)
+        {
+            foreach (var item in group.Items)
+            {
+                if (item.Key == "None") continue;
+                if (item.Key == newKey && sourceVM != item) return true;
+            }
+        }
         
         return false;
     }
-
     public Brush HpBarBrush => HpPercent < 25
         ? CreateBrush("#F44336")
         : CreateBrush("#4CAF50");
@@ -110,12 +131,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         
         AutopotHP = new AutopotHPViewModel(_worker);
         AutopotSP = new AutopotSPViewModel(_worker);
-        Debuffs = new DebuffsViewModel(worker);
-        SkillTimer = new SkillTimerViewModel(worker);
-        AutobuffSkill = new AutobuffSkillViewModel(worker);
-        AutobuffItem = new AutobuffItemViewModel(worker);
-        SkillSpammer = new SkillSpammerViewModel(worker);
-        Settings = new SettingsViewModel(worker);
+        Debuffs = new DebuffsViewModel(_worker);
+        SkillTimer = new SkillTimerViewModel(_worker);
+        AutoOff = new AutoOffViewModel(_worker);
+        AutobuffSkill = new AutobuffSkillViewModel(_worker);
+        AutobuffOrder = new AutobuffOrderViewModel(_worker);
+        AutobuffItem = new AutobuffItemViewModel(_worker);
+        SkillSpammer = new SkillSpammerViewModel(_worker);
+        Settings = new SettingsViewModel(worker, AutobuffSkill);
         Profiles = new ProfilesViewModel(worker);
 
         // Map ViewModels to tabs

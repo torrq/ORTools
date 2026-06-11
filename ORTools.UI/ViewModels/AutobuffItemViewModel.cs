@@ -54,27 +54,46 @@ public partial class AutobuffItemViewModel : ObservableObject
 
         Delay = Math.Max(Delay, config.Delay);
 
-        ItemGroups.Clear();
-
-        foreach (var groupData in config.Groups)
+        if (ItemGroups.Count == 0)
         {
-            var groupVm = new AutobuffItemGroupViewModel { GroupName = groupData.GroupName };
-            foreach (var itemData in groupData.Items)
+            foreach (var groupData in config.Groups)
             {
-                var itemVm = new AutobuffItemItemViewModel
+                var groupVm = new AutobuffItemGroupViewModel { GroupName = groupData.GroupName };
+                foreach (var itemData in groupData.Items)
                 {
-                    Name = itemData.Name,
-                    DisplayName = itemData.DisplayName,
-                    Key = itemData.Key
-                };
-                itemVm.OnKeyUpdated += (sender, key) =>
-                {
-                    if (!_isUpdatingFromServer && sender is AutobuffItemItemViewModel vm)
-                        _worker.Send(new UpdateAutobuffItemCommand(vm.Name, key));
-                };
-                groupVm.Items.Add(itemVm);
+                    var itemVm = new AutobuffItemItemViewModel
+                    {
+                        Name = itemData.Name,
+                        DisplayName = itemData.DisplayName,
+                        Key = itemData.Key
+                    };
+                    itemVm.OnKeyUpdated += (sender, key) =>
+                    {
+                        if (!_isUpdatingFromServer && sender is AutobuffItemItemViewModel vm)
+                            _worker.Send(new UpdateAutobuffItemCommand(vm.Name, key));
+                    };
+                    groupVm.Items.Add(itemVm);
+                }
+                ItemGroups.Add(groupVm);
             }
-            ItemGroups.Add(groupVm);
+        }
+        else
+        {
+            // In-place update
+            foreach (var groupData in config.Groups)
+            {
+                var groupVm = ItemGroups.FirstOrDefault(g => g.GroupName == groupData.GroupName);
+                if (groupVm == null) continue;
+
+                foreach (var itemData in groupData.Items)
+                {
+                    var itemVm = groupVm.Items.FirstOrDefault(i => i.Name == itemData.Name);
+                    if (itemVm != null && itemVm.Key != itemData.Key)
+                    {
+                        itemVm.Key = itemData.Key;
+                    }
+                }
+            }
         }
 
         _isUpdatingFromServer = false;

@@ -119,6 +119,11 @@ public sealed class CommandDispatcher
                 if (abss != null) await _core.HandleUpdateAutobuffSkillSettings(abss);
                 break;
 
+            case MessageTypes.UpdateAutobuffOrder:
+                var uabo = env.As<UpdateAutobuffOrderCommand>();
+                if (uabo != null) await _core.HandleUpdateAutobuffOrder(uabo);
+                break;
+
             case MessageTypes.UpdateAutobuffItemItem:
                 var abii = env.As<UpdateAutobuffItemCommand>();
                 if (abii != null) await _core.HandleUpdateAutobuffItemItem(abii);
@@ -142,6 +147,11 @@ public sealed class CommandDispatcher
             case MessageTypes.UpdateProfileSettings:
                 var ups = env.As<UpdateProfileSettingsCommand>();
                 if (ups != null) await _core.HandleUpdateProfileSettings(ups);
+                break;
+
+            case MessageTypes.UpdateAutoOffSettings:
+                var uaos = env.As<UpdateAutoOffSettingsCommand>();
+                if (uaos != null) await _core.HandleUpdateAutoOffSettings(uaos);
                 break;
 
             case MessageTypes.UpdateGlobalConfig:

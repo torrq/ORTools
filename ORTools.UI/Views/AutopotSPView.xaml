@@ -11,38 +11,42 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Grid Margin="0,0,0,12">
+        <Grid Margin="0,0,0,8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="36"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="ON" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="KEY" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="SP PERCENT THRESHOLD" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center"/>
+            <TextBlock Text="ON" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="KEY" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="SP %" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- Slots -->
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Slots}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Margin="0,0,0,8">
+                    <Grid Margin="0,0,0,6">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="36"/>
                         </Grid.ColumnDefinitions>
 
                         <CheckBox IsChecked="{Binding Enabled}" 
                                   HorizontalAlignment="Center" 
-                                  VerticalAlignment="Center"/>
+                                  VerticalAlignment="Center">
+                            <CheckBox.LayoutTransform>
+                                <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                            </CheckBox.LayoutTransform>
+                        </CheckBox>
 
                         <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay}"
                                  PreviewKeyDown="KeyTextBox_PreviewKeyDown"
                                  HorizontalAlignment="Center" VerticalAlignment="Center"
-                                 Width="40" Height="24" MaxLength="10"
+                                 Width="40" Height="22" MaxLength="10" FontSize="11"
                                  Background="{StaticResource AppInputBrush}" 
                                  BorderBrush="{StaticResource AppInputBorderBrush}" 
                                  TextAlignment="Center"
@@ -62,15 +66,13 @@
                         </TextBox>
 
                         <Slider Grid.Column="2" Value="{Binding Percent, Delay=150}" Minimum="0" Maximum="100"
-                                VerticalAlignment="Center" Margin="12,0,12,0"
+                                VerticalAlignment="Center" Margin="8,0,8,0"
                                 IsSnapToTickEnabled="True" TickFrequency="1" />
 
                         <TextBox Grid.Column="3" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
                                  Foreground="{StaticResource AppTextBrush}" Background="{StaticResource AppInputBrush}"
-                                 BorderBrush="{StaticResource AppInputBorderBrush}" TextAlignment="Center" Width="36"
-                                 VerticalAlignment="Center" HorizontalAlignment="Right"
-                                  
-                                  />
+                                 BorderBrush="{StaticResource AppInputBorderBrush}" TextAlignment="Center" Width="32" Height="22" FontSize="11"
+                                 VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

@@ -435,6 +435,29 @@ public static class BuffService
     private static List<Buff> ServerList(Dictionary<int, List<Buff>> d)
         => d.TryGetValue(AppConfig.ServerMode, out var list) ? list : (d.TryGetValue(0, out var fb) ? fb : new List<Buff>());
 
+    public static Buff? GetBuff(EffectStatusIDs statusId)
+    {
+        Initialize();
+        var allLists = new[]
+        {
+            ServerList(BuffDefinitions.ArcherBuffs), ServerList(BuffDefinitions.SwordmanBuffs),
+            ServerList(BuffDefinitions.MageBuffs), ServerList(BuffDefinitions.MerchantBuffs),
+            ServerList(BuffDefinitions.ThiefBuffs), ServerList(BuffDefinitions.AcolyteBuffs),
+            ServerList(BuffDefinitions.NinjaBuffs), ServerList(BuffDefinitions.TaekwonBuffs),
+            ServerList(BuffDefinitions.GunslingerBuffs), ServerList(BuffDefinitions.PadawanBuffs),
+            BuffDefinitions.PotionBuffs, ServerList(BuffDefinitions.ElementBuffs),
+            BuffDefinitions.FoodBuffs, BuffDefinitions.BoxBuffs,
+            BuffDefinitions.ScrollBuffs, BuffDefinitions.EtcBuffs,
+            BuffDefinitions.FishBuffs, BuffDefinitions.Debuffs
+        };
+        foreach (var list in allLists)
+        {
+            var buff = list.FirstOrDefault(b => b.EffectStatusID == statusId);
+            if (buff != null) return buff;
+        }
+        return null;
+    }
+
     // Skill buffs
     public static List<Buff> GetArcherBuffs()      => ServerList(BuffDefinitions.ArcherBuffs);
     public static List<Buff> GetSwordmanBuffs()    => ServerList(BuffDefinitions.SwordmanBuffs);

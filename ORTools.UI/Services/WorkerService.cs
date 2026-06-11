@@ -41,10 +41,12 @@ public sealed class WorkerService : IDisposable
     public event Action<SkillTimerConfigUpdate>? SkillTimerConfigReceived;
     public event Action<DebuffRecoveryConfigUpdate>? DebuffRecoveryConfigReceived;
     public event Action<AutobuffSkillConfigUpdate>? AutobuffSkillConfigReceived;
+    public event Action<AutobuffOrderConfigUpdate>? AutobuffOrderConfigReceived;
     public event Action<AutobuffItemConfigUpdate>? AutobuffItemConfigReceived;
     public event Action<SkillSpammerConfigUpdate>? SkillSpammerConfigReceived;
     public event Action<GlobalConfigUpdate>? GlobalConfigReceived;
     public event Action<ProfileSettingsUpdate>? ProfileSettingsReceived;
+    public event Action<AutoOffConfigUpdate>? AutoOffConfigReceived;
 
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
@@ -219,17 +221,23 @@ public sealed class WorkerService : IDisposable
             case MessageTypes.AutobuffSkillConfig:
                 AutobuffSkillConfigReceived?.Invoke(env.As<AutobuffSkillConfigUpdate>()!);
                 break;
+            case MessageTypes.AutobuffOrderConfig:
+                AutobuffOrderConfigReceived?.Invoke(env.As<AutobuffOrderConfigUpdate>()!);
+                break;
             case MessageTypes.AutobuffItemConfig:
                 AutobuffItemConfigReceived?.Invoke(env.As<AutobuffItemConfigUpdate>()!);
                 break;
-            case MessageTypes.SkillSpammerConfig:
+            case MessageTypes.SkillSpammerConfigUpdate:
                 SkillSpammerConfigReceived?.Invoke(env.As<SkillSpammerConfigUpdate>()!);
                 break;
-            case MessageTypes.GlobalConfig:
+            case MessageTypes.GlobalConfigUpdate:
                 GlobalConfigReceived?.Invoke(env.As<GlobalConfigUpdate>()!);
                 break;
-            case MessageTypes.ProfileSettings:
+            case MessageTypes.ProfileSettingsUpdate:
                 ProfileSettingsReceived?.Invoke(env.As<ProfileSettingsUpdate>()!);
+                break;
+            case MessageTypes.AutoOffConfigUpdate:
+                AutoOffConfigReceived?.Invoke(env.As<AutoOffConfigUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");

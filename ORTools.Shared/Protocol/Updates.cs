@@ -115,6 +115,14 @@ public sealed record AutobuffSkillConfigUpdate(
     public string Type => MessageTypes.AutobuffSkillConfig;
 }
 
+public sealed record AutobuffOrderItemData(string Name, string DisplayName, string Key, string ItemType, string IconName);
+
+public sealed record AutobuffOrderConfigUpdate(
+    List<AutobuffOrderItemData> Items) : IIpcMessage
+{
+    public string Type => MessageTypes.AutobuffOrderConfig;
+}
+
 public sealed record AutobuffItemItemData(string Name, string DisplayName, string Key);
 
 public sealed record AutobuffItemGroupData(string GroupName, List<AutobuffItemItemData> Items);
@@ -136,7 +144,7 @@ public sealed record SkillSpammerConfigUpdate(
     bool ToggleMode,
     string ToggleModeKey) : IIpcMessage
 {
-    public string Type => MessageTypes.SkillSpammerConfig;
+    public string Type => MessageTypes.SkillSpammerConfigUpdate;
 }
 
 public sealed record GlobalConfigUpdate(
@@ -153,12 +161,26 @@ public sealed record GlobalConfigUpdate(
     bool ExitWithRo,
     bool AlwaysOnTop) : IIpcMessage
 {
-    public string Type => MessageTypes.GlobalConfig;
+    public string Type => MessageTypes.GlobalConfigUpdate;
 }
 
 public sealed record ProfileSettingsUpdate(
     bool StopBuffsCity,
     bool SoundEnabled) : IIpcMessage
 {
-    public string Type => MessageTypes.ProfileSettings;
+    public string Type => MessageTypes.ProfileSettingsUpdate;
+}
+
+public sealed record AutoOffConfigUpdate(
+    bool AutoOffOverweight,
+    int AutoOffOverweightMode,
+    string AutoOffKey1,
+    string AutoOffKey2,
+    bool AutoOffKillClient,
+    bool SwitchAmmo,
+    string Ammo1Key,
+    string Ammo2Key,
+    int AutoOffTime) : IIpcMessage
+{
+    public string Type => MessageTypes.AutoOffConfigUpdate;
 }

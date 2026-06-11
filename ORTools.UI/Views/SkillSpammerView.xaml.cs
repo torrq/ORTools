@@ -15,7 +15,7 @@ public partial class SkillSpammerView : UserControl
     {
         if (sender is TextBox tb && tb.DataContext is SkillSpammerViewModel vm)
         {
-            ORTools.UI.Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.ToggleModeKey = newKey);
+            ORTools.UI.Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.ToggleModeKey = newKey, "SkillSpammer_ToggleKey");
         }
     }
 }

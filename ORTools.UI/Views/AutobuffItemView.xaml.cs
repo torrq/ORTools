@@ -16,7 +16,7 @@ public partial class AutobuffItemView : UserControl
     {
         if (sender is TextBox tb && tb.DataContext is AutobuffItemItemViewModel vm)
         {
-            InputHelper.HandleKeyInput(tb, e, newKey => vm.Key = newKey);
+            InputHelper.HandleKeyInput(tb, e, newKey => vm.Key = newKey, vm);
         }
     }
 

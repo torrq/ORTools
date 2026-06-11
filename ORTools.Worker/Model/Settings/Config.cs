@@ -14,7 +14,7 @@ public class Config
     public int    SongRows                     { get; set; } = 4;
     public int    MacroSwitchRows              { get; set; } = 4;
     public string DefaultToggleStateKey        { get; set; } = "None";
-    public bool   PauseWhenChatting            { get; set; } = true;
+    public bool   PauseWhenChatting            { get; set; } = false;
     public bool   PauseWhenDead                { get; set; } = false;
     public bool   ExitWithRo                   { get; set; } = false;
     public bool   AlwaysOnTop                  { get; set; } = false;

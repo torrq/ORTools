@@ -12,7 +12,7 @@ public partial class MainWindow : Window
     {
         if (DataContext is MainWindowViewModel vm && sender is System.Windows.Controls.TextBox tb)
         {
-            ORTools.UI.Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.UpdateToggleKeyCommand.Execute(newKey));
+            ORTools.UI.Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.UpdateToggleKeyCommand.Execute(newKey), "ToggleKeyTextBox");
         }
     }
 

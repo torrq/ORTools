@@ -68,16 +68,16 @@
         <!-- Buttons Panel -->
         <StackPanel Grid.Column="1" Width="140">
             <Button Content="Create Profile" Command="{Binding SaveProfileCommand}" Height="30" Margin="0,0,0,10"
-                    Background="{StaticResource AppSurfaceAltBrush}" Foreground="{StaticResource AppTextBrush}" BorderThickness="0" Cursor="Hand"/>
+                    Style="{StaticResource SecondaryButtonStyle}" />
             
             <Button Content="Rename Profile" Command="{Binding RenameProfileCommand}" Height="30" Margin="0,0,0,10"
-                    Background="{StaticResource AppSurfaceAltBrush}" Foreground="{StaticResource AppTextBrush}" BorderThickness="0" Cursor="Hand"/>
+                    Style="{StaticResource SecondaryButtonStyle}" />
 
             <Button Content="Copy Profile" Command="{Binding CopyProfileCommand}" Height="30" Margin="0,0,0,10"
-                    Background="{StaticResource AppSurfaceAltBrush}" Foreground="{StaticResource AppTextBrush}" BorderThickness="0" Cursor="Hand"/>
+                    Style="{StaticResource SecondaryButtonStyle}" />
             
             <Button Content="Delete Profile" Command="{Binding RemoveProfileCommand}" Height="30" Margin="0,0,0,10"
-                    Background="{StaticResource AppSurfaceAltBrush}" Foreground="{StaticResource AppTextBrush}" BorderThickness="0" Cursor="Hand"/>
+                    Style="{StaticResource DangerButtonStyle}" />
         </StackPanel>
     </Grid>
 </UserControl>

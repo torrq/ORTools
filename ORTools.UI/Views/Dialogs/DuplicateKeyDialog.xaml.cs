@@ -7,7 +7,7 @@ namespace ORTools.UI.Views.Dialogs
         public DuplicateKeyDialog(string featureName)
         {
             InitializeComponent();
-            this.MessageTextBlock.Text = $"This key is already in use by '{featureName}'. Do you want to continue and overwrite it?";
+            this.MessageTextBlock.Text = "This key is already in use. Do you want to use it here instead?";
         }
 
         private void YesButton_Click(object sender, RoutedEventArgs e)

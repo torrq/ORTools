@@ -7,7 +7,7 @@ namespace ORTools.UI.Helpers;
 
 public static class InputHelper
 {
-    public static void HandleKeyInput(TextBox textBox, KeyEventArgs e, Action<string> onKeySet)
+    public static void HandleKeyInput(TextBox textBox, KeyEventArgs e, Action<string> onKeySet, object? sourceVM = null)
     {
         if (e.Key == Key.Tab) return;
         e.Handled = true;
@@ -36,7 +36,7 @@ public static class InputHelper
 
         // Check for duplicates via MainWindowViewModel (the root context)
         var mainWindowVm = (ViewModels.MainWindowViewModel)System.Windows.Application.Current.MainWindow.DataContext;
-        if (newKey != "None" && mainWindowVm.IsKeyInUse(newKey))
+        if (newKey != "None" && mainWindowVm.IsKeyInUse(newKey, sourceVM))
         {
             var dialog = new Views.Dialogs.DuplicateKeyDialog("another feature")
             {

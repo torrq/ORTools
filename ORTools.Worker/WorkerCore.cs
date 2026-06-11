@@ -122,13 +122,18 @@ public sealed class WorkerCore
         }
     }
 
-    public async Task HandleUpdateToggleKey(string key)
+    public async Task HandleUpdateToggleKey(string keyStr)
     {
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
-        prefs.ToggleStateKey = key;
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(keyStr, ignoreCase: true, out var key)) unbindChanged = UnbindKeyGlobally(key);
+        prefs.ToggleStateKey = keyStr;
         ProfileSingleton.SetConfiguration(prefs);
         RefreshToggleHotkey();
-        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: key));
+        
+        if (unbindChanged) await PushAllConfigs();
+        
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: keyStr));
     }
 
     public async Task HandleRequestProcessList()
@@ -307,11 +312,17 @@ public sealed class WorkerCore
         var slot = hp.HPSlots[cmd.Id - 1];
         if (slot == null) return;
         slot.Id = cmd.Id; // ensure ID is correct
-        if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key)) slot.Key = key;
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            slot.Key = key;
+        }
         slot.HPPercent = Math.Clamp(cmd.Percent, 0, 100);
         slot.Enabled = cmd.Enabled;
         ProfileSingleton.SetConfiguration(hp);
-        await BroadcastAsync(BuildAutopotHPConfig());
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildAutopotHPConfig());
     }
 
     public async Task HandleUpdateAutopotHPSettings(UpdateAutopotHPSettingsCommand cmd)
@@ -342,11 +353,17 @@ public sealed class WorkerCore
         var slot = sp.SPSlots[cmd.Id - 1];
         if (slot == null) return;
         slot.Id = cmd.Id;
-        if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key)) slot.Key = key;
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            slot.Key = key;
+        }
         slot.SPPercent = Math.Clamp(cmd.Percent, 0, 100);
         slot.Enabled = cmd.Enabled;
         ProfileSingleton.SetConfiguration(sp);
-        await BroadcastAsync(BuildAutopotSPConfig());
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildAutopotSPConfig());
     }
 
     public async Task HandleUpdateAutopotSPSettings(UpdateAutopotSPSettingsCommand cmd)
@@ -450,16 +467,19 @@ public sealed class WorkerCore
     public async Task HandleUpdateDebuffRecoveryItem(UpdateDebuffRecoveryItemCommand cmd)
     {
         var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
+        bool unbindChanged = false;
         if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
         {
             if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
             {
+                unbindChanged = UnbindKeyGlobally(key);
                 if (key == Keys.None) dr.RemoveKeyFromBuff(statusId);
                 else dr.AddKeyToBuff(statusId, key);
             }
         }
         ProfileSingleton.SetConfiguration(dr);
-        await BroadcastAsync(BuildDebuffRecoveryConfig());
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildDebuffRecoveryConfig());
     }
 
     public async Task HandleUpdateDebuffRecoverySettings(UpdateDebuffRecoverySettingsCommand cmd)
@@ -483,20 +503,27 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutobuffSkillItem(UpdateAutobuffSkillItemCommand cmd)
     {
         var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
+        bool unbindChanged = false;
         if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
         {
             if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
             {
+                unbindChanged = UnbindKeyGlobally(key);
                 if (key == Keys.None) abs.RemoveKeyFromBuff(statusId);
                 else abs.AddKeyToBuff(statusId, key);
             }
         }
         ProfileSingleton.SetConfiguration(abs);
-        await BroadcastAsync(BuildAutobuffSkillConfig());
+        if (unbindChanged) await PushAllConfigs();
+        else {
+            await BroadcastAsync(BuildAutobuffSkillConfig());
+            await BroadcastAsync(BuildAutobuffOrderConfig());
+        }
     }
 
     public async Task HandleUpdateAutobuffSkillSettings(UpdateAutobuffSkillSettingsCommand cmd)
     {
+        bool unbindChanged = false;
         var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
         abs.Delay = Math.Max(1, cmd.Delay);
         ProfileSingleton.SetConfiguration(abs);
@@ -534,20 +561,27 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutobuffItemItem(UpdateAutobuffItemCommand cmd)
     {
         var abi = ProfileSingleton.GetCurrent().AutobuffItem;
+        bool unbindChanged = false;
         if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
         {
             if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
             {
+                unbindChanged = UnbindKeyGlobally(key);
                 if (key == Keys.None) abi.RemoveKeyFromBuff(statusId);
                 else abi.AddKeyToBuff(statusId, key);
             }
         }
         ProfileSingleton.SetConfiguration(abi);
-        await BroadcastAsync(BuildAutobuffItemConfig());
+        if (unbindChanged) await PushAllConfigs();
+        else {
+            await BroadcastAsync(BuildAutobuffItemConfig());
+            await BroadcastAsync(BuildAutobuffOrderConfig());
+        }
     }
 
     public async Task HandleUpdateAutobuffItemSettings(UpdateAutobuffItemSettingsCommand cmd)
     {
+        bool unbindChanged = false;
         var abi = ProfileSingleton.GetCurrent().AutobuffItem;
         abi.Delay = Math.Max(1, cmd.Delay);
         ProfileSingleton.SetConfiguration(abi);
@@ -572,8 +606,10 @@ public sealed class WorkerCore
     public async Task HandleUpdateSkillSpammerEntry(UpdateSkillSpammerEntryCommand cmd)
     {
         var spammer = ProfileSingleton.GetCurrent().SkillSpammer;
+        bool unbindChanged = false;
         if (Enum.TryParse<Keys>(cmd.KeyName, out var key))
         {
+            unbindChanged = UnbindKeyGlobally(key);
             if (cmd.IsChecked || cmd.IsIndeterminate)
             {
                 spammer.AddSkillSpammerEntry(cmd.KeyName, new KeyConfig(key, cmd.IsChecked, cmd.IsIndeterminate));
@@ -583,7 +619,8 @@ public sealed class WorkerCore
                 spammer.RemoveSkillSpammerEntry(cmd.KeyName);
             }
             ProfileSingleton.SetConfiguration(spammer);
-            await BroadcastAsync(BuildSkillSpammerConfig());
+            if (unbindChanged) await PushAllConfigs();
+            else await BroadcastAsync(BuildSkillSpammerConfig());
         }
     }
 
@@ -595,13 +632,40 @@ public sealed class WorkerCore
         spammer.NoShift = cmd.NoShift;
         spammer.ToggleMode = cmd.ToggleMode;
         
+        bool unbindChanged = false;
         if (Enum.TryParse<Keys>(cmd.ToggleModeKey, out var toggleKey))
         {
+            unbindChanged = UnbindKeyGlobally(toggleKey);
             spammer.ToggleModeKey = toggleKey;
         }
 
         ProfileSingleton.SetConfiguration(spammer);
-        await BroadcastAsync(BuildSkillSpammerConfig());
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildSkillSpammerConfig());
+    }
+
+    // ── Auto Off ──────────────────────────────────────────────────────────────
+    
+    public async Task HandleUpdateAutoOffSettings(UpdateAutoOffSettingsCommand cmd)
+    {
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        prefs.AutoOffOverweight = cmd.AutoOffOverweight;
+        prefs.AutoOffOverweightMode = (ConfigProfile.OverweightAutoOffMode)cmd.AutoOffOverweightMode;
+        
+        bool unbindChanged = false;
+        
+        if (Enum.TryParse<Keys>(cmd.AutoOffKey1, out var key1)) { unbindChanged |= UnbindKeyGlobally(key1); prefs.AutoOffKey1 = key1; }
+        if (Enum.TryParse<Keys>(cmd.AutoOffKey2, out var key2)) { unbindChanged |= UnbindKeyGlobally(key2); prefs.AutoOffKey2 = key2; }
+        if (Enum.TryParse<Keys>(cmd.Ammo1Key, out var am1)) { unbindChanged |= UnbindKeyGlobally(am1); prefs.Ammo1Key = am1; }
+        if (Enum.TryParse<Keys>(cmd.Ammo2Key, out var am2)) { unbindChanged |= UnbindKeyGlobally(am2); prefs.Ammo2Key = am2; }
+
+        prefs.AutoOffKillClient = cmd.AutoOffKillClient;
+        prefs.SwitchAmmo = cmd.SwitchAmmo;
+        prefs.AutoOffTime = cmd.AutoOffTime;
+
+        ProfileSingleton.SetConfiguration(prefs);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildAutoOffConfig());
     }
 
     public async Task HandleUpdateGlobalConfig(UpdateGlobalConfigCommand cmd)
@@ -620,6 +684,7 @@ public sealed class WorkerCore
         config.ExitWithRo = cmd.ExitWithRo;
         config.AlwaysOnTop = cmd.AlwaysOnTop;
         ConfigGlobal.SaveConfig();
+        await BroadcastAsync(BuildGlobalConfigUpdate());
     }
 
     public async Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
@@ -656,6 +721,97 @@ public sealed class WorkerCore
 
         return new AutobuffItemConfigUpdate(groups, abi.Delay);
     }
+    public async Task HandleUpdateAutobuffOrder(UpdateAutobuffOrderCommand cmd)
+    {
+        var profile = ProfileSingleton.GetCurrent();
+        var abs = profile.AutobuffSkill;
+        var abi = profile.AutobuffItem;
+        
+        var newSkillMapping = new Dictionary<EffectStatusIDs, Keys>();
+        var newItemMapping = new Dictionary<EffectStatusIDs, List<Keys>>();
+        
+        foreach (var statusStr in cmd.OrderedStatusNames)
+        {
+            if (Enum.TryParse<EffectStatusIDs>(statusStr, out var statusId))
+            {
+                if (abs.buffMapping.TryGetValue(statusId, out var sk))
+                    newSkillMapping[statusId] = sk;
+                if (abi.buffMapping.TryGetValue(statusId, out var ik))
+                    newItemMapping[statusId] = ik;
+            }
+        }
+        
+        abs.SetBuffMapping(newSkillMapping);
+        abi.buffMapping = newItemMapping;
+        profile.UnifiedAutobuffOrder = cmd.OrderedStatusNames;
+        
+        ProfileSingleton.SetConfiguration(abs);
+        ProfileSingleton.SetConfiguration(abi);
+        
+        await BroadcastAsync(BuildAutobuffOrderConfig());
+    }
+
+    private AutobuffOrderConfigUpdate BuildAutobuffOrderConfig()
+    {
+        var profile = ProfileSingleton.GetCurrent();
+        var abs = profile.AutobuffSkill;
+        var abi = profile.AutobuffItem;
+
+        var items = new List<AutobuffOrderItemData>();
+        var addedStatuses = new HashSet<EffectStatusIDs>();
+
+        // Migrate legacy AutoBuffOrder if UnifiedAutobuffOrder is empty
+        if (profile.UnifiedAutobuffOrder.Count == 0 && profile.UserPreferences.AutoBuffOrder.Count > 0)
+        {
+            profile.UnifiedAutobuffOrder = profile.UserPreferences.AutoBuffOrder.Select(x => x.ToString()).ToList();
+            ProfileSingleton.SetConfiguration(profile.UserPreferences); // Save the profile
+        }
+
+        // First, add items based on the saved unified order
+        foreach (var statusStr in profile.UnifiedAutobuffOrder)
+        {
+            if (Enum.TryParse<EffectStatusIDs>(statusStr, out var statusId))
+            {
+                if (abs.buffMapping.TryGetValue(statusId, out var sk) && !addedStatuses.Contains(statusId))
+                {
+                    var buff = BuffService.GetBuff(statusId);
+                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), sk.ToString(), "Skill", statusId.ToString()));
+                    addedStatuses.Add(statusId);
+                }
+                
+                if (abi.buffMapping.TryGetValue(statusId, out var ik) && !addedStatuses.Contains(statusId))
+                {
+                    var buff = BuffService.GetBuff(statusId);
+                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), string.Join(", ", ik), "Item", statusId.ToString()));
+                    addedStatuses.Add(statusId);
+                }
+            }
+        }
+
+        // Then, append any buffs that were newly added and aren't in the saved order yet
+        foreach (var kvp in abs.buffMapping)
+        {
+            if (!addedStatuses.Contains(kvp.Key))
+            {
+                var buff = BuffService.GetBuff(kvp.Key);
+                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), kvp.Value.ToString(), "Skill", kvp.Key.ToString()));
+                profile.UnifiedAutobuffOrder.Add(kvp.Key.ToString());
+                addedStatuses.Add(kvp.Key);
+            }
+        }
+        foreach (var kvp in abi.buffMapping)
+        {
+            if (!addedStatuses.Contains(kvp.Key))
+            {
+                var buff = BuffService.GetBuff(kvp.Key);
+                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), string.Join(", ", kvp.Value), "Item", kvp.Key.ToString()));
+                profile.UnifiedAutobuffOrder.Add(kvp.Key.ToString());
+                addedStatuses.Add(kvp.Key);
+            }
+        }
+
+        return new AutobuffOrderConfigUpdate(items);
+    }
 
     // ── Full state ────────────────────────────────────────────────────────────
 
@@ -679,9 +835,28 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildDebuffRecoveryConfig());
         await BroadcastAsync(BuildAutobuffSkillConfig());
         await BroadcastAsync(BuildAutobuffItemConfig());
+        await BroadcastAsync(BuildAutobuffOrderConfig());
         await BroadcastAsync(BuildSkillSpammerConfig());
+        await PushSkillTimerConfig();
+        await BroadcastAsync(BuildAutoOffConfig());
         await BroadcastAsync(BuildGlobalConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());
+    }
+
+    private AutoOffConfigUpdate BuildAutoOffConfig()
+    {
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        return new AutoOffConfigUpdate(
+            prefs.AutoOffOverweight,
+            (int)prefs.AutoOffOverweightMode,
+            prefs.AutoOffKey1.ToString(),
+            prefs.AutoOffKey2.ToString(),
+            prefs.AutoOffKillClient,
+            prefs.SwitchAmmo,
+            prefs.Ammo1Key.ToString(),
+            prefs.Ammo2Key.ToString(),
+            prefs.AutoOffTime
+        );
     }
 
     private GlobalConfigUpdate BuildGlobalConfigUpdate()
@@ -725,6 +900,66 @@ public sealed class WorkerCore
             spammer.NoShift,
             spammer.ToggleMode,
             spammer.ToggleModeKey.ToString());
+    }
+
+
+    private bool UnbindKeyGlobally(Keys key)
+    {
+        if (key == Keys.None) return false;
+        bool changed = false;
+        var p = ProfileSingleton.GetCurrent();
+        var prefs = p.UserPreferences;
+        
+        if (Enum.TryParse<Keys>(prefs.ToggleStateKey, out var tk) && tk == key)
+        {
+            prefs.ToggleStateKey = "None";
+            changed = true;
+        }
+
+        foreach (var slot in p.AutopotHP.HPSlots) if (slot.Key == key) { slot.Key = Keys.None; changed = true; }
+        foreach (var slot in p.AutopotSP.SPSlots) if (slot.Key == key) { slot.Key = Keys.None; changed = true; }
+        foreach (var slot in p.SkillTimer.skillTimer) if (slot.Value.Key == key) { slot.Value.Key = Keys.None; changed = true; }
+        
+        foreach (var kvp in p.AutobuffSkill.buffMapping.ToList())
+        {
+            if (kvp.Value == key) { p.AutobuffSkill.buffMapping.Remove(kvp.Key); changed = true; }
+        }
+        foreach (var kvp in p.AutobuffItem.buffMapping.ToList())
+        {
+            if (kvp.Value.Contains(key)) 
+            { 
+                kvp.Value.Remove(key); 
+                if (kvp.Value.Count == 0) p.AutobuffItem.buffMapping.Remove(kvp.Key);
+                changed = true; 
+            }
+        }
+        foreach (var list in p.StatusRecovery.statusLists.Values)
+        {
+            if (list.Key == key) { list.Key = Keys.None; changed = true; }
+        }
+        foreach (var kvp in p.DebuffsRecovery.buffMapping.ToList())
+        {
+            if (kvp.Value == key) { p.DebuffsRecovery.buffMapping.Remove(kvp.Key); changed = true; }
+        }
+        foreach (var kvp in p.SkillSpammer.SpammerEntries)
+        {
+            if (kvp.Value.Key == key) { kvp.Value.Key = Keys.None; changed = true; }
+        }
+        if (p.SkillSpammer.ToggleModeKey == key) { p.SkillSpammer.ToggleModeKey = Keys.None; changed = true; }
+        
+        if (changed)
+        {
+            ProfileSingleton.SetConfiguration(prefs);
+            ProfileSingleton.SetConfiguration(p.AutopotHP);
+            ProfileSingleton.SetConfiguration(p.AutopotSP);
+            ProfileSingleton.SetConfiguration(p.SkillTimer);
+            ProfileSingleton.SetConfiguration(p.AutobuffSkill);
+            ProfileSingleton.SetConfiguration(p.AutobuffItem);
+            ProfileSingleton.SetConfiguration(p.StatusRecovery);
+            ProfileSingleton.SetConfiguration(p.DebuffsRecovery);
+            ProfileSingleton.SetConfiguration(p.SkillSpammer);
+        }
+        return changed;
     }
 
     // ── Broadcast ─────────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ORTools.Shared\ORTools.Shared.csproj" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <Resource Include="Views\ortools.png" />
     <Resource Include="Icons\**\*.png" />
+    <Resource Include="Icons\**\*.gif" />
   </ItemGroup>
   <ItemGroup />
   <Target Name="CopyWorker" AfterTargets="Build">
