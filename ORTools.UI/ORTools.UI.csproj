@@ -27,4 +27,5 @@
     <Resource Include="Views\ortools.png" />
     <Resource Include="Icons\**\*.png" />
   </ItemGroup>
+  <ItemGroup />
 </Project>

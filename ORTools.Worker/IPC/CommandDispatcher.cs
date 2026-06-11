@@ -109,6 +109,26 @@ public sealed class CommandDispatcher
                 if (drs != null) await _core.HandleUpdateDebuffRecoverySettings(drs);
                 break;
 
+            case MessageTypes.UpdateAutobuffSkillItem:
+                var absi = env.As<UpdateAutobuffSkillItemCommand>();
+                if (absi != null) await _core.HandleUpdateAutobuffSkillItem(absi);
+                break;
+
+            case MessageTypes.UpdateAutobuffSkillSettings:
+                var abss = env.As<UpdateAutobuffSkillSettingsCommand>();
+                if (abss != null) await _core.HandleUpdateAutobuffSkillSettings(abss);
+                break;
+
+            case MessageTypes.UpdateAutobuffItemItem:
+                var abii = env.As<UpdateAutobuffItemCommand>();
+                if (abii != null) await _core.HandleUpdateAutobuffItemItem(abii);
+                break;
+
+            case MessageTypes.UpdateAutobuffItemSettings:
+                var abis = env.As<UpdateAutobuffItemSettingsCommand>();
+                if (abis != null) await _core.HandleUpdateAutobuffItemSettings(abis);
+                break;
+
             case MessageTypes.Shutdown:
                 DebugLogger.Info("[Dispatcher] Shutdown requested.");
                 await _core.HandleTurnOff();

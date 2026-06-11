@@ -103,3 +103,25 @@ public sealed record DebuffRecoveryConfigUpdate(
 {
     public string Type => MessageTypes.DebuffRecoveryConfig;
 }
+
+public sealed record AutobuffSkillItemData(string Name, string DisplayName, string Key);
+
+public sealed record AutobuffSkillGroupData(string GroupName, List<AutobuffSkillItemData> Items);
+
+public sealed record AutobuffSkillConfigUpdate(
+    List<AutobuffSkillGroupData> Groups,
+    int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.AutobuffSkillConfig;
+}
+
+public sealed record AutobuffItemItemData(string Name, string DisplayName, string Key);
+
+public sealed record AutobuffItemGroupData(string GroupName, List<AutobuffItemItemData> Items);
+
+public sealed record AutobuffItemConfigUpdate(
+    List<AutobuffItemGroupData> Groups,
+    int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.AutobuffItemConfig;
+}

@@ -218,16 +218,10 @@
                 <views:DebuffsView DataContext="{Binding Debuffs}" />
             </TabItem>
             <TabItem Header="Autobuff Skills">
-                <Border Padding="16">
-                    <TextBlock Text="Autobuff Skills - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:AutobuffSkillView DataContext="{Binding AutobuffSkill}" />
             </TabItem>
             <TabItem Header="Autobuff Items">
-                <Border Padding="16">
-                    <TextBlock Text="Autobuff Items - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:AutobuffItemView DataContext="{Binding AutobuffItem}" />
             </TabItem>
             <TabItem Header="ATK x DEF">
                 <Border Padding="16">

@@ -463,6 +463,109 @@ public sealed class WorkerCore
             Delay: dr.Delay);
     }
 
+    // ── Autobuff Skill ────────────────────────────────────────────────────────
+
+    public async Task HandleUpdateAutobuffSkillItem(UpdateAutobuffSkillItemCommand cmd)
+    {
+        var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
+        if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
+        {
+            if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
+            {
+                if (key == Keys.None) abs.RemoveKeyFromBuff(statusId);
+                else abs.AddKeyToBuff(statusId, key);
+            }
+        }
+        ProfileSingleton.SetConfiguration(abs);
+        await BroadcastAsync(BuildAutobuffSkillConfig());
+    }
+
+    public async Task HandleUpdateAutobuffSkillSettings(UpdateAutobuffSkillSettingsCommand cmd)
+    {
+        var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
+        abs.Delay = Math.Max(1, cmd.Delay);
+        ProfileSingleton.SetConfiguration(abs);
+        await BroadcastAsync(BuildAutobuffSkillConfig());
+    }
+
+    private AutobuffSkillConfigUpdate BuildAutobuffSkillConfig()
+    {
+        var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
+        var map = abs.buffMapping;
+        
+        List<AutobuffSkillItemData> Build(List<Buff> buffs) => buffs
+            .Select(b => new AutobuffSkillItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var k) ? k.ToString() : "None"))
+            .ToList();
+
+        var groups = new List<AutobuffSkillGroupData>
+        {
+            new AutobuffSkillGroupData("Archer", Build(BuffService.GetArcherBuffs())),
+            new AutobuffSkillGroupData("Swordsman", Build(BuffService.GetSwordmanBuffs())),
+            new AutobuffSkillGroupData("Mage", Build(BuffService.GetMageBuffs())),
+            new AutobuffSkillGroupData("Merchant", Build(BuffService.GetMerchantBuffs())),
+            new AutobuffSkillGroupData("Thief", Build(BuffService.GetThiefBuffs())),
+            new AutobuffSkillGroupData("Acolyte", Build(BuffService.GetAcolyteBuffs())),
+            new AutobuffSkillGroupData("Taekwon", Build(BuffService.GetTaekwonBuffs())),
+            new AutobuffSkillGroupData("Ninja", Build(BuffService.GetNinjaBuffs())),
+            new AutobuffSkillGroupData("Gunslinger", Build(BuffService.GetGunslingerBuffs())),
+            new AutobuffSkillGroupData("Padawan", Build(BuffService.GetPadawanBuffs()))
+        };
+
+        return new AutobuffSkillConfigUpdate(groups, abs.Delay);
+    }
+
+    // ── Autobuff Item ─────────────────────────────────────────────────────────
+
+    public async Task HandleUpdateAutobuffItemItem(UpdateAutobuffItemCommand cmd)
+    {
+        var abi = ProfileSingleton.GetCurrent().AutobuffItem;
+        if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
+        {
+            if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
+            {
+                if (key == Keys.None) abi.RemoveKeyFromBuff(statusId);
+                else abi.AddKeyToBuff(statusId, key);
+            }
+        }
+        ProfileSingleton.SetConfiguration(abi);
+        await BroadcastAsync(BuildAutobuffItemConfig());
+    }
+
+    public async Task HandleUpdateAutobuffItemSettings(UpdateAutobuffItemSettingsCommand cmd)
+    {
+        var abi = ProfileSingleton.GetCurrent().AutobuffItem;
+        abi.Delay = Math.Max(1, cmd.Delay);
+        ProfileSingleton.SetConfiguration(abi);
+        await BroadcastAsync(BuildAutobuffItemConfig());
+    }
+
+    private AutobuffItemConfigUpdate BuildAutobuffItemConfig()
+    {
+        var abi = ProfileSingleton.GetCurrent().AutobuffItem;
+        var map = abi.buffMapping;
+
+        List<AutobuffItemItemData> Build(List<Buff> buffs) => buffs
+            .Select(b => new AutobuffItemItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var kList) && kList.Count > 0 ? kList[0].ToString() : "None"))
+            .ToList();
+
+        var groups = new List<AutobuffItemGroupData>
+        {
+            new AutobuffItemGroupData("Potions", Build(BuffService.GetPotionBuffs())),
+            new AutobuffItemGroupData("Elements", Build(BuffService.GetElementBuffs())),
+            new AutobuffItemGroupData("Food", Build(BuffService.GetFoodBuffs())),
+            new AutobuffItemGroupData("Boxes", Build(BuffService.GetBoxBuffs())),
+            new AutobuffItemGroupData("Scrolls", Build(BuffService.GetScrollBuffs())),
+            new AutobuffItemGroupData("Etc", Build(BuffService.GetEtcBuffs()))
+        };
+
+        if (AppConfig.SupportsFishing)
+        {
+            groups.Add(new AutobuffItemGroupData("Fish", Build(BuffService.GetFishBuffs())));
+        }
+
+        return new AutobuffItemConfigUpdate(groups, abi.Delay);
+    }
+
     // ── Full state ────────────────────────────────────────────────────────────
 
     public async Task HandleFullStateRequest()
@@ -484,6 +587,8 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildStatusRecoveryConfig());
         await PushSkillTimerConfig();
         await BroadcastAsync(BuildDebuffRecoveryConfig());
+        await BroadcastAsync(BuildAutobuffSkillConfig());
+        await BroadcastAsync(BuildAutobuffItemConfig());
     }
 
     // ── Broadcast ─────────────────────────────────────────────────────────────

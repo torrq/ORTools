@@ -33,6 +33,16 @@ public static class MessageTypes
     public const string UpdateDebuffRecoveryItem = "UpdateDebuffRecoveryItem";
     public const string UpdateDebuffRecoverySettings = "UpdateDebuffRecoverySettings";
 
+    // Autobuff Skill
+    public const string UpdateAutobuffSkillItem = "UpdateAutobuffSkillItem";
+    public const string UpdateAutobuffSkillSettings = "UpdateAutobuffSkillSettings";
+    public const string AutobuffSkillConfigUpdate = "AutobuffSkillConfigUpdate";
+
+    // Autobuff Item
+    public const string UpdateAutobuffItemItem = "UpdateAutobuffItemItem";
+    public const string UpdateAutobuffItemSettings = "UpdateAutobuffItemSettings";
+    public const string AutobuffItemConfig = "AutobuffItemConfig";
+
     // ── Worker → UI (state updates) ───────────────────────────────────────────
     public const string WorkerReady = "WorkerReady";
     public const string AppState = "AppState";
@@ -50,4 +60,5 @@ public static class MessageTypes
     public const string StatusRecoveryConfig = "StatusRecoveryConfig";
     public const string SkillTimerConfig = "SkillTimerConfig";
     public const string DebuffRecoveryConfig = "DebuffRecoveryConfig";
+    public const string AutobuffSkillConfig = "AutobuffSkillConfig";
 }

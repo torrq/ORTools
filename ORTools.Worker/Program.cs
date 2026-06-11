@@ -14,6 +14,8 @@ Console.CancelKeyPress += (_, e) =>
 AppDomain.CurrentDomain.UnhandledException += (_, e) =>
     Console.WriteLine($"[Worker] Unhandled: {e.ExceptionObject}");
 
+BuffService.Initialize();
+
 var core = new WorkerCore();
 await core.RunAsync(cts.Token);
 

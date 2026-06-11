@@ -135,3 +135,27 @@ public sealed record UpdateDebuffRecoverySettingsCommand(int Delay) : IIpcMessag
 {
     public string Type => MessageTypes.UpdateDebuffRecoverySettings;
 }
+
+// ── AutobuffSkill ─────────────────────────────────────────────────────────────
+
+public sealed record UpdateAutobuffSkillItemCommand(string StatusName, string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutobuffSkillItem;
+}
+
+public sealed record UpdateAutobuffSkillSettingsCommand(int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutobuffSkillSettings;
+}
+
+// ── AutobuffItem ──────────────────────────────────────────────────────────────
+
+public sealed record UpdateAutobuffItemCommand(string StatusName, string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutobuffItemItem;
+}
+
+public sealed record UpdateAutobuffItemSettingsCommand(int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAutobuffItemSettings;
+}
