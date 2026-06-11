@@ -159,3 +159,42 @@ public sealed record UpdateAutobuffItemSettingsCommand(int Delay) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateAutobuffItemSettings;
 }
+
+public sealed record UpdateSkillSpammerEntryCommand(string KeyName, bool IsChecked, bool IsIndeterminate) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateSkillSpammerEntry;
+}
+
+public sealed record UpdateSkillSpammerSettingsCommand(
+    int Delay,
+    bool MouseFlick,
+    bool NoShift,
+    bool ToggleMode,
+    string ToggleModeKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateSkillSpammerSettings;
+}
+
+public sealed record UpdateGlobalConfigCommand(
+    int SongRows,
+    int MacroSwitchRows,
+    string DefaultToggleStateKey,
+    bool DebugMode,
+    bool DebugModeShowLog,
+    bool DisableSystray,
+    bool StartAutoOffTimerOnEnable,
+    bool ClearAutoOffTimerOnDisable,
+    bool PauseWhenChatting,
+    bool PauseWhenDead,
+    bool ExitWithRo,
+    bool AlwaysOnTop) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateGlobalConfig;
+}
+
+public sealed record UpdateProfileSettingsCommand(
+    bool StopBuffsCity,
+    bool SoundEnabled) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateProfileSettings;
+}

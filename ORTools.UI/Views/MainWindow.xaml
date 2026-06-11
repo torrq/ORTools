@@ -209,10 +209,7 @@
                 </Border>
             </TabItem>
             <TabItem Header="Skill Spammer">
-                <Border Padding="16">
-                    <TextBlock Text="Skill Spammer - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,0,0" />
-                </Border>
+                <views:SkillSpammerView DataContext="{Binding SkillSpammer}" />
             </TabItem>
             <TabItem Header="Debuffs">
                 <views:DebuffsView DataContext="{Binding Debuffs}" />
@@ -248,10 +245,7 @@
                 </Border>
             </TabItem>
             <TabItem Header="Settings">
-                <Border Padding="16">
-                    <TextBlock Text="Settings - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:SettingsView DataContext="{Binding Settings}" />
             </TabItem>
             <TabItem Header="Profiles">
                 <views:ProfilesView DataContext="{Binding Profiles}" />

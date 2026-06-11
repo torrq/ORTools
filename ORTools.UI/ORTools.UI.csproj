@@ -28,4 +28,13 @@
     <Resource Include="Icons\**\*.png" />
   </ItemGroup>
   <ItemGroup />
+  <Target Name="CopyWorker" AfterTargets="Build">
+    <Copy SourceFiles="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\ORTools.Worker.exe" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\ORTools.Worker.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\ORTools.Worker.runtimeconfig.json" DestinationFolder="$(OutputPath)" />
+    <ItemGroup>
+      <WorkerResources Include="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\Resources\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(WorkerResources)" DestinationFolder="$(OutputPath)Resources\%(RecursiveDir)" />
+  </Target>
 </Project>

@@ -42,6 +42,9 @@ public sealed class WorkerService : IDisposable
     public event Action<DebuffRecoveryConfigUpdate>? DebuffRecoveryConfigReceived;
     public event Action<AutobuffSkillConfigUpdate>? AutobuffSkillConfigReceived;
     public event Action<AutobuffItemConfigUpdate>? AutobuffItemConfigReceived;
+    public event Action<SkillSpammerConfigUpdate>? SkillSpammerConfigReceived;
+    public event Action<GlobalConfigUpdate>? GlobalConfigReceived;
+    public event Action<ProfileSettingsUpdate>? ProfileSettingsReceived;
 
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
@@ -218,6 +221,15 @@ public sealed class WorkerService : IDisposable
                 break;
             case MessageTypes.AutobuffItemConfig:
                 AutobuffItemConfigReceived?.Invoke(env.As<AutobuffItemConfigUpdate>()!);
+                break;
+            case MessageTypes.SkillSpammerConfig:
+                SkillSpammerConfigReceived?.Invoke(env.As<SkillSpammerConfigUpdate>()!);
+                break;
+            case MessageTypes.GlobalConfig:
+                GlobalConfigReceived?.Invoke(env.As<GlobalConfigUpdate>()!);
+                break;
+            case MessageTypes.ProfileSettings:
+                ProfileSettingsReceived?.Invoke(env.As<ProfileSettingsUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");

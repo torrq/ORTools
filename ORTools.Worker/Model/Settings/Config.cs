@@ -7,6 +7,7 @@ public class Config
     public bool   DebugMode                    { get; set; } = false;
     public bool   DebugModeShowLog             { get; set; } = true;
     public bool   DisableSystray               { get; set; } = false;
+    public bool   StartAutoOffTimerOnEnable    { get; set; } = false;
     public bool   ClearAutoOffTimerOnDisable   { get; set; } = false;
     public string LastUsedProfile              { get; set; } = "Default";
     public bool   MiniMode                     { get; set; } = false;
@@ -15,6 +16,8 @@ public class Config
     public string DefaultToggleStateKey        { get; set; } = "None";
     public bool   PauseWhenChatting            { get; set; } = true;
     public bool   PauseWhenDead                { get; set; } = false;
+    public bool   ExitWithRo                   { get; set; } = false;
+    public bool   AlwaysOnTop                  { get; set; } = false;
 }
 
 public static class ConfigGlobal

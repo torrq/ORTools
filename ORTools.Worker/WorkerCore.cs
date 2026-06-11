@@ -30,6 +30,7 @@ public sealed class WorkerCore
 
         ProfileSingleton.Create("Default");
         ProfileSingleton.Load("Default");
+        HookSkillSpammerEvents();
 
         _hookThread = new Thread(() =>
         {
@@ -91,6 +92,12 @@ public sealed class WorkerCore
         p.TransferHelper.Start();
         await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey));
         DebugLogger.Info("[WorkerCore] Turned ON");
+
+        if (p.UserPreferences.SoundEnabled)
+        {
+            try { new System.Media.SoundPlayer(@"Resources\toggle_on.wav").Play(); }
+            catch (Exception ex) { DebugLogger.Warning($"Failed to play sound: {ex.Message}"); }
+        }
     }
 
     public async Task HandleTurnOff()
@@ -107,6 +114,12 @@ public sealed class WorkerCore
         p.TransferHelper.Stop();
         await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey));
         DebugLogger.Info("[WorkerCore] Turned OFF");
+
+        if (p.UserPreferences.SoundEnabled)
+        {
+            try { new System.Media.SoundPlayer(@"Resources\toggle_off.wav").Play(); }
+            catch (Exception ex) { DebugLogger.Warning($"Failed to play sound: {ex.Message}"); }
+        }
     }
 
     public async Task HandleUpdateToggleKey(string key)
@@ -202,12 +215,14 @@ public sealed class WorkerCore
         {
             ProfileSingleton.Create(profileName);
             ProfileSingleton.Load(profileName);
+            HookSkillSpammerEvents();
             _currentProfileName = profileName;
             Subject.Notify(new Message(MessageCode.PROFILE_CHANGED, profileName));
             ConfigGlobal.GetConfig().LastUsedProfile = profileName;
             ConfigGlobal.SaveConfig();
             RefreshToggleHotkey();
             await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), profileName));
+            await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey));
             await PushAllConfigs();
             DebugLogger.Info($"[WorkerCore] Profile: {profileName}");
         }
@@ -539,6 +554,82 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildAutobuffItemConfig());
     }
 
+    // ── Skill Spammer ─────────────────────────────────────────────────────────
+
+    private void HookSkillSpammerEvents()
+    {
+        var spammer = ProfileSingleton.GetCurrent().SkillSpammer;
+        // Unsubscribe first to avoid double-firing if Hook is called multiple times.
+        spammer.ToggleModeChanged -= OnSkillSpammerToggleModeChanged;
+        spammer.ToggleModeChanged += OnSkillSpammerToggleModeChanged;
+    }
+
+    private void OnSkillSpammerToggleModeChanged(object? sender, bool e)
+    {
+        _ = BroadcastAsync(BuildSkillSpammerConfig());
+    }
+
+    public async Task HandleUpdateSkillSpammerEntry(UpdateSkillSpammerEntryCommand cmd)
+    {
+        var spammer = ProfileSingleton.GetCurrent().SkillSpammer;
+        if (Enum.TryParse<Keys>(cmd.KeyName, out var key))
+        {
+            if (cmd.IsChecked || cmd.IsIndeterminate)
+            {
+                spammer.AddSkillSpammerEntry(cmd.KeyName, new KeyConfig(key, cmd.IsChecked, cmd.IsIndeterminate));
+            }
+            else
+            {
+                spammer.RemoveSkillSpammerEntry(cmd.KeyName);
+            }
+            ProfileSingleton.SetConfiguration(spammer);
+            await BroadcastAsync(BuildSkillSpammerConfig());
+        }
+    }
+
+    public async Task HandleUpdateSkillSpammerSettings(UpdateSkillSpammerSettingsCommand cmd)
+    {
+        var spammer = ProfileSingleton.GetCurrent().SkillSpammer;
+        spammer.SpammerDelay = cmd.Delay;
+        spammer.MouseFlick = cmd.MouseFlick;
+        spammer.NoShift = cmd.NoShift;
+        spammer.ToggleMode = cmd.ToggleMode;
+        
+        if (Enum.TryParse<Keys>(cmd.ToggleModeKey, out var toggleKey))
+        {
+            spammer.ToggleModeKey = toggleKey;
+        }
+
+        ProfileSingleton.SetConfiguration(spammer);
+        await BroadcastAsync(BuildSkillSpammerConfig());
+    }
+
+    public async Task HandleUpdateGlobalConfig(UpdateGlobalConfigCommand cmd)
+    {
+        var config = ConfigGlobal.GetConfig();
+        config.SongRows = cmd.SongRows;
+        config.MacroSwitchRows = cmd.MacroSwitchRows;
+        config.DefaultToggleStateKey = cmd.DefaultToggleStateKey;
+        config.DebugMode = cmd.DebugMode;
+        config.DebugModeShowLog = cmd.DebugModeShowLog;
+        config.DisableSystray = cmd.DisableSystray;
+        config.StartAutoOffTimerOnEnable = cmd.StartAutoOffTimerOnEnable;
+        config.ClearAutoOffTimerOnDisable = cmd.ClearAutoOffTimerOnDisable;
+        config.PauseWhenChatting = cmd.PauseWhenChatting;
+        config.PauseWhenDead = cmd.PauseWhenDead;
+        config.ExitWithRo = cmd.ExitWithRo;
+        config.AlwaysOnTop = cmd.AlwaysOnTop;
+        ConfigGlobal.SaveConfig();
+    }
+
+    public async Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
+    {
+        var profile = ProfileSingleton.GetCurrent();
+        profile.UserPreferences.StopBuffsCity = cmd.StopBuffsCity;
+        profile.UserPreferences.SoundEnabled = cmd.SoundEnabled;
+        ProfileSingleton.SetConfiguration(profile.UserPreferences);
+    }
+
     private AutobuffItemConfigUpdate BuildAutobuffItemConfig()
     {
         var abi = ProfileSingleton.GetCurrent().AutobuffItem;
@@ -585,10 +676,55 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildAutopotHPConfig());
         await BroadcastAsync(BuildAutopotSPConfig());
         await BroadcastAsync(BuildStatusRecoveryConfig());
-        await PushSkillTimerConfig();
         await BroadcastAsync(BuildDebuffRecoveryConfig());
         await BroadcastAsync(BuildAutobuffSkillConfig());
         await BroadcastAsync(BuildAutobuffItemConfig());
+        await BroadcastAsync(BuildSkillSpammerConfig());
+        await BroadcastAsync(BuildGlobalConfigUpdate());
+        await BroadcastAsync(BuildProfileSettingsUpdate());
+    }
+
+    private GlobalConfigUpdate BuildGlobalConfigUpdate()
+    {
+        var config = ConfigGlobal.GetConfig();
+        return new GlobalConfigUpdate(
+            config.SongRows,
+            config.MacroSwitchRows,
+            config.DefaultToggleStateKey,
+            config.DebugMode,
+            config.DebugModeShowLog,
+            config.DisableSystray,
+            config.StartAutoOffTimerOnEnable,
+            config.ClearAutoOffTimerOnDisable,
+            config.PauseWhenChatting,
+            config.PauseWhenDead,
+            config.ExitWithRo,
+            config.AlwaysOnTop
+        );
+    }
+
+    private ProfileSettingsUpdate BuildProfileSettingsUpdate()
+    {
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        return new ProfileSettingsUpdate(
+            prefs.StopBuffsCity,
+            prefs.SoundEnabled
+        );
+    }
+
+    private SkillSpammerConfigUpdate BuildSkillSpammerConfig()
+    {
+        var spammer = ProfileSingleton.GetCurrent().SkillSpammer;
+        var entries = spammer.SpammerEntries.Select(kvp => 
+            new SkillSpammerKeyData(kvp.Key, kvp.Value.ClickActive, kvp.Value.IsIndeterminate)).ToList();
+
+        return new SkillSpammerConfigUpdate(
+            entries,
+            spammer.SpammerDelay,
+            spammer.MouseFlick,
+            spammer.NoShift,
+            spammer.ToggleMode,
+            spammer.ToggleModeKey.ToString());
     }
 
     // ── Broadcast ─────────────────────────────────────────────────────────────

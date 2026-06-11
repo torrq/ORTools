@@ -52,6 +52,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public SkillTimerViewModel SkillTimer { get; }
     public AutobuffSkillViewModel AutobuffSkill { get; }
     public AutobuffItemViewModel AutobuffItem { get; }
+    public SkillSpammerViewModel SkillSpammer { get; }
+    public SettingsViewModel Settings { get; }
     public ProfilesViewModel Profiles { get; }
 
     // ── Derived display properties ────────────────────────────────────────────
@@ -112,16 +114,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SkillTimer = new SkillTimerViewModel(worker);
         AutobuffSkill = new AutobuffSkillViewModel(worker);
         AutobuffItem = new AutobuffItemViewModel(worker);
+        SkillSpammer = new SkillSpammerViewModel(worker);
+        Settings = new SettingsViewModel(worker);
         Profiles = new ProfilesViewModel(worker);
 
         // Map ViewModels to tabs
         Tabs = new ObservableCollection<object>
         {
             AutopotHP,
+            AutopotSP,
             Debuffs,
             SkillTimer,
             AutobuffSkill,
             AutobuffItem,
+            SkillSpammer,
             Profiles
         };
         worker.AppStateReceived    += OnAppState;

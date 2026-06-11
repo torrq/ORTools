@@ -129,6 +129,26 @@ public sealed class CommandDispatcher
                 if (abis != null) await _core.HandleUpdateAutobuffItemSettings(abis);
                 break;
 
+            case MessageTypes.UpdateSkillSpammerEntry:
+                var usse = env.As<UpdateSkillSpammerEntryCommand>();
+                if (usse != null) await _core.HandleUpdateSkillSpammerEntry(usse);
+                break;
+
+            case MessageTypes.UpdateSkillSpammerSettings:
+                var usss = env.As<UpdateSkillSpammerSettingsCommand>();
+                if (usss != null) await _core.HandleUpdateSkillSpammerSettings(usss);
+                break;
+
+            case MessageTypes.UpdateProfileSettings:
+                var ups = env.As<UpdateProfileSettingsCommand>();
+                if (ups != null) await _core.HandleUpdateProfileSettings(ups);
+                break;
+
+            case MessageTypes.UpdateGlobalConfig:
+                var ugc = env.As<UpdateGlobalConfigCommand>();
+                if (ugc != null) await _core.HandleUpdateGlobalConfig(ugc);
+                break;
+
             case MessageTypes.Shutdown:
                 DebugLogger.Info("[Dispatcher] Shutdown requested.");
                 await _core.HandleTurnOff();
