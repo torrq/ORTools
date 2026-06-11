@@ -1,0 +1,28 @@
+<Window x:Class="ORTools.UI.Views.Dialogs.DuplicateKeyDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Duplicate Key Warning" Height="150" Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource AppBaseBrush}"
+        WindowStyle="ToolWindow"
+        Topmost="True">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="MessageTextBlock" Text="This key is already in use by another feature. Do you want to continue?" 
+                   Foreground="{StaticResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,16" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="YesButton" Content="Yes, continue" Width="100" Height="28" Margin="0,0,8,0"
+                    Background="{StaticResource AppDangerBrush}" Foreground="{StaticResource AppTextBrush}"
+                    BorderThickness="0" Cursor="Hand" Click="YesButton_Click" />
+            <Button x:Name="NoButton" Content="No, cancel" Width="90" Height="28"
+                    Background="{StaticResource AppSurfaceBrush}" Foreground="{StaticResource AppTextBrush}"
+                    BorderThickness="0" Cursor="Hand" Click="NoButton_Click" IsCancel="True" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

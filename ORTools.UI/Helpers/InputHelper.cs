@@ -19,9 +19,15 @@ public static class InputHelper
         var mainWindowVm = (ViewModels.MainWindowViewModel)System.Windows.Application.Current.MainWindow.DataContext;
         if (newKey != "None" && mainWindowVm.IsKeyInUse(newKey))
         {
-            System.Windows.MessageBox.Show($"The key '{newKey}' is already assigned to another action.", "Duplicate Key", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
-            Keyboard.ClearFocus();
-            return;
+            var dialog = new Views.Dialogs.DuplicateKeyDialog("another feature")
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            if (dialog.ShowDialog() != true)
+            {
+                Keyboard.ClearFocus();
+                return;
+            }
         }
 
         onKeySet(newKey);

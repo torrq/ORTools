@@ -80,3 +80,26 @@ public sealed record StatusRecoveryConfigUpdate(
 {
     public string Type => MessageTypes.StatusRecoveryConfig;
 }
+
+public sealed record SkillTimerSlotData(
+    int Id,
+    string Key,
+    int Delay,
+    int ClickMode,
+    bool AltKey,
+    bool Enabled);
+
+public sealed record SkillTimerConfigUpdate(
+    List<SkillTimerSlotData> Slots) : IIpcMessage
+{
+    public string Type => MessageTypes.SkillTimerConfig;
+}
+
+public sealed record DebuffRecoveryItemData(string Name, string Key);
+
+public sealed record DebuffRecoveryConfigUpdate(
+    List<DebuffRecoveryItemData> Items,
+    int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.DebuffRecoveryConfig;
+}

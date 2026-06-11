@@ -9,6 +9,10 @@ public static class MessageTypes
     public const string DisconnectClient = "DisconnectClient";
     public const string UpdateToggleKey  = "UpdateToggleKey";
     public const string SwitchProfile = "SwitchProfile";
+    public const string CreateProfile = "CreateProfile";
+    public const string CopyProfile = "CopyProfile";
+    public const string RenameProfile = "RenameProfile";
+    public const string DeleteProfile = "DeleteProfile";
     public const string RequestProcessList = "RequestProcessList";
     public const string RequestFullState = "RequestFullState";
     public const string Shutdown = "Shutdown";
@@ -23,6 +27,11 @@ public static class MessageTypes
     
     public const string UpdateStatusRecoveryItem = "UpdateStatusRecoveryItem";
     public const string UpdateStatusRecoverySettings = "UpdateStatusRecoverySettings";
+
+    public const string UpdateSkillTimerSlot = "UpdateSkillTimerSlot";
+
+    public const string UpdateDebuffRecoveryItem = "UpdateDebuffRecoveryItem";
+    public const string UpdateDebuffRecoverySettings = "UpdateDebuffRecoverySettings";
 
     // ── Worker → UI (state updates) ───────────────────────────────────────────
     public const string WorkerReady = "WorkerReady";
@@ -39,4 +48,6 @@ public static class MessageTypes
     public const string AutopotHPConfig = "AutopotHPConfig";
     public const string AutopotSPConfig = "AutopotSPConfig";
     public const string StatusRecoveryConfig = "StatusRecoveryConfig";
+    public const string SkillTimerConfig = "SkillTimerConfig";
+    public const string DebuffRecoveryConfig = "DebuffRecoveryConfig";
 }

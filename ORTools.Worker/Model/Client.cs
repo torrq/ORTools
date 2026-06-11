@@ -416,7 +416,15 @@ namespace ORTools.Worker
                         this.CurrentMapAddress = dto.MapAddressPointer;
                         this.CurrentJobAddress = dto.JobAddressPointer;
                         this.CurrentOnlineAddress = dto.OnlineAddressPointer;
-                        // Status buffer address is set later or not needed for basic info
+                        
+                        if (AppConfig.ServerMode == 1) // HR
+                        {
+                            this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x470;
+                        }
+                        else // Default to MR (ServerMode == 0)
+                        {
+                            this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x474;
+                        }
                     }
                     catch
                     {

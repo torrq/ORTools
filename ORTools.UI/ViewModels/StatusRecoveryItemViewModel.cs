@@ -9,7 +9,9 @@ public partial class StatusRecoveryItemViewModel : ObservableObject
     private string _name = "";
 
     [ObservableProperty]
-    private string _displayName = "";
+    private string _displayName = string.Empty;
+
+    public string ImagePath => $"pack://application:,,,/Icons/Debuffs/{Name}.png";
 
     [ObservableProperty]
     private string _key = "None";

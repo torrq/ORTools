@@ -38,6 +38,8 @@ public sealed class WorkerService : IDisposable
     public event Action<AutopotHPConfigUpdate>? AutopotHPConfigReceived;
     public event Action<AutopotSPConfigUpdate>? AutopotSPConfigReceived;
     public event Action<StatusRecoveryConfigUpdate>? StatusRecoveryConfigReceived;
+    public event Action<SkillTimerConfigUpdate>? SkillTimerConfigReceived;
+    public event Action<DebuffRecoveryConfigUpdate>? DebuffRecoveryConfigReceived;
 
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
@@ -202,6 +204,12 @@ public sealed class WorkerService : IDisposable
                 break;
             case MessageTypes.StatusRecoveryConfig:
                 StatusRecoveryConfigReceived?.Invoke(env.As<StatusRecoveryConfigUpdate>()!);
+                break;
+            case MessageTypes.SkillTimerConfig:
+                SkillTimerConfigReceived?.Invoke(env.As<SkillTimerConfigUpdate>()!);
+                break;
+            case MessageTypes.DebuffRecoveryConfig:
+                DebuffRecoveryConfigReceived?.Invoke(env.As<DebuffRecoveryConfigUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");

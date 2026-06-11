@@ -32,6 +32,26 @@ public sealed record SwitchProfileCommand(string ProfileName) : IIpcMessage
     public string Type => MessageTypes.SwitchProfile;
 }
 
+public sealed record CreateProfileCommand(string ProfileName) : IIpcMessage
+{
+    public string Type => MessageTypes.CreateProfile;
+}
+
+public sealed record CopyProfileCommand(string SourceProfile, string NewProfileName) : IIpcMessage
+{
+    public string Type => MessageTypes.CopyProfile;
+}
+
+public sealed record RenameProfileCommand(string OldProfileName, string NewProfileName) : IIpcMessage
+{
+    public string Type => MessageTypes.RenameProfile;
+}
+
+public sealed record DeleteProfileCommand(string ProfileName) : IIpcMessage
+{
+    public string Type => MessageTypes.DeleteProfile;
+}
+
 public sealed record RequestProcessListCommand : IIpcMessage
 {
     public string Type => MessageTypes.RequestProcessList;
@@ -89,4 +109,29 @@ public record UpdateStatusRecoveryItemCommand(string Name, string Key) : IIpcMes
 public record UpdateStatusRecoverySettingsCommand(int Delay) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateStatusRecoverySettings;
+}
+
+// ── SkillTimer ──────────────────────────────────────────────────────────────
+
+public sealed record UpdateSkillTimerSlotCommand(
+    int Id,
+    string Key,
+    int Delay,
+    int ClickMode,
+    bool AltKey,
+    bool Enabled) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateSkillTimerSlot;
+}
+
+// ── DebuffRecovery ────────────────────────────────────────────────────────────
+
+public sealed record UpdateDebuffRecoveryItemCommand(string StatusName, string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateDebuffRecoveryItem;
+}
+
+public sealed record UpdateDebuffRecoverySettingsCommand(int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateDebuffRecoverySettings;
 }

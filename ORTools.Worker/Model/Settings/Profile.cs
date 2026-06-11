@@ -63,7 +63,7 @@ public class Profile
         {
             DebugLogger.Warning($"Profile.ListAll: {ex.Message}");
         }
-        return profiles;
+        return profiles.OrderBy(p => p == "Default" ? 0 : 1).ThenBy(p => p).ToList();
     }
 }
 

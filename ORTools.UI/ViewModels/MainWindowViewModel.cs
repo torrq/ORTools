@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -47,7 +48,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     // ── Child ViewModels ──────────────────────────────────────────────────────
     public AutopotHPViewModel AutopotHP { get; }
     public AutopotSPViewModel AutopotSP { get; }
-    public StatusRecoveryViewModel StatusRecovery { get; }
+    public DebuffsViewModel Debuffs { get; }
+    public SkillTimerViewModel SkillTimer { get; }
+    public ProfilesViewModel Profiles { get; }
 
     // ── Derived display properties ────────────────────────────────────────────
 
@@ -59,15 +62,30 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         ? CreateBrush("#4CAF50")
         : CreateBrush("#FF5252");
 
-    public bool IsKeyInUse(string key)
+    public bool IsKeyInUse(string newKey, object? sourceVM = null)
     {
-        if (string.IsNullOrWhiteSpace(key) || key == "None") return false;
-        if (ToggleKey == key) return true;
+        if (string.IsNullOrWhiteSpace(newKey) || newKey == "None") return false;
+        if (ToggleKey == newKey && sourceVM != this) return true;
         
-        foreach (var slot in AutopotHP.Slots) if (slot.Key == key) return true;
-        foreach (var slot in AutopotSP.Slots) if (slot.Key == key) return true;
+        foreach (var slot in AutopotHP.Slots) if (slot.Key == newKey && sourceVM != slot) return true;
+        foreach (var slot in AutopotSP.Slots) if (slot.Key == newKey && sourceVM != slot) return true;
         
-        foreach (var item in StatusRecovery.Items) if (item.Key == key) return true;
+        // 3) Debuffs (Status Recovery row)
+        foreach (var sr in Debuffs.StatusRecoveryItems)
+        {
+            if (sr.Key == "None") continue;
+            if (sr.Key == newKey && sourceVM != sr) return true;
+        }
+
+        // 4) Debuffs (Debuffs grid)
+        foreach (var dr in Debuffs.DebuffItems)
+        {
+            if (dr.Key == "None") continue;
+            if (dr.Key == newKey && sourceVM != dr) return true;
+        }
+
+        // 5) Skill Timer
+        foreach (var st in SkillTimer.Slots) if (st.Key == newKey && sourceVM != st) return true;
         
         return false;
     }
@@ -88,17 +106,29 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         
         AutopotHP = new AutopotHPViewModel(_worker);
         AutopotSP = new AutopotSPViewModel(_worker);
-        StatusRecovery = new StatusRecoveryViewModel(_worker);
+        Debuffs = new DebuffsViewModel(worker);
+        SkillTimer = new SkillTimerViewModel(worker);
+        Profiles = new ProfilesViewModel(worker);
 
-        worker.ConnectionChanged   += OnConnectionChanged;
+        // Map ViewModels to tabs
+        Tabs = new ObservableCollection<object>
+        {
+            AutopotHP,
+            Debuffs,
+            SkillTimer,
+            Profiles
+        };
         worker.AppStateReceived    += OnAppState;
         worker.ClientStateReceived += OnClientState;
         worker.HpSpReceived        += OnHpSp;
         worker.CharacterReceived   += OnCharacter;
         worker.ProcessListReceived += OnProcessList;
+        worker.ConnectionChanged   += OnConnectionChanged;
         worker.ProfileListReceived += OnProfileList;
         worker.ErrorReceived       += OnError;
     }
+
+    public ObservableCollection<object> Tabs { get; }
 
     // ── Commands ──────────────────────────────────────────────────────────────
 

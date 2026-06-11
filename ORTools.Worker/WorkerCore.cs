@@ -142,14 +142,10 @@ public sealed class WorkerCore
                         {
                             string name = tempClient.ReadCharacterName();
                             string map = tempClient.ReadCurrentMap();
-                            var jobSnap = tempClient.ReadJobBlock();
-                            uint level = jobSnap?.Level ?? 0;
-                            uint jobId = jobSnap?.JobId ?? 0;
-                            string jobName = ORTools.Shared.Protocol.JobList.GetNameById((int)jobId);
                             
                             if (!string.IsNullOrWhiteSpace(name))
                             {
-                                info = $" ({name} / {map} / {jobName} Lv.{level})";
+                                info = $" ({name} @ {map})";
                             }
                         }
                     }
@@ -212,11 +208,78 @@ public sealed class WorkerCore
             ConfigGlobal.SaveConfig();
             RefreshToggleHotkey();
             await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), profileName));
+            await PushAllConfigs();
             DebugLogger.Info($"[WorkerCore] Profile: {profileName}");
         }
         catch (Exception ex)
         {
             await BroadcastAsync(new ErrorUpdate($"Failed to load profile '{profileName}': {ex.Message}"));
+        }
+    }
+
+    public async Task HandleCreateProfile(string profileName)
+    {
+        try
+        {
+            ProfileSingleton.Create(profileName);
+            await HandleSwitchProfile(profileName);
+        }
+        catch (Exception ex)
+        {
+            await BroadcastAsync(new ErrorUpdate($"Failed to create profile '{profileName}': {ex.Message}"));
+        }
+    }
+
+    public async Task HandleCopyProfile(string sourceProfile, string newProfileName)
+    {
+        try
+        {
+            ProfileSingleton.Copy(sourceProfile, newProfileName);
+            await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+        }
+        catch (Exception ex)
+        {
+            await BroadcastAsync(new ErrorUpdate($"Failed to copy profile '{sourceProfile}': {ex.Message}"));
+        }
+    }
+
+    public async Task HandleRenameProfile(string oldProfileName, string newProfileName)
+    {
+        try
+        {
+            ProfileSingleton.Rename(oldProfileName, newProfileName);
+            if (_currentProfileName == oldProfileName)
+            {
+                await HandleSwitchProfile(newProfileName);
+            }
+            else
+            {
+                await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+            }
+        }
+        catch (Exception ex)
+        {
+            await BroadcastAsync(new ErrorUpdate($"Failed to rename profile '{oldProfileName}': {ex.Message}"));
+        }
+    }
+
+    public async Task HandleDeleteProfile(string profileName)
+    {
+        try
+        {
+            ProfileSingleton.Delete(profileName);
+            if (_currentProfileName == profileName)
+            {
+                await HandleSwitchProfile("Default");
+            }
+            else
+            {
+                await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+            }
+        }
+        catch (Exception ex)
+        {
+            await BroadcastAsync(new ErrorUpdate($"Failed to delete profile '{profileName}': {ex.Message}"));
         }
     }
 
@@ -309,12 +372,95 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildStatusRecoveryConfig());
     }
 
+    // ── Skill Timer ───────────────────────────────────────────────────────────
+
+    public async Task HandleUpdateSkillTimerSlot(UpdateSkillTimerSlotCommand cmd)
+    {
+        var st = ProfileSingleton.GetCurrent().SkillTimer;
+        if (!st.skillTimer.TryGetValue(cmd.Id, out var slot))
+        {
+            slot = new SkillTimerKey(System.Windows.Forms.Keys.None, 1000);
+            st.skillTimer[cmd.Id] = slot;
+        }
+
+        if (Enum.TryParse<System.Windows.Forms.Keys>(cmd.Key, out var parsed))
+            slot.Key = parsed;
+        
+        slot.Delay = cmd.Delay;
+        slot.ClickMode = cmd.ClickMode;
+        slot.AltKey = cmd.AltKey;
+        slot.Enabled = cmd.Enabled;
+
+        ProfileSingleton.SetConfiguration(st);
+        
+        // If the worker is ON, toggle the specific timer thread
+        if (_isOn)
+        {
+            if (slot.Enabled) st.StartTimer(cmd.Id);
+            else st.StopTimer(cmd.Id);
+        }
+
+        await PushSkillTimerConfig();
+    }
+
+    private async Task PushSkillTimerConfig()
+    {
+        var st = ProfileSingleton.GetCurrent().SkillTimer;
+        var slots = new List<SkillTimerSlotData>();
+
+        for (int i = 1; i <= SkillTimer.MAX_SKILL_TIMERS; i++)
+        {
+            if (st.skillTimer.TryGetValue(i, out var macro))
+            {
+                slots.Add(new SkillTimerSlotData(i, macro.Key.ToString(), macro.Delay, macro.ClickMode, macro.AltKey, macro.Enabled));
+            }
+            else
+            {
+                slots.Add(new SkillTimerSlotData(i, "None", 1000, 0, false, false));
+            }
+        }
+        await BroadcastAsync(new SkillTimerConfigUpdate(slots));
+    }
+
     private StatusRecoveryConfigUpdate BuildStatusRecoveryConfig()
     {
         var sr = ProfileSingleton.GetCurrent().StatusRecovery;
         return new StatusRecoveryConfigUpdate(
             Items: sr.statusLists.Select(kvp => new StatusRecoveryItemData(kvp.Key, kvp.Value.Key.ToString())).ToList(),
             Delay: sr.Delay);
+    }
+
+    // ── Debuff Recovery ───────────────────────────────────────────────────────
+
+    public async Task HandleUpdateDebuffRecoveryItem(UpdateDebuffRecoveryItemCommand cmd)
+    {
+        var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
+        if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
+        {
+            if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
+            {
+                if (key == Keys.None) dr.RemoveKeyFromBuff(statusId);
+                else dr.AddKeyToBuff(statusId, key);
+            }
+        }
+        ProfileSingleton.SetConfiguration(dr);
+        await BroadcastAsync(BuildDebuffRecoveryConfig());
+    }
+
+    public async Task HandleUpdateDebuffRecoverySettings(UpdateDebuffRecoverySettingsCommand cmd)
+    {
+        var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
+        dr.Delay = Math.Max(1, cmd.Delay);
+        ProfileSingleton.SetConfiguration(dr);
+        await BroadcastAsync(BuildDebuffRecoveryConfig());
+    }
+
+    private DebuffRecoveryConfigUpdate BuildDebuffRecoveryConfig()
+    {
+        var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
+        return new DebuffRecoveryConfigUpdate(
+            Items: dr.buffMapping.Select(kvp => new DebuffRecoveryItemData(kvp.Key.ToString(), kvp.Value.ToString())).ToList(),
+            Delay: dr.Delay);
     }
 
     // ── Full state ────────────────────────────────────────────────────────────
@@ -328,9 +474,16 @@ public sealed class WorkerCore
             ProcessName: client != null ? _GetConnectedProcessName() : null));
         await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
         await BroadcastAsync(new ProcessListUpdate(ListLocalProcesses()));
+        await PushAllConfigs();
+    }
+
+    private async Task PushAllConfigs()
+    {
         await BroadcastAsync(BuildAutopotHPConfig());
         await BroadcastAsync(BuildAutopotSPConfig());
         await BroadcastAsync(BuildStatusRecoveryConfig());
+        await PushSkillTimerConfig();
+        await BroadcastAsync(BuildDebuffRecoveryConfig());
     }
 
     // ── Broadcast ─────────────────────────────────────────────────────────────

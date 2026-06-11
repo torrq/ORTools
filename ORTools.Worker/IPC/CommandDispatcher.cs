@@ -37,6 +37,26 @@ public sealed class CommandDispatcher
                 if (sp != null) await _core.HandleSwitchProfile(sp.ProfileName);
                 break;
 
+            case MessageTypes.CreateProfile:
+                var crp = env.As<CreateProfileCommand>();
+                if (crp != null) await _core.HandleCreateProfile(crp.ProfileName);
+                break;
+
+            case MessageTypes.CopyProfile:
+                var cop = env.As<CopyProfileCommand>();
+                if (cop != null) await _core.HandleCopyProfile(cop.SourceProfile, cop.NewProfileName);
+                break;
+
+            case MessageTypes.RenameProfile:
+                var rep = env.As<RenameProfileCommand>();
+                if (rep != null) await _core.HandleRenameProfile(rep.OldProfileName, rep.NewProfileName);
+                break;
+
+            case MessageTypes.DeleteProfile:
+                var dep = env.As<DeleteProfileCommand>();
+                if (dep != null) await _core.HandleDeleteProfile(dep.ProfileName);
+                break;
+
             case MessageTypes.RequestProcessList:
                 await _core.HandleRequestProcessList();
                 break;
@@ -72,6 +92,21 @@ public sealed class CommandDispatcher
             case MessageTypes.UpdateStatusRecoverySettings:
                 var srs = env.As<UpdateStatusRecoverySettingsCommand>();
                 if (srs != null) await _core.HandleUpdateStatusRecoverySettings(srs);
+                break;
+
+            case MessageTypes.UpdateSkillTimerSlot:
+                var sts = env.As<UpdateSkillTimerSlotCommand>();
+                if (sts != null) await _core.HandleUpdateSkillTimerSlot(sts);
+                break;
+
+            case MessageTypes.UpdateDebuffRecoveryItem:
+                var dri = env.As<UpdateDebuffRecoveryItemCommand>();
+                if (dri != null) await _core.HandleUpdateDebuffRecoveryItem(dri);
+                break;
+
+            case MessageTypes.UpdateDebuffRecoverySettings:
+                var drs = env.As<UpdateDebuffRecoverySettingsCommand>();
+                if (drs != null) await _core.HandleUpdateDebuffRecoverySettings(drs);
                 break;
 
             case MessageTypes.Shutdown:

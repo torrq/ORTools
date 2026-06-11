@@ -199,13 +199,13 @@
             <TabItem Header="Autopot SP">
                 <views:AutopotSPView DataContext="{Binding AutopotSP}" />
             </TabItem>
-            <TabItem Header="Status Recovery">
-                <views:StatusRecoveryView DataContext="{Binding StatusRecovery}" />
-            </TabItem>
             <TabItem Header="Skill Timer">
+                <views:SkillTimerView DataContext="{Binding SkillTimer}" />
+            </TabItem>
+            <TabItem Header="Auto Off">
                 <Border Padding="16">
-                    <TextBlock Text="Skill Timer - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,0,0" />
+                    <TextBlock Text="Auto Off - Phase 2"
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
             <TabItem Header="Skill Spammer">
@@ -215,38 +215,23 @@
                 </Border>
             </TabItem>
             <TabItem Header="Debuffs">
+                <views:DebuffsView DataContext="{Binding Debuffs}" />
+            </TabItem>
+            <TabItem Header="Autobuff Skills">
                 <Border Padding="16">
-                    <TextBlock Text="Debuffs - Phase 2"
+                    <TextBlock Text="Autobuff Skills - Phase 2"
                      FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
-            <TabItem Header="Auto Off">
+            <TabItem Header="Autobuff Items">
                 <Border Padding="16">
-                    <TextBlock Text="Auto Off - Phase 2"
+                    <TextBlock Text="Autobuff Items - Phase 2"
                      FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
-            <TabItem Header="Autobuff">
+            <TabItem Header="ATK x DEF">
                 <Border Padding="16">
-                    <TextBlock Text="Autobuff - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
-            </TabItem>
-            <TabItem Header="Transfer">
-                <Border Padding="16">
-                    <TextBlock Text="Transfer Helper - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
-            </TabItem>
-            <TabItem Header="ATK/DEF">
-                <Border Padding="16">
-                    <TextBlock Text="ATK/DEF - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
-            </TabItem>
-            <TabItem Header="Macro Switch">
-                <Border Padding="16">
-                    <TextBlock Text="Macro Switch - Phase 2"
+                    <TextBlock Text="ATK x DEF - Phase 2"
                      FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
@@ -256,11 +241,26 @@
                      FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
+            <TabItem Header="Macro Switch">
+                <Border Padding="16">
+                    <TextBlock Text="Macro Switch - Phase 2"
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
+                </Border>
+            </TabItem>
+            <TabItem Header="Transfer">
+                <Border Padding="16">
+                    <TextBlock Text="Transfer Helper - Phase 2"
+                     FontStyle="Italic" Margin="-6,-6,6,6" />
+                </Border>
+            </TabItem>
             <TabItem Header="Settings">
                 <Border Padding="16">
                     <TextBlock Text="Settings - Phase 2"
                      FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
+            </TabItem>
+            <TabItem Header="Profiles">
+                <views:ProfilesView DataContext="{Binding Profiles}" />
             </TabItem>
         </TabControl>
     </Grid>
