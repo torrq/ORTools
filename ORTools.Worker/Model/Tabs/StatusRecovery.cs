@@ -1,4 +1,4 @@
-﻿
+
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -364,7 +364,8 @@ namespace ORTools.Worker
                     var client = ClientSingleton.GetClient();
                     if (client?.Process != null && !client.Process.HasExited && !client.IsTextInputActive() && !client.IsDead())
                     {
-                        Win32Interop.PostMessage(client.Process.MainWindowHandle, Constants.WM_KEYDOWN_MSG_ID, key, 0);
+                        Win32Interop.PostMessage(client.Process.MainWindowHandle, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
+                        Win32Interop.PostMessage(client.Process.MainWindowHandle, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
                     }
                 }
             }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -87,8 +87,8 @@ namespace ORTools.Worker
         {
             Win32Interop.keybd_event(Constants.VK_LMENU, 0, Constants.KEYEVENTF_EXTENDEDKEY, 0);
             Thread.Sleep(20);
-            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, 0);
-            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, 0);
+            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
+            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
             Thread.Sleep(20);
             Win32Interop.keybd_event(Constants.VK_LMENU, 0, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
         }
