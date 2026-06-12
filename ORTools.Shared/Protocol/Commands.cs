@@ -165,7 +165,10 @@ public sealed record UpdateAutobuffItemSettingsCommand(int Delay) : IIpcMessage
     public string Type => MessageTypes.UpdateAutobuffItemSettings;
 }
 
-public sealed record UpdateSkillSpammerEntryCommand(string KeyName, bool IsChecked, bool IsIndeterminate) : IIpcMessage
+public sealed record UpdateSkillSpammerEntryCommand(
+    string KeyName,
+    bool IsChecked,
+    bool IsIndeterminate) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateSkillSpammerEntry;
 }
@@ -178,6 +181,13 @@ public sealed record UpdateSkillSpammerSettingsCommand(
     string ToggleModeKey) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateSkillSpammerSettings;
+}
+
+
+
+public sealed record ToggleAutoOffTimerCommand(bool Start) : IIpcMessage
+{
+    public string Type => MessageTypes.ToggleAutoOffTimer;
 }
 
 public sealed record UpdateGlobalConfigCommand(

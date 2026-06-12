@@ -74,8 +74,19 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnPauseWhenDeadChanged(bool value) => SendGlobalUpdate();
     partial void OnExitWithRoChanged(bool value) => SendGlobalUpdate();
     partial void OnAlwaysOnTopChanged(bool value) => SendGlobalUpdate();
-    partial void OnSongRowsChanged(int value) => SendGlobalUpdate();
-    partial void OnMacroSwitchRowsChanged(int value) => SendGlobalUpdate();
+    
+    partial void OnSongRowsChanged(int value) 
+    {
+        if (value < 1 && !_suppressUpdates) { SongRows = 1; return; }
+        SendGlobalUpdate();
+    }
+    
+    partial void OnMacroSwitchRowsChanged(int value) 
+    {
+        if (value < 1 && !_suppressUpdates) { MacroSwitchRows = 1; return; }
+        SendGlobalUpdate();
+    }
+    
     partial void OnDefaultToggleStateKeyChanged(string value) => SendGlobalUpdate();
     partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendGlobalUpdate();
 

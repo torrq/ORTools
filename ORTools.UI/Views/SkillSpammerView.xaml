@@ -94,11 +94,14 @@
                 </StackPanel>
             </GroupBox>
 
-            <Button Content="GitHub" Margin="0,0,0,20" Padding="5" />
-            
+
             <GroupBox Header="Spammer Delay" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppBorderBrush}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                    <TextBox Text="{Binding SpammerDelay, UpdateSourceTrigger=PropertyChanged, Delay=500}" Width="50" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" helpers:InputHelper.IsNumericInput="True"/>
+                    <TextBox Text="{Binding SpammerDelay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                             helpers:InputHelper.IsNumericInput="True"
+                             PreviewKeyDown="SpammerDelay_PreviewKeyDown"
+                             TextChanged="SpammerDelay_TextChanged"
+                             Style="{StaticResource NumericTextBoxStyle}" Width="50" />
                     <TextBlock Text="ms" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="{StaticResource AppTextBrush}"/>
                 </StackPanel>
             </GroupBox>
@@ -114,7 +117,9 @@
                 <Image Source="pack://application:,,,/Icons/Spammer/shift.png" Width="16" Height="16" Margin="0,0,20,0" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
                 
                 <CheckBox Content="Toggle Mode" IsChecked="{Binding ToggleMode}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Text="{Binding ToggleModeKey}" Width="60" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsReadOnly="True" PreviewKeyDown="ToggleModeKey_PreviewKeyDown" ToolTip="Press a key to assign"/>
+                <TextBox Text="{Binding ToggleModeKey, Mode=TwoWay}"
+                         PreviewKeyDown="ToggleModeKey_PreviewKeyDown" ToolTip="Press a key to assign"
+                         Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" />
             </StackPanel>
         </GroupBox>
     </Grid>

@@ -184,3 +184,11 @@ public sealed record AutoOffConfigUpdate(
 {
     public string Type => MessageTypes.AutoOffConfigUpdate;
 }
+
+public sealed record AutoOffTimerStateUpdate(
+    bool IsRunning,
+    int SelectedMinutes,
+    int RemainingSeconds) : IIpcMessage
+{
+    public string Type => MessageTypes.AutoOffTimerStateUpdate;
+}

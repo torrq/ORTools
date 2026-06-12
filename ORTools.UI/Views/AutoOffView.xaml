@@ -6,6 +6,9 @@
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -13,114 +16,139 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left Column: Primary Settings -->
+        <!-- Left Column: Timer Settings -->
         <StackPanel Grid.Column="0">
-            
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,16" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
                 <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif" 
-                       Width="32" Height="32" Margin="0,0,12,0" />
-                <TextBlock Text="Auto Off Settings" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                       Stretch="None" Margin="0,0,8,0"
+                       Visibility="{Binding IsTimerRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <TextBlock Text="Auto Off Timer" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>
 
-            <TextBlock Text="Conditions" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
+            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,16">
+                <StackPanel>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding RemainingTimeText}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="{Binding SelectedTimeText}" FontWeight="Bold" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                    </Grid>
+                    
+                    <Slider Minimum="1" Maximum="{Binding MaxTime}" Value="{Binding AutoOffTime, Delay=150}" Margin="0,0,0,12" IsSnapToTickEnabled="True" TickFrequency="1" Cursor="Hand" />
+                    
+                    <ItemsControl ItemsSource="{Binding QuickButtons}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Content="{Binding StringFormat='{}{0}h'}" 
+                                        Command="{Binding DataContext.SetTimeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                        CommandParameter="{Binding}" 
+                                        Style="{StaticResource PrimaryButtonStyle}" 
+                                        Margin="0,0,4,0" Width="30" Padding="0,2" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Button Command="{Binding ToggleTimerCommand}" HorizontalAlignment="Stretch" Padding="8,6">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                <Setter Property="Content" Value="Start Timer"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTimerRunning}" Value="True">
+                                        <Setter Property="Content" Value="Stop Timer"/>
+                                        <Setter Property="Background" Value="{StaticResource AppDangerBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Overweight Auto Off" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
             
-            <!-- Overweight -->
             <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
                     
-                    <CheckBox Content="Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" VerticalAlignment="Center"/>
-                    
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" IsEnabled="{Binding AutoOffOverweight}">
-                        <RadioButton Content="50%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=50}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <RadioButton Content="90%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=90}" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" IsEnabled="{Binding AutoOffOverweight}" HorizontalAlignment="Center" RenderTransformOrigin="0.122,0.507">
+                        <RadioButton Content="50%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=50}" Foreground="{StaticResource AppTextBrush}" Margin="0,0,16,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                            <RadioButton.ContentTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Icons/ui/weight50.png" Stretch="None" Margin="0,0,6,0" />
+                                        <TextBlock Text="50%" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </RadioButton.ContentTemplate>
+                        </RadioButton>
+                        <RadioButton Content="90%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=90}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                            <RadioButton.ContentTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="pack://application:,,,/Icons/ui/weight90.png" Stretch="None" Margin="0,0,6,0" />
+                                        <TextBlock Text="90%" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </RadioButton.ContentTemplate>
+                        </RadioButton>
                     </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- Kill Client -->
-            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
-                <CheckBox Content="Kill Game Client on Auto Off" IsChecked="{Binding AutoOffKillClient}" />
-            </Border>
-
-            <!-- Auto Off Timer -->
-            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Auto Off Timer (minutes)" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                    <TextBox Grid.Column="1" Text="{Binding AutoOffTime, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="24" Background="{StaticResource AppInputBrush}" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppInputBorderBrush}" VerticalContentAlignment="Center" Padding="4,0" />
-                </Grid>
+                </StackPanel>
             </Border>
         </StackPanel>
 
-        <!-- Right Column: Keys & Ammo -->
+        <!-- Right Column: Actions -->
         <StackPanel Grid.Column="2">
-            <TextBlock Text="Auto Off Keys" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
+            <TextBlock Text="Trigger Actions" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
             
-            <!-- Off Keys -->
-            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,16">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Text="Auto Off Key 1:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding AutoOffKey1}" Width="80" Height="24" />
-
-                    <TextBlock Grid.Row="2" Text="Auto Off Key 2:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                    <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding AutoOffKey2}" Width="80" Height="24" />
-                </Grid>
-            </Border>
-
-            <TextBlock Text="Ammo Switch" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
-            
-            <!-- Ammo Switch -->
             <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="12" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <CheckBox Content="Enable Ammo Switch" IsChecked="{Binding SwitchAmmo}" Grid.ColumnSpan="2" />
-
-                    <Grid Grid.Row="2" Grid.ColumnSpan="2" IsEnabled="{Binding SwitchAmmo}">
+                <StackPanel>
+                    <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,12" />
+                    
+                    <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Ammo 1 Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding Ammo1Key}" Width="80" Height="24" />
+                        <TextBlock Text="1." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBox Grid.Column="2" Text="{Binding AutoOffKey1, Mode=TwoWay}"
+                                 PreviewKeyDown="Key1TextBox_PreviewKeyDown"
+                                 Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
                     </Grid>
 
-                    <Grid Grid.Row="4" Grid.ColumnSpan="2" IsEnabled="{Binding SwitchAmmo}">
+                    <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Ammo 2 Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding Ammo2Key}" Width="80" Height="24" />
+                        <TextBlock Text="2." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBox Grid.Column="2" Text="{Binding AutoOffKey2, Mode=TwoWay}"
+                                 PreviewKeyDown="Key2TextBox_PreviewKeyDown"
+                                 Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
                     </Grid>
-                </Grid>
+
+                    <Grid Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="3." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="Stop Game Client" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <CheckBox Grid.Column="2" IsChecked="{Binding AutoOffKillClient}" VerticalAlignment="Center" Cursor="Hand" />
+                    </Grid>
+                </StackPanel>
             </Border>
         </StackPanel>
     </Grid>

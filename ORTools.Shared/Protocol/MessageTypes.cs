@@ -69,6 +69,12 @@ public static class MessageTypes
     // Autopot config pushes (Worker → UI)
     public const string AutopotHPConfig = "AutopotHPConfig";
     public const string AutopotSPConfig = "AutopotSPConfig";
+    // AutoOff Timer
+    public const string ToggleAutoOffTimer = "ToggleAutoOffTimer";
+    public const string AutoOffTimerStateUpdate = "AutoOffTimerStateUpdate";
+    
+    // Status Recovery
+    public const string StatusRecoveryConfigUpdate = "StatusRecoveryConfigUpdate";
     public const string StatusRecoveryConfig = "StatusRecoveryConfig";
     public const string SkillTimerConfig = "SkillTimerConfig";
     public const string DebuffRecoveryConfig = "DebuffRecoveryConfig";

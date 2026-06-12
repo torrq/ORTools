@@ -16,6 +16,7 @@ public sealed class WorkerCore
 
     private bool _isOn;
     private string _currentProfileName = "Default";
+    private readonly AutoOff _autoOff;
 
     public WorkerCore()
     {
@@ -31,6 +32,20 @@ public sealed class WorkerCore
         ProfileSingleton.Create("Default");
         ProfileSingleton.Load("Default");
         HookSkillSpammerEvents();
+
+        _autoOff = new AutoOff();
+        _autoOff.TimerStarted += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.SelectedMinutes, e.RemainingSeconds));
+        _autoOff.TimerStopped += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.SelectedMinutes, e.RemainingSeconds));
+        _autoOff.TimerTick += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.SelectedMinutes, e.RemainingSeconds));
+        _autoOff.TimerCompleted += (s, e) => 
+        {
+            _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.SelectedMinutes, e.RemainingSeconds));
+            if (_isOn)
+            {
+                _ = HandleTurnOff();
+                WeightLimitMacro.SendOverweightMacro();
+            }
+        };
 
         _hookThread = new Thread(() =>
         {
@@ -523,7 +538,6 @@ public sealed class WorkerCore
 
     public async Task HandleUpdateAutobuffSkillSettings(UpdateAutobuffSkillSettingsCommand cmd)
     {
-        bool unbindChanged = false;
         var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
         abs.Delay = Math.Max(1, cmd.Delay);
         ProfileSingleton.SetConfiguration(abs);
@@ -581,7 +595,6 @@ public sealed class WorkerCore
 
     public async Task HandleUpdateAutobuffItemSettings(UpdateAutobuffItemSettingsCommand cmd)
     {
-        bool unbindChanged = false;
         var abi = ProfileSingleton.GetCurrent().AutobuffItem;
         abi.Delay = Math.Max(1, cmd.Delay);
         ProfileSingleton.SetConfiguration(abi);
@@ -663,6 +676,8 @@ public sealed class WorkerCore
         prefs.SwitchAmmo = cmd.SwitchAmmo;
         prefs.AutoOffTime = cmd.AutoOffTime;
 
+        _autoOff.SetTime(prefs.AutoOffTime);
+
         ProfileSingleton.SetConfiguration(prefs);
         if (unbindChanged) await PushAllConfigs();
         else await BroadcastAsync(BuildAutoOffConfig());
@@ -687,12 +702,26 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildGlobalConfigUpdate());
     }
 
-    public async Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
+    public Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
     {
         var profile = ProfileSingleton.GetCurrent();
         profile.UserPreferences.StopBuffsCity = cmd.StopBuffsCity;
         profile.UserPreferences.SoundEnabled = cmd.SoundEnabled;
         ProfileSingleton.SetConfiguration(profile.UserPreferences);
+        return Task.CompletedTask;
+    }
+
+    public Task HandleToggleAutoOffTimer(ToggleAutoOffTimerCommand cmd)
+    {
+        if (cmd.Start)
+        {
+            _autoOff.StartTimer();
+        }
+        else
+        {
+            _autoOff.StopTimer();
+        }
+        return Task.CompletedTask;
     }
 
     private AutobuffItemConfigUpdate BuildAutobuffItemConfig()
@@ -839,6 +868,7 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildSkillSpammerConfig());
         await PushSkillTimerConfig();
         await BroadcastAsync(BuildAutoOffConfig());
+        await BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds));
         await BroadcastAsync(BuildGlobalConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());
     }

@@ -45,33 +45,14 @@
 
                         <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay}"
                                  PreviewKeyDown="KeyTextBox_PreviewKeyDown"
-                                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                                 Width="40" Height="22" MaxLength="10" FontSize="11"
-                                 Background="{StaticResource AppInputBrush}" 
-                                 BorderBrush="{StaticResource AppInputBorderBrush}" 
-                                 TextAlignment="Center"
-                                 IsReadOnly="True" Cursor="Hand">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
-                                    <Setter Property="FontWeight" Value="Bold" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Key}" Value="None">
-                                            <Setter Property="Foreground" Value="{StaticResource AppSubtleBrush}" />
-                                            <Setter Property="FontWeight" Value="Normal" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                                 Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" Width="40" Height="22" />
 
                         <Slider Grid.Column="2" Value="{Binding Percent, Delay=150}" Minimum="0" Maximum="100"
                                 VerticalAlignment="Center" Margin="8,0,8,0"
                                 IsSnapToTickEnabled="True" TickFrequency="1" />
 
                         <TextBox Grid.Column="3" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
-                                 Foreground="{StaticResource AppTextBrush}" Background="{StaticResource AppInputBrush}"
-                                 BorderBrush="{StaticResource AppInputBorderBrush}" TextAlignment="Center" Width="32" Height="22" FontSize="11"
+                                 Style="{StaticResource NumericTextBoxStyle}" Width="32" Height="22" FontSize="11"
                                  VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     </Grid>
                 </DataTemplate>
@@ -79,17 +60,11 @@
         </ItemsControl>
 
         <!-- Settings -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Center">
             <TextBlock Text="Delay (ms):" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
                      helpers:InputHelper.IsNumericInput="True"
-                     
-                     
-                     Width="60" Height="24" 
-                     Background="{StaticResource AppInputBrush}" 
-                     Foreground="{StaticResource AppTextBrush}" 
-                     BorderBrush="{StaticResource AppInputBorderBrush}" 
-                     TextAlignment="Center" VerticalAlignment="Center"/>
+                     Style="{StaticResource NumericTextBoxStyle}" />
         </StackPanel>
     </Grid>
 </UserControl>

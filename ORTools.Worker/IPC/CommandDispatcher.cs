@@ -154,6 +154,11 @@ public sealed class CommandDispatcher
                 if (uaos != null) await _core.HandleUpdateAutoOffSettings(uaos);
                 break;
 
+            case MessageTypes.ToggleAutoOffTimer:
+                var taot = env.As<ToggleAutoOffTimerCommand>();
+                if (taot != null) await _core.HandleToggleAutoOffTimer(taot);
+                break;
+
             case MessageTypes.UpdateGlobalConfig:
                 var ugc = env.As<UpdateGlobalConfigCommand>();
                 if (ugc != null) await _core.HandleUpdateGlobalConfig(ugc);

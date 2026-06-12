@@ -6,8 +6,8 @@
   <Application.Resources>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <local:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
-    <SolidColorBrush x:Key="AppBaseBrush" Color="#1E1E2E" />
-    <SolidColorBrush x:Key="AppSurfaceBrush" Color="#252535" />
+    <SolidColorBrush x:Key="AppBaseBrush" Color="#1E1E1E" />
+    <SolidColorBrush x:Key="AppSurfaceBrush" Color="#252525" />
     <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#222222" />
     <SolidColorBrush x:Key="AppPanelBrush" Color="#111111" />
     <SolidColorBrush x:Key="AppTextBrush" Color="#E0E0E0" />
@@ -190,6 +190,49 @@
           </ControlTemplate>
         </Setter.Value>
       </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type CheckBox}">
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style TargetType="{x:Type Slider}">
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style TargetType="{x:Type ComboBox}">
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style x:Key="NumericTextBoxStyle" TargetType="{x:Type TextBox}">
+      <Setter Property="Width" Value="60" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="Background" Value="{StaticResource AppInputBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource AppInputBorderBrush}" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="KeyTextBoxStyle" TargetType="{x:Type TextBox}">
+      <Setter Property="Width" Value="60" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="MaxLength" Value="10" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Background" Value="{StaticResource AppInputBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource AppInputBorderBrush}" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="IsReadOnly" Value="True" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Text}" Value="None">
+          <Setter Property="Foreground" Value="{StaticResource AppSubtleBrush}" />
+          <Setter Property="FontWeight" Value="Normal" />
+        </DataTrigger>
+      </Style.Triggers>
     </Style>
   </Application.Resources>
 </Application>

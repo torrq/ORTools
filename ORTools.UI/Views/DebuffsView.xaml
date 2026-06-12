@@ -36,24 +36,8 @@
                         <!-- Key -->
                         <TextBox Text="{Binding Key, Mode=TwoWay}"
                                  PreviewKeyDown="KeyTextBox_PreviewKeyDown"
-                                 Width="60" Height="28" MaxLength="10" FontSize="14"
-                                 Background="{StaticResource AppInputBrush}" 
-                                 BorderBrush="{StaticResource AppInputBorderBrush}" 
-                                 TextAlignment="Center" VerticalAlignment="Center"
-                                 IsReadOnly="True" Cursor="Hand">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
-                                    <Setter Property="FontWeight" Value="Bold" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Key}" Value="None">
-                                            <Setter Property="Foreground" Value="{StaticResource AppSubtleBrush}" />
-                                            <Setter Property="FontWeight" Value="Normal" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                                 Style="{StaticResource KeyTextBoxStyle}" 
+                                 Height="28" FontSize="14" />
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -87,24 +71,8 @@
 
                             <TextBox Grid.Column="2" Text="{Binding Key, Mode=TwoWay}"
                                      PreviewKeyDown="KeyTextBox_PreviewKeyDown"
-                                     Width="60" Height="28" MaxLength="10" FontSize="14"
-                                     Background="{StaticResource AppInputBrush}" 
-                                     BorderBrush="{StaticResource AppInputBorderBrush}" 
-                                     TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Right"
-                                     IsReadOnly="True" Cursor="Hand">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
-                                        <Setter Property="FontWeight" Value="Bold" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Key}" Value="None">
-                                                <Setter Property="Foreground" Value="{StaticResource AppSubtleBrush}" />
-                                                <Setter Property="FontWeight" Value="Normal" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
+                                     Style="{StaticResource KeyTextBoxStyle}" 
+                                     Height="28" FontSize="14" HorizontalAlignment="Right" />
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -116,12 +84,7 @@
             <TextBlock Text="Delay (ms):" FontSize="14" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
                      helpers:InputHelper.IsNumericInput="True"
-                     
-                     Width="70" Height="28" FontSize="14"
-                     Background="{StaticResource AppInputBrush}" 
-                     Foreground="{StaticResource AppTextBrush}" 
-                     BorderBrush="{StaticResource AppInputBorderBrush}" 
-                     TextAlignment="Center" VerticalAlignment="Center"/>
+                     Style="{StaticResource NumericTextBoxStyle}" Width="70" Height="28" FontSize="14" />
         </StackPanel>
     </Grid>
 </UserControl>

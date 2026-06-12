@@ -32,4 +32,13 @@ public partial class SettingsView : UserControl
             Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.DefaultToggleStateKey = newKey, "Settings_DefaultToggleKey");
         }
     }
+
+    private void RowsTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox tb && string.IsNullOrWhiteSpace(tb.Text))
+        {
+            tb.Text = "1";
+            tb.CaretIndex = 1;
+        }
+    }
 }

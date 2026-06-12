@@ -4,6 +4,7 @@ using ORTools.UI.Services;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ORTools.UI.ViewModels;
 
@@ -21,8 +22,14 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     [ObservableProperty] private string _ammo1Key = "None";
     [ObservableProperty] private string _ammo2Key = "None";
     [ObservableProperty] private int _autoOffTime = 1;
+    [ObservableProperty] private bool _isTimerRunning;
+    [ObservableProperty] private string _selectedTimeText = "0m";
+    [ObservableProperty] private string _remainingTimeText = "0m";
+    [ObservableProperty] private int _maxTime = 480;
+    partial void OnMaxTimeChanged(int value) => UpdateQuickButtons();
 
     public ObservableCollection<string> AvailableKeys { get; } = new();
+    public ObservableCollection<int> QuickButtons { get; } = new();
 
     public AutoOffViewModel(WorkerService worker)
     {
@@ -36,7 +43,39 @@ public sealed partial class AutoOffViewModel : ViewModelBase
         AvailableKeys.Add("Space"); AvailableKeys.Add("Insert"); AvailableKeys.Add("Delete");
         AvailableKeys.Add("Home"); AvailableKeys.Add("End"); AvailableKeys.Add("PageUp"); AvailableKeys.Add("PageDown");
 
+        UpdateQuickButtons();
+
         _worker.AutoOffConfigReceived += OnConfigReceived;
+        _worker.AutoOffTimerStateReceived += OnTimerStateReceived;
+    }
+
+    private void UpdateQuickButtons()
+    {
+        QuickButtons.Clear();
+        for(int i = 1; i <= MaxTime / 60; i++) QuickButtons.Add(i);
+    }
+
+    private void OnTimerStateReceived(AutoOffTimerStateUpdate update)
+    {
+        Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            IsTimerRunning = update.IsRunning;
+            int hours = update.SelectedMinutes / 60;
+            int minutes = update.SelectedMinutes % 60;
+            SelectedTimeText = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
+            
+            if (update.IsRunning)
+            {
+                int rMin = (update.RemainingSeconds + 59) / 60;
+                int rHr = rMin / 60;
+                int rM = rMin % 60;
+                RemainingTimeText = rHr > 0 ? $"{rHr}h {rM}m" : $"{rM}m";
+            }
+            else
+            {
+                RemainingTimeText = "0m";
+            }
+        }, DispatcherPriority.Background);
     }
 
     private void OnConfigReceived(AutoOffConfigUpdate update)
@@ -49,12 +88,15 @@ public sealed partial class AutoOffViewModel : ViewModelBase
             AutoOffKey1 = update.AutoOffKey1;
             AutoOffKey2 = update.AutoOffKey2;
             AutoOffKillClient = update.AutoOffKillClient;
-            SwitchAmmo = update.SwitchAmmo;
-            Ammo1Key = update.Ammo1Key;
-            Ammo2Key = update.Ammo2Key;
             AutoOffTime = update.AutoOffTime;
             _suppressCommands = false;
         }, DispatcherPriority.Background);
+    }
+
+    [RelayCommand] private void ToggleTimer() => _worker.Send(new ToggleAutoOffTimerCommand(!IsTimerRunning));
+    [RelayCommand] private void SetTime(int hours) 
+    {
+        AutoOffTime = hours * 60;
     }
 
     partial void OnAutoOffOverweightChanged(bool value) => SendUpdate();
@@ -62,10 +104,13 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     partial void OnAutoOffKey1Changed(string value) => SendUpdate();
     partial void OnAutoOffKey2Changed(string value) => SendUpdate();
     partial void OnAutoOffKillClientChanged(bool value) => SendUpdate();
-    partial void OnSwitchAmmoChanged(bool value) => SendUpdate();
-    partial void OnAmmo1KeyChanged(string value) => SendUpdate();
-    partial void OnAmmo2KeyChanged(string value) => SendUpdate();
-    partial void OnAutoOffTimeChanged(int value) => SendUpdate();
+    partial void OnAutoOffTimeChanged(int value) 
+    {
+        int hours = value / 60;
+        int mins = value % 60;
+        SelectedTimeText = hours > 0 ? $"{hours}h {mins}m" : $"{mins}m";
+        SendUpdate();
+    }
 
     private void SendUpdate()
     {

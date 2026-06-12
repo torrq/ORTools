@@ -47,6 +47,7 @@ public sealed class WorkerService : IDisposable
     public event Action<GlobalConfigUpdate>? GlobalConfigReceived;
     public event Action<ProfileSettingsUpdate>? ProfileSettingsReceived;
     public event Action<AutoOffConfigUpdate>? AutoOffConfigReceived;
+    public event Action<AutoOffTimerStateUpdate>? AutoOffTimerStateReceived;
 
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
@@ -238,6 +239,9 @@ public sealed class WorkerService : IDisposable
                 break;
             case MessageTypes.AutoOffConfigUpdate:
                 AutoOffConfigReceived?.Invoke(env.As<AutoOffConfigUpdate>()!);
+                break;
+            case MessageTypes.AutoOffTimerStateUpdate:
+                AutoOffTimerStateReceived?.Invoke(env.As<AutoOffTimerStateUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");

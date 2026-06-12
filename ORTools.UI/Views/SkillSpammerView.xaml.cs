@@ -18,4 +18,21 @@ public partial class SkillSpammerView : UserControl
             ORTools.UI.Helpers.InputHelper.HandleKeyInput(tb, e, newKey => vm.ToggleModeKey = newKey, "SkillSpammer_ToggleKey");
         }
     }
+
+    private void SpammerDelay_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (sender is TextBox tb && tb.DataContext is SkillSpammerViewModel vm)
+        {
+            ORTools.UI.Helpers.InputHelper.HandleNumericUpDown(tb, e, 0, 1000, 10, newVal => vm.SpammerDelay = newVal);
+        }
+    }
+
+    private void SpammerDelay_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is TextBox tb && string.IsNullOrWhiteSpace(tb.Text))
+        {
+            tb.Text = "0";
+            tb.CaretIndex = 1;
+        }
+    }
 }
