@@ -43,7 +43,7 @@
                             </CheckBox.LayoutTransform>
                         </CheckBox>
 
-                        <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay}"
+                        <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="KeyTextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" Width="40" Height="22" />
 

@@ -4,10 +4,10 @@
         xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
         xmlns:views="clr-namespace:ORTools.UI.Views"
         Title="OSRO Tools v1.99.0/HR"
-        Width="820"
-        Height="620"
-        MinWidth="640"
-        MinHeight="480"
+        Width="731"
+        Height="659"
+        MinWidth="600"
+        MinHeight="500"
         FontFamily="Segoe UI" Background="#FF222222">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -15,7 +15,6 @@
             <ColumnDefinition Width="649*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -31,39 +30,50 @@
                     VerticalAlignment="Center"
                     Margin="0,0,16,0" Height="0"/>
 
-                <Image Width="96" Source="/Views/ortools.png" RenderTransformOrigin="1.146,0.21" HorizontalAlignment="Left" Margin="0,0,0,39" Grid.ColumnSpan="2"/>
+                <Image Width="96" Source="/Views/ortools.png" HorizontalAlignment="Left" Grid.ColumnSpan="2"/>
 
                 <StackPanel Grid.Column="1"
-                    VerticalAlignment="Top" Height="112" Margin="40,0,0,0" Grid.IsSharedSizeScope="True">
+                    VerticalAlignment="Center" Margin="40,0,0,0" Grid.IsSharedSizeScope="True">
 
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" SharedSizeGroup="TextCol" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="CharacterNameTextBlock" Text="{Binding CharacterName}"
-                       FontSize="16"
-                       FontWeight="SemiBold"
-                       Foreground="{StaticResource AppTextBrush}" Grid.Column="0" HorizontalAlignment="Left" />
-                        <TextBlock x:Name="MapNameTextBlock" Grid.Column="0"
-                       Text="{Binding MapName}"
-                       FontSize="16"
-                       Foreground="#FFADFF04"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Right" />
+
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock x:Name="CharacterNameTextBlock" Text="{Binding CharacterName}"
+                                           FontSize="16" FontWeight="SemiBold"
+                                           Foreground="{StaticResource AppTextBrush}" HorizontalAlignment="Left" />
+                                <TextBlock x:Name="MapNameTextBlock" Text="{Binding MapName}" FontSize="16" Foreground="#FFADFF04" VerticalAlignment="Center" Margin="10,0,0,0" />
+                            </StackPanel>
+                            <TextBlock x:Name="JobNameTextBlock" Text="{Binding JobName}"
+                                       FontSize="11" Foreground="{StaticResource AppSubtleBrush}"
+                                       Margin="0,1,0,0" HorizontalAlignment="Left" />
+                            <TextBlock x:Name="InfoLineTextBlock" Text="{Binding InfoLine}"
+                                       FontSize="11" Margin="0,3,0,0" Foreground="#FFFAFAFA" HorizontalAlignment="Left" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0,0,0" MinWidth="140">
+                            <Button x:Name="ToggleApplicationButton" Content="{Binding ToggleButtonText}"
+                                    Command="{Binding ToggleApplicationCommand}"
+                                    IsEnabled="{Binding IsClientConnected}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Height="24" FontSize="11" Margin="0,0,0,6" Padding="16,0"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="Key:" FontSize="10" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBox x:Name="ToggleKeyTextBox" Text="{Binding ToggleKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         PreviewKeyDown="ToggleKeyTextBox_PreviewKeyDown"
+                                         Width="50" Height="22" MaxLength="10" FontSize="11"
+                                         Style="{StaticResource KeyTextBoxStyle}"/>
+                            </StackPanel>
+                        </StackPanel>
                     </Grid>
-
-                    <TextBlock x:Name="JobNameTextBlock" Text="{Binding JobName}"
-                     FontSize="11"
-                     Foreground="{StaticResource AppSubtleBrush}"
-                     Margin="0,1,0,0" HorizontalAlignment="Left" />
-
-                    <TextBlock x:Name="InfoLineTextBlock" Text="{Binding InfoLine}"
-                     FontSize="11"
-                     Margin="0,3,0,0" Foreground="#FFFAFAFA" HorizontalAlignment="Left" />
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="28" SharedSizeGroup="LabelCol" />
                             <ColumnDefinition Width="Auto" SharedSizeGroup="TextCol" />
                         </Grid.ColumnDefinitions>
                         <ProgressBar x:Name="HpProgressBar" Value="{Binding HpPercent}"
@@ -72,17 +82,19 @@
                          Height="11"
                          Background="{StaticResource AppInputBrush}"
                          Foreground="{StaticResource AppSuccessBrush}" Grid.Column="0" />
-                        <TextBlock x:Name="HpTextBlock" Grid.Column="1"
+                        <TextBlock Grid.Column="1" Text="HP" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Center" Margin="6,0,4,0" TextAlignment="Right" />
+                        <TextBlock x:Name="HpTextBlock" Grid.Column="2"
                        Text="{Binding HpText}"
                        FontSize="10"
                        Foreground="{StaticResource AppSubtleBrush}"
                        VerticalAlignment="Center"
-                       Margin="6,0,0,0"
-                       MinWidth="140" />
+                       Margin="0,0,0,0"
+                       MinWidth="100" />
                     </Grid>
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="28" SharedSizeGroup="LabelCol" />
                             <ColumnDefinition Width="Auto" SharedSizeGroup="TextCol" />
                         </Grid.ColumnDefinitions>
                         <ProgressBar x:Name="SpProgressBar" Value="{Binding SpPercent}"
@@ -91,17 +103,19 @@
                          Height="11"
                          Background="{StaticResource AppInputBrush}"
                          Foreground="{StaticResource AppInfoBrush}" Grid.Column="0" Margin="0,1,0,1" />
-                        <TextBlock x:Name="SpTextBlock" Grid.Column="1"
+                        <TextBlock Grid.Column="1" Text="SP" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Center" Margin="6,0,4,0" TextAlignment="Right" />
+                        <TextBlock x:Name="SpTextBlock" Grid.Column="2"
                        Text="{Binding SpText}"
                        FontSize="10"
                        Foreground="{StaticResource AppSubtleBrush}"
                        VerticalAlignment="Center"
-                       Margin="6,0,0,0"
-                       MinWidth="140" />
+                       Margin="0,0,0,0"
+                       MinWidth="100" />
                     </Grid>
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="28" SharedSizeGroup="LabelCol" />
                             <ColumnDefinition Width="Auto" SharedSizeGroup="TextCol" />
                         </Grid.ColumnDefinitions>
                         <ProgressBar x:Name="WtProgressBar" Value="{Binding WtPercent}"
@@ -110,89 +124,47 @@
                          Height="11"
                          Background="{StaticResource AppInputBrush}"
                          Foreground="#CD7F32" Grid.Column="0" />
-                        <TextBlock x:Name="WtTextBlock" Grid.Column="1"
+                        <TextBlock Grid.Column="1" Text="Wgt" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Center" Margin="6,0,4,0" TextAlignment="Right" />
+                        <TextBlock x:Name="WtTextBlock" Grid.Column="2"
                        Text="{Binding WtText}"
                        FontSize="10"
                        Foreground="{StaticResource AppSubtleBrush}"
                        VerticalAlignment="Center"
-                       Margin="6,0,0,0"
-                       MinWidth="140" />
+                       Margin="0,0,0,0"
+                       MinWidth="100" />
                     </Grid>
                 </StackPanel>
                 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,-2,-2">
-                    <Ellipse x:Name="ConnectionDot" Width="6" Height="6" Fill="{Binding ConnectionDotBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                    <TextBlock x:Name="ConnectionLabelTextBlock" Text="{Binding ConnectionLabel}" FontSize="10" FontWeight="Bold" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" />
-                </StackPanel>
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="Client" FontSize="10" Foreground="{StaticResource AppSubtleBrush}" Margin="0,0,0,2"/>
+                    <ComboBox x:Name="ClientComboBox" ItemsSource="{Binding ProcessList}"
+                              SelectedItem="{Binding SelectedProcess}"
+                              DisplayMemberPath="DisplayName"
+                              DropDownOpened="ProcessList_DropDownOpened"
+                              Width="130" Height="24" FontSize="12"
+                              Background="{StaticResource AppInputBrush}"
+                              Foreground="Black" BorderBrush="{StaticResource AppInputBorderBrush}" Margin="0,0,0,6">
+                    </ComboBox>
 
-                <StackPanel Grid.Column="2"
-                    VerticalAlignment="Center"
-                    Margin="12,0,0,0">
+                    <TextBlock Text="Profile" FontSize="10" Foreground="{StaticResource AppSubtleBrush}" Margin="0,0,0,2"/>
                     <ComboBox x:Name="ProfileComboBox" ItemsSource="{Binding ProfileList}"
-                    SelectedItem="{Binding CurrentProfile}"
-                    Width="130"
-                    Height="26"
-                    FontSize="12"
-                    Background="{StaticResource AppInputBrush}"
-                    BorderBrush="{StaticResource AppInputBorderBrush}" Foreground="Black">
+                              SelectedItem="{Binding CurrentProfile}"
+                              Width="130" Height="24" FontSize="12"
+                              Background="{StaticResource AppInputBrush}"
+                              BorderBrush="{StaticResource AppInputBorderBrush}" Foreground="Black" Margin="0,0,0,8">
                     </ComboBox>
                     
-                    <StackPanel HorizontalAlignment="Center" Margin="0,6,0,0">
-                        <Button x:Name="ToggleApplicationButton" Content="{Binding ToggleButtonText}"
-                    Command="{Binding ToggleApplicationCommand}"
-                    IsEnabled="{Binding IsClientConnected}"
-                    Style="{StaticResource PrimaryButtonStyle}"
-                    Height="28"
-                    FontSize="12" Margin="0,0,0,4"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="Toggle Key:" FontSize="11" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
-                            <TextBox x:Name="ToggleKeyTextBox" Text="{Binding ToggleKey, Mode=TwoWay}"
-                                     PreviewKeyDown="ToggleKeyTextBox_PreviewKeyDown"
-                                     Width="60" Height="20" MaxLength="10" FontSize="11"
-                                     Background="{StaticResource AppInputBrush}" 
-                                     BorderBrush="{StaticResource AppInputBorderBrush}" 
-                                     TextAlignment="Center"
-                                     IsReadOnly="True" Cursor="Hand">
-                                <TextBox.Style>
-                                    <Style TargetType="TextBox">
-                                        <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
-                                        <Setter Property="FontWeight" Value="Bold" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ToggleKey}" Value="None">
-                                                <Setter Property="Foreground" Value="{StaticResource AppSubtleBrush}" />
-                                                <Setter Property="FontWeight" Value="Normal" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBox.Style>
-                            </TextBox>
-                        </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                        <Ellipse x:Name="ConnectionDot" Width="6" Height="6" Fill="{Binding ConnectionDotBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                        <TextBlock x:Name="ConnectionLabelTextBlock" Text="{Binding ConnectionLabel}" FontSize="10" FontWeight="Bold" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" />
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>
-        <Border
-            Padding="10,5"
-            BorderThickness="0,0,0,1"
-            BorderBrush="{StaticResource AppBorderBrush}" Margin="0,127,0,0" Grid.ColumnSpan="2">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Client:"
-                   FontSize="12"
-                   VerticalAlignment="Center"
-                   Margin="0,0,8,0" Foreground="#FFADADAD" />
-                <ComboBox x:Name="ClientComboBox" ItemsSource="{Binding ProcessList}"
-                  SelectedItem="{Binding SelectedProcess}"
-                  DropDownOpened="ProcessList_DropDownOpened"
-                  Width="300"
-                  Height="26"
-                  FontSize="12"
-                  Background="{StaticResource AppInputBrush}"
-                  Foreground="Black"
-                  BorderBrush="{StaticResource AppInputBorderBrush}">
-                </ComboBox>
-            </StackPanel>
-        </Border>
-        <TabControl Margin="0,3,0,2" Grid.Row="2" Grid.ColumnSpan="2">
+        <TabControl Margin="0,3,0,2" Grid.Row="1" Grid.ColumnSpan="2">
+            <TabItem Header="Skill Spammer">
+                <views:SkillSpammerView DataContext="{Binding SkillSpammer}" />
+            </TabItem>
             <TabItem Header="Autopot">
                 <views:AutopotView DataContext="{Binding}" />
             </TabItem>
@@ -202,9 +174,7 @@
             <TabItem Header="Auto Off">
                 <views:AutoOffView DataContext="{Binding AutoOff}" />
             </TabItem>
-            <TabItem Header="Skill Spammer">
-                <views:SkillSpammerView DataContext="{Binding SkillSpammer}" />
-            </TabItem>
+
             <TabItem Header="Debuffs">
                 <views:DebuffsView DataContext="{Binding Debuffs}" />
             </TabItem>
@@ -239,17 +209,14 @@
                      FontStyle="Italic" Margin="-6,-6,6,6" />
                 </Border>
             </TabItem>
-            <TabItem Header="Transfer">
-                <Border Padding="16">
-                    <TextBlock Text="Transfer Helper - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
-            </TabItem>
-            <TabItem Header="Settings">
-                <views:SettingsView DataContext="{Binding Settings}" />
+            <TabItem Header="Misc">
+                <views:MiscView DataContext="{Binding Misc}" />
             </TabItem>
             <TabItem Header="Profiles">
                 <views:ProfilesView DataContext="{Binding Profiles}" />
+            </TabItem>
+            <TabItem Header="Settings">
+                <views:SettingsView DataContext="{Binding Settings}" />
             </TabItem>
         </TabControl>
     </Grid>

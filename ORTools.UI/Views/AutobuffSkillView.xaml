@@ -27,31 +27,33 @@
                             <ItemsControl ItemsSource="{Binding Items}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <WrapPanel Orientation="Horizontal" ItemWidth="240" ItemHeight="48" />
+                                        <WrapPanel Orientation="Horizontal" ItemWidth="215" ItemHeight="34" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="10,5">
+                                        <Grid Margin="4,2">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="65"/>
                                             </Grid.ColumnDefinitions>
 
                                             <!-- Fallback background just in case the icon has transparency -->
-                                            <Border Width="24" Height="24" Background="Transparent" CornerRadius="2" Margin="0,0,8,0" VerticalAlignment="Center">
+                                            <Border Width="24" Height="24" Background="Transparent" CornerRadius="2" Margin="0,0,6,0" VerticalAlignment="Center">
                                                 <Image Source="{Binding ImagePath}" Stretch="None"
                                                        RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
                                             </Border>
 
-                                            <TextBlock Grid.Column="1" Text="{Binding DisplayName}" VerticalAlignment="Center"
-                                                       Foreground="{StaticResource AppTextBrush}" FontSize="14" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
-
-                                            <TextBox Grid.Column="2" Text="{Binding Key, Mode=TwoWay}"
+                                            <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                                      PreviewKeyDown="KeyTextBox_PreviewKeyDown"
                                                      Style="{StaticResource KeyTextBoxStyle}" 
-                                                     Height="28" FontSize="14" HorizontalAlignment="Right" />
+                                                     Height="24" FontSize="12" Width="50" Margin="0,0,6,0" VerticalAlignment="Center" />
+
+                                            <TextBlock Grid.Column="2" Text="{Binding DisplayName}" VerticalAlignment="Center"
+                                                       TextWrapping="Wrap" LineHeight="12"
+                                                       Foreground="{StaticResource AppTextBrush}" 
+                                                       FontSize="{Binding DisplayName, Converter={StaticResource TextLengthToFontSizeConverter}}" />
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

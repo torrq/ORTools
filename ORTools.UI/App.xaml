@@ -6,6 +6,8 @@
   <Application.Resources>
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <local:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
+    <local:TextLengthToFontSizeConverter x:Key="TextLengthToFontSizeConverter" NormalSize="13" SmallSize="10" Threshold="30" />
+    <local:KeyToStringConverter x:Key="KeyToStringConverter" />
     <SolidColorBrush x:Key="AppBaseBrush" Color="#1E1E1E" />
     <SolidColorBrush x:Key="AppSurfaceBrush" Color="#252525" />
     <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#222222" />
@@ -135,6 +137,22 @@
       <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Padding" Value="0" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type TabControl}">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+              </Grid.RowDefinitions>
+              <WrapPanel x:Name="HeaderPanel" IsItemsHost="True" Grid.Row="0" Margin="0,0,0,2"/>
+              <Border x:Name="ContentPanel" Grid.Row="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}"/>
+              </Border>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
     </Style>
 
     <Style TargetType="{x:Type TabItem}">

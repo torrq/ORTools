@@ -84,4 +84,6 @@ public static class MessageTypes
     public const string GlobalConfigUpdate = "GlobalConfigUpdate";
     public const string ProfileSettingsUpdate = "ProfileSettingsUpdate";
     public const string AutoOffConfigUpdate = "AutoOffConfigUpdate";
+    public const string TransferHelperConfigUpdate = "TransferHelperConfigUpdate";
+    public const string UpdateTransferHelperCommand = "UpdateTransferHelperCommand";
 }

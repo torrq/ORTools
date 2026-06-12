@@ -83,7 +83,8 @@
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Source="pack://application:,,,/Icons/ui/weight50.png" Stretch="None" Margin="0,0,6,0" />
+                                        <Image Source="pack://application:,,,/Icons/ui/weight50.png" Stretch="None" Margin="0,0,6,0" 
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" />
                                         <TextBlock Text="50%" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>
@@ -93,7 +94,8 @@
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Source="pack://application:,,,/Icons/ui/weight90.png" Stretch="None" Margin="0,0,6,0" />
+                                        <Image Source="pack://application:,,,/Icons/ui/weight90.png" Stretch="None" Margin="0,0,6,0" 
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" />
                                         <TextBlock Text="90%" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </DataTemplate>
@@ -120,7 +122,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="1." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
                         <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <TextBox Grid.Column="2" Text="{Binding AutoOffKey1, Mode=TwoWay}"
+                        <TextBox Grid.Column="2" Text="{Binding AutoOffKey1, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="Key1TextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
                     </Grid>
@@ -133,7 +135,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="2." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
                         <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <TextBox Grid.Column="2" Text="{Binding AutoOffKey2, Mode=TwoWay}"
+                        <TextBox Grid.Column="2" Text="{Binding AutoOffKey2, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="Key2TextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
                     </Grid>

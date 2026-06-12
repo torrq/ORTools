@@ -163,6 +163,11 @@ public sealed class CommandDispatcher
                 var ugc = env.As<UpdateGlobalConfigCommand>();
                 if (ugc != null) await _core.HandleUpdateGlobalConfig(ugc);
                 break;
+                
+            case MessageTypes.UpdateTransferHelperCommand:
+                var utc = env.As<UpdateTransferHelperCommand>();
+                if (utc != null) await _core.HandleUpdateTransferHelper(utc);
+                break;
 
             case MessageTypes.Shutdown:
                 DebugLogger.Info("[Dispatcher] Shutdown requested.");

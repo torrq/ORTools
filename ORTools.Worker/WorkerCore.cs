@@ -105,6 +105,13 @@ public sealed class WorkerCore
         p.AutobuffItem.Start(); p.DebuffsRecovery.Start();
         p.MacroSwitch.Start(); p.SongMacro.Start();
         p.TransferHelper.Start();
+        
+        var config = ConfigGlobal.GetConfig();
+        if (config.StartAutoOffTimerOnEnable && !_autoOff.IsTimerRunning)
+        {
+            _autoOff.StartTimer();
+        }
+        
         await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey));
         DebugLogger.Info("[WorkerCore] Turned ON");
 
@@ -127,6 +134,13 @@ public sealed class WorkerCore
         p.AutobuffItem.Stop(); p.DebuffsRecovery.Stop();
         p.MacroSwitch.Stop(); p.SongMacro.Stop();
         p.TransferHelper.Stop();
+        
+        var config = ConfigGlobal.GetConfig();
+        if (config.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
+        {
+            _autoOff.StopTimer();
+        }
+        
         await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey));
         DebugLogger.Info("[WorkerCore] Turned OFF");
 
@@ -156,9 +170,9 @@ public sealed class WorkerCore
         await BroadcastAsync(new ProcessListUpdate(ListLocalProcesses()));
     }
 
-    private List<string> ListLocalProcesses()
+    private List<ProcessEntry> ListLocalProcesses()
     {
-        var result = new List<string>();
+        var result = new List<ProcessEntry>();
         foreach (var server in Server.GetLocalClients())
         {
             try
@@ -166,10 +180,11 @@ public sealed class WorkerCore
                 var processes = System.Diagnostics.Process.GetProcessesByName(server.Name);
                 foreach (var p in processes)
                 {
-                    string info = "";
+                    string id = $"{p.ProcessName}.exe - {p.Id}";
+                    string displayName = id;
                     try
                     {
-                        using var tempClient = new Client($"{p.ProcessName}.exe - {p.Id}");
+                        using var tempClient = new Client(id);
                         tempClient.RefreshLoginStatus();
                         if (tempClient.IsLoggedIn)
                         {
@@ -178,13 +193,13 @@ public sealed class WorkerCore
                             
                             if (!string.IsNullOrWhiteSpace(name))
                             {
-                                info = $" ({name} @ {map})";
+                                displayName = $"{name} @ {map}";
                             }
                         }
                     }
                     catch { }
 
-                    result.Add($"{p.ProcessName}.exe - {p.Id}{info}");
+                    result.Add(new ProcessEntry(id, displayName));
                 }
             }
             catch (Exception ex)
@@ -711,6 +726,18 @@ public sealed class WorkerCore
         return Task.CompletedTask;
     }
 
+    public async Task HandleUpdateTransferHelper(UpdateTransferHelperCommand cmd)
+    {
+        var th = ProfileSingleton.GetCurrent().TransferHelper;
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.TransferKey, ignoreCase: true, out var key)) unbindChanged = UnbindKeyGlobally(key);
+        th.TransferKey = key;
+        ProfileSingleton.SetConfiguration(th);
+        
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildTransferHelperConfig());
+    }
+
     public Task HandleToggleAutoOffTimer(ToggleAutoOffTimerCommand cmd)
     {
         if (cmd.Start)
@@ -871,6 +898,12 @@ public sealed class WorkerCore
         await BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds));
         await BroadcastAsync(BuildGlobalConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());
+        await BroadcastAsync(BuildTransferHelperConfig());
+    }
+
+    private TransferHelperConfigUpdate BuildTransferHelperConfig()
+    {
+        return new TransferHelperConfigUpdate(ProfileSingleton.GetCurrent().TransferHelper.TransferKey.ToString());
     }
 
     private AutoOffConfigUpdate BuildAutoOffConfig()
@@ -1023,7 +1056,12 @@ public sealed class WorkerCore
 
     private string? _GetConnectedProcessName()
     {
-        try { return ClientSingleton.GetClient()?.Process?.ProcessName; }
+        try 
+        { 
+            var p = ClientSingleton.GetClient()?.Process;
+            if (p != null) return $"{p.ProcessName}.exe - {p.Id}";
+            return null;
+        }
         catch { return null; }
     }
 }

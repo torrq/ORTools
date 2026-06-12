@@ -29,7 +29,7 @@ ORTools.sln
 │   ├── Utils/                 KeyboardHook, ThreadRunner, Win32Interop, etc.
 │   └── Model/                 all ported model classes (Tabs/, Buffs/, Settings/)
 │
-└── ORTools.UI          (.NET 8 WPF, asInvoker — NOT elevated)
+└── ORTools.UI          (.NET 8 WPF, requireAdministrator)
     ├── Services/WorkerService    pipe client, reconnection, event dispatch
     ├── Services/WorkerLauncher   ShellExecute runas to start Worker
     ├── ViewModels/               MVVM via CommunityToolkit.Mvvm
@@ -38,8 +38,8 @@ ORTools.sln
 
 ### Why two processes?
 
-The legacy app used a single elevated process with an MDI WinForms container, which caused severe lag on older hardware when dragging the window. The new architecture splits the app into two processes, because the UI runs at **medium integrity** (non-elevated). This means:
-- DWM composites it on the normal fast path — no UIPI overhead.
+The legacy app used a single elevated process with an MDI WinForms container, which caused severe lag on older hardware when dragging the window. The new architecture splits the app into two processes, because separating the WPF rendering thread from the heavy Win32 hooks and memory reading improves performance. This means:
+- DWM composites it smoothly.
 - Window dragging is smooth on older hardware.
 - The elevated Worker handles all Win32 `ReadProcessMemory` / `OpenProcess` calls that need admin.
 
@@ -100,6 +100,13 @@ The legacy `Buff.cs` and other models had tightly coupled UI rendering logic (`B
 
 **4. Global Textbox Styles**
 To keep inputs styled consistently across tabs, we define `NumericTextBoxStyle` and `KeyTextBoxStyle` in `App.xaml`. Avoid copy/pasting `Background="{StaticResource AppInputBrush}"` onto individual text boxes; instead use `Style="{StaticResource NumericTextBoxStyle}"` and override sizes locally if necessary.
+
+**5. WPF App Startup Crashes (StaticResource Exceptions)**
+If the UI crashes instantly on startup after adding new UI elements to a tab (especially when copying from another location), check the Windows Event Viewer (`Application` log, `.NET Runtime` source). 
+A very common cause is a `XamlParseException` related to missing `StaticResource` references (e.g. `System.Exception: Cannot find resource named '...Brush'`). `StaticResource` strictly demands the resource to exist in `App.xaml` at load time, and if it doesn't (due to a typo or copy-pasting an old generic name like `AppTextMutedBrush` instead of `AppSubtleBrush`), the entire WPF application will crash at startup instead of ignoring it.
+
+**6. Utility Scripts (`ORTools\Scripts\`)**
+Any python scripts or small utility tools written to automate codebase refactoring (like the `update_bindings.py` script used to bulk-update XAML text box bindings) are stored in the `Scripts/` directory at the repository root. Ensure scripts are kept there so the project tree stays clean.
 
 ---
 

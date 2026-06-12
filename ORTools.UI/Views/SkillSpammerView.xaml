@@ -117,7 +117,7 @@
                 <Image Source="pack://application:,,,/Icons/Spammer/shift.png" Width="16" Height="16" Margin="0,0,20,0" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
                 
                 <CheckBox Content="Toggle Mode" IsChecked="{Binding ToggleMode}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Text="{Binding ToggleModeKey, Mode=TwoWay}"
+                <TextBox Text="{Binding ToggleModeKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                          PreviewKeyDown="ToggleModeKey_PreviewKeyDown" ToolTip="Press a key to assign"
                          Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" />
             </StackPanel>

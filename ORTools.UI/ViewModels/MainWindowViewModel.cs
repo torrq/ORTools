@@ -24,8 +24,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _connectedProcessName = "";
 
     // ── Process list ──────────────────────────────────────────────────────────
-    [ObservableProperty] private List<string> _processList    = new();
-    [ObservableProperty] private string?      _selectedProcess;
+    [ObservableProperty] private List<ProcessEntry> _processList    = new();
+    [ObservableProperty] private ProcessEntry?      _selectedProcess;
 
     // ── Profiles ──────────────────────────────────────────────────────────────
     [ObservableProperty] private List<string> _profileList    = new() { "Default" };
@@ -57,12 +57,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public SkillSpammerViewModel SkillSpammer { get; }
     public SettingsViewModel Settings { get; }
     public ProfilesViewModel Profiles { get; }
+    public MiscViewModel Misc { get; }
 
     // ── Derived display properties ────────────────────────────────────────────
 
     public string ToggleButtonText => IsApplicationOn ? "Turn OFF" : "Turn ON";
 
-    public bool HasSelectedProcess => !string.IsNullOrWhiteSpace(SelectedProcess);
+    public bool HasSelectedProcess => SelectedProcess != null;
 
     public Brush ConnectionDotBrush => IsConnected
         ? CreateBrush("#4CAF50")
@@ -113,6 +114,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             }
         }
         
+        if (Misc.TransferKey == newKey && (sourceVM as string) != "Misc_TransferKey") return true;
+
         return false;
     }
     public Brush HpBarBrush => HpPercent < 25
@@ -140,6 +143,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SkillSpammer = new SkillSpammerViewModel(_worker);
         Settings = new SettingsViewModel(worker, AutobuffSkill);
         Profiles = new ProfilesViewModel(worker);
+        Misc = new MiscViewModel(worker);
 
         // Map ViewModels to tabs
         Tabs = new ObservableCollection<object>
@@ -180,7 +184,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void ConnectToProcess()
     {
         if (SelectedProcess is { } p)
-            _worker.Send(new ConnectClientCommand(p));
+            _worker.Send(new ConnectClientCommand(p.Id));
     }
 
     [RelayCommand]
@@ -203,19 +207,22 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             _worker.Send(new SwitchProfileCommand(value));
     }
 
+    private bool _suppressProcessCommand;
+    partial void OnSelectedProcessChanged(ProcessEntry? value)
+    {
+        OnPropertyChanged(nameof(HasSelectedProcess));
+        if (!_suppressProcessCommand && value != null)
+        {
+            _worker.Send(new ConnectClientCommand(value.Id));
+        }
+    }
+
     // Recompute derived properties when their inputs change
     partial void OnIsApplicationOnChanged(bool value)  => OnPropertyChanged(nameof(ToggleButtonText));
     partial void OnIsConnectedChanged(bool value)       => OnPropertyChanged(nameof(ConnectionDotBrush));
     partial void OnHpPercentChanged(double value)       => OnPropertyChanged(nameof(HpBarBrush));
     partial void OnSpPercentChanged(double value)       => OnPropertyChanged(nameof(SpBarBrush));
-    partial void OnSelectedProcessChanged(string? value)
-    {
-        OnPropertyChanged(nameof(HasSelectedProcess));
-        if (!string.IsNullOrWhiteSpace(value))
-        {
-            ConnectToProcess();
-        }
-    }
+
 
     // ── Event handlers — all marshal to UI thread ─────────────────────────────
 
@@ -225,8 +232,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             IsConnected      = s == WorkerService.Status.Connected;
             ConnectionLabel  = s switch
             {
-                WorkerService.Status.Connected    => "LINKED",
-                WorkerService.Status.Connecting   => "LINKING...",
+                WorkerService.Status.Connected    => "AUS!!",
+                WorkerService.Status.Connecting   => "FOCK!",
                 WorkerService.Status.Disconnected => "DISCONNECTED",
                 _                                 => "UNKNOWN"
             };
@@ -244,6 +251,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             IsClientConnected    = u.Connected;
             ConnectedProcessName = u.ProcessName ?? "";
+
+            if (IsClientConnected && !string.IsNullOrEmpty(ConnectedProcessName) && ProcessList.Count > 0)
+            {
+                var match = ProcessList.FirstOrDefault(p => p.Id == ConnectedProcessName);
+                if (match != null && SelectedProcess?.Id != match.Id)
+                {
+                    _suppressProcessCommand = true;
+                    SelectedProcess = match;
+                    _suppressProcessCommand = false;
+                }
+            }
         });
 
     private void OnHpSp(HpSpUpdate u) =>
@@ -251,8 +269,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             HpPercent = u.MaxHp > 0 ? (double)u.CurrentHp / u.MaxHp * 100.0 : 0;
             SpPercent = u.MaxSp > 0 ? (double)u.CurrentSp / u.MaxSp * 100.0 : 0;
-            HpText    = $"HP  {u.CurrentHp:N0} / {u.MaxHp:N0}";
-            SpText    = $"SP  {u.CurrentSp:N0} / {u.MaxSp:N0}";
+            HpText    = $"{u.CurrentHp:N0} / {u.MaxHp:N0}";
+            SpText    = $"{u.CurrentSp:N0} / {u.MaxSp:N0}";
         });
 
     private void OnCharacter(CharacterUpdate u) =>
@@ -262,7 +280,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             JobName       = JobList.GetNameById((int)u.JobId);
             MapName       = u.Map;
             WtPercent     = u.WeightMax > 0 ? (double)u.WeightCur / u.WeightMax * 100.0 : 0;
-            WtText        = $"Weight  {u.WeightCur} / {u.WeightMax}";
+            WtText        = $"{u.WeightCur} / {u.WeightMax}";
 
             string expPct = u.ExpToLevel > 0
                 ? $"{(double)u.Exp / u.ExpToLevel * 100:0.00}%"
@@ -271,7 +289,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         });
 
     private void OnProcessList(ProcessListUpdate u) =>
-        Post(() => ProcessList = u.Processes);
+        Post(() => 
+        {
+            ProcessList = u.Processes;
+            
+            if (IsClientConnected && !string.IsNullOrEmpty(ConnectedProcessName))
+            {
+                var match = ProcessList.FirstOrDefault(p => p.Id == ConnectedProcessName);
+                if (match != null && SelectedProcess?.Id != match.Id)
+                {
+                    _suppressProcessCommand = true;
+                    SelectedProcess = match;
+                    _suppressProcessCommand = false;
+                }
+            }
+        });
 
     private void OnProfileList(ProfileListUpdate u) =>
         Post(() =>

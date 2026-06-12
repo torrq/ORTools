@@ -48,6 +48,7 @@ public sealed class WorkerService : IDisposable
     public event Action<ProfileSettingsUpdate>? ProfileSettingsReceived;
     public event Action<AutoOffConfigUpdate>? AutoOffConfigReceived;
     public event Action<AutoOffTimerStateUpdate>? AutoOffTimerStateReceived;
+    public event Action<TransferHelperConfigUpdate>? TransferHelperConfigReceived;
 
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
@@ -242,6 +243,9 @@ public sealed class WorkerService : IDisposable
                 break;
             case MessageTypes.AutoOffTimerStateUpdate:
                 AutoOffTimerStateReceived?.Invoke(env.As<AutoOffTimerStateUpdate>()!);
+                break;
+            case MessageTypes.TransferHelperConfigUpdate:
+                TransferHelperConfigReceived?.Invoke(env.As<TransferHelperConfigUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");

@@ -33,7 +33,9 @@ public sealed record CharacterUpdate(
     public string Type => MessageTypes.Character;
 }
 
-public sealed record ProcessListUpdate(List<string> Processes) : IIpcMessage
+public sealed record ProcessEntry(string Id, string DisplayName);
+
+public sealed record ProcessListUpdate(List<ProcessEntry> Processes) : IIpcMessage
 {
     public string Type => MessageTypes.ProcessList;
 }
@@ -191,4 +193,10 @@ public sealed record AutoOffTimerStateUpdate(
     int RemainingSeconds) : IIpcMessage
 {
     public string Type => MessageTypes.AutoOffTimerStateUpdate;
+}
+
+public sealed record TransferHelperConfigUpdate(
+    string TransferKey) : IIpcMessage
+{
+    public string Type => MessageTypes.TransferHelperConfigUpdate;
 }

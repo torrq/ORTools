@@ -227,3 +227,9 @@ public sealed record UpdateAutoOffSettingsCommand(
 {
     public string Type => MessageTypes.UpdateAutoOffSettings;
 }
+
+public sealed record UpdateTransferHelperCommand(
+    string TransferKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateTransferHelperCommand;
+}
