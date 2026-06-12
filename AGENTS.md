@@ -76,6 +76,7 @@ Every message is a single newline-terminated JSON line:
 - ViewModels use `[ObservableProperty]` and `[RelayCommand]` from CommunityToolkit.Mvvm.
 - Color palette is defined in `App.xaml` (e.g., `{StaticResource AppPrimaryBrush}`, `{StaticResource AppDangerBrush}`). Do not hardcode colors in XAML.
 - Keep bindings clean. WPF does not use `x:DataType` compiled bindings by default.
+- Key inputs should use `Style="{StaticResource KeyTextBoxStyle}"` combined with the `{StaticResource KeyToStringConverter}` to pretty-print key names (e.g., "NP/" instead of "Divide").
 
 ### Worker
 - All model instances live on `WorkerCore` as fields/properties.
@@ -121,7 +122,9 @@ The application features the following tabs, implemented as individual WPF views
 5. **Autobuff (Skills/Items)** — Buff slot lists for items and skills.
 6. **Debuffs** — Auto-cure lists for various debuffs.
 7. **AutoOff** — Configures auto-shutdown or auto-exit conditions (timer-based or overweight-based).
-8. **Songs/MacroSwitch/TransferHelper/ATKDEF/Settings/Profiles** — Other miscellaneous utility tabs configuring settings.
+8. **Misc** — Houses standalone helper tools, like the **Transfer Helper** (simulates Alt+RightClick to move items between inventory/storage).
+9. **Settings/Profiles** — Global application settings and profile management.
+10. **ATK x DEF / Songs / MacroSwitch** — Currently pending UI implementation.
 
 ---
 
@@ -151,7 +154,7 @@ The application features the following tabs, implemented as individual WPF views
 ## TODO List
 
 **Features & Logic**
-- Complete remaining UI placeholders in the Settings tab (ATK x DEF, Songs, Macro Switch, Transfer).
+- Complete remaining UI placeholders in the Settings tab (ATK x DEF, Songs, Macro Switch).
 
 **Polish & System Integration**
 - System tray icon (use `System.Windows.Forms.NotifyIcon` from Worker side, or `Hardcodet.NotifyIcon.Wpf` in the UI).
