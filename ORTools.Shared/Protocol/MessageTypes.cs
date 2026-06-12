@@ -101,4 +101,13 @@ public static class MessageTypes
     public const string UpdateMacroSongDelay    = "UpdateMacroSongDelay";
     public const string ResetMacroSongRow       = "ResetMacroSongRow";
     public const string MacroSongConfigUpdate   = "MacroSongConfigUpdate";
+
+    // ATK x DEF
+    public const string UpdateAtkDefTrigger     = "UpdateAtkDefTrigger";
+    public const string UpdateAtkDefSpammerDelay= "UpdateAtkDefSpammerDelay";
+    public const string UpdateAtkDefSwitchDelay = "UpdateAtkDefSwitchDelay";
+    public const string UpdateAtkDefClick       = "UpdateAtkDefClick";
+    public const string UpdateAtkDefEquip       = "UpdateAtkDefEquip";
+    public const string ResetAtkDefRow          = "ResetAtkDefRow";
+    public const string AtkDefConfigUpdate      = "AtkDefConfigUpdate";
 }

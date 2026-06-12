@@ -51,6 +51,7 @@ public sealed class WorkerService : IDisposable
     public event Action<TransferHelperConfigUpdate>? TransferHelperConfigReceived;
     public event Action<MacroSwitchConfigUpdate>? MacroSwitchConfigReceived;
     public event Action<MacroSongConfigUpdate>? MacroSongConfigReceived;
+    public event Action<AtkDefConfigUpdate>? AtkDefConfigReceived;
 
     // ── Private ───────────────────────────────────────────────────────────────
     private NamedPipeClientStream? _pipe;
@@ -254,6 +255,9 @@ public sealed class WorkerService : IDisposable
                 break;
             case MessageTypes.MacroSongConfigUpdate:
                 MacroSongConfigReceived?.Invoke(env.As<MacroSongConfigUpdate>()!);
+                break;
+            case MessageTypes.AtkDefConfigUpdate:
+                AtkDefConfigReceived?.Invoke(env.As<AtkDefConfigUpdate>()!);
                 break;
             default:
                 Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");

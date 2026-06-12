@@ -214,6 +214,36 @@ public sealed class CommandDispatcher
                 if (rmsongr != null) await _core.HandleResetMacroSongRow(rmsongr);
                 break;
 
+            case MessageTypes.UpdateAtkDefTrigger:
+                var uadt = env.As<UpdateAtkDefTriggerCommand>();
+                if (uadt != null) await _core.HandleUpdateAtkDefTrigger(uadt);
+                break;
+
+            case MessageTypes.UpdateAtkDefSpammerDelay:
+                var uadsd = env.As<UpdateAtkDefSpammerDelayCommand>();
+                if (uadsd != null) await _core.HandleUpdateAtkDefSpammerDelay(uadsd);
+                break;
+
+            case MessageTypes.UpdateAtkDefSwitchDelay:
+                var uadswd = env.As<UpdateAtkDefSwitchDelayCommand>();
+                if (uadswd != null) await _core.HandleUpdateAtkDefSwitchDelay(uadswd);
+                break;
+
+            case MessageTypes.UpdateAtkDefClick:
+                var uadc = env.As<UpdateAtkDefClickCommand>();
+                if (uadc != null) await _core.HandleUpdateAtkDefClick(uadc);
+                break;
+
+            case MessageTypes.UpdateAtkDefEquip:
+                var uade = env.As<UpdateAtkDefEquipCommand>();
+                if (uade != null) await _core.HandleUpdateAtkDefEquip(uade);
+                break;
+
+            case MessageTypes.ResetAtkDefRow:
+                var radr = env.As<ResetAtkDefRowCommand>();
+                if (radr != null) await _core.HandleResetAtkDefRow(radr);
+                break;
+
             case MessageTypes.Shutdown:
                 DebugLogger.Info("[Dispatcher] Shutdown requested.");
                 await _core.HandleTurnOff();

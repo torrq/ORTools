@@ -25,6 +25,14 @@ public partial class SettingsView : UserControl
         }
     }
 
+    private void AtkDefRows_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (sender is TextBox tb && DataContext is ViewModels.SettingsViewModel vm)
+        {
+            Helpers.InputHelper.HandleNumericUpDown(tb, e, 1, 100, 1, newVal => vm.AtkDefRows = newVal);
+        }
+    }
+
     private void DefaultToggleKey_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
     {
         if (sender is TextBox tb && DataContext is ViewModels.SettingsViewModel vm)

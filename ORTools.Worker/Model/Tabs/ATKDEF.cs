@@ -1,278 +1,233 @@
+using ORTools.Shared.Protocol;
+using System.Diagnostics;
+using System.Text.Json.Serialization;
 
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
+namespace ORTools.Worker.Model.Tabs;
 
-namespace ORTools.Worker
+public class AtkDefEquipConfig
 {
-    public enum ATKDEFEnum
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    private int _keySpammerDelay = AppConfig.ATKDEFSpammerDefaultDelay;
+    [JsonPropertyName("keySpammerDelay")]
+    public int KeySpammerDelay
     {
-        ATK,
-        DEF,
+        get => _keySpammerDelay <= 0 ? AppConfig.ATKDEFSpammerDefaultDelay : _keySpammerDelay;
+        set => _keySpammerDelay = value;
     }
 
-    public class EquipConfig
+    private int _switchDelay = AppConfig.ATKDEFSwitchDefaultDelay;
+    [JsonPropertyName("switchDelay")]
+    public int SwitchDelay
     {
-        public int id;
+        get => _switchDelay <= 0 ? AppConfig.ATKDEFSwitchDefaultDelay : _switchDelay;
+        set => _switchDelay = value;
+    }
 
-        private int _keySpammerDelay = AppConfig.ATKDEFSpammerDefaultDelay;
+    [JsonPropertyName("keySpammer")]
+    public string KeySpammer { get; set; } = "None";
 
-        public int KeySpammerDelay
+    [JsonPropertyName("keySpammerWithClick")]
+    public bool KeySpammerWithClick { get; set; } = true;
+
+    [JsonPropertyName("defKeys")]
+    public Dictionary<string, string> DefKeys { get; set; } = new();
+
+    [JsonPropertyName("atkKeys")]
+    public Dictionary<string, string> AtkKeys { get; set; } = new();
+
+    public AtkDefEquipConfig() { }
+
+    public AtkDefEquipConfig(int id)
+    {
+        Id = id;
+    }
+}
+
+public class AtkDef : IAction
+{
+    public const string ActionName = "ATKDEFMode";
+
+    private ThreadRunner? _thread;
+    
+    [JsonPropertyName("equipConfigs")]
+    public List<AtkDefEquipConfig> EquipConfigs { get; set; } = new();
+
+    public string GetActionName() => ActionName;
+    public string GetConfiguration() => System.Text.Json.JsonSerializer.Serialize(this);
+
+    public void Start()
+    {
+        var client = ClientSingleton.GetClient();
+        if (client != null)
         {
-            get => _keySpammerDelay <= 0 ? AppConfig.ATKDEFSpammerDefaultDelay : _keySpammerDelay;
-            set => _keySpammerDelay = value;
-        }
-
-        private int _switchDelay = AppConfig.ATKDEFSwitchDefaultDelay;
-
-        public int SwitchDelay
-        {
-            get => _switchDelay <= 0 ? AppConfig.ATKDEFSwitchDefaultDelay : _switchDelay;
-            set => _switchDelay = value;
-        }
-
-        public Keys KeySpammer { get; set; }
-        public bool KeySpammerWithClick { get; set; } = true;
-        public Dictionary<string, Keys> DefKeys { get; set; } = new Dictionary<string, Keys>();
-        public Dictionary<string, Keys> AtkKeys { get; set; } = new Dictionary<string, Keys>();
-
-        public EquipConfig()
-        { }
-
-        public EquipConfig(int id)
-        {
-            this.id = id;
-        }
-
-        public EquipConfig(EquipConfig macro)
-        {
-            this.id = macro.id;
-            this.KeySpammerDelay = macro.KeySpammerDelay;
-            this.SwitchDelay = macro.SwitchDelay;
-            this.KeySpammer = macro.KeySpammer;
-            this.KeySpammerWithClick = macro.KeySpammerWithClick;
-            this.DefKeys = new Dictionary<string, Keys>(macro.DefKeys);
-            this.AtkKeys = new Dictionary<string, Keys>(macro.AtkKeys);
-        }
-
-        public EquipConfig(int id, Keys trigger) : this(id)
-        {
-            this.KeySpammer = trigger;
+            Stop();
+            _thread = new ThreadRunner(_ => AtkDefThread(client), "ATKDEF") { IterationDelay = 1 };
+            ThreadRunner.Start(_thread);
         }
     }
 
-    public class ATKDEF : IAction
+    public void Stop()
     {
-        public static string ACTION_NAME_ATKDEF = "ATKDEFMode";
-        private ThreadRunner thread;
-        public List<EquipConfig> EquipConfigs { get; set; } = new List<EquipConfig>();
-
-        public ATKDEF(int macroLanes)
+        if (_thread != null)
         {
-            for (int i = 1; i <= macroLanes; i++)
+            ThreadRunner.Stop(_thread);
+            _thread.Terminate();
+            _thread = null;
+        }
+    }
+
+    public void EnsureCorrectRowCount(int count)
+    {
+        lock (EquipConfigs)
+        {
+            // Do not delete rows when count shrinks, just add if missing
+            int maxId = EquipConfigs.Count > 0 ? EquipConfigs.Max(x => x.Id) : 0;
+            for (int i = 1; i <= count; i++)
             {
-                EquipConfigs.Add(new EquipConfig(i, Keys.None));
-            }
-        }
-
-        public string GetActionName()
-        {
-            return ACTION_NAME_ATKDEF;
-        }
-
-        public string GetConfiguration()
-        {
-            return JsonConvert.SerializeObject(this);
-        }
-
-        public void Start()
-        {
-            Client roClient = ClientSingleton.GetClient();
-            if (roClient != null)
-            {
-                if (this.thread != null)
+                if (!EquipConfigs.Any(x => x.Id == i))
                 {
-                    ThreadRunner.Stop(this.thread);
-                    this.thread.Terminate();
-                    this.thread = null;
+                    EquipConfigs.Add(new AtkDefEquipConfig(i));
                 }
-                this.thread = new ThreadRunner(_ => ATKDEFThread(roClient), "ATKDEF") { IterationDelay = 1 };
-                ThreadRunner.Start(this.thread);
             }
         }
+    }
 
-        private int ATKDEFThread(Client roClient)
+    private int AtkDefThread(Client roClient)
+    {
+        if (roClient.IsTextInputActive() || roClient.IsDead()) return 0;
+        if (!roClient.IsProcessRunning()) return 0;
+
+        IntPtr hWnd = roClient.MainWindowHandle;
+        if (hWnd == IntPtr.Zero) return 0;
+
+        if (Win32Interop.GetForegroundWindow() != hWnd) return 0;
+
+        List<AtkDefEquipConfig> currentConfigs;
+        lock (EquipConfigs)
         {
-            if (roClient.IsTextInputActive() || roClient.IsDead()) return 0;
-            if (!roClient.IsProcessRunning()) return 0;
+            // Only process the configured number of rows (from ConfigGlobal)
+            int rowsToProcess = ConfigGlobal.GetConfig().AtkDefRows;
+            currentConfigs = EquipConfigs.Where(c => c.Id <= rowsToProcess).ToList();
+        }
 
-            IntPtr hWnd = roClient.MainWindowHandle;
-            if (hWnd == IntPtr.Zero) return 0;
-
-            if (Win32Interop.GetForegroundWindow() != hWnd) return 0;
-
-            List<EquipConfig> currentConfigs;
-            lock (this.EquipConfigs)
+        try
+        {
+            foreach (var equipConfig in currentConfigs)
             {
-                currentConfigs = this.EquipConfigs.ToList();
-            }
+                bool equipAtkItems = false;
+                bool equipDefItems = false;
+                bool ammo = false;
 
-            try
-            {
-                foreach (EquipConfig equipConfig in currentConfigs)
+                if (Enum.TryParse<Keys>(equipConfig.KeySpammer, out var spammerKey) && spammerKey != Keys.None)
                 {
-                    bool equipAtkItems = false;
-                    bool equipDefItems = false;
-                    bool ammo = false;
-
-                    if (equipConfig.KeySpammer != Keys.None && Win32Interop.IsKeyPressed(equipConfig.KeySpammer)
+                    if (WorkerNotifier.IsValidKey(equipConfig.KeySpammer) && Win32Interop.IsKeyPressed(spammerKey)
                         && !Win32Interop.IsKeyPressed(Keys.LMenu) && !Win32Interop.IsKeyPressed(Keys.RMenu))
                     {
-                        Keys thisk = equipConfig.KeySpammer;
-
-                        while (Win32Interop.IsKeyPressed(equipConfig.KeySpammer))
+                        while (Win32Interop.IsKeyPressed(spammerKey))
                         {
-                            if (Win32Interop.GetForegroundWindow() != hWnd)
-                            {
-                                break;
-                            }
+                        if (Win32Interop.GetForegroundWindow() != hWnd)
+                        {
+                            break;
+                        }
 
-                            if (!equipAtkItems)
+                        if (!equipAtkItems)
+                        {
+                            List<string> atkKeys;
+                            lock (EquipConfigs)
                             {
-                                List<Keys> atkKeys;
-                                lock (this.EquipConfigs)
-                                {
-                                    atkKeys = equipConfig.AtkKeys.Values.ToList();
-                                }
-                                foreach (Keys key in atkKeys)
+                                atkKeys = equipConfig.AtkKeys.Values.Where(k => WorkerNotifier.IsValidKey(k)).ToList();
+                            }
+                            foreach (string keyStr in atkKeys)
+                            {
+                                if (Enum.TryParse<Keys>(keyStr, out var key))
                                 {
                                     Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true)); //Equip ATK Items
                                     Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
                                     Thread.Sleep(equipConfig.SwitchDelay);
                                 }
-                                equipAtkItems = true;
                             }
-
-                            if (equipConfig.KeySpammerWithClick)
-                            {
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, true));
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, false));
-                                Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, 0, 0);
-                                AutoSwitchAmmo(roClient, ref ammo, hWnd);
-                                Thread.Sleep(1);
-                                Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, 0, 0);
-                                Thread.Sleep(equipConfig.KeySpammerDelay);
-                            }
-                            else
-                            {
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, true));
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, false));
-                                Thread.Sleep(equipConfig.KeySpammerDelay);
-                            }
+                            equipAtkItems = true;
                         }
 
                         if (equipConfig.KeySpammerWithClick)
                         {
-                            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, 0, 0);
+                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, true));
+                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, false));
+                            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, Keys.None, 0);
+                            AutoSwitchAmmo(roClient, ref ammo, hWnd);
                             Thread.Sleep(1);
-                            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, 0, 0);
+                            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, Keys.None, 0);
+                            Thread.Sleep(equipConfig.KeySpammerDelay);
                         }
-
-                        if (!equipDefItems)
+                        else
                         {
-                            List<Keys> defKeys;
-                            lock (this.EquipConfigs)
-                            {
-                                defKeys = equipConfig.DefKeys.Values.ToList();
-                            }
-                            foreach (Keys key in defKeys)
+                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, true));
+                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, false));
+                            Thread.Sleep(equipConfig.KeySpammerDelay);
+                        }
+                    }
+
+                    if (equipConfig.KeySpammerWithClick)
+                    {
+                        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, Keys.None, 0);
+                        Thread.Sleep(1);
+                        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, Keys.None, 0);
+                    }
+
+                    if (!equipDefItems)
+                    {
+                        List<string> defKeys;
+                        lock (EquipConfigs)
+                        {
+                            defKeys = equipConfig.DefKeys.Values.Where(k => WorkerNotifier.IsValidKey(k)).ToList();
+                        }
+                        foreach (string keyStr in defKeys)
+                        {
+                            if (Enum.TryParse<Keys>(keyStr, out var key))
                             {
                                 Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true)); //Equip DEF Items
                                 Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
                                 Thread.Sleep(equipConfig.SwitchDelay);
                             }
-                            equipDefItems = true;
                         }
+                        equipDefItems = true;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ATKDEFThread] Exception: {ex.Message}");
-            }
-
-            return 0;
-        }
-
-        private void AutoSwitchAmmo(Client roClient, ref bool ammo, IntPtr hWnd)
-        {
-            ConfigProfile prefs = ProfileSingleton.GetCurrent().UserPreferences;
-            if (prefs.SwitchAmmo)
-            {
-                if (prefs.Ammo1Key != Keys.None && prefs.Ammo2Key != Keys.None)
-                {
-                    if (!ammo)
-                    {
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, prefs.Ammo1Key, Win32Interop.CreateLParam(prefs.Ammo1Key, true));
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, prefs.Ammo1Key, Win32Interop.CreateLParam(prefs.Ammo1Key, false));
-                        ammo = true;
-                    }
-                    else
-                    {
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, prefs.Ammo2Key, Win32Interop.CreateLParam(prefs.Ammo2Key, true));
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, prefs.Ammo2Key, Win32Interop.CreateLParam(prefs.Ammo2Key, false));
-                        ammo = false;
-                    }
                 }
             }
         }
-
-        public void AddSwitchItem(int id, string dictKey, Keys k, string type)
+        catch (Exception ex)
         {
-            lock (this.EquipConfigs)
-            {
-                var equips = EquipConfigs.FirstOrDefault(x => x.id == id);
-                if (equips == null) return;
-
-                bool isDef = string.Equals(type, ATKDEFEnum.DEF.ToString(), StringComparison.OrdinalIgnoreCase);
-                Dictionary<string, Keys> copy = isDef ? equips.DefKeys : equips.AtkKeys;
-
-                if (copy.ContainsKey(dictKey))
-                {
-                    copy.Remove(dictKey);
-                }
-
-                if (k != Keys.None)
-                {
-                    copy.Add(dictKey, k);
-                }
-            }
+            DebugLogger.Error($"[AtkDefThread] Exception: {ex.Message}");
         }
 
-        public void RemoveSwitchEntry(int id, string dictKey, string type)
+        return 0;
+    }
+
+    private void AutoSwitchAmmo(Client roClient, ref bool ammo, IntPtr hWnd)
+    {
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        if (prefs.SwitchAmmo)
         {
-            lock (this.EquipConfigs)
+            if (WorkerNotifier.IsValidKey(prefs.Ammo1Key) && WorkerNotifier.IsValidKey(prefs.Ammo2Key))
             {
-                var equips = EquipConfigs.FirstOrDefault(x => x.id == id);
-                if (equips == null) return;
-
-                bool isDef = string.Equals(type, ATKDEFEnum.DEF.ToString(), StringComparison.OrdinalIgnoreCase);
-                Dictionary<string, Keys> copy = isDef ? equips.DefKeys : equips.AtkKeys;
-
-                copy.Remove(dictKey);
-            }
-        }
-
-        public void Stop()
-        {
-            if (this.thread != null)
-            {
-                ThreadRunner.Stop(this.thread);
-                this.thread.Terminate();
-                this.thread = null;
+                var ammo1 = prefs.Ammo1Key;
+                var ammo2 = prefs.Ammo2Key;
+                
+                if (!ammo)
+                {
+                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, ammo1, Win32Interop.CreateLParam(ammo1, true));
+                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, ammo1, Win32Interop.CreateLParam(ammo1, false));
+                    ammo = true;
+                }
+                else
+                {
+                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, ammo2, Win32Interop.CreateLParam(ammo2, true));
+                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, ammo2, Win32Interop.CreateLParam(ammo2, false));
+                    ammo = false;
+                }
             }
         }
     }

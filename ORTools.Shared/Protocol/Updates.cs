@@ -152,6 +152,7 @@ public sealed record SkillSpammerConfigUpdate(
 public sealed record GlobalConfigUpdate(
     int SongRows,
     int MacroSwitchRows,
+    int AtkDefRows,
     string DefaultToggleStateKey,
     bool DebugMode,
     bool DebugModeShowLog,
@@ -233,4 +234,21 @@ public sealed record MacroSongConfigUpdate(
     List<MacroSongRowData> Rows) : IIpcMessage
 {
     public string Type => MessageTypes.MacroSongConfigUpdate;
+}
+
+// ── ATK x DEF ─────────────────────────────────────────────────────────────────
+
+public record AtkDefRowData(
+    int Id,
+    string TriggerKey,
+    int SpammerDelay,
+    int SwitchDelay,
+    bool Click,
+    Dictionary<string, string> AtkKeys,
+    Dictionary<string, string> DefKeys);
+
+public sealed record AtkDefConfigUpdate(
+    List<AtkDefRowData> Rows) : IIpcMessage
+{
+    public string Type => MessageTypes.AtkDefConfigUpdate;
 }

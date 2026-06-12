@@ -193,6 +193,7 @@ public sealed record ToggleAutoOffTimerCommand(bool Start) : IIpcMessage
 public sealed record UpdateGlobalConfigCommand(
     int SongRows,
     int MacroSwitchRows,
+    int AtkDefRows,
     string DefaultToggleStateKey,
     bool DebugMode,
     bool DebugModeShowLog,
@@ -281,4 +282,36 @@ public sealed record UpdateMacroSongDelayCommand(int RowId, int Delay) : IIpcMes
 public sealed record ResetMacroSongRowCommand(int RowId) : IIpcMessage
 {
     public string Type => MessageTypes.ResetMacroSongRow;
+}
+
+// ── ATK x DEF ─────────────────────────────────────────────────────────────────
+
+public sealed record UpdateAtkDefTriggerCommand(int RowId, string TriggerKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAtkDefTrigger;
+}
+
+public sealed record UpdateAtkDefSpammerDelayCommand(int RowId, int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAtkDefSpammerDelay;
+}
+
+public sealed record UpdateAtkDefSwitchDelayCommand(int RowId, int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAtkDefSwitchDelay;
+}
+
+public sealed record UpdateAtkDefClickCommand(int RowId, bool Click) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAtkDefClick;
+}
+
+public sealed record UpdateAtkDefEquipCommand(int RowId, string Category, string SlotName, string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateAtkDefEquip;
+}
+
+public sealed record ResetAtkDefRowCommand(int RowId) : IIpcMessage
+{
+    public string Type => MessageTypes.ResetAtkDefRow;
 }

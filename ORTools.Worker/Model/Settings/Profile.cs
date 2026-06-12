@@ -1,5 +1,6 @@
 using System.IO;
 using Newtonsoft.Json.Linq;
+using ORTools.Worker.Model.Tabs;
 
 namespace ORTools.Worker;
 
@@ -18,7 +19,7 @@ public class Profile
     public MacroSong      SongMacro       { get; set; } = new();
     public MacroSwitch    MacroSwitch     { get; set; } = new MacroSwitch(MacroSwitch.ACTION_NAME_MACRO_SWITCH, MacroSwitchKey.TOTAL_MACRO_LANES);
     public TransferHelper TransferHelper  { get; set; } = new();
-    public ATKDEF         ATKDEFMode      { get; set; } = new ATKDEF(AppConfig.ATKDEFLanes);
+    public AtkDef         ATKDEFMode      { get; set; } = new AtkDef();
     public List<string>   UnifiedAutobuffOrder { get; set; } = new();
 
     public Profile() { }
@@ -37,7 +38,7 @@ public class Profile
         StatusRecovery          = new StatusRecovery();
         SongMacro               = new MacroSong();
         MacroSwitch             = new MacroSwitch(MacroSwitch.ACTION_NAME_MACRO_SWITCH, MacroSwitchKey.TOTAL_MACRO_LANES);
-        ATKDEFMode              = new ATKDEF(AppConfig.ATKDEFLanes);
+        ATKDEFMode              = new AtkDef();
         DebuffsRecovery         = new DebuffRecovery("DebuffsRecovery");
         TransferHelper          = new TransferHelper();
     }
@@ -112,7 +113,7 @@ public static class ProfileSingleton
                 if (_profile.AutobuffItem.Delay < 0) _profile.AutobuffItem.Delay = AppConfig.AutoBuffItemsDefaultDelay;
 
                 _profile.SongMacro      = JsonConvert.DeserializeObject<MacroSong>(Profile.GetByAction(rawObject, _profile.SongMacro));
-                _profile.ATKDEFMode     = JsonConvert.DeserializeObject<ATKDEF>(Profile.GetByAction(rawObject, _profile.ATKDEFMode));
+                _profile.ATKDEFMode     = JsonConvert.DeserializeObject<AtkDef>(Profile.GetByAction(rawObject, _profile.ATKDEFMode));
                 _profile.MacroSwitch    = JsonConvert.DeserializeObject<MacroSwitch>(Profile.GetByAction(rawObject, _profile.MacroSwitch));
                 _profile.TransferHelper = JsonConvert.DeserializeObject<TransferHelper>(Profile.GetByAction(rawObject, _profile.TransferHelper));
                 _profile.DebuffsRecovery = JsonConvert.DeserializeObject<DebuffRecovery>(Profile.GetByAction(rawObject, _profile.DebuffsRecovery));

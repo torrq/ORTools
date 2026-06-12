@@ -57,6 +57,11 @@ public partial class SkillSpammerViewModel : ObservableObject
     private string _toggleModeKey = "None";
 
     public ObservableCollection<SpammerKeyViewModel> AllKeys { get; } = new();
+    public ObservableCollection<SpammerKeyViewModel> FKeys { get; } = new();
+    public ObservableCollection<SpammerKeyViewModel> NumKeys { get; } = new();
+    public ObservableCollection<SpammerKeyViewModel> QKeys { get; } = new();
+    public ObservableCollection<SpammerKeyViewModel> AKeys { get; } = new();
+    public ObservableCollection<SpammerKeyViewModel> ZKeys { get; } = new();
 
     public SkillSpammerViewModel(WorkerService worker)
     {
@@ -75,11 +80,11 @@ public partial class SkillSpammerViewModel : ObservableObject
         string[] aKeys = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
         string[] zKeys = { "Z", "X", "C", "V", "B", "N", "M" };
 
-        foreach (var k in fKeys) AllKeys.Add(new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false));
-        foreach (var k in numKeys) AllKeys.Add(new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false));
-        foreach (var k in qKeys) AllKeys.Add(new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false));
-        foreach (var k in aKeys) AllKeys.Add(new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false));
-        foreach (var k in zKeys) AllKeys.Add(new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false));
+        foreach (var k in fKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); FKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in numKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); NumKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in qKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); QKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in aKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); AKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in zKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); ZKeys.Add(vm); AllKeys.Add(vm); }
     }
 
     private void OnConfigReceived(SkillSpammerConfigUpdate config)

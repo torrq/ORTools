@@ -13,6 +13,7 @@ public class Config
     public bool   MiniMode                     { get; set; } = false;
     public int    SongRows                     { get; set; } = 4;
     public int    MacroSwitchRows              { get; set; } = 4;
+    public int    AtkDefRows                   { get; set; } = 2;
     public string DefaultToggleStateKey        { get; set; } = "None";
     public bool   PauseWhenChatting            { get; set; } = false;
     public bool   PauseWhenDead                { get; set; } = false;

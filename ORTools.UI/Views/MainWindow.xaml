@@ -5,7 +5,7 @@
         xmlns:views="clr-namespace:ORTools.UI.Views"
         Title="{Binding AppTitle}"
         Width="731"
-        Height="659"
+        Height="675"
         MinWidth="600"
         MinHeight="500"
         FontFamily="Segoe UI" Background="#FF222222">
@@ -192,10 +192,7 @@
                 </TabControl>
             </TabItem>
             <TabItem Header="ATK x DEF">
-                <Border Padding="16">
-                    <TextBlock Text="ATK x DEF - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:AtkDefView DataContext="{Binding AtkDef}" />
             </TabItem>
             <TabItem Header="Songs">
                 <views:MacroSongView DataContext="{Binding MacroSong}" />

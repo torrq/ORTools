@@ -104,7 +104,7 @@ public sealed class WorkerCore
         p.StatusRecovery.Start(); p.AutobuffSkill.Start();
         p.AutobuffItem.Start(); p.DebuffsRecovery.Start();
         p.MacroSwitch.Start(); p.SongMacro.Start();
-        p.TransferHelper.Start();
+        p.TransferHelper.Start(); p.ATKDEFMode.Start();
         
         var config = ConfigGlobal.GetConfig();
         if (config.StartAutoOffTimerOnEnable && !_autoOff.IsTimerRunning)
@@ -133,7 +133,7 @@ public sealed class WorkerCore
         p.StatusRecovery.Stop(); p.AutobuffSkill.Stop();
         p.AutobuffItem.Stop(); p.DebuffsRecovery.Stop();
         p.MacroSwitch.Stop(); p.SongMacro.Stop();
-        p.TransferHelper.Stop();
+        p.TransferHelper.Stop(); p.ATKDEFMode.Stop();
         
         var config = ConfigGlobal.GetConfig();
         if (config.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
@@ -181,7 +181,7 @@ public sealed class WorkerCore
                 foreach (var p in processes)
                 {
                     string id = $"{p.ProcessName}.exe - {p.Id}";
-                    string displayName = id;
+                    string displayName = $"Client [{p.Id}]"; // Prettified default
                     try
                     {
                         using var tempClient = new Client(id);
@@ -193,8 +193,16 @@ public sealed class WorkerCore
                             
                             if (!string.IsNullOrWhiteSpace(name))
                             {
-                                displayName = $"{name} @ {map}";
+                                displayName = string.IsNullOrWhiteSpace(map) ? name : $"{name} @ {map}";
                             }
+                            else
+                            {
+                                displayName = "Loading Character...";
+                            }
+                        }
+                        else
+                        {
+                            displayName = "Login / Select Screen";
                         }
                     }
                     catch { }
@@ -701,27 +709,9 @@ public sealed class WorkerCore
     public async Task HandleUpdateGlobalConfig(UpdateGlobalConfigCommand cmd)
     {
         var config = ConfigGlobal.GetConfig();
-        var profile = ProfileSingleton.GetCurrent();
-        bool macroSwitchRowsChanged = config.MacroSwitchRows != cmd.MacroSwitchRows;
-        config.MacroSwitchRows = cmd.MacroSwitchRows;
-        if (macroSwitchRowsChanged)
-        {
-            var chains = profile.MacroSwitch.ChainConfigs;
-            while (chains.Count < cmd.MacroSwitchRows)
-                chains.Add(new MacroSwitchChainConfig(chains.Count + 1, Keys.None));
-            ProfileSingleton.SetConfiguration(profile.MacroSwitch);
-        }
-
-        bool songRowsChanged = config.SongRows != cmd.SongRows;
-        config.SongRows = cmd.SongRows;
-        if (songRowsChanged)
-        {
-            var songs = profile.SongMacro.SongRows;
-            while (songs.Count < cmd.SongRows)
-                songs.Add(new SongRow(songs.Count + 1));
-            ProfileSingleton.SetConfiguration(profile.SongMacro);
-        }
-
+        config.SongRows = Math.Max(1, cmd.SongRows);
+        config.MacroSwitchRows = Math.Max(1, cmd.MacroSwitchRows);
+        config.AtkDefRows = Math.Max(1, cmd.AtkDefRows);
         config.DefaultToggleStateKey = cmd.DefaultToggleStateKey;
         config.DebugMode = cmd.DebugMode;
         config.DebugModeShowLog = cmd.DebugModeShowLog;
@@ -733,9 +723,15 @@ public sealed class WorkerCore
         config.ExitWithRo = cmd.ExitWithRo;
         config.AlwaysOnTop = cmd.AlwaysOnTop;
         ConfigGlobal.SaveConfig();
+
+        var p = ProfileSingleton.GetCurrent();
+        p.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
+        ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+
         await BroadcastAsync(BuildGlobalConfigUpdate());
-        if (macroSwitchRowsChanged) await BroadcastAsync(BuildMacroSwitchConfig());
-        if (songRowsChanged) await BroadcastAsync(BuildMacroSongConfig());
+        await BroadcastAsync(BuildMacroSongConfig());
+        await BroadcastAsync(BuildMacroSwitchConfig());
+        await BroadcastAsync(BuildAtkDefConfig());
     }
 
     public Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
@@ -862,6 +858,114 @@ public sealed class WorkerCore
         ProfileSingleton.SetConfiguration(p.SongMacro);
         if (unbindChanged) await PushAllConfigs();
         else await BroadcastAsync(BuildMacroSongConfig());
+    }
+
+
+
+    // ── ATK x DEF ─────────────────────────────────────────────────────────────────
+
+    public async Task HandleUpdateAtkDefTrigger(UpdateAtkDefTriggerCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.ATKDEFMode.EquipConfigs.FirstOrDefault(x => x.Id == cmd.RowId);
+        if (row != null)
+        {
+            row.KeySpammer = cmd.TriggerKey;
+            ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+            await BroadcastAsync(BuildAtkDefConfig());
+        }
+    }
+
+    public async Task HandleUpdateAtkDefSpammerDelay(UpdateAtkDefSpammerDelayCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.ATKDEFMode.EquipConfigs.FirstOrDefault(x => x.Id == cmd.RowId);
+        if (row != null)
+        {
+            row.KeySpammerDelay = Math.Max(0, cmd.Delay);
+            ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+            await BroadcastAsync(BuildAtkDefConfig());
+        }
+    }
+
+    public async Task HandleUpdateAtkDefSwitchDelay(UpdateAtkDefSwitchDelayCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.ATKDEFMode.EquipConfigs.FirstOrDefault(x => x.Id == cmd.RowId);
+        if (row != null)
+        {
+            row.SwitchDelay = Math.Max(0, cmd.Delay);
+            ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+            await BroadcastAsync(BuildAtkDefConfig());
+        }
+    }
+
+    public async Task HandleUpdateAtkDefClick(UpdateAtkDefClickCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.ATKDEFMode.EquipConfigs.FirstOrDefault(x => x.Id == cmd.RowId);
+        if (row != null)
+        {
+            row.KeySpammerWithClick = cmd.Click;
+            ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+            await BroadcastAsync(BuildAtkDefConfig());
+        }
+    }
+
+    public async Task HandleUpdateAtkDefEquip(UpdateAtkDefEquipCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.ATKDEFMode.EquipConfigs.FirstOrDefault(x => x.Id == cmd.RowId);
+        if (row != null)
+        {
+            var dict = string.Equals(cmd.Category, "DEF", StringComparison.OrdinalIgnoreCase) ? row.DefKeys : row.AtkKeys;
+            
+            if (cmd.Key == "None" || string.IsNullOrWhiteSpace(cmd.Key))
+            {
+                dict.Remove(cmd.SlotName);
+            }
+            else
+            {
+                dict[cmd.SlotName] = cmd.Key;
+            }
+            ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+            await BroadcastAsync(BuildAtkDefConfig());
+        }
+    }
+
+    public async Task HandleResetAtkDefRow(ResetAtkDefRowCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.ATKDEFMode.EquipConfigs.FirstOrDefault(x => x.Id == cmd.RowId);
+        if (row != null)
+        {
+            row.KeySpammer = "None";
+            row.KeySpammerDelay = AppConfig.ATKDEFSpammerDefaultDelay;
+            row.SwitchDelay = AppConfig.ATKDEFSwitchDefaultDelay;
+            row.KeySpammerWithClick = true;
+            row.AtkKeys.Clear();
+            row.DefKeys.Clear();
+            ProfileSingleton.SetConfiguration(p.ATKDEFMode);
+            await BroadcastAsync(BuildAtkDefConfig());
+        }
+    }
+
+    private AtkDefConfigUpdate BuildAtkDefConfig()
+    {
+        var config = ConfigGlobal.GetConfig();
+        var p = ProfileSingleton.GetCurrent();
+        var rows = p.ATKDEFMode.EquipConfigs
+            .Take(config.AtkDefRows)
+            .Select(c => new AtkDefRowData(
+                c.Id,
+                c.KeySpammer,
+                c.KeySpammerDelay,
+                c.SwitchDelay,
+                c.KeySpammerWithClick,
+                new Dictionary<string, string>(c.AtkKeys),
+                new Dictionary<string, string>(c.DefKeys)
+            )).ToList();
+        return new AtkDefConfigUpdate(rows);
     }
 
     public async Task HandleUpdateMacroSongAdaptation(UpdateMacroSongAdaptationCommand cmd)
@@ -1082,6 +1186,7 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildTransferHelperConfig());
         await BroadcastAsync(BuildMacroSwitchConfig());
         await BroadcastAsync(BuildMacroSongConfig());
+        await BroadcastAsync(BuildAtkDefConfig());
     }
 
     private TransferHelperConfigUpdate BuildTransferHelperConfig()
@@ -1140,6 +1245,7 @@ public sealed class WorkerCore
         return new GlobalConfigUpdate(
             config.SongRows,
             config.MacroSwitchRows,
+            config.AtkDefRows,
             config.DefaultToggleStateKey,
             config.DebugMode,
             config.DebugModeShowLog,

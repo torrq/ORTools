@@ -25,6 +25,7 @@ public partial class SettingsViewModel : ObservableObject
     // Placeholders for Global Settings
     [ObservableProperty] private int _songRows = 4;
     [ObservableProperty] private int _macroSwitchRows = 4;
+    [ObservableProperty] private int _atkDefRows = 2;
     [ObservableProperty] private string _defaultToggleStateKey = "None";
     [ObservableProperty] private bool _startAutoOffTimerOnEnable;
 
@@ -43,6 +44,7 @@ public partial class SettingsViewModel : ObservableObject
         _suppressUpdates = true;
         SongRows = update.SongRows;
         MacroSwitchRows = update.MacroSwitchRows;
+        AtkDefRows = update.AtkDefRows;
         DefaultToggleStateKey = update.DefaultToggleStateKey;
         DebugMode = update.DebugMode;
         DebugModeShowLog = update.DebugModeShowLog;
@@ -87,6 +89,12 @@ public partial class SettingsViewModel : ObservableObject
         SendGlobalUpdate();
     }
     
+    partial void OnAtkDefRowsChanged(int value)
+    {
+        if (value < 1 && !_suppressUpdates) { AtkDefRows = 1; return; }
+        SendGlobalUpdate();
+    }
+
     partial void OnDefaultToggleStateKeyChanged(string value) => SendGlobalUpdate();
     partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendGlobalUpdate();
 
@@ -100,6 +108,7 @@ public partial class SettingsViewModel : ObservableObject
         var cmd = new UpdateGlobalConfigCommand(
             SongRows: SongRows,
             MacroSwitchRows: MacroSwitchRows,
+            AtkDefRows: AtkDefRows,
             DefaultToggleStateKey: DefaultToggleStateKey,
             DebugMode: DebugMode,
             DebugModeShowLog: DebugModeShowLog,

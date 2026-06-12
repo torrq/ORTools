@@ -25,4 +25,5 @@ public static class WorkerNotifier
     }
 
     public static bool IsValidKey(Keys key) => key != Keys.None;
+    public static bool IsValidKey(string key) => Enum.TryParse<Keys>(key, out var parsed) && parsed != Keys.None;
 }

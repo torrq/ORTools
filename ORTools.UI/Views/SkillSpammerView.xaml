@@ -14,9 +14,12 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
-                        <Border x:Name="Bd" Width="16" Height="16" BorderBrush="#313338" BorderThickness="1" Background="White" CornerRadius="0">
-                            <TextBlock x:Name="CheckMark" Text="✓" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" FontWeight="Bold" FontSize="12" Margin="0,-2,0,0"/>
-                        </Border>
+                        <StackPanel Orientation="Horizontal" Cursor="Hand">
+                            <Border x:Name="Bd" Width="16" Height="16" BorderBrush="#313338" BorderThickness="1" Background="White" CornerRadius="0" VerticalAlignment="Center">
+                                <TextBlock x:Name="CheckMark" Text="✓" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" FontWeight="Bold" FontSize="12" Margin="0,-2,0,0"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="#0078D7"/>
@@ -41,62 +44,106 @@
         </Style>
 
         <DataTemplate x:Key="SpammerKeyTemplate" DataType="{x:Type vm:SpammerKeyViewModel}">
-            <StackPanel Orientation="Horizontal" Margin="4">
-                <CheckBox Style="{StaticResource SpammerCheckBoxStyle}" 
-                          IsChecked="{Binding IsCheckedState, Mode=TwoWay}"
-                          VerticalAlignment="Center" Margin="0,0,4,0"/>
-                <Image Source="{Binding ImagePath}" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
-            </StackPanel>
+            <CheckBox Style="{StaticResource SpammerCheckBoxStyle}" 
+                      IsChecked="{Binding IsCheckedState, Mode=TwoWay}"
+                      VerticalAlignment="Center">
+                <Image Source="{Binding ImagePath}" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center" Margin="4,0,0,0"/>
+            </CheckBox>
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid Margin="10">
+    <Grid Margin="22,10,22,10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Keys Area -->
-        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,20,0">
-            <ItemsControl ItemsSource="{Binding AllKeys}" ItemTemplate="{StaticResource SpammerKeyTemplate}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="9" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+        <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,0,0" HorizontalAlignment="Stretch">
+            
+            <ItemsControl ItemsSource="{Binding FKeys}" ItemTemplate="{StaticResource SpammerKeyTemplate}">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="9" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
             </ItemsControl>
+
+            <Border Height="1" Background="{StaticResource AppBorderBrush}" Margin="0,15,0,16" />
+
+            <ItemsControl ItemsSource="{Binding NumKeys}" ItemTemplate="{StaticResource SpammerKeyTemplate}" Margin="0,0,0,19">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="9" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <ItemsControl ItemsSource="{Binding QKeys}" ItemTemplate="{StaticResource SpammerKeyTemplate}" Margin="0,0,0,19">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="9" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <ItemsControl ItemsSource="{Binding AKeys}" ItemTemplate="{StaticResource SpammerKeyTemplate}" Margin="0,0,0,19">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="9" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <ItemsControl ItemsSource="{Binding ZKeys}" ItemTemplate="{StaticResource SpammerKeyTemplate}">
+                <ItemsControl.ItemsPanel><ItemsPanelTemplate><UniformGrid Columns="9" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+            </ItemsControl>
+
         </StackPanel>
 
-        <!-- Right Panel (Legend & Delay) -->
-        <StackPanel Grid.Column="1" Grid.Row="0" Width="160">
+        <!-- Right Panel (Legend) -->
+        <StackPanel Grid.Column="1" Grid.Row="0" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top">
             <GroupBox Header="Legend" Margin="0,0,0,10" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppBorderBrush}">
                 <StackPanel Margin="5">
                     <StackPanel Orientation="Horizontal" Margin="0,2">
                         <CheckBox Style="{StaticResource SpammerCheckBoxStyle}" IsChecked="True" IsHitTestVisible="False" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="With click" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" Width="70"/>
+                        <TextBlock Text="With click" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" Width="55"/>
                         <Image Source="pack://application:,,,/Icons/Spammer/spammer_mouse_on.png" Width="16" Height="16" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,2">
                         <CheckBox Style="{StaticResource SpammerCheckBoxStyle}" IsChecked="{x:Null}" IsHitTestVisible="False" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="No click" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" Width="70"/>
+                        <TextBlock Text="No click" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" Width="55"/>
                         <Image Source="pack://application:,,,/Icons/Spammer/spammer_mouse_off.png" Width="16" Height="16" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,2">
                         <CheckBox Style="{StaticResource SpammerCheckBoxStyle}" IsChecked="False" IsHitTestVisible="False" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Disabled" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" Width="70"/>
+                        <TextBlock Text="Disabled" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" Width="55"/>
                         <Image Source="pack://application:,,,/Icons/Spammer/spammer_off.png" Width="16" Height="16" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
+        </StackPanel>
 
-
-            <GroupBox Header="Spammer Delay" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppBorderBrush}">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+        <!-- Bottom Panel (Key Config & Delay) -->
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,10,0,0" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            
+            <GroupBox Grid.Column="0" Header="Key Config" Margin="0,0,20,0" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppBorderBrush}">
+                <UniformGrid Columns="3" Margin="10,5">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <CheckBox Content="Mouse Flick" IsChecked="{Binding MouseFlick}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <Image Source="pack://application:,,,/Icons/Spammer/up_and_down_arrow.png" Width="16" Height="16" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <CheckBox Content="No Shift" IsChecked="{Binding NoShift}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                        <Image Source="pack://application:,,,/Icons/Spammer/shift.png" Width="16" Height="16" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <CheckBox Content="Toggle Mode" IsChecked="{Binding ToggleMode}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBox Text="{Binding ToggleModeKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                 PreviewKeyDown="ToggleModeKey_PreviewKeyDown" ToolTip="Press a key to assign"
+                                 Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </UniformGrid>
+            </GroupBox>
+            
+            <GroupBox Grid.Column="1" Header="Spammer Delay" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppBorderBrush}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,5">
                     <TextBox Text="{Binding SpammerDelay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                              helpers:InputHelper.IsNumericInput="True"
                              PreviewKeyDown="SpammerDelay_PreviewKeyDown"
@@ -105,22 +152,11 @@
                     <TextBlock Text="ms" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="{StaticResource AppTextBrush}"/>
                 </StackPanel>
             </GroupBox>
+        </Grid>
+        
+        <!-- Banner and Links Placeholder -->
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,20,0,0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Image Source="pack://application:,,,/Icons/ui/server_banner.png" Height="106" Stretch="Uniform" RenderOptions.BitmapScalingMode="NearestNeighbor" />
         </StackPanel>
-
-        <!-- Bottom Panel (Key Config) -->
-        <GroupBox Grid.Row="1" Grid.ColumnSpan="2" Header="Key Config" Margin="0,10,0,0" Foreground="{StaticResource AppTextBrush}" BorderBrush="{StaticResource AppBorderBrush}">
-            <StackPanel Orientation="Horizontal" Margin="10,5">
-                <CheckBox Content="Mouse Flick" IsChecked="{Binding MouseFlick}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <Image Source="pack://application:,,,/Icons/Spammer/up_and_down_arrow.png" Width="16" Height="16" Margin="0,0,20,0" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
-                
-                <CheckBox Content="No Shift" IsChecked="{Binding NoShift}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <Image Source="pack://application:,,,/Icons/Spammer/shift.png" Width="16" Height="16" Margin="0,0,20,0" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" VerticalAlignment="Center"/>
-                
-                <CheckBox Content="Toggle Mode" IsChecked="{Binding ToggleMode}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox Text="{Binding ToggleModeKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
-                         PreviewKeyDown="ToggleModeKey_PreviewKeyDown" ToolTip="Press a key to assign"
-                         Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" />
-            </StackPanel>
-        </GroupBox>
     </Grid>
 </UserControl>

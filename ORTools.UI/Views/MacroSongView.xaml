@@ -15,7 +15,7 @@
                             BorderBrush="{StaticResource AppBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
-                            Margin="0,0,0,10"
+                            Margin="0,0,0,14"
                             Padding="15,10">
                         
                         <Grid>
@@ -158,8 +158,8 @@
                             <!-- Instrument/Adaptation -->
                             <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="0,0,15,0">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
-                                    <Image Source="pack://application:,,,/Icons/bd_adaptation.png" Stretch="None" Margin="0,0,4,0" ToolTip="Adaptation" />
-                                    <Image Source="pack://application:,,,/Icons/harp.png" Stretch="None" ToolTip="Instrument" />
+                                    <Image Source="pack://application:,,,/Icons/bd_adaptation.png" Stretch="None" Margin="0,0,4,0" ToolTip="Adaptation" RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                    <Image Source="pack://application:,,,/Icons/harp.png" Stretch="None" ToolTip="Instrument" RenderOptions.BitmapScalingMode="NearestNeighbor" />
                                 </StackPanel>
                                 <TextBox Text="{Binding AdaptationKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                          Style="{StaticResource KeyTextBoxStyle}" Height="24" Width="60"

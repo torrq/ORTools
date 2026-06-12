@@ -61,6 +61,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public MiscViewModel Misc { get; }
     public MacroSwitchViewModel MacroSwitch { get; }
     public MacroSongViewModel MacroSong { get; }
+    public AtkDefViewModel AtkDef { get; }
 
     // ── Derived display properties ────────────────────────────────────────────
 
@@ -140,6 +141,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             }
         }
 
+        foreach (var row in AtkDef.Rows)
+        {
+            if (row.SpammerKey == newKey && sourceVM != row) return true;
+        }
+
         return false;
     }
     public Brush HpBarBrush => HpPercent < 25
@@ -170,6 +176,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Misc = new MiscViewModel(worker);
         MacroSwitch = new MacroSwitchViewModel(_worker);
         MacroSong = new MacroSongViewModel(_worker);
+        AtkDef = new AtkDefViewModel(_worker);
 
         // Map ViewModels to tabs
         Tabs = new ObservableCollection<object>
