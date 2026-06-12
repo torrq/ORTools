@@ -1,12 +1,12 @@
-# AGENTS.md — ORTools Modernization
+# AGENTS.md — OSRO Tools Modernization
 
 Read this file in full before touching any code.
 
 ---
 
-## What is ORTools?
+## What is OSRO Tools?
 
-ORTools (also called OSRO Tools) is a Windows automation assistant for the private Ragnarok Online server OSRO. It automates tasks the game does not handle (Autopot, Skill Timer, Autobuff, Status Recovery, Auto Off, etc.).
+OSRO Tools (internally known as ORTools) is a Windows automation assistant for the private Ragnarok Online server OSRO. It automates tasks the game does not handle (Autopot, Skill Timer, Autobuff, Status Recovery, Auto Off, etc.).
 
 There are two server modes: **MR** (Midrate) and **HR** (Highrate).
 `AppConfig.ServerMode` controls which memory addresses and server configs are active.
