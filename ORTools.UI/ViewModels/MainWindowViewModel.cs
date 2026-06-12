@@ -20,6 +20,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     // ── App / client state ────────────────────────────────────────────────────
     [ObservableProperty] private bool   _isApplicationOn;
     [ObservableProperty] private string _toggleKey = "None";
+    [ObservableProperty] private string _appTitle = "OSRO Tools";
     [ObservableProperty] private bool   _isClientConnected;
     [ObservableProperty] private string _connectedProcessName = "";
 
@@ -59,6 +60,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ProfilesViewModel Profiles { get; }
     public MiscViewModel Misc { get; }
     public MacroSwitchViewModel MacroSwitch { get; }
+    public MacroSongViewModel MacroSong { get; }
 
     // ── Derived display properties ────────────────────────────────────────────
 
@@ -126,6 +128,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             }
         }
 
+        foreach (var row in MacroSong.Rows)
+        {
+            if (row.TriggerKey == newKey && sourceVM != row) return true;
+            if (row.AdaptationKey == newKey && sourceVM != row) return true;
+            if (row.InstrumentKey == newKey && sourceVM != row) return true;
+            foreach (var step in row.Steps)
+            {
+                if (step.Key == "None") continue;
+                if (step.Key == newKey && sourceVM != step) return true;
+            }
+        }
+
         return false;
     }
     public Brush HpBarBrush => HpPercent < 25
@@ -155,6 +169,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Profiles = new ProfilesViewModel(worker);
         Misc = new MiscViewModel(worker);
         MacroSwitch = new MacroSwitchViewModel(_worker);
+        MacroSong = new MacroSongViewModel(_worker);
 
         // Map ViewModels to tabs
         Tabs = new ObservableCollection<object>
@@ -255,6 +270,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             IsApplicationOn = u.IsOn;
             ToggleKey       = u.ToggleKey ?? "None";
+            AppTitle        = u.AppTitle ?? "OSRO Tools";
         });
 
     private void OnClientState(ClientStateUpdate u) =>

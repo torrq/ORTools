@@ -110,8 +110,10 @@ namespace ORTools.Worker
 
         private void OnGlobalKeyDown(Keys key)
         {
-             foreach (var chainConfig in this.ChainConfigs)
+             int maxRows = ConfigGlobal.GetConfig().MacroSwitchRows;
+             for (int i = 0; i < maxRows && i < this.ChainConfigs.Count; i++)
              {
+                 var chainConfig = this.ChainConfigs[i];
                  if (chainConfig.TriggerKey != Keys.None && chainConfig.TriggerKey == key)
                  {
                      _macroQueue.Add(chainConfig);

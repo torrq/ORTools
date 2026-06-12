@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
         xmlns:views="clr-namespace:ORTools.UI.Views"
-        Title="OSRO Tools v1.99.0/HR"
+        Title="{Binding AppTitle}"
         Width="731"
         Height="659"
         MinWidth="600"
@@ -198,10 +198,7 @@
                 </Border>
             </TabItem>
             <TabItem Header="Songs">
-                <Border Padding="16">
-                    <TextBlock Text="Songs - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:MacroSongView DataContext="{Binding MacroSong}" />
             </TabItem>
             <TabItem Header="Macro Switch">
                 <views:MacroSwitchView DataContext="{Binding MacroSwitch}" />

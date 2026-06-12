@@ -4,7 +4,7 @@ public static class AppConfig
 {
     // ── General ───────────────────────────────────────────────────────────────
     public static string  Name           = "OSRO Tools";
-    public static string  Version        = "v1.99.0";
+    public static string  Version        = "v2.0.0";
     public static decimal ConfigVersion  = 1;
     public static int     ServerMode     = 1;   // 0 = MR, 1 = HR
 
@@ -13,7 +13,7 @@ public static class AppConfig
     public static bool SupportsFishing => IsMidRate;
 
     public static bool   preRelease    = true;
-    public static string preReleaseTag = "SPEEDY-20260602";
+    public static string preReleaseTag = "ALPHA";
 
     // ── File paths ────────────────────────────────────────────────────────────
     public static string ProfileFolder = "Profiles\\";

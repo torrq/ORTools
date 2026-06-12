@@ -2,7 +2,7 @@ namespace ORTools.Shared.Protocol;
 
 public static class MessageTypes
 {
-    // ── UI → Worker (commands) ────────────────────────────────────────────────
+    // UI -> Worker (commands)
     public const string TurnOn = "TurnOn";
     public const string TurnOff = "TurnOff";
     public const string ConnectClient    = "ConnectClient";
@@ -55,7 +55,7 @@ public static class MessageTypes
     // Auto Off
     public const string UpdateAutoOffSettings = "UpdateAutoOffSettings";
 
-    // ── Worker → UI (state updates) ───────────────────────────────────────────
+    // Worker -> UI (state updates)
     public const string WorkerReady = "WorkerReady";
     public const string AppState = "AppState";
     public const string ClientState = "ClientState";
@@ -92,4 +92,13 @@ public static class MessageTypes
     public const string UpdateMacroSwitchStep = "UpdateMacroSwitchStep";
     public const string ResetMacroSwitchRow = "ResetMacroSwitchRow";
     public const string MacroSwitchConfigUpdate = "MacroSwitchConfigUpdate";
+
+    // Macro Song
+    public const string UpdateMacroSongTrigger  = "UpdateMacroSongTrigger";
+    public const string UpdateMacroSongStep     = "UpdateMacroSongStep";
+    public const string UpdateMacroSongAdaptation = "UpdateMacroSongAdaptation";
+    public const string UpdateMacroSongInstrument = "UpdateMacroSongInstrument";
+    public const string UpdateMacroSongDelay    = "UpdateMacroSongDelay";
+    public const string ResetMacroSongRow       = "ResetMacroSongRow";
+    public const string MacroSongConfigUpdate   = "MacroSongConfigUpdate";
 }

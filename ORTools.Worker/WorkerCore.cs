@@ -112,7 +112,7 @@ public sealed class WorkerCore
             _autoOff.StartTimer();
         }
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey));
+        await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
         DebugLogger.Info("[WorkerCore] Turned ON");
 
         if (p.UserPreferences.SoundEnabled)
@@ -141,7 +141,7 @@ public sealed class WorkerCore
             _autoOff.StopTimer();
         }
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey));
+        await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
         DebugLogger.Info("[WorkerCore] Turned OFF");
 
         if (p.UserPreferences.SoundEnabled)
@@ -162,7 +162,7 @@ public sealed class WorkerCore
         
         if (unbindChanged) await PushAllConfigs();
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: keyStr));
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: keyStr, AppTitle: GetAppTitle()));
     }
 
     public async Task HandleRequestProcessList()
@@ -257,7 +257,7 @@ public sealed class WorkerCore
             ConfigGlobal.SaveConfig();
             RefreshToggleHotkey();
             await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), profileName));
-            await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey));
+            await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
             await PushAllConfigs();
             DebugLogger.Info($"[WorkerCore] Profile: {profileName}");
         }
@@ -702,18 +702,24 @@ public sealed class WorkerCore
     {
         var config = ConfigGlobal.GetConfig();
         var profile = ProfileSingleton.GetCurrent();
-        config.SongRows = cmd.SongRows;
-        
         bool macroSwitchRowsChanged = config.MacroSwitchRows != cmd.MacroSwitchRows;
         config.MacroSwitchRows = cmd.MacroSwitchRows;
         if (macroSwitchRowsChanged)
         {
             var chains = profile.MacroSwitch.ChainConfigs;
-            while (chains.Count > cmd.MacroSwitchRows)
-                chains.RemoveAt(chains.Count - 1);
             while (chains.Count < cmd.MacroSwitchRows)
                 chains.Add(new MacroSwitchChainConfig(chains.Count + 1, Keys.None));
             ProfileSingleton.SetConfiguration(profile.MacroSwitch);
+        }
+
+        bool songRowsChanged = config.SongRows != cmd.SongRows;
+        config.SongRows = cmd.SongRows;
+        if (songRowsChanged)
+        {
+            var songs = profile.SongMacro.SongRows;
+            while (songs.Count < cmd.SongRows)
+                songs.Add(new SongRow(songs.Count + 1));
+            ProfileSingleton.SetConfiguration(profile.SongMacro);
         }
 
         config.DefaultToggleStateKey = cmd.DefaultToggleStateKey;
@@ -729,6 +735,7 @@ public sealed class WorkerCore
         ConfigGlobal.SaveConfig();
         await BroadcastAsync(BuildGlobalConfigUpdate());
         if (macroSwitchRowsChanged) await BroadcastAsync(BuildMacroSwitchConfig());
+        if (songRowsChanged) await BroadcastAsync(BuildMacroSongConfig());
     }
 
     public Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
@@ -800,6 +807,116 @@ public sealed class WorkerCore
         p.MacroSwitch.ResetMacro(cmd.RowId);
         ProfileSingleton.SetConfiguration(p.MacroSwitch);
         await BroadcastAsync(BuildMacroSwitchConfig());
+    }
+
+    // ── Macro Song ────────────────────────────────────────────────────────────
+
+    private MacroSongConfigUpdate BuildMacroSongConfig()
+    {
+        var config = ConfigGlobal.GetConfig();
+        var p = ProfileSingleton.GetCurrent();
+        var rows = p.SongMacro.SongRows
+            .Take(config.SongRows)
+            .Select(r => new MacroSongRowData(
+            r.Id,
+            r.TriggerKey.ToString(),
+            r.AdaptationKey.ToString(),
+            r.InstrumentKey.ToString(),
+            r.Delay,
+            r.SongSequence.Select(k => k.ToString()).ToList()
+        )).ToList();
+        return new MacroSongConfigUpdate(rows);
+    }
+
+    public async Task HandleUpdateMacroSongTrigger(UpdateMacroSongTriggerCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.SongMacro.GetSongRow(cmd.RowId);
+        if (row == null) return;
+        
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.TriggerKey, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            row.TriggerKey = key;
+        }
+        
+        ProfileSingleton.SetConfiguration(p.SongMacro);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildMacroSongConfig());
+    }
+
+    public async Task HandleUpdateMacroSongStep(UpdateMacroSongStepCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.SongMacro.GetSongRow(cmd.RowId);
+        if (row == null || cmd.StepId < 1 || cmd.StepId > row.SongSequence.Length) return;
+        
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.Key, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            row.SongSequence[cmd.StepId - 1] = key;
+        }
+        
+        ProfileSingleton.SetConfiguration(p.SongMacro);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildMacroSongConfig());
+    }
+
+    public async Task HandleUpdateMacroSongAdaptation(UpdateMacroSongAdaptationCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.SongMacro.GetSongRow(cmd.RowId);
+        if (row == null) return;
+        
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.AdaptationKey, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            row.AdaptationKey = key;
+        }
+        
+        ProfileSingleton.SetConfiguration(p.SongMacro);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildMacroSongConfig());
+    }
+
+    public async Task HandleUpdateMacroSongInstrument(UpdateMacroSongInstrumentCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.SongMacro.GetSongRow(cmd.RowId);
+        if (row == null) return;
+        
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.InstrumentKey, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            row.InstrumentKey = key;
+        }
+        
+        ProfileSingleton.SetConfiguration(p.SongMacro);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildMacroSongConfig());
+    }
+
+    public async Task HandleUpdateMacroSongDelay(UpdateMacroSongDelayCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var row = p.SongMacro.GetSongRow(cmd.RowId);
+        if (row == null) return;
+        
+        row.Delay = cmd.Delay;
+        ProfileSingleton.SetConfiguration(p.SongMacro);
+        await BroadcastAsync(BuildMacroSongConfig());
+    }
+
+    public async Task HandleResetMacroSongRow(ResetMacroSongRowCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        p.SongMacro.ResetSongRow(cmd.RowId);
+        ProfileSingleton.SetConfiguration(p.SongMacro);
+        await BroadcastAsync(BuildMacroSongConfig());
     }
 
     public Task HandleToggleAutoOffTimer(ToggleAutoOffTimerCommand cmd)
@@ -938,7 +1055,7 @@ public sealed class WorkerCore
     public async Task HandleFullStateRequest()
     {
         var client = ClientSingleton.GetClient();
-        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey));
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
         await BroadcastAsync(new ClientStateUpdate(
             Connected: client != null,
             ProcessName: client != null ? _GetConnectedProcessName() : null));
@@ -964,6 +1081,7 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildProfileSettingsUpdate());
         await BroadcastAsync(BuildTransferHelperConfig());
         await BroadcastAsync(BuildMacroSwitchConfig());
+        await BroadcastAsync(BuildMacroSongConfig());
     }
 
     private TransferHelperConfigUpdate BuildTransferHelperConfig()
@@ -971,10 +1089,24 @@ public sealed class WorkerCore
         return new TransferHelperConfigUpdate(ProfileSingleton.GetCurrent().TransferHelper.TransferKey.ToString());
     }
 
+    private string GetAppTitle()
+    {
+        string mode = AppConfig.IsHighRate ? "HR" : "MR";
+        string title = $"{AppConfig.Name} {AppConfig.Version}/{mode}";
+        if (AppConfig.preRelease)
+        {
+            title += $" ({AppConfig.preReleaseTag})";
+        }
+        return title;
+    }
+
     private MacroSwitchConfigUpdate BuildMacroSwitchConfig()
     {
+        var config = ConfigGlobal.GetConfig();
         var p = ProfileSingleton.GetCurrent();
-        var chains = p.MacroSwitch.ChainConfigs.Select(chain => new MacroSwitchChainData(
+        var chains = p.MacroSwitch.ChainConfigs
+            .Take(config.MacroSwitchRows)
+            .Select(chain => new MacroSwitchChainData(
             chain.id,
             chain.TriggerKey.ToString(),
             chain.macroEntries.Select(step => new MacroSwitchStepData(

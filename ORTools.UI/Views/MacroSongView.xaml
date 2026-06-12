@@ -1,0 +1,180 @@
+<UserControl x:Class="ORTools.UI.Views.MacroSongView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="700">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <ItemsControl ItemsSource="{Binding Rows}" Margin="10,8,10,10">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:MacroSongRowViewModel}">
+                    <Border Background="{StaticResource AppSurfaceBrush}"
+                            BorderBrush="{StaticResource AppBorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Margin="0,0,0,10"
+                            Padding="15,10">
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/> <!-- Trigger & Delay -->
+                                <ColumnDefinition Width="Auto"/> <!-- Separator -->
+                                <ColumnDefinition Width="*"/>    <!-- ZigZag Grid -->
+                                <ColumnDefinition Width="Auto"/> <!-- Separator -->
+                                <ColumnDefinition Width="Auto"/> <!-- Instrument/Adaptation -->
+                                <ColumnDefinition Width="Auto"/> <!-- Reset -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left: Trigger and Delay -->
+                            <Grid Grid.Column="0" VerticalAlignment="Center" Margin="0,0,15,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Key -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TriggerKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
+                                         PreviewKeyDown="TriggerKey_PreviewKeyDown" />
+
+                                <!-- Delay -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Delay" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Delay, Mode=TwoWay, Delay=150}"
+                                         Style="{StaticResource NumericTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
+                                         PreviewKeyDown="StepDelay_PreviewKeyDown" />
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="ms" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,0,0" FontSize="11" />
+                            </Grid>
+
+                            <!-- Separator -->
+                            <Rectangle Grid.Column="1" Width="1" Fill="{StaticResource AppBorderBrush}" Margin="0,0,20,0" />
+
+                            <!-- Middle: ZigZag Sequence Grid -->
+                            <Grid Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,20,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="60"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="20"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Step 1 (Top Left) -->
+                                <TextBox Grid.Row="0" Grid.Column="0" DataContext="{Binding Steps[0]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+                                         
+                                <!-- Arrow 1 -> 2 (Down) -->
+                                <Path Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 2 (Bottom Left) -->
+                                <TextBox Grid.Row="2" Grid.Column="0" DataContext="{Binding Steps[1]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+
+                                <!-- Arrow 2 -> 3 (Up-Right Diagonal) -->
+                                <Path Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 3 (Top Col 2) -->
+                                <TextBox Grid.Row="0" Grid.Column="2" DataContext="{Binding Steps[2]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+
+                                <!-- Arrow 3 -> 4 (Down) -->
+                                <Path Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 4 (Bottom Col 2) -->
+                                <TextBox Grid.Row="2" Grid.Column="2" DataContext="{Binding Steps[3]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+
+                                <!-- Arrow 4 -> 5 (Up-Right Diagonal) -->
+                                <Path Grid.Row="0" Grid.RowSpan="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 5 (Top Col 3) -->
+                                <TextBox Grid.Row="0" Grid.Column="4" DataContext="{Binding Steps[4]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+
+                                <!-- Arrow 5 -> 6 (Down) -->
+                                <Path Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 6 (Bottom Col 3) -->
+                                <TextBox Grid.Row="2" Grid.Column="4" DataContext="{Binding Steps[5]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+
+                                <!-- Arrow 6 -> 7 (Up-Right Diagonal) -->
+                                <Path Grid.Row="0" Grid.RowSpan="3" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 7 (Top Col 4) -->
+                                <TextBox Grid.Row="0" Grid.Column="6" DataContext="{Binding Steps[6]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+
+                                <!-- Arrow 7 -> 8 (Down) -->
+                                <Path Grid.Row="1" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+
+                                <!-- Step 8 (Bottom Col 4) -->
+                                <TextBox Grid.Row="2" Grid.Column="6" DataContext="{Binding Steps[7]}"
+                                         Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24"
+                                         PreviewKeyDown="StepKey_PreviewKeyDown" />
+                            </Grid>
+
+                            <!-- Separator -->
+                            <Rectangle Grid.Column="3" Width="1" Fill="{StaticResource AppBorderBrush}" Margin="0,0,15,0" />
+
+                            <!-- Instrument/Adaptation -->
+                            <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="0,0,15,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
+                                    <Image Source="pack://application:,,,/Icons/bd_adaptation.png" Stretch="None" Margin="0,0,4,0" ToolTip="Adaptation" />
+                                    <Image Source="pack://application:,,,/Icons/harp.png" Stretch="None" ToolTip="Instrument" />
+                                </StackPanel>
+                                <TextBox Text="{Binding AdaptationKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                         Style="{StaticResource KeyTextBoxStyle}" Height="24" Width="60"
+                                         PreviewKeyDown="AdaptationKey_PreviewKeyDown" />
+                            </StackPanel>
+
+                            <!-- Reset Button -->
+                            <Button Grid.Column="5" Content="Reset" Command="{Binding ResetRowCommand}"
+                                    Style="{StaticResource DangerButtonStyle}"
+                                    Width="60" Height="28" VerticalAlignment="Center" />
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </ScrollViewer>
+</UserControl>

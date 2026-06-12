@@ -236,25 +236,49 @@ public sealed record UpdateTransferHelperCommand(
 
 // ── Macro Switch ──────────────────────────────────────────────────────────────
 
-public sealed record UpdateMacroSwitchTriggerCommand(
-    int RowId,
-    string TriggerKey) : IIpcMessage
+public sealed record UpdateMacroSwitchTriggerCommand(int RowId, string TriggerKey) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateMacroSwitchTrigger;
 }
 
-public sealed record UpdateMacroSwitchStepCommand(
-    int RowId,
-    int StepId,
-    string Key,
-    int Delay,
-    int ClickMode) : IIpcMessage
+public sealed record UpdateMacroSwitchStepCommand(int RowId, int StepId, string Key, int Delay, int ClickMode) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateMacroSwitchStep;
 }
 
-public sealed record ResetMacroSwitchRowCommand(
-    int RowId) : IIpcMessage
+public sealed record ResetMacroSwitchRowCommand(int RowId) : IIpcMessage
 {
     public string Type => MessageTypes.ResetMacroSwitchRow;
-}
+}
+
+// ── Macro Song ────────────────────────────────────────────────────────────────
+
+public sealed record UpdateMacroSongTriggerCommand(int RowId, string TriggerKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSongTrigger;
+}
+
+public sealed record UpdateMacroSongStepCommand(int RowId, int StepId, string Key) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSongStep;
+}
+
+public sealed record UpdateMacroSongAdaptationCommand(int RowId, string AdaptationKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSongAdaptation;
+}
+
+public sealed record UpdateMacroSongInstrumentCommand(int RowId, string InstrumentKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSongInstrument;
+}
+
+public sealed record UpdateMacroSongDelayCommand(int RowId, int Delay) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSongDelay;
+}
+
+public sealed record ResetMacroSongRowCommand(int RowId) : IIpcMessage
+{
+    public string Type => MessageTypes.ResetMacroSongRow;
+}

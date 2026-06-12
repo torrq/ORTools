@@ -7,7 +7,7 @@ public sealed record WorkerReadyUpdate(string Version = "1.0") : IIpcMessage
     public string Type => MessageTypes.WorkerReady;
 }
 
-public sealed record AppStateUpdate(bool IsOn, string ToggleKey) : IIpcMessage
+public sealed record AppStateUpdate(bool IsOn, string ToggleKey, string AppTitle) : IIpcMessage
 {
     public string Type => MessageTypes.AppState;
 }
@@ -217,4 +217,20 @@ public sealed record MacroSwitchConfigUpdate(
     List<MacroSwitchChainData> Chains) : IIpcMessage
 {
     public string Type => MessageTypes.MacroSwitchConfigUpdate;
+}
+
+// ── Macro Song ────────────────────────────────────────────────────────────────
+
+public record MacroSongRowData(
+    int Id,
+    string TriggerKey,
+    string AdaptationKey,
+    string InstrumentKey,
+    int Delay,
+    List<string> Sequence);
+
+public sealed record MacroSongConfigUpdate(
+    List<MacroSongRowData> Rows) : IIpcMessage
+{
+    public string Type => MessageTypes.MacroSongConfigUpdate;
 }

@@ -170,18 +170,48 @@ public sealed class CommandDispatcher
                 break;
 
             case MessageTypes.UpdateMacroSwitchTrigger:
-                var mst = env.As<UpdateMacroSwitchTriggerCommand>();
-                if (mst != null) await _core.HandleUpdateMacroSwitchTrigger(mst);
+                var umst = env.As<UpdateMacroSwitchTriggerCommand>();
+                if (umst != null) await _core.HandleUpdateMacroSwitchTrigger(umst);
                 break;
 
             case MessageTypes.UpdateMacroSwitchStep:
-                var mss = env.As<UpdateMacroSwitchStepCommand>();
-                if (mss != null) await _core.HandleUpdateMacroSwitchStep(mss);
+                var umss = env.As<UpdateMacroSwitchStepCommand>();
+                if (umss != null) await _core.HandleUpdateMacroSwitchStep(umss);
                 break;
 
             case MessageTypes.ResetMacroSwitchRow:
-                var msr = env.As<ResetMacroSwitchRowCommand>();
-                if (msr != null) await _core.HandleResetMacroSwitchRow(msr);
+                var rmsr = env.As<ResetMacroSwitchRowCommand>();
+                if (rmsr != null) await _core.HandleResetMacroSwitchRow(rmsr);
+                break;
+
+            case MessageTypes.UpdateMacroSongTrigger:
+                var umsonst = env.As<UpdateMacroSongTriggerCommand>();
+                if (umsonst != null) await _core.HandleUpdateMacroSongTrigger(umsonst);
+                break;
+
+            case MessageTypes.UpdateMacroSongStep:
+                var umsonss = env.As<UpdateMacroSongStepCommand>();
+                if (umsonss != null) await _core.HandleUpdateMacroSongStep(umsonss);
+                break;
+
+            case MessageTypes.UpdateMacroSongAdaptation:
+                var umsa = env.As<UpdateMacroSongAdaptationCommand>();
+                if (umsa != null) await _core.HandleUpdateMacroSongAdaptation(umsa);
+                break;
+
+            case MessageTypes.UpdateMacroSongInstrument:
+                var umsi = env.As<UpdateMacroSongInstrumentCommand>();
+                if (umsi != null) await _core.HandleUpdateMacroSongInstrument(umsi);
+                break;
+
+            case MessageTypes.UpdateMacroSongDelay:
+                var umsd = env.As<UpdateMacroSongDelayCommand>();
+                if (umsd != null) await _core.HandleUpdateMacroSongDelay(umsd);
+                break;
+
+            case MessageTypes.ResetMacroSongRow:
+                var rmsongr = env.As<ResetMacroSongRowCommand>();
+                if (rmsongr != null) await _core.HandleResetMacroSongRow(rmsongr);
                 break;
 
             case MessageTypes.Shutdown:

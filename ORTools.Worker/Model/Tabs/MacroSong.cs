@@ -107,8 +107,10 @@ namespace ORTools.Worker
 
         private void OnGlobalKeyDown(Keys key)
         {
-            foreach (SongRow songRow in this.SongRows)
+            int maxRows = ConfigGlobal.GetConfig().SongRows;
+            for (int i = 0; i < maxRows && i < this.SongRows.Count; i++)
             {
+                var songRow = this.SongRows[i];
                 if (songRow.TriggerKey != Keys.None && songRow.TriggerKey == key)
                 {
                     _songQueue.Add(songRow);
@@ -162,12 +164,6 @@ namespace ORTools.Worker
             while (SongRows.Count < totalRows)
             {
                 SongRows.Add(new SongRow(SongRows.Count + 1));
-            }
-
-            // Remove extra rows if config has fewer rows than saved data
-            while (SongRows.Count > totalRows)
-            {
-                SongRows.RemoveAt(SongRows.Count - 1);
             }
         }
 
