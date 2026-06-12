@@ -112,8 +112,8 @@ namespace ORTools.Worker
                     else
                     {
                         // Remove the KeyInterop conversion since macro.Key is already Keys enum
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, macro.Key, 0);
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, macro.Key, 0);
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, macro.Key, Win32Interop.CreateLParam(macro.Key, true));
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, macro.Key, Win32Interop.CreateLParam(macro.Key, false));
                     }
                 }
                 // Handle clicking based on the ClickMode

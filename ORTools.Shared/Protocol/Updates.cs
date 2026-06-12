@@ -200,3 +200,21 @@ public sealed record TransferHelperConfigUpdate(
 {
     public string Type => MessageTypes.TransferHelperConfigUpdate;
 }
+
+// ── Macro Switch ──────────────────────────────────────────────────────────────
+
+public record MacroSwitchStepData(
+    string Key,
+    int Delay,
+    int ClickMode);
+
+public record MacroSwitchChainData(
+    int Id,
+    string TriggerKey,
+    List<MacroSwitchStepData> Steps);
+
+public sealed record MacroSwitchConfigUpdate(
+    List<MacroSwitchChainData> Chains) : IIpcMessage
+{
+    public string Type => MessageTypes.MacroSwitchConfigUpdate;
+}

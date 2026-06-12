@@ -15,7 +15,7 @@ namespace ORTools.Worker
         public Keys Key { get; set; }
 
         public static int TOTAL_MACRO_LANES = ConfigGlobal.GetConfig().MacroSwitchRows;
-        public static int TOTAL_MACRO_KEYS = 7;
+        public static int TOTAL_MACRO_KEYS = 8;
 
         private int _delay = AppConfig.MacroDefaultDelay;
         public int Delay
@@ -163,8 +163,8 @@ namespace ORTools.Worker
                     if (macroKey.Key != Keys.None)
                     {
                         // Send the key
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, macroKey.Key, 0);
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, macroKey.Key, 0);
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, macroKey.Key, Win32Interop.CreateLParam(macroKey.Key, true));
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, macroKey.Key, Win32Interop.CreateLParam(macroKey.Key, false));
 
                         // Handle click behavior
                         if (macroKey.ClickMode == 1)

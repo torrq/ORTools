@@ -36,6 +36,19 @@ internal static class Win32Interop
     [DllImport("user32.dll", SetLastError = true)] public static extern bool PostMessage(IntPtr hWnd, int Msg, Keys wParam, int lParam);
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)] public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
+    public static int CreateLParam(Keys key, bool isKeyDown)
+    {
+        uint scanCode = MapVirtualKey((uint)key, 0);
+        int lParam = 1; // Repeat count
+        lParam |= (int)(scanCode << 16);
+        if (!isKeyDown)
+        {
+            lParam |= (1 << 30); // Previous key state
+            lParam |= unchecked((int)0x80000000); // Transition state
+        }
+        return lParam;
+    }
+
     // Hooks
     [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
     public static extern IntPtr SetWindowsHookEx(int idHook, KeyboardHook.HookProc lpfn, IntPtr hInstance, int threadId);

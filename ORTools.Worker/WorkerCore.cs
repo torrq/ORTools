@@ -701,8 +701,21 @@ public sealed class WorkerCore
     public async Task HandleUpdateGlobalConfig(UpdateGlobalConfigCommand cmd)
     {
         var config = ConfigGlobal.GetConfig();
+        var profile = ProfileSingleton.GetCurrent();
         config.SongRows = cmd.SongRows;
+        
+        bool macroSwitchRowsChanged = config.MacroSwitchRows != cmd.MacroSwitchRows;
         config.MacroSwitchRows = cmd.MacroSwitchRows;
+        if (macroSwitchRowsChanged)
+        {
+            var chains = profile.MacroSwitch.ChainConfigs;
+            while (chains.Count > cmd.MacroSwitchRows)
+                chains.RemoveAt(chains.Count - 1);
+            while (chains.Count < cmd.MacroSwitchRows)
+                chains.Add(new MacroSwitchChainConfig(chains.Count + 1, Keys.None));
+            ProfileSingleton.SetConfiguration(profile.MacroSwitch);
+        }
+
         config.DefaultToggleStateKey = cmd.DefaultToggleStateKey;
         config.DebugMode = cmd.DebugMode;
         config.DebugModeShowLog = cmd.DebugModeShowLog;
@@ -715,6 +728,7 @@ public sealed class WorkerCore
         config.AlwaysOnTop = cmd.AlwaysOnTop;
         ConfigGlobal.SaveConfig();
         await BroadcastAsync(BuildGlobalConfigUpdate());
+        if (macroSwitchRowsChanged) await BroadcastAsync(BuildMacroSwitchConfig());
     }
 
     public Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
@@ -736,6 +750,56 @@ public sealed class WorkerCore
         
         if (unbindChanged) await PushAllConfigs();
         else await BroadcastAsync(BuildTransferHelperConfig());
+    }
+
+    // ── Macro Switch ──────────────────────────────────────────────────────────
+
+    public async Task HandleUpdateMacroSwitchTrigger(UpdateMacroSwitchTriggerCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        if (cmd.RowId < 1 || cmd.RowId > p.MacroSwitch.ChainConfigs.Count) return;
+        
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.TriggerKey, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            p.MacroSwitch.ChainConfigs[cmd.RowId - 1].TriggerKey = key;
+        }
+        
+        ProfileSingleton.SetConfiguration(p.MacroSwitch);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildMacroSwitchConfig());
+    }
+
+    public async Task HandleUpdateMacroSwitchStep(UpdateMacroSwitchStepCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        if (cmd.RowId < 1 || cmd.RowId > p.MacroSwitch.ChainConfigs.Count) return;
+        var chain = p.MacroSwitch.ChainConfigs[cmd.RowId - 1];
+        if (cmd.StepId < 1 || cmd.StepId > chain.macroEntries.Count) return;
+        
+        var step = chain.macroEntries[cmd.StepId - 1];
+        bool unbindChanged = false;
+        if (Enum.TryParse<Keys>(cmd.Key, out var key))
+        {
+            unbindChanged = UnbindKeyGlobally(key);
+            step.Key = key;
+        }
+        step.Delay = cmd.Delay;
+        step.ClickMode = cmd.ClickMode;
+
+        ProfileSingleton.SetConfiguration(p.MacroSwitch);
+        if (unbindChanged) await PushAllConfigs();
+        else await BroadcastAsync(BuildMacroSwitchConfig());
+    }
+
+    public async Task HandleResetMacroSwitchRow(ResetMacroSwitchRowCommand cmd)
+    {
+        var p = ProfileSingleton.GetCurrent();
+        if (cmd.RowId < 1 || cmd.RowId > p.MacroSwitch.ChainConfigs.Count) return;
+        p.MacroSwitch.ResetMacro(cmd.RowId);
+        ProfileSingleton.SetConfiguration(p.MacroSwitch);
+        await BroadcastAsync(BuildMacroSwitchConfig());
     }
 
     public Task HandleToggleAutoOffTimer(ToggleAutoOffTimerCommand cmd)
@@ -899,11 +963,27 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildGlobalConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());
         await BroadcastAsync(BuildTransferHelperConfig());
+        await BroadcastAsync(BuildMacroSwitchConfig());
     }
 
     private TransferHelperConfigUpdate BuildTransferHelperConfig()
     {
         return new TransferHelperConfigUpdate(ProfileSingleton.GetCurrent().TransferHelper.TransferKey.ToString());
+    }
+
+    private MacroSwitchConfigUpdate BuildMacroSwitchConfig()
+    {
+        var p = ProfileSingleton.GetCurrent();
+        var chains = p.MacroSwitch.ChainConfigs.Select(chain => new MacroSwitchChainData(
+            chain.id,
+            chain.TriggerKey.ToString(),
+            chain.macroEntries.Select(step => new MacroSwitchStepData(
+                step.Key.ToString(),
+                step.Delay,
+                step.ClickMode
+            )).ToList()
+        )).ToList();
+        return new MacroSwitchConfigUpdate(chains);
     }
 
     private AutoOffConfigUpdate BuildAutoOffConfig()
@@ -1010,6 +1090,15 @@ public sealed class WorkerCore
         }
         if (p.SkillSpammer.ToggleModeKey == key) { p.SkillSpammer.ToggleModeKey = Keys.None; changed = true; }
         
+        foreach (var chain in p.MacroSwitch.ChainConfigs)
+        {
+            if (chain.TriggerKey == key) { chain.TriggerKey = Keys.None; changed = true; }
+            foreach (var step in chain.macroEntries)
+            {
+                if (step.Key == key) { step.Key = Keys.None; changed = true; }
+            }
+        }
+
         if (changed)
         {
             ProfileSingleton.SetConfiguration(prefs);
@@ -1021,6 +1110,7 @@ public sealed class WorkerCore
             ProfileSingleton.SetConfiguration(p.StatusRecovery);
             ProfileSingleton.SetConfiguration(p.DebuffsRecovery);
             ProfileSingleton.SetConfiguration(p.SkillSpammer);
+            ProfileSingleton.SetConfiguration(p.MacroSwitch);
         }
         return changed;
     }

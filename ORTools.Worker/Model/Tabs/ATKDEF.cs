@@ -149,8 +149,8 @@ namespace ORTools.Worker
                                 }
                                 foreach (Keys key in atkKeys)
                                 {
-                                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, 0); //Equip ATK Items
-                                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, 0);
+                                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true)); //Equip ATK Items
+                                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
                                     Thread.Sleep(equipConfig.SwitchDelay);
                                 }
                                 equipAtkItems = true;
@@ -158,8 +158,8 @@ namespace ORTools.Worker
 
                             if (equipConfig.KeySpammerWithClick)
                             {
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, thisk, 0);
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, thisk, 0);
+                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, true));
+                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, false));
                                 Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, 0, 0);
                                 AutoSwitchAmmo(roClient, ref ammo, hWnd);
                                 Thread.Sleep(1);
@@ -168,8 +168,8 @@ namespace ORTools.Worker
                             }
                             else
                             {
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, thisk, 0);
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, thisk, 0);
+                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, true));
+                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, thisk, Win32Interop.CreateLParam(thisk, false));
                                 Thread.Sleep(equipConfig.KeySpammerDelay);
                             }
                         }
@@ -190,8 +190,8 @@ namespace ORTools.Worker
                             }
                             foreach (Keys key in defKeys)
                             {
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, 0); //Equip DEF Items
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, 0);
+                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true)); //Equip DEF Items
+                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
                                 Thread.Sleep(equipConfig.SwitchDelay);
                             }
                             equipDefItems = true;
@@ -216,14 +216,14 @@ namespace ORTools.Worker
                 {
                     if (!ammo)
                     {
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, prefs.Ammo1Key, 0);
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, prefs.Ammo1Key, 0);
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, prefs.Ammo1Key, Win32Interop.CreateLParam(prefs.Ammo1Key, true));
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, prefs.Ammo1Key, Win32Interop.CreateLParam(prefs.Ammo1Key, false));
                         ammo = true;
                     }
                     else
                     {
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, prefs.Ammo2Key, 0);
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, prefs.Ammo2Key, 0);
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, prefs.Ammo2Key, Win32Interop.CreateLParam(prefs.Ammo2Key, true));
+                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, prefs.Ammo2Key, Win32Interop.CreateLParam(prefs.Ammo2Key, false));
                         ammo = false;
                     }
                 }

@@ -124,7 +124,7 @@
                          Height="11"
                          Background="{StaticResource AppInputBrush}"
                          Foreground="#CD7F32" Grid.Column="0" />
-                        <TextBlock Grid.Column="1" Text="Wgt" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Center" Margin="6,0,4,0" TextAlignment="Right" />
+                        <TextBlock Grid.Column="1" Text="WT" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Bottom" Margin="6,0,4,0" TextAlignment="Right" />
                         <TextBlock x:Name="WtTextBlock" Grid.Column="2"
                        Text="{Binding WtText}"
                        FontSize="10"
@@ -204,10 +204,7 @@
                 </Border>
             </TabItem>
             <TabItem Header="Macro Switch">
-                <Border Padding="16">
-                    <TextBlock Text="Macro Switch - Phase 2"
-                     FontStyle="Italic" Margin="-6,-6,6,6" />
-                </Border>
+                <views:MacroSwitchView DataContext="{Binding MacroSwitch}" />
             </TabItem>
             <TabItem Header="Misc">
                 <views:MiscView DataContext="{Binding Misc}" />

@@ -58,6 +58,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public SettingsViewModel Settings { get; }
     public ProfilesViewModel Profiles { get; }
     public MiscViewModel Misc { get; }
+    public MacroSwitchViewModel MacroSwitch { get; }
 
     // ── Derived display properties ────────────────────────────────────────────
 
@@ -116,6 +117,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         
         if (Misc.TransferKey == newKey && (sourceVM as string) != "Misc_TransferKey") return true;
 
+        foreach (var row in MacroSwitch.Rows)
+        {
+            if (row.TriggerKey != "None" && row.TriggerKey == newKey && sourceVM != row) return true;
+            foreach (var step in row.Steps)
+            {
+                if (step.Key != "None" && step.Key == newKey && sourceVM != step) return true;
+            }
+        }
+
         return false;
     }
     public Brush HpBarBrush => HpPercent < 25
@@ -144,6 +154,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Settings = new SettingsViewModel(worker, AutobuffSkill);
         Profiles = new ProfilesViewModel(worker);
         Misc = new MiscViewModel(worker);
+        MacroSwitch = new MacroSwitchViewModel(_worker);
 
         // Map ViewModels to tabs
         Tabs = new ObservableCollection<object>

@@ -17,6 +17,7 @@ namespace ORTools.Worker
             if (profile == null) return;
             
             MigrateSkillSpammerKeys(profile);
+            MigrateMacroSwitchSteps(profile);
         }
 
         /// <summary>
@@ -48,6 +49,30 @@ namespace ORTools.Worker
                 
                 // Re-insert using the clean enum string (e.g., "R" instead of "chkR")
                 profile.SkillSpammer.SpammerEntries[val.Key.ToString()] = val;
+            }
+        }
+
+        /// <summary>
+        /// Migration: Macro Switch steps extension
+        /// 
+        /// Reason:
+        /// The old application had 7 Macro Switch steps. We updated it to 9.
+        /// This ensures legacy profiles with 7 steps are padded up to TOTAL_MACRO_KEYS
+        /// with default empty entries so the UI bindings don't fail.
+        /// </summary>
+        private static void MigrateMacroSwitchSteps(Profile profile)
+        {
+            if (profile.MacroSwitch?.ChainConfigs == null) return;
+
+            foreach (var chainConfig in profile.MacroSwitch.ChainConfigs)
+            {
+                if (chainConfig.macroEntries == null)
+                    chainConfig.macroEntries = new System.Collections.Generic.List<MacroSwitchKey>();
+
+                while (chainConfig.macroEntries.Count < MacroSwitchKey.TOTAL_MACRO_KEYS)
+                {
+                    chainConfig.macroEntries.Add(new MacroSwitchKey(System.Windows.Forms.Keys.None, AppConfig.MacroDefaultDelay));
+                }
             }
         }
     }

@@ -86,4 +86,10 @@ public static class MessageTypes
     public const string AutoOffConfigUpdate = "AutoOffConfigUpdate";
     public const string TransferHelperConfigUpdate = "TransferHelperConfigUpdate";
     public const string UpdateTransferHelperCommand = "UpdateTransferHelperCommand";
+
+    // Macro Switch
+    public const string UpdateMacroSwitchTrigger = "UpdateMacroSwitchTrigger";
+    public const string UpdateMacroSwitchStep = "UpdateMacroSwitchStep";
+    public const string ResetMacroSwitchRow = "ResetMacroSwitchRow";
+    public const string MacroSwitchConfigUpdate = "MacroSwitchConfigUpdate";
 }

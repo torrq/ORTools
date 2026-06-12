@@ -169,6 +169,21 @@ public sealed class CommandDispatcher
                 if (utc != null) await _core.HandleUpdateTransferHelper(utc);
                 break;
 
+            case MessageTypes.UpdateMacroSwitchTrigger:
+                var mst = env.As<UpdateMacroSwitchTriggerCommand>();
+                if (mst != null) await _core.HandleUpdateMacroSwitchTrigger(mst);
+                break;
+
+            case MessageTypes.UpdateMacroSwitchStep:
+                var mss = env.As<UpdateMacroSwitchStepCommand>();
+                if (mss != null) await _core.HandleUpdateMacroSwitchStep(mss);
+                break;
+
+            case MessageTypes.ResetMacroSwitchRow:
+                var msr = env.As<ResetMacroSwitchRowCommand>();
+                if (msr != null) await _core.HandleResetMacroSwitchRow(msr);
+                break;
+
             case MessageTypes.Shutdown:
                 DebugLogger.Info("[Dispatcher] Shutdown requested.");
                 await _core.HandleTurnOff();

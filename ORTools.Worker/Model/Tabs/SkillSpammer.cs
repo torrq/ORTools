@@ -190,8 +190,8 @@ namespace ORTools.Worker
                 Win32Interop.keybd_event(Constants.VK_SHIFT, 0x45, Constants.KEYEVENTF_EXTENDEDKEY, 0);
             }
 
-            Win32Interop.PostMessage(windowHandle, Constants.WM_KEYDOWN_MSG_ID, config.Key, 0);
-            Win32Interop.PostMessage(windowHandle, Constants.WM_KEYUP_MSG_ID, config.Key, 0);
+            Win32Interop.PostMessage(windowHandle, Constants.WM_KEYDOWN_MSG_ID, config.Key, Win32Interop.CreateLParam(config.Key, true));
+            Win32Interop.PostMessage(windowHandle, Constants.WM_KEYUP_MSG_ID, config.Key, Win32Interop.CreateLParam(config.Key, false));
 
             if (config.ClickActive && !config.IsIndeterminate)
             {

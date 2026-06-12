@@ -233,3 +233,28 @@ public sealed record UpdateTransferHelperCommand(
 {
     public string Type => MessageTypes.UpdateTransferHelperCommand;
 }
+
+// ── Macro Switch ──────────────────────────────────────────────────────────────
+
+public sealed record UpdateMacroSwitchTriggerCommand(
+    int RowId,
+    string TriggerKey) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSwitchTrigger;
+}
+
+public sealed record UpdateMacroSwitchStepCommand(
+    int RowId,
+    int StepId,
+    string Key,
+    int Delay,
+    int ClickMode) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateMacroSwitchStep;
+}
+
+public sealed record ResetMacroSwitchRowCommand(
+    int RowId) : IIpcMessage
+{
+    public string Type => MessageTypes.ResetMacroSwitchRow;
+}

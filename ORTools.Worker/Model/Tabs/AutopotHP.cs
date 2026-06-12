@@ -224,8 +224,8 @@ namespace ORTools.Worker
             {
                 if (!Win32Interop.IsKeyPressed(Keys.LMenu) && !Win32Interop.IsKeyPressed(Keys.RMenu))
                 {
-                    Win32Interop.PostMessage(handle, Constants.WM_KEYDOWN_MSG_ID, key, 0);
-                    Win32Interop.PostMessage(handle, Constants.WM_KEYUP_MSG_ID, key, 0);
+                    Win32Interop.PostMessage(handle, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
+                    Win32Interop.PostMessage(handle, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
                     return true;
                 }
             }
