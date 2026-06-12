@@ -34,20 +34,7 @@ public static class InputHelper
             _ => e.Key.ToString()
         };
 
-        // Check for duplicates via MainWindowViewModel (the root context)
-        var mainWindowVm = (ViewModels.MainWindowViewModel)System.Windows.Application.Current.MainWindow.DataContext;
-        if (newKey != "None" && mainWindowVm.IsKeyInUse(newKey, sourceVM))
-        {
-            var dialog = new Views.Dialogs.DuplicateKeyDialog("another feature")
-            {
-                Owner = System.Windows.Application.Current.MainWindow
-            };
-            if (dialog.ShowDialog() != true)
-            {
-                Keyboard.ClearFocus();
-                return;
-            }
-        }
+
 
         onKeySet(newKey);
         

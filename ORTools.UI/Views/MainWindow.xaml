@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
         xmlns:views="clr-namespace:ORTools.UI.Views"
+        xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
         Title="{Binding AppTitle}"
         Width="731"
         Height="675"
@@ -162,21 +163,31 @@
             </Grid>
         </Border>
         <TabControl Margin="0,3,0,2" Grid.Row="1" Grid.ColumnSpan="2">
+            <TabControl.Template>
+                <ControlTemplate TargetType="{x:Type TabControl}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <helpers:CenteredWrapPanel x:Name="HeaderPanel" IsItemsHost="True" Grid.Row="0" Margin="0,0,0,2"/>
+                        <Border x:Name="ContentPanel" Grid.Row="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </TabControl.Template>
             <TabItem Header="Skill Spammer">
                 <views:SkillSpammerView DataContext="{Binding SkillSpammer}" />
-            </TabItem>
-            <TabItem Header="Autopot">
-                <views:AutopotView DataContext="{Binding}" />
             </TabItem>
             <TabItem Header="Skill Timer">
                 <views:SkillTimerView DataContext="{Binding SkillTimer}" />
             </TabItem>
-            <TabItem Header="Auto Off">
-                <views:AutoOffView DataContext="{Binding AutoOff}" />
-            </TabItem>
-
             <TabItem Header="Debuffs">
                 <views:DebuffsView DataContext="{Binding Debuffs}" />
+            </TabItem>
+            <TabItem Header="Autopot">
+                <views:AutopotView DataContext="{Binding}" />
             </TabItem>
             <TabItem Header="Autobuff">
                 <TabControl Background="Transparent" BorderThickness="0" Margin="0,-2,0,0">
@@ -191,23 +202,41 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="ATK x DEF">
-                <views:AtkDefView DataContext="{Binding AtkDef}" />
-            </TabItem>
             <TabItem Header="Songs">
                 <views:MacroSongView DataContext="{Binding MacroSong}" />
             </TabItem>
             <TabItem Header="Macro Switch">
                 <views:MacroSwitchView DataContext="{Binding MacroSwitch}" />
             </TabItem>
+            <TabItem Header="ATK x DEF">
+                <views:AtkDefView DataContext="{Binding AtkDef}" />
+            </TabItem>
             <TabItem Header="Misc">
                 <views:MiscView DataContext="{Binding Misc}" />
             </TabItem>
-            <TabItem Header="Profiles">
+            <TabItem Width="120">
+                <TabItem.Header>
+                    <TextBlock Text="Auto Off" TextAlignment="Center" Width="100" />
+                </TabItem.Header>
+                <views:AutoOffView DataContext="{Binding AutoOff}" />
+            </TabItem>
+            <TabItem Width="120">
+                <TabItem.Header>
+                    <TextBlock Text="Profiles" TextAlignment="Center" Width="100" />
+                </TabItem.Header>
                 <views:ProfilesView DataContext="{Binding Profiles}" />
             </TabItem>
-            <TabItem Header="Settings">
+            <TabItem Width="120">
+                <TabItem.Header>
+                    <TextBlock Text="Settings" TextAlignment="Center" Width="100" />
+                </TabItem.Header>
                 <views:SettingsView DataContext="{Binding Settings}" />
+            </TabItem>
+            <TabItem Width="120">
+                <TabItem.Header>
+                    <TextBlock Text="About" TextAlignment="Center" Width="100" />
+                </TabItem.Header>
+                <views:AboutView />
             </TabItem>
         </TabControl>
     </Grid>

@@ -10,8 +10,8 @@ OSRO Tools (internally known as ORTools) is a Windows automation assistant for t
 
 There are two server modes: **MR** (Midrate) and **HR** (Highrate).
 `AppConfig.ServerMode` controls which memory addresses and server configs are active.
-The current active version is **HR** (`ServerMode = 1`, title `v1.99.0/HR`).
-
+The current active version is **HR** (`ServerMode = 1`).
+*Note: Do not hardcode version strings in the UI or codebase. The single source of truth for the application version is `Directory.Build.props` at the repository root. `AppConfig` dynamically reads this from the assembly at runtime.*
 ---
 
 ## Architecture: New (this repo, .NET 8)
