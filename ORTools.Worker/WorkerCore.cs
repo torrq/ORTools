@@ -7,8 +7,6 @@ public sealed class WorkerCore
 {
     public const string PipeName = "ORTools-Worker";
 
-    public Subject Subject { get; } = new();
-
     private readonly PipeServer _server;
     private readonly CommandDispatcher _dispatcher;
     private readonly StatePublisher _statePublisher;
@@ -98,7 +96,7 @@ public sealed class WorkerCore
         }
         _isOn = true;
         var p = ProfileSingleton.GetCurrent();
-        Subject.Notify(new Message(MessageCode.TURN_ON, null));
+        Thread.Sleep(300);
         p.AutopotHP.Start(); p.AutopotSP.Start();
         p.SkillTimer.Start(); p.SkillSpammer.Start();
         p.StatusRecovery.Start(); p.AutobuffSkill.Start();
@@ -127,7 +125,6 @@ public sealed class WorkerCore
         if (!_isOn) return;
         _isOn = false;
         var p = ProfileSingleton.GetCurrent();
-        Subject.Notify(new Message(MessageCode.TURN_OFF, null));
         p.AutopotHP.Stop(); p.AutopotSP.Stop();
         p.SkillTimer.Stop(); p.SkillSpammer.Stop();
         p.StatusRecovery.Stop(); p.AutobuffSkill.Stop();
@@ -260,7 +257,6 @@ public sealed class WorkerCore
             ProfileSingleton.Load(profileName);
             HookSkillSpammerEvents();
             _currentProfileName = profileName;
-            Subject.Notify(new Message(MessageCode.PROFILE_CHANGED, profileName));
             ConfigGlobal.GetConfig().LastUsedProfile = profileName;
             ConfigGlobal.SaveConfig();
             RefreshToggleHotkey();
