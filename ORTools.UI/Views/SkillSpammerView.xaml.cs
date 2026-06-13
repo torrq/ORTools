@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using ORTools.UI.ViewModels;
 
 namespace ORTools.UI.Views;
@@ -34,5 +36,11 @@ public partial class SkillSpammerView : UserControl
             tb.Text = "0";
             tb.CaretIndex = 1;
         }
+    }
+
+    private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        e.Handled = true;
     }
 }

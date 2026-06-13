@@ -15,6 +15,12 @@
                            
                 <TextBlock Text="Built with .NET 8 and WPF." 
                            TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource AppSubtleBrush}" MaxWidth="350"/>
+                           
+                <TextBlock TextAlignment="Center" Margin="0,20,0,0">
+                    <Hyperlink NavigateUri="https://github.com/torrq/ORTools" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">
+                        <Run Text="View on GitHub"/>
+                    </Hyperlink>
+                </TextBlock>
             </StackPanel>
         </Border>
     </Grid>

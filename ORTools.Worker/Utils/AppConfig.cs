@@ -106,7 +106,7 @@ public static class AppConfig
     };
 
     // ── URLs ──────────────────────────────────────────────────────────────────
-    public static string GithubLink     = "https://github.com/torrq/4RTools-OSRO/releases";
+    public static string GithubLink     = "https://github.com/torrq/ORTools";
     public static string WebsiteMR      = "https://osro.mr";
     public static string WebsiteHR      = "https://osro.gg";
     public static string DiscordLinkMR  = "https://discord.com/invite/osro2";
