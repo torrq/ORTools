@@ -120,6 +120,12 @@ public static class ProfileSingleton
 
                 // Run legacy profile migrations
                 ProfileMigrator.Migrate(_profile);
+
+                // Ensure row counts match global config
+                var config = ConfigGlobal.GetConfig();
+                _profile.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
+                _profile.SongMacro.EnsureCorrectRowCount(config.SongRows);
+                _profile.MacroSwitch.EnsureCorrectRowCount(config.MacroSwitchRows);
             }
         }
         catch (Exception ex)
@@ -144,8 +150,14 @@ public static class ProfileSingleton
             if (!Directory.Exists(AppConfig.ProfileFolder))
                 Directory.CreateDirectory(AppConfig.ProfileFolder);
             ClearProfile(profileName);
+            
+            var config = ConfigGlobal.GetConfig();
+            _profile.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
+            _profile.SongMacro.EnsureCorrectRowCount(config.SongRows);
+            _profile.MacroSwitch.EnsureCorrectRowCount(config.MacroSwitchRows);
+
             File.WriteAllText(jsonFile,
-                JsonConvert.SerializeObject(new Profile(profileName), Formatting.Indented));
+                JsonConvert.SerializeObject(_profile, Formatting.Indented));
         }
         catch (Exception ex) { DebugLogger.Error(ex, $"Failed to create profile '{profileName}'"); }
     }

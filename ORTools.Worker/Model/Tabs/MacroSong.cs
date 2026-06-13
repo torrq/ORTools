@@ -130,7 +130,7 @@ namespace ORTools.Worker
             this.SongRows = songRows ?? new List<SongRow>();
 
             // Ensure we have the correct number of rows based on current config
-            EnsureCorrectRowCount();
+            EnsureCorrectRowCount(ConfigGlobal.GetConfig().SongRows);
         }
 
         [JsonIgnore]
@@ -141,7 +141,7 @@ namespace ORTools.Worker
         {
             if (!isInitialized)
             {
-                EnsureCorrectRowCount();
+                EnsureCorrectRowCount(ConfigGlobal.GetConfig().SongRows);
                 isInitialized = true;
             }
         }
@@ -156,12 +156,10 @@ namespace ORTools.Worker
             }
         }
 
-        private void EnsureCorrectRowCount()
+        public void EnsureCorrectRowCount(int count)
         {
-            int totalRows = ConfigGlobal.GetConfig().SongRows;
-
             // Add missing rows if config has more rows than saved data
-            while (SongRows.Count < totalRows)
+            while (SongRows.Count < count)
             {
                 SongRows.Add(new SongRow(SongRows.Count + 1));
             }

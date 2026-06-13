@@ -119,4 +119,44 @@ public static class ClientInput
     {
         Win32Interop.mouse_event(flags, x, y, 0, 0);
     }
+
+    public static bool IsWindowVisible(IntPtr hWnd)
+    {
+        return Win32Interop.IsWindowVisible(hWnd);
+    }
+
+    public static bool ClickAtCurrentPosition(IntPtr hWnd)
+    {
+        if (hWnd == IntPtr.Zero || !IsWindowVisible(hWnd)) return false;
+
+        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONDOWN, (IntPtr)1, IntPtr.Zero);
+        Thread.Sleep(25);
+        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+
+        return true;
+    }
+
+    public static bool ClickAtWindowCenter(IntPtr hWnd)
+    {
+        if (hWnd == IntPtr.Zero || !IsWindowVisible(hWnd)) return false;
+
+        var clientRect = GetClientRect(hWnd);
+        if (clientRect == Rectangle.Empty) return false;
+
+        int centerX = clientRect.Width / 2;
+        int centerY = clientRect.Height / 2;
+
+        var centerPoint = ClientToScreen(hWnd, new Point(centerX, centerY));
+        var originalPos = GetCursorPos();
+
+        SetCursorPos(centerPoint.X, centerPoint.Y);
+        Thread.Sleep(25);
+        SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN);
+        Thread.Sleep(50);
+        SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP);
+
+        SetCursorPos(originalPos.X, originalPos.Y);
+
+        return true;
+    }
 }

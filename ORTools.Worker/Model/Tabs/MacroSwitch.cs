@@ -124,9 +124,14 @@ namespace ORTools.Worker
         public MacroSwitch(string macroname, int macroLanes)
         {
             this.ActionName = macroname;
-            for (int i = 1; i <= macroLanes; i++)
+            EnsureCorrectRowCount(macroLanes);
+        }
+
+        public void EnsureCorrectRowCount(int count)
+        {
+            while (ChainConfigs.Count < count)
             {
-                ChainConfigs.Add(new MacroSwitchChainConfig(i, Keys.None));
+                ChainConfigs.Add(new MacroSwitchChainConfig(ChainConfigs.Count + 1, Keys.None));
             }
         }
 
@@ -168,15 +173,14 @@ namespace ORTools.Worker
                         ClientInput.SendKey(hWnd, macroKey.Key, blockOnAlt: false);
 
                         // Handle click behavior
-                        if (macroKey.ClickMode == 1)
+                        switch (macroKey.ClickMode)
                         {
-                            // Click at current mouse position
-                            MouseHelper.TryClickAtCurrentPosition(hWnd);
-                        }
-                        else if (macroKey.ClickMode == 2)
-                        {
-                            // Click at center of game window
-                            MouseHelper.TryClickAtWindowCenter(hWnd);
+                            case 1:
+                                ClientInput.ClickAtCurrentPosition(hWnd);
+                                break;
+                            case 2:
+                                ClientInput.ClickAtWindowCenter(hWnd);
+                                break;
                         }
 
                         Thread.Sleep(macroKey.Delay); // delay after sending key and/or click

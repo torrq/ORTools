@@ -50,53 +50,56 @@ public partial class AutobuffItemViewModel : ObservableObject
 
     private void OnConfigReceived(AutobuffItemConfigUpdate config)
     {
-        _isUpdatingFromServer = true;
-
-        Delay = Math.Max(Delay, config.Delay);
-
-        if (ItemGroups.Count == 0)
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            foreach (var groupData in config.Groups)
+            _isUpdatingFromServer = true;
+
+            Delay = Math.Max(Delay, config.Delay);
+
+            if (ItemGroups.Count == 0)
             {
-                var groupVm = new AutobuffItemGroupViewModel { GroupName = groupData.GroupName };
-                foreach (var itemData in groupData.Items)
+                foreach (var groupData in config.Groups)
                 {
-                    var itemVm = new AutobuffItemItemViewModel
+                    var groupVm = new AutobuffItemGroupViewModel { GroupName = groupData.GroupName };
+                    foreach (var itemData in groupData.Items)
                     {
-                        Name = itemData.Name,
-                        DisplayName = itemData.DisplayName,
-                        Key = itemData.Key
-                    };
-                    itemVm.OnKeyUpdated += (sender, key) =>
-                    {
-                        if (!_isUpdatingFromServer && sender is AutobuffItemItemViewModel vm)
-                            _worker.Send(new UpdateAutobuffItemCommand(vm.Name, key));
-                    };
-                    groupVm.Items.Add(itemVm);
+                        var itemVm = new AutobuffItemItemViewModel
+                        {
+                            Name = itemData.Name,
+                            DisplayName = itemData.DisplayName,
+                            Key = itemData.Key
+                        };
+                        itemVm.OnKeyUpdated += (sender, key) =>
+                        {
+                            if (!_isUpdatingFromServer && sender is AutobuffItemItemViewModel vm)
+                                _worker.Send(new UpdateAutobuffItemCommand(vm.Name, key));
+                        };
+                        groupVm.Items.Add(itemVm);
+                    }
+                    ItemGroups.Add(groupVm);
                 }
-                ItemGroups.Add(groupVm);
             }
-        }
-        else
-        {
-            // In-place update
-            foreach (var groupData in config.Groups)
+            else
             {
-                var groupVm = ItemGroups.FirstOrDefault(g => g.GroupName == groupData.GroupName);
-                if (groupVm == null) continue;
-
-                foreach (var itemData in groupData.Items)
+                // In-place update to prevent massive WPF layout lag
+                foreach (var groupData in config.Groups)
                 {
-                    var itemVm = groupVm.Items.FirstOrDefault(i => i.Name == itemData.Name);
-                    if (itemVm != null && itemVm.Key != itemData.Key)
+                    var groupVm = ItemGroups.FirstOrDefault(g => g.GroupName == groupData.GroupName);
+                    if (groupVm == null) continue;
+
+                    foreach (var itemData in groupData.Items)
                     {
-                        itemVm.Key = itemData.Key;
+                        var itemVm = groupVm.Items.FirstOrDefault(i => i.Name == itemData.Name);
+                        if (itemVm != null && itemVm.Key != itemData.Key)
+                        {
+                            itemVm.Key = itemData.Key;
+                        }
                     }
                 }
             }
-        }
 
-        _isUpdatingFromServer = false;
+            _isUpdatingFromServer = false;
+        });
     }
 
     partial void OnDelayChanged(int value)
