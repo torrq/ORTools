@@ -46,6 +46,15 @@
                                 <Setter Property="Header" Value="{Binding}" />
                                 <Setter Property="Command" Value="{Binding DataContext.SelectProfileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                 <Setter Property="CommandParameter" Value="{Binding}" />
+                                <Setter Property="IsCheckable" Value="True" />
+                                <Setter Property="IsChecked">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource EqualityMultiConverter}">
+                                            <Binding Path="." />
+                                            <Binding Path="DataContext.CurrentProfile" RelativeSource="{RelativeSource AncestorType=ContextMenu}" />
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
                             </Style>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>

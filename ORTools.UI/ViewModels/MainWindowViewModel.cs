@@ -32,9 +32,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _appTitle = "OSRO Tools";
     [ObservableProperty] private string _appLogoSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.png";
 #if SERVERMODE_HR
-    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/Views/ortools-hr.ico";
+    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.ico";
 #else
-    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/Views/ortools-mr.ico";
+    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/ORTools;component/Views/ortools-mr.ico";
 #endif
     [ObservableProperty] private bool   _isClientConnected;
     [ObservableProperty] private string _connectedProcessName = "";

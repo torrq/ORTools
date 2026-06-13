@@ -28,7 +28,21 @@ public sealed class WorkerCore
         }
 
         ProfileSingleton.Create("Default");
-        ProfileSingleton.Load("Default");
+        
+        var lastProfile = ConfigGlobal.GetConfig().LastUsedProfile;
+        if (string.IsNullOrEmpty(lastProfile)) lastProfile = "Default";
+        
+        try
+        {
+            ProfileSingleton.Load(lastProfile);
+            _currentProfileName = lastProfile;
+        }
+        catch
+        {
+            ProfileSingleton.Load("Default");
+            _currentProfileName = "Default";
+        }
+        
         HookSkillSpammerEvents();
 
         _autoOff = new AutoOff();
