@@ -11,10 +11,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <TextBlock Grid.Row="0" Margin="0,0,0,16" Foreground="{DynamicResource AppTextBrush}" TextWrapping="Wrap" FontSize="14">
-            Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom). Use the Up/Down buttons to reorder them.
-        </TextBlock>
+
+        <TextBlock Grid.Row="0" Margin="0,0,0,8" Foreground="{DynamicResource AppTextBrush}" TextWrapping="Wrap" FontStyle="Italic" FontSize="13" HorizontalAlignment="Center" Text="Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom)."/>
 
         <ListBox Grid.Row="1" ItemsSource="{Binding ActiveItems}" 
                  Background="{DynamicResource AppSurfaceBrush}" 
