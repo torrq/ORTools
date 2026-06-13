@@ -4,7 +4,7 @@
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <!-- ServerMode can be HR or MR. This controls the preprocessor directives, app icons, and runtime behavior. -->
-    <ServerMode>MR</ServerMode>
+    <ServerMode>HR</ServerMode>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(ServerMode)' == 'HR'">
