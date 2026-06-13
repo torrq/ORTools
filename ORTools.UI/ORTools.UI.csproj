@@ -17,8 +17,8 @@
     <None Remove="Views\ortools-mr.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ortools-hr.ico" />
-    <Content Include="Views\ortools-mr.ico" />
+    <Resource Include="Views\ortools-hr.ico" />
+    <Resource Include="Views\ortools-mr.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
