@@ -1,4 +1,4 @@
-﻿
+
 using Newtonsoft.Json;
 using System;
 using System.Runtime.InteropServices;
@@ -30,7 +30,7 @@ namespace ORTools.Worker
             if (roClient.IsTextInputActive() || roClient.IsDead()) return 0;
 
             var transferKey = ProfileSingleton.GetCurrent().TransferHelper.TransferKey;
-            if (transferKey != Keys.None && Win32Interop.IsKeyPressed(transferKey))
+            if (transferKey != Keys.None && ClientInput.IsKeyPressed(transferKey))
             {
                 TransferHelperMacro(roClient, new KeyConfig(transferKey, true), transferKey);
                 return 0;
@@ -43,20 +43,18 @@ namespace ORTools.Worker
         {
             Func<int, int> send_click = (evt) =>
             {
-                Win32Interop.PostMessage(roClient.Process.MainWindowHandle, Constants.WM_RBUTTONDOWN, 0, 0);
-                Thread.Sleep(1);
-                Win32Interop.PostMessage(roClient.Process.MainWindowHandle, Constants.WM_RBUTTONUP, 0, 0);
+                ClientInput.SendRightClick(roClient.Process.MainWindowHandle);
                 return 0;
             };
 
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0xA4, Constants.KEYEVENTF_EXTENDEDKEY, 0);
+            ClientInput.HoldAlt();
 
-            while (Win32Interop.IsKeyPressed(config.Key))
+            while (ClientInput.IsKeyPressed(config.Key))
             {
                 send_click(0);
                 Thread.Sleep(10);
             }
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0xA4, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
+            ClientInput.ReleaseAlt();
         }
 
         public void Start()

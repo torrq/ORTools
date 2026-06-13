@@ -51,16 +51,7 @@ namespace ORTools.Worker
                     return false;
                 }
 
-                IntPtr activeWindowHandle = Win32Interop.GetForegroundWindow();
-                if (activeWindowHandle == IntPtr.Zero)
-                {
-                    return false;
-                }
-
-                uint activeProcessId;
-                Win32Interop.GetWindowThreadProcessId(activeWindowHandle, out activeProcessId);
-
-                return activeProcessId == currentClient.Process.Id;
+                return ClientInput.IsForeground(currentClient.Process.MainWindowHandle);
             }
             catch (Exception ex)
             {
@@ -122,7 +113,7 @@ namespace ORTools.Worker
             // Handle toggle mode key press
             if (this.ToggleModeKey != Keys.None)
             {
-                bool isToggleKeyPressed = Win32Interop.IsKeyPressed(this.ToggleModeKey);
+                bool isToggleKeyPressed = ClientInput.IsKeyPressed(this.ToggleModeKey);
                 bool wasToggleKeyPressed = keyPressedLastFrame.ContainsKey(this.ToggleModeKey) && keyPressedLastFrame[this.ToggleModeKey];
 
                 if (isToggleKeyPressed && !wasToggleKeyPressed)
@@ -154,7 +145,7 @@ namespace ORTools.Worker
 
         private void SkillSpammerSpeedBoost(KeyConfig config, IntPtr windowHandle, bool noShift, bool mouseFlick)
         {
-            bool isKeyPressed = Win32Interop.IsKeyPressed(config.Key);
+            bool isKeyPressed = ClientInput.IsKeyPressed(config.Key);
             bool wasKeyPressed = keyPressedLastFrame.ContainsKey(config.Key) && keyPressedLastFrame[config.Key];
 
             if (this.ToggleMode)
@@ -187,11 +178,10 @@ namespace ORTools.Worker
         {
             if (noShift)
             {
-                Win32Interop.keybd_event(Constants.VK_SHIFT, 0x45, Constants.KEYEVENTF_EXTENDEDKEY, 0);
+                ClientInput.HoldShift();
             }
 
-            Win32Interop.PostMessage(windowHandle, Constants.WM_KEYDOWN_MSG_ID, config.Key, Win32Interop.CreateLParam(config.Key, true));
-            Win32Interop.PostMessage(windowHandle, Constants.WM_KEYUP_MSG_ID, config.Key, Win32Interop.CreateLParam(config.Key, false));
+            ClientInput.SendKey(windowHandle, config.Key, blockOnAlt: false);
 
             if (config.ClickActive && !config.IsIndeterminate)
             {
@@ -205,22 +195,22 @@ namespace ORTools.Worker
                     );
 
                     System.Windows.Forms.Cursor.Position = flickPos;
-                    Win32Interop.mouse_event(Constants.MOUSEEVENTF_LEFTDOWN, (uint)flickPos.X, (uint)flickPos.Y, 0, 0);
+                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)flickPos.X, (uint)flickPos.Y);
                     Thread.Sleep(1);
-                    Win32Interop.mouse_event(Constants.MOUSEEVENTF_LEFTUP, (uint)flickPos.X, (uint)flickPos.Y, 0, 0);
+                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)flickPos.X, (uint)flickPos.Y);
                     System.Windows.Forms.Cursor.Position = cursorPos;
                 }
                 else
                 {
-                    Win32Interop.mouse_event(Constants.MOUSEEVENTF_LEFTDOWN, (uint)cursorPos.X, (uint)cursorPos.Y, 0, 0);
+                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)cursorPos.X, (uint)cursorPos.Y);
                     Thread.Sleep(1);
-                    Win32Interop.mouse_event(Constants.MOUSEEVENTF_LEFTUP, (uint)cursorPos.X, (uint)cursorPos.Y, 0, 0);
+                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)cursorPos.X, (uint)cursorPos.Y);
                 }
             }
 
             if (noShift)
             {
-                Win32Interop.keybd_event(Constants.VK_SHIFT, 0x45, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
+                ClientInput.ReleaseShift();
             }
 
             Thread.Sleep(this.SpammerDelay);

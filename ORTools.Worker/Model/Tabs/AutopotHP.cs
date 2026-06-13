@@ -217,24 +217,15 @@ namespace ORTools.Worker
 
         private bool UsePot(Keys key, IntPtr handle)
         {
-            if (key == Keys.None)
-                return false;
-
             try
             {
-                if (!Win32Interop.IsKeyPressed(Keys.LMenu) && !Win32Interop.IsKeyPressed(Keys.RMenu))
-                {
-                    Win32Interop.PostMessage(handle, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
-                    Win32Interop.PostMessage(handle, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
-                    return true;
-                }
+                return ClientInput.SendKey(handle, key);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to use pot key {key}: {ex.Message}");
+                return false;
             }
-
-            return false;
         }
 
         public void Stop()

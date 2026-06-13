@@ -165,8 +165,7 @@ namespace ORTools.Worker
                     if (macroKey.Key != Keys.None)
                     {
                         // Send the key
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, macroKey.Key, Win32Interop.CreateLParam(macroKey.Key, true));
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, macroKey.Key, Win32Interop.CreateLParam(macroKey.Key, false));
+                        ClientInput.SendKey(hWnd, macroKey.Key, blockOnAlt: false);
 
                         // Handle click behavior
                         if (macroKey.ClickMode == 1)

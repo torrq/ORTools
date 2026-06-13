@@ -107,13 +107,12 @@ namespace ORTools.Worker
                 {
                     if (macro.AltKey)
                     {
-                        SendAltKey(hWnd, macro.Key);
+                        ClientInput.SendAltKeyCombo(hWnd, macro.Key);
                     }
                     else
                     {
                         // Remove the KeyInterop conversion since macro.Key is already Keys enum
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, macro.Key, Win32Interop.CreateLParam(macro.Key, true));
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, macro.Key, Win32Interop.CreateLParam(macro.Key, false));
+                        ClientInput.SendKey(hWnd, macro.Key, blockOnAlt: false);
                     }
                 }
                 // Handle clicking based on the ClickMode
@@ -142,22 +141,6 @@ namespace ORTools.Worker
             return ACTION_NAME;
         }
 
-        private static void SendAltKey(IntPtr hWnd, Keys key)
-        {
-            if (Win32Interop.GetForegroundWindow() != hWnd)
-            {
-                Win32Interop.SetForegroundWindow(hWnd);
-                Thread.Sleep(30);
-            }
-            // SendKeys.SendWait is not available in a console/Worker process without a message pump.
-            // Use keybd_event to synthesize Alt+key directly.
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0, Constants.KEYEVENTF_EXTENDEDKEY, 0);
-            Thread.Sleep(20);
-            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, 0);
-            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID,   key, 0);
-            Thread.Sleep(20);
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
-        }
 
         private static readonly Dictionary<Keys, string> _sendKeysMap = new Dictionary<Keys, string>()
         {
@@ -184,14 +167,13 @@ namespace ORTools.Worker
 
         private void TryClickAtCurrentPosition(IntPtr hWnd)
         {
-            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, Keys.LButton, 0);
-            Thread.Sleep(5);
-            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, Keys.None, 0);
+            ClientInput.SendLeftClick(hWnd);
         }
 
         private void TryClickAtCenter(IntPtr hWnd)
         {
-            if (!Win32Interop.GetClientRect(hWnd, out Win32Interop.RECT clientRect))
+            System.Drawing.Rectangle clientRect = ClientInput.GetClientRect(hWnd);
+            if (clientRect == System.Drawing.Rectangle.Empty)
                 return;
 
             // Calculate the center of the client area
@@ -199,22 +181,22 @@ namespace ORTools.Worker
             int centerY = clientRect.Bottom / 2;
 
             // Convert client coordinates to screen coordinates
-            Win32Interop.POINT centerPoint = new Win32Interop.POINT { X = centerX, Y = centerY };
-            Win32Interop.ClientToScreen(hWnd, ref centerPoint);
+            System.Drawing.Point centerPoint = new System.Drawing.Point(centerX, centerY);
+            centerPoint = ClientInput.ClientToScreen(hWnd, centerPoint);
 
             // Save current cursor position
-            Win32Interop.GetCursorPos(out Win32Interop.POINT originalPos);
+            System.Drawing.Point originalPos = ClientInput.GetCursorPos();
 
             // Move cursor to center, click, then restore position
-            Win32Interop.SetCursorPos(centerPoint.X, centerPoint.Y);
+            ClientInput.SetCursorPos(centerPoint.X, centerPoint.Y);
             // SetCursorPos is synchronous — no sleep needed before the click
 
-            Win32Interop.mouse_event(Constants.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+            ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN);
             Thread.Sleep(25);
-            Win32Interop.mouse_event(Constants.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+            ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP);
 
             // Restore original cursor position
-            Win32Interop.SetCursorPos(originalPos.X, originalPos.Y);
+            ClientInput.SetCursorPos(originalPos.X, originalPos.Y);
         }
 
     }

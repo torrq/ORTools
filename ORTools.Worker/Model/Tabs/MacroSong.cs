@@ -216,8 +216,7 @@ namespace ORTools.Worker
                     // Equip instrument if specified
                     if (songRow.InstrumentKey != Keys.None)
                     {
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, songRow.InstrumentKey, Win32Interop.CreateLParam(songRow.InstrumentKey, true));
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, songRow.InstrumentKey, Win32Interop.CreateLParam(songRow.InstrumentKey, false));
+                        ClientInput.SendKey(hWnd, songRow.InstrumentKey, blockOnAlt: false);
                         Thread.Sleep(30);
                     }
 
@@ -225,15 +224,13 @@ namespace ORTools.Worker
                     for (int i = 0; i < activeSongKeys.Count; i++)
                     {
                         // Cast the song key
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, activeSongKeys[i], Win32Interop.CreateLParam(activeSongKeys[i], true));
-                        Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, activeSongKeys[i], Win32Interop.CreateLParam(activeSongKeys[i], false));
+                        ClientInput.SendKey(hWnd, activeSongKeys[i], blockOnAlt: false);
                         Thread.Sleep(songRow.Delay);
 
                         // Send adaptation key after each song step (including the last one)
                         if (songRow.AdaptationKey != Keys.None)
                         {
-                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, songRow.AdaptationKey, Win32Interop.CreateLParam(songRow.AdaptationKey, true));
-                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, songRow.AdaptationKey, Win32Interop.CreateLParam(songRow.AdaptationKey, false));
+                            ClientInput.SendKey(hWnd, songRow.AdaptationKey, blockOnAlt: false);
                             Thread.Sleep(songRow.Delay);
                         }
                     }

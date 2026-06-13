@@ -423,15 +423,7 @@ namespace ORTools.Worker
         {
             try
             {
-                if ((key != Keys.None) && !Win32Interop.IsKeyPressed(Keys.LMenu) && !Win32Interop.IsKeyPressed(Keys.RMenu))
-                {
-                    var client = ClientSingleton.GetClient();
-                    if (client?.Process != null && !client.Process.HasExited)
-                    {
-                        Win32Interop.PostMessage(client.Process.MainWindowHandle, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
-                        Win32Interop.PostMessage(client.Process.MainWindowHandle, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
-                    }
-                }
+                ClientInput.SendKey(key);
             }
             catch (Exception ex)
             {

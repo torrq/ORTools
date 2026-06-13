@@ -102,7 +102,7 @@ public class AtkDef : IAction
         IntPtr hWnd = roClient.MainWindowHandle;
         if (hWnd == IntPtr.Zero) return 0;
 
-        if (Win32Interop.GetForegroundWindow() != hWnd) return 0;
+        if (!ClientInput.IsForeground(hWnd)) return 0;
 
         List<AtkDefEquipConfig> currentConfigs;
         lock (EquipConfigs)
@@ -122,12 +122,12 @@ public class AtkDef : IAction
 
                 if (Enum.TryParse<Keys>(equipConfig.KeySpammer, out var spammerKey) && spammerKey != Keys.None)
                 {
-                    if (WorkerNotifier.IsValidKey(equipConfig.KeySpammer) && Win32Interop.IsKeyPressed(spammerKey)
-                        && !Win32Interop.IsKeyPressed(Keys.LMenu) && !Win32Interop.IsKeyPressed(Keys.RMenu))
+                    if (WorkerNotifier.IsValidKey(equipConfig.KeySpammer) && ClientInput.IsKeyPressed(spammerKey)
+                        && !ClientInput.IsKeyPressed(Keys.LMenu) && !ClientInput.IsKeyPressed(Keys.RMenu))
                     {
-                        while (Win32Interop.IsKeyPressed(spammerKey))
+                        while (ClientInput.IsKeyPressed(spammerKey))
                         {
-                        if (Win32Interop.GetForegroundWindow() != hWnd)
+                        if (!ClientInput.IsForeground(hWnd))
                         {
                             break;
                         }
@@ -143,8 +143,7 @@ public class AtkDef : IAction
                             {
                                 if (Enum.TryParse<Keys>(keyStr, out var key))
                                 {
-                                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true)); //Equip ATK Items
-                                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
+                                    ClientInput.SendKey(hWnd, key, blockOnAlt: false); //Equip ATK Items
                                     Thread.Sleep(equipConfig.SwitchDelay);
                                 }
                             }
@@ -153,27 +152,21 @@ public class AtkDef : IAction
 
                         if (equipConfig.KeySpammerWithClick)
                         {
-                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, true));
-                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, false));
-                            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, Keys.None, 0);
+                            ClientInput.SendKey(hWnd, spammerKey, blockOnAlt: false);
+                            ClientInput.SendLeftClick(hWnd);
                             AutoSwitchAmmo(roClient, ref ammo, hWnd);
-                            Thread.Sleep(1);
-                            Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, Keys.None, 0);
                             Thread.Sleep(equipConfig.KeySpammerDelay);
                         }
                         else
                         {
-                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, true));
-                            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, spammerKey, Win32Interop.CreateLParam(spammerKey, false));
+                            ClientInput.SendKey(hWnd, spammerKey, blockOnAlt: false);
                             Thread.Sleep(equipConfig.KeySpammerDelay);
                         }
                     }
 
                     if (equipConfig.KeySpammerWithClick)
                     {
-                        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, Keys.None, 0);
-                        Thread.Sleep(1);
-                        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, Keys.None, 0);
+                        ClientInput.SendLeftClick(hWnd);
                     }
 
                     if (!equipDefItems)
@@ -187,8 +180,7 @@ public class AtkDef : IAction
                         {
                             if (Enum.TryParse<Keys>(keyStr, out var key))
                             {
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true)); //Equip DEF Items
-                                Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
+                                ClientInput.SendKey(hWnd, key, blockOnAlt: false); //Equip DEF Items
                                 Thread.Sleep(equipConfig.SwitchDelay);
                             }
                         }
@@ -218,14 +210,12 @@ public class AtkDef : IAction
                 
                 if (!ammo)
                 {
-                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, ammo1, Win32Interop.CreateLParam(ammo1, true));
-                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, ammo1, Win32Interop.CreateLParam(ammo1, false));
+                    ClientInput.SendKey(hWnd, ammo1, blockOnAlt: false);
                     ammo = true;
                 }
                 else
                 {
-                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, ammo2, Win32Interop.CreateLParam(ammo2, true));
-                    Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, ammo2, Win32Interop.CreateLParam(ammo2, false));
+                    ClientInput.SendKey(hWnd, ammo2, blockOnAlt: false);
                     ammo = false;
                 }
             }

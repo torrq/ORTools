@@ -765,31 +765,7 @@ namespace ORTools.Worker
                 .FirstOrDefault();
         }
 
-        public static bool IsClientWindowActive()
-        {
-            try
-            {
-                IntPtr activeWindowHandle = Win32Interop.GetForegroundWindow();
 
-                uint activeProcessId;
-                Win32Interop.GetWindowThreadProcessId(activeWindowHandle, out activeProcessId);
-
-                Process activeProcess = Process.GetProcessById((int)activeProcessId);
-                return activeProcess.ProcessName.Equals(ClientSingleton.GetClient().Process.ProcessName, StringComparison.OrdinalIgnoreCase);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public static void SendKeysToClientIfActive(byte bVk, byte bScan, int dwFlags, int dwExtraInfo)
-        {
-            if (IsClientWindowActive())
-            {
-                Win32Interop.keybd_event(bVk, bScan, dwFlags, dwExtraInfo);
-            }
-        }
 
         public void Kill()
         {

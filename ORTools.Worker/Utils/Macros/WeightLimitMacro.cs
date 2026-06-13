@@ -48,7 +48,7 @@ namespace ORTools.Worker
             {
                 IntPtr hWnd = ClientSingleton.GetClient().Process.MainWindowHandle;
 
-                if (Win32Interop.GetForegroundWindow() != hWnd) { Win32Interop.SetForegroundWindow(hWnd); }
+                if (!ClientInput.IsForeground(hWnd)) { ClientInput.SetForeground(hWnd); }
 
                 Thread.Sleep(1000);
 
@@ -56,7 +56,7 @@ namespace ORTools.Worker
                 {
                     for (int i = 0; i < timesToSend; i++)
                     {
-                        SendAltKeyCombo(hWnd, prefs.AutoOffKey1);
+                        ClientInput.SendAltKeyCombo(hWnd, prefs.AutoOffKey1);
                         DebugLogger.Info($"Sent macro {i + 1}/{timesToSend}: Alt + {prefs.AutoOffKey1} (Auto-off, key 1)");
                         if (i < timesToSend - 1) Thread.Sleep(intervalMs);
                     }
@@ -68,7 +68,7 @@ namespace ORTools.Worker
                 {
                     for (int i = 0; i < timesToSend; i++)
                     {
-                        SendAltKeyCombo(hWnd, prefs.AutoOffKey2);
+                        ClientInput.SendAltKeyCombo(hWnd, prefs.AutoOffKey2);
                         DebugLogger.Info($"Sent macro {i + 1}/{timesToSend}: Alt + {prefs.AutoOffKey2} (Auto-off, key 2)");
                         if (i < timesToSend - 1) Thread.Sleep(intervalMs);
                     }
@@ -83,14 +83,5 @@ namespace ORTools.Worker
             }
         }
 
-        private static void SendAltKeyCombo(IntPtr hWnd, Keys key)
-        {
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0, Constants.KEYEVENTF_EXTENDEDKEY, 0);
-            Thread.Sleep(20);
-            Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
-            Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
-            Thread.Sleep(20);
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
-        }
     }
 }
