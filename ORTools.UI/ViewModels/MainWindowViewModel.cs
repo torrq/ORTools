@@ -30,6 +30,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private bool   _isApplicationOn;
     [ObservableProperty] private string _toggleKey = "None";
     [ObservableProperty] private string _appTitle = "OSRO Tools";
+    [ObservableProperty] private string _appLogoSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.png";
     [ObservableProperty] private bool   _isClientConnected;
     [ObservableProperty] private string _connectedProcessName = "";
 
@@ -221,6 +222,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             IsApplicationOn = u.IsOn;
             ToggleKey       = u.ToggleKey ?? "None";
             AppTitle        = u.AppTitle ?? "OSRO Tools";
+            AppLogoSource   = u.ServerMode == 1 
+                ? "pack://application:,,,/ORTools;component/Views/ortools-hr.png" 
+                : "pack://application:,,,/ORTools;component/Views/ortools-mr.png";
+            ORTools.UI.Services.ThemeService.SetServerMode(u.ServerMode);
         });
 
     private void OnClientState(ClientStateUpdate u) =>

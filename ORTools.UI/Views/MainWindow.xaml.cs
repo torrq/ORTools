@@ -7,6 +7,7 @@ namespace ORTools.UI.Views;
 public partial class MainWindow : Window
 {
     private double _expandedHeight = 675;
+    private double _expandedWidth = 731;
 
     public MainWindow()
     {
@@ -31,14 +32,19 @@ public partial class MainWindow : Window
                 if (vm.IsMiniMode)
                 {
                     _expandedHeight = this.Height;
+                    _expandedWidth = this.Width;
                     this.MinHeight = 0;
+                    this.MinWidth = 0;
+                    this.Width = 584;
                     this.SizeToContent = SizeToContent.Height;
                 }
                 else
                 {
                     this.SizeToContent = SizeToContent.Manual;
                     this.Height = _expandedHeight;
+                    this.Width = _expandedWidth;
                     this.MinHeight = 500;
+                    this.MinWidth = 600;
                 }
             }
         }

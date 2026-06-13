@@ -112,7 +112,7 @@ public sealed class WorkerCore
             _autoOff.StartTimer();
         }
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
+        await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
         DebugLogger.Info("[WorkerCore] Turned ON");
 
         if (p.UserPreferences.SoundEnabled)
@@ -141,7 +141,7 @@ public sealed class WorkerCore
             _autoOff.StopTimer();
         }
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
+        await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
         DebugLogger.Info("[WorkerCore] Turned OFF");
 
         if (p.UserPreferences.SoundEnabled)
@@ -162,7 +162,7 @@ public sealed class WorkerCore
         
         if (unbindChanged) await PushAllConfigs();
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: keyStr, AppTitle: GetAppTitle()));
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: keyStr, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
     }
 
     public async Task HandleRequestProcessList()
@@ -265,7 +265,7 @@ public sealed class WorkerCore
             ConfigGlobal.SaveConfig();
             RefreshToggleHotkey();
             await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), profileName));
-            await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
+            await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
             await PushAllConfigs();
             DebugLogger.Info($"[WorkerCore] Profile: {profileName}");
         }
@@ -1160,7 +1160,7 @@ public sealed class WorkerCore
     public async Task HandleFullStateRequest()
     {
         var client = ClientSingleton.GetClient();
-        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle()));
+        await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
         await BroadcastAsync(new ClientStateUpdate(
             Connected: client != null,
             ProcessName: client != null ? _GetConnectedProcessName() : null));

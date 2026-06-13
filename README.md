@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="ORTools.UI/Views/ortools.png" alt="OSRO Tools Logo" width="150"/>
+  <img src="ORTools.UI/Views/ortools-hr.png" alt="OSRO Tools Logo" width="150"/>
   <h1>OSRO Tools</h1>
   <p><strong>A modern Windows automation assistant for Ragnarok Online (OSRO)</strong></p>
 </div>

@@ -9,6 +9,16 @@ namespace ORTools.UI.Services;
 public static class ThemeService
 {
     private static ThemeMode _currentMode = ThemeMode.System;
+    private static int _serverMode = 1; // 1 = HR, 0 = MR
+
+    public static void SetServerMode(int serverMode)
+    {
+        if (_serverMode != serverMode)
+        {
+            _serverMode = serverMode;
+            ApplyTheme(_currentMode);
+        }
+    }
 
     public static void Initialize()
     {
@@ -36,22 +46,63 @@ public static class ThemeService
 
         var dictionaries = Application.Current.Resources.MergedDictionaries;
         
-        // Find existing theme dictionary
+        var newTheme = new ResourceDictionary { Source = new Uri(themeUri) };
+
+        // Inject ServerMode specific colors
+        if (_serverMode == 0) // MR - Red
+        {
+            if (useLight)
+            {
+                newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#E5C9C9"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F7EDED"), 
+                    new Point(0, 0), new Point(1, 0));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D34A4A"));
+                newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#B03D3D"));
+            }
+            else
+            {
+                newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2B1010"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3D1F1F"), 
+                    new Point(0, 0), new Point(1, 0));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8A3A3A"));
+                newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B2D2D"));
+            }
+        }
+        else // HR - Green
+        {
+            if (useLight)
+            {
+                newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#CFE1C1"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#ECF4E6"), 
+                    new Point(0, 0), new Point(1, 0));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#71973A"));
+                newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5C7C2F"));
+            }
+            else
+            {
+                newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#161E10"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2B3D1F"), 
+                    new Point(0, 0), new Point(1, 0));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4F6B28"));
+                newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3D521F"));
+            }
+        }
+
         var existingTheme = dictionaries.FirstOrDefault(d => 
             d.Source != null && d.Source.OriginalString.Contains("Theme"));
-            
+
         if (existingTheme != null)
         {
-            // Only swap if it's actually changing
-            if (existingTheme.Source.OriginalString != themeUri)
-            {
-                dictionaries.Remove(existingTheme);
-                dictionaries.Add(new ResourceDictionary { Source = new Uri(themeUri) });
-            }
+            dictionaries.Remove(existingTheme);
+            dictionaries.Add(newTheme);
         }
         else
         {
-            dictionaries.Add(new ResourceDictionary { Source = new Uri(themeUri) });
+            dictionaries.Add(newTheme);
         }
     }
 

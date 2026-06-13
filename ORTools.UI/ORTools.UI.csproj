@@ -9,13 +9,16 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>ORTools</AssemblyName>
     <RootNamespace>ORTools.UI</RootNamespace>
-    <ApplicationIcon>Views\ortools.ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(ServerMode)' == 'HR'">Views\ortools-hr.ico</ApplicationIcon>
+    <ApplicationIcon Condition="'$(ServerMode)' == 'MR'">Views\ortools-mr.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Views\ortools.png" />
+    <None Remove="Views\ortools-hr.png" />
+    <None Remove="Views\ortools-mr.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ortools.ico" />
+    <Content Include="Views\ortools-hr.ico" />
+    <Content Include="Views\ortools-mr.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
@@ -25,7 +28,8 @@
     <ProjectReference Include="..\ORTools.Shared\ORTools.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Views\ortools.png" />
+    <Resource Include="Views\ortools-hr.png" />
+    <Resource Include="Views\ortools-mr.png" />
     <Resource Include="Icons\**\*.png" />
     <Resource Include="Icons\**\*.gif" />
   </ItemGroup>

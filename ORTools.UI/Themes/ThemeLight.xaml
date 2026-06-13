@@ -2,6 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <SolidColorBrush x:Key="AppBaseBrush" Color="#F3F4F6" />
     <SolidColorBrush x:Key="AppSurfaceBrush" Color="#FFFFFF" />
+    <LinearGradientBrush x:Key="AppHeaderBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#CFE1C1" Offset="0.0" />
+        <GradientStop Color="#ECF4E6" Offset="1.0" />
+    </LinearGradientBrush>
     <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#D1D5DB" />
     <SolidColorBrush x:Key="AppPanelBrush" Color="#E5E7EB" />
     <SolidColorBrush x:Key="AppTextBrush" Color="#111827" />
@@ -13,6 +17,10 @@
     <SolidColorBrush x:Key="AppPrimaryBrush" Color="#4B5563" />
     <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#374151" />
     <SolidColorBrush x:Key="AppPrimaryPressedBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="AppToggleOnBrush" Color="#71973A" />
+    <SolidColorBrush x:Key="AppToggleOnHoverBrush" Color="#5C7C2F" />
+    <SolidColorBrush x:Key="AppToggleOffBrush" Color="#EF4444" />
+    <SolidColorBrush x:Key="AppToggleOffHoverBrush" Color="#DC2828" />
     <SolidColorBrush x:Key="AppDangerBrush" Color="#EF4444" />
     <SolidColorBrush x:Key="AppDangerHoverBrush" Color="#DC2828" />
     <SolidColorBrush x:Key="AppSuccessBrush" Color="#10B981" />

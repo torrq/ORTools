@@ -3,5 +3,14 @@
     <Version>2.0.0</Version>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
+    <!-- ServerMode can be HR or MR. This controls the preprocessor directives, app icons, and runtime behavior. -->
+    <ServerMode>MR</ServerMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ServerMode)' == 'HR'">
+    <DefineConstants>$(DefineConstants);SERVERMODE_HR</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(ServerMode)' == 'MR'">
+    <DefineConstants>$(DefineConstants);SERVERMODE_MR</DefineConstants>
   </PropertyGroup>
 </Project>

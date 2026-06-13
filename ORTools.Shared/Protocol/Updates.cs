@@ -7,7 +7,7 @@ public sealed record WorkerReadyUpdate(string Version = "1.0") : IIpcMessage
     public string Type => MessageTypes.WorkerReady;
 }
 
-public sealed record AppStateUpdate(bool IsOn, string ToggleKey, string AppTitle) : IIpcMessage
+public sealed record AppStateUpdate(bool IsOn, string ToggleKey, string AppTitle, int ServerMode = 1) : IIpcMessage
 {
     public string Type => MessageTypes.AppState;
 }

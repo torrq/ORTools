@@ -6,7 +6,11 @@ public static class AppConfig
     public static string  Name           = "OSRO Tools";
     public static string  Version        => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3)}";
     public static decimal ConfigVersion  = 1;
-    public static int     ServerMode     = 1;   // 0 = MR, 1 = HR
+#if SERVERMODE_HR
+    public static int ServerMode = 1;   // 0 = MR, 1 = HR
+#else
+    public static int ServerMode = 0;   // 0 = MR, 1 = HR
+#endif
 
     public static bool IsMidRate  => ServerMode == 0;
     public static bool IsHighRate => ServerMode == 1;

@@ -22,7 +22,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Border x:Name="HeaderPanel" VerticalAlignment="Top" 
-            Padding="10,8" Background="{DynamicResource AppSurfaceBrush}" Grid.ColumnSpan="2">
+            Padding="10,8" Background="{DynamicResource AppHeaderBrush}" Grid.ColumnSpan="2">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="70" />
@@ -33,7 +33,7 @@
                     VerticalAlignment="Center"
                     Margin="0,0,16,0" Height="0"/>
 
-                <Image Width="96" Source="/Views/ortools.png" HorizontalAlignment="Left" Grid.ColumnSpan="2"/>
+                <Image Width="96" Source="{Binding AppLogoSource}" HorizontalAlignment="Left" Grid.ColumnSpan="2"/>
 
                 <StackPanel Grid.Column="1"
                     VerticalAlignment="Center" Margin="40,0,0,0" Grid.IsSharedSizeScope="True">
@@ -61,7 +61,7 @@
                             <Button x:Name="ToggleApplicationButton" Content="{Binding ToggleButtonText}"
                                     Command="{Binding ToggleApplicationCommand}"
                                     IsEnabled="{Binding IsClientConnected}"
-                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Style="{StaticResource ToggleApplicationButtonStyle}"
                                     Height="24" Width="100" FontSize="11" Margin="0,0,0,6"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock Text="Key:" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
