@@ -26,16 +26,18 @@ public static class ClientInput
 
     public static void SendLeftClick(IntPtr hWnd)
     {
-        if (hWnd == IntPtr.Zero) return;
-        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, Keys.LButton, 0);
-        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, Keys.None, 0);
+        if (hWnd == IntPtr.Zero || !IsWindowVisible(hWnd)) return;
+        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONDOWN, (IntPtr)1, IntPtr.Zero);
+        Thread.Sleep(25);
+        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
     }
 
     public static void SendRightClick(IntPtr hWnd)
     {
-        if (hWnd == IntPtr.Zero) return;
-        Win32Interop.PostMessage(hWnd, Constants.WM_RBUTTONDOWN, 0, 0);
-        Win32Interop.PostMessage(hWnd, Constants.WM_RBUTTONUP, 0, 0);
+        if (hWnd == IntPtr.Zero || !IsWindowVisible(hWnd)) return;
+        Win32Interop.SendMessage(hWnd, Constants.WM_RBUTTONDOWN, (IntPtr)2, IntPtr.Zero);
+        Thread.Sleep(25);
+        Win32Interop.SendMessage(hWnd, Constants.WM_RBUTTONUP, IntPtr.Zero, IntPtr.Zero);
     }
 
     public static void HoldAlt()
