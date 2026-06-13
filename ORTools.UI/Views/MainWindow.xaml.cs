@@ -58,6 +58,25 @@ public partial class MainWindow : Window
         }
     }
 
+    private void DragRegion_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.Left)
+            this.DragMove();
+    }
+
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm && !vm.ForceExit)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
+        else
+        {
+            base.OnClosing(e);
+        }
+    }
+
     private void ProcessList_DropDownOpened(object sender, System.EventArgs e)
     {
         if (DataContext is MainWindowViewModel vm)

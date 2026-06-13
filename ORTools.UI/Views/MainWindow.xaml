@@ -4,6 +4,7 @@
         xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
         xmlns:views="clr-namespace:ORTools.UI.Views"
         xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         Title="{Binding AppTitle}"
         Width="731"
         Height="675"
@@ -21,6 +22,38 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <tb:TaskbarIcon x:Name="AppTrayIcon"
+                        IconSource="{Binding TrayIconSource}"
+                        ToolTipText="{Binding AppTitle}"
+                        DoubleClickCommand="{Binding ShowWindowCommand}">
+            <tb:TaskbarIcon.Style>
+                <Style TargetType="tb:TaskbarIcon">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Settings.DisableSystray}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </tb:TaskbarIcon.Style>
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{Binding ToggleButtonText}" Command="{Binding ToggleApplicationCommand}" />
+                    <MenuItem Header="Profiles" ItemsSource="{Binding ProfileList}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="Header" Value="{Binding}" />
+                                <Setter Property="Command" Value="{Binding DataContext.SelectProfileCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                <Setter Property="CommandParameter" Value="{Binding}" />
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Exit" Command="{Binding ExitAppCommand}" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
         <Border x:Name="HeaderPanel" VerticalAlignment="Top" 
             Padding="10,8" Background="{DynamicResource AppHeaderBrush}" Grid.ColumnSpan="2">
             <Grid>

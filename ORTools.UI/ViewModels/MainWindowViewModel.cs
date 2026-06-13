@@ -31,8 +31,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _toggleKey = "None";
     [ObservableProperty] private string _appTitle = "OSRO Tools";
     [ObservableProperty] private string _appLogoSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.png";
+#if SERVERMODE_HR
+    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/Views/ortools-hr.ico";
+#else
+    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/Views/ortools-mr.ico";
+#endif
     [ObservableProperty] private bool   _isClientConnected;
     [ObservableProperty] private string _connectedProcessName = "";
+
+    public bool ForceExit { get; private set; }
 
     // ── Process list ──────────────────────────────────────────────────────────
     [ObservableProperty] private List<ProcessEntry> _processList    = new();
@@ -167,6 +174,34 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void DisconnectClient()
         => _worker.Send(new DisconnectClientCommand());
+
+    [RelayCommand]
+    private void ShowWindow()
+    {
+        var mainWindow = Application.Current.MainWindow;
+        if (mainWindow != null)
+        {
+            mainWindow.Show();
+            if (mainWindow.WindowState == WindowState.Minimized)
+                mainWindow.WindowState = WindowState.Normal;
+            mainWindow.Activate();
+        }
+    }
+
+    [RelayCommand]
+    private void SelectProfile(string profile)
+    {
+        if (!string.IsNullOrEmpty(profile))
+            CurrentProfile = profile;
+    }
+
+    [RelayCommand]
+    private void ExitApp()
+    {
+        ForceExit = true;
+        _worker.Send(new ShutdownCommand());
+        Application.Current.Shutdown();
+    }
 
     [RelayCommand]
     private void RefreshProcessList()
