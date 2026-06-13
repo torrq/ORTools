@@ -12,7 +12,7 @@
         <ItemsControl ItemsSource="{Binding Rows}" Margin="10">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{StaticResource AppSurfaceAltBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,8" Padding="10,8">
+                    <Border Background="{DynamicResource AppSurfaceAltBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,8" Padding="10,8">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -21,7 +21,7 @@
 
                             <!-- Left Side: Trigger -->
                             <StackPanel Grid.Column="0" Width="70" Margin="0,0,10,0" VerticalAlignment="Center">
-                                <TextBlock Text="Trigger Key" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4" />
+                                <TextBlock Text="Trigger Key" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4" />
                                 <TextBox Text="{Binding TriggerKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                          Style="{StaticResource KeyTextBoxStyle}" 
                                          PreviewKeyDown="TriggerKey_PreviewKeyDown"
@@ -33,9 +33,9 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,6">
                                 <!-- Labels -->
                                 <StackPanel VerticalAlignment="Bottom" Margin="0,0,4,0">
-                                    <TextBlock Text="Key" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" Height="22" Margin="0,0,0,6" VerticalAlignment="Center" TextAlignment="Right"/>
-                                    <TextBlock Text="Delay" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" Height="22" Margin="0,0,0,6" VerticalAlignment="Center" TextAlignment="Right"/>
-                                    <TextBlock Text="Click" Foreground="{StaticResource AppSubtleBrush}" FontSize="10" Height="16" VerticalAlignment="Center" TextAlignment="Right"/>
+                                    <TextBlock Text="Key" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" Height="22" Margin="0,0,0,6" VerticalAlignment="Center" TextAlignment="Right"/>
+                                    <TextBlock Text="Delay" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" Height="22" Margin="0,0,0,6" VerticalAlignment="Center" TextAlignment="Right"/>
+                                    <TextBlock Text="Click" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" Height="16" VerticalAlignment="Center" TextAlignment="Right"/>
                                 </StackPanel>
 
                                 <!-- Steps -->

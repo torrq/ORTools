@@ -18,11 +18,11 @@
                 <ColumnDefinition Width="70"/>
                 <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="ON" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="KEY" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- Slots -->
@@ -54,7 +54,7 @@
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
                                   Width="70" Height="24"
                                   Foreground="Black"
-                                  BorderBrush="{StaticResource AppInputBorderBrush}">
+                                  BorderBrush="{DynamicResource AppInputBorderBrush}">
                             <ComboBoxItem Content="None"/>
                             <ComboBoxItem Content="Cursor"/>
                             <ComboBoxItem Content="Center"/>

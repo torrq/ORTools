@@ -722,6 +722,7 @@ public sealed class WorkerCore
         config.PauseWhenDead = cmd.PauseWhenDead;
         config.ExitWithRo = cmd.ExitWithRo;
         config.AlwaysOnTop = cmd.AlwaysOnTop;
+        config.Theme = cmd.Theme;
         ConfigGlobal.SaveConfig();
 
         var p = ProfileSingleton.GetCurrent();
@@ -1255,7 +1256,8 @@ public sealed class WorkerCore
             config.PauseWhenChatting,
             config.PauseWhenDead,
             config.ExitWithRo,
-            config.AlwaysOnTop
+            config.AlwaysOnTop,
+            config.Theme
         );
     }
 

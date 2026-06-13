@@ -19,6 +19,7 @@ public class Config
     public bool   PauseWhenDead                { get; set; } = false;
     public bool   ExitWithRo                   { get; set; } = false;
     public bool   AlwaysOnTop                  { get; set; } = false;
+    public Shared.Protocol.ThemeMode Theme     { get; set; } = Shared.Protocol.ThemeMode.System;
 }
 
 public static class ConfigGlobal

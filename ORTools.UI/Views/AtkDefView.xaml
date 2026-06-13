@@ -12,7 +12,7 @@
         <ItemsControl ItemsSource="{Binding Rows}" Margin="10">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{StaticResource AppSurfaceAltBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,6" Padding="10,6">
+                    <Border Background="{DynamicResource AppSurfaceAltBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,6" Padding="10,6">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="4*" />
@@ -21,7 +21,7 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Left Side: Trigger Settings -->
-                            <GroupBox Grid.Column="0" Header="Settings" Foreground="{StaticResource AppSubtleBrush}" BorderBrush="{StaticResource AppBorderBrush}" Margin="0" VerticalAlignment="Center">
+                            <GroupBox Grid.Column="0" Header="Settings" Foreground="{DynamicResource AppSubtleBrush}" BorderBrush="{DynamicResource AppBorderBrush}" Margin="0" VerticalAlignment="Center">
                                 <Grid Margin="10,12" MaxWidth="220" HorizontalAlignment="Center">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -36,8 +36,8 @@
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="Spam Key" Foreground="{StaticResource AppSubtleBrush}" FontSize="11" HorizontalAlignment="Left" />
-                                        <CheckBox Grid.Column="1" Content="Click?" IsChecked="{Binding WithClick}" Foreground="{StaticResource AppSubtleBrush}" FontSize="11" Margin="10,0,0,0" />
+                                        <TextBlock Grid.Column="0" Text="Spam Key" Foreground="{DynamicResource AppSubtleBrush}" FontSize="11" HorizontalAlignment="Left" />
+                                        <CheckBox Grid.Column="1" Content="Click?" IsChecked="{Binding WithClick}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="11" Margin="10,0,0,0" />
                                     </Grid>
                                     
                                     <TextBox Grid.Row="1" Text="{Binding SpammerKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
@@ -51,8 +51,8 @@
                                             <ColumnDefinition Width="8"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="Spam Delay" Foreground="{StaticResource AppSubtleBrush}" FontSize="11" HorizontalAlignment="Left" />
-                                        <TextBlock Grid.Column="2" Text="Switch Delay" Foreground="{StaticResource AppSubtleBrush}" FontSize="11" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Column="0" Text="Spam Delay" Foreground="{DynamicResource AppSubtleBrush}" FontSize="11" HorizontalAlignment="Left" />
+                                        <TextBlock Grid.Column="2" Text="Switch Delay" Foreground="{DynamicResource AppSubtleBrush}" FontSize="11" HorizontalAlignment="Left" />
                                     </Grid>
                                     
                                     <Grid Grid.Row="3" Margin="0,0,0,10">
@@ -79,7 +79,7 @@
 
                                 <!-- DEF Slots -->
                                 <StackPanel Grid.Column="0" Margin="0" VerticalAlignment="Center">
-                                    <TextBlock Text="DEF Switch" Foreground="{StaticResource AppSubtleBrush}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,10,8" />
+                                    <TextBlock Text="DEF Switch" Foreground="{DynamicResource AppSubtleBrush}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Right" Margin="0,0,10,8" />
                                     <StackPanel Margin="0">
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
@@ -115,11 +115,11 @@
                                 </StackPanel>
 
                                 <!-- Divider -->
-                                <Rectangle Grid.Column="1" Width="1" Fill="{StaticResource AppBorderBrush}" Margin="0,15" HorizontalAlignment="Center"/>
+                                <Rectangle Grid.Column="1" Width="1" Fill="{DynamicResource AppBorderBrush}" Margin="0,15" HorizontalAlignment="Center"/>
 
                                 <!-- ATK Slots -->
                                 <StackPanel Grid.Column="2" Margin="0" VerticalAlignment="Center">
-                                    <TextBlock Text="ATK Switch" Foreground="{StaticResource AppDangerBrush}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,0,0,8" />
+                                    <TextBlock Text="ATK Switch" Foreground="{DynamicResource AppDangerBrush}" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,0,0,8" />
                                     <StackPanel Margin="0">
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>

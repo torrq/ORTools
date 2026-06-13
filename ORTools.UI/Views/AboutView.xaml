@@ -6,15 +6,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="400">
     <Grid Margin="12">
-        <Border Background="{StaticResource AppSurfaceAltBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="20">
+        <Border Background="{DynamicResource AppSurfaceAltBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="20">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding AppTitle}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource AppTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                <TextBlock Text="{Binding AppTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,24"/>
                 
                 <TextBlock Text="A high-performance automation assistant for Oldschool RO." 
-                           TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,10" MaxWidth="350"/>
+                           TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,10" MaxWidth="350"/>
                            
                 <TextBlock Text="Built with .NET 8 and WPF." 
-                           TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource AppSubtleBrush}" MaxWidth="350"/>
+                           TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource AppSubtleBrush}" MaxWidth="350"/>
             </StackPanel>
         </Border>
     </Grid>

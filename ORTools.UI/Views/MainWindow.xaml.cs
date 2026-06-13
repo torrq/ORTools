@@ -6,7 +6,43 @@ namespace ORTools.UI.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow() => InitializeComponent();
+    private double _expandedHeight = 675;
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        DataContextChanged += MainWindow_DataContextChanged;
+    }
+
+    private void MainWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.OldValue is MainWindowViewModel oldVm)
+            oldVm.PropertyChanged -= Vm_PropertyChanged;
+        if (e.NewValue is MainWindowViewModel newVm)
+            newVm.PropertyChanged += Vm_PropertyChanged;
+    }
+
+    private void Vm_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainWindowViewModel.IsMiniMode))
+        {
+            if (DataContext is MainWindowViewModel vm)
+            {
+                if (vm.IsMiniMode)
+                {
+                    _expandedHeight = this.Height;
+                    this.MinHeight = 0;
+                    this.SizeToContent = SizeToContent.Height;
+                }
+                else
+                {
+                    this.SizeToContent = SizeToContent.Manual;
+                    this.Height = _expandedHeight;
+                    this.MinHeight = 500;
+                }
+            }
+        }
+    }
 
     private void ToggleKeyTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
     {

@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="AppBaseBrush" Color="#F3F4F6" />
+    <SolidColorBrush x:Key="AppSurfaceBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#D1D5DB" />
+    <SolidColorBrush x:Key="AppPanelBrush" Color="#E5E7EB" />
+    <SolidColorBrush x:Key="AppTextBrush" Color="#111827" />
+    <SolidColorBrush x:Key="AppMutedBrush" Color="#4B5563" />
+    <SolidColorBrush x:Key="AppSubtleBrush" Color="#6B7280" />
+    <SolidColorBrush x:Key="AppBorderBrush" Color="#9CA3AF" />
+    <SolidColorBrush x:Key="AppInputBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppInputBorderBrush" Color="#9CA3AF" />
+    <SolidColorBrush x:Key="AppPrimaryBrush" Color="#4B5563" />
+    <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#374151" />
+    <SolidColorBrush x:Key="AppPrimaryPressedBrush" Color="#1F2937" />
+    <SolidColorBrush x:Key="AppDangerBrush" Color="#EF4444" />
+    <SolidColorBrush x:Key="AppDangerHoverBrush" Color="#DC2828" />
+    <SolidColorBrush x:Key="AppSuccessBrush" Color="#10B981" />
+    <SolidColorBrush x:Key="AppWarningBrush" Color="#F59E0B" />
+    <SolidColorBrush x:Key="AppInfoBrush" Color="#3B82F6" />
+    <SolidColorBrush x:Key="AppMapNameBrush" Color="#65A30D" />
+    <SolidColorBrush x:Key="AppWeightBrush" Color="#B45309" />
+    <SolidColorBrush x:Key="AppPrimaryTextBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppTabInactiveBrush" Color="#D1D5DB" />
+    <SolidColorBrush x:Key="AppTabInactiveBorderBrush" Color="#9CA3AF" />
+
+    <BitmapImage x:Key="SpammerShiftIcon" UriSource="pack://application:,,,/Icons/Spammer/shift.png" />
+    <BitmapImage x:Key="SpammerMouseIcon" UriSource="pack://application:,,,/Icons/Spammer/up_and_down_arrow.png" />
+</ResourceDictionary>

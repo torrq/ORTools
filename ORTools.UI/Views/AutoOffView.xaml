@@ -22,10 +22,10 @@
                 <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif" 
                        Stretch="None" Margin="0,0,8,0"
                        Visibility="{Binding IsTimerRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <TextBlock Text="Auto Off Timer" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <TextBlock Text="Auto Off Timer" Foreground="{DynamicResource AppMutedBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
             </StackPanel>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,16">
+            <Border Background="{DynamicResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,16">
                 <StackPanel>
                     <Grid Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
@@ -33,8 +33,8 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding RemainingTimeText}" FontSize="16" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="2" Text="{Binding SelectedTimeText}" FontWeight="Bold" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding RemainingTimeText}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource AppPrimaryBrush}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="{Binding SelectedTimeText}" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                     </Grid>
                     
                     <Slider Minimum="1" Maximum="{Binding MaxTime}" Value="{Binding AutoOffTime, Delay=150}" Margin="0,0,0,12" IsSnapToTickEnabled="True" TickFrequency="1" Cursor="Hand" />
@@ -63,7 +63,7 @@
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsTimerRunning}" Value="True">
                                         <Setter Property="Content" Value="Stop Timer"/>
-                                        <Setter Property="Background" Value="{StaticResource AppDangerBrush}"/>
+                                        <Setter Property="Background" Value="{DynamicResource AppDangerBrush}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -72,14 +72,14 @@
                 </StackPanel>
             </Border>
 
-            <TextBlock Text="Overweight Auto Off" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
+            <TextBlock Text="Overweight Auto Off" Foreground="{DynamicResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
             
-            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
+            <Border Background="{DynamicResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
                 <StackPanel>
-                    <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
+                    <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
                     
                     <StackPanel Orientation="Horizontal" IsEnabled="{Binding AutoOffOverweight}" HorizontalAlignment="Center" RenderTransformOrigin="0.122,0.507">
-                        <RadioButton Content="50%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=50}" Foreground="{StaticResource AppTextBrush}" Margin="0,0,16,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                        <RadioButton Content="50%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=50}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,16,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -90,7 +90,7 @@
                                 </DataTemplate>
                             </RadioButton.ContentTemplate>
                         </RadioButton>
-                        <RadioButton Content="90%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=90}" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
+                        <RadioButton Content="90%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=90}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
@@ -108,11 +108,11 @@
 
         <!-- Right Column: Actions -->
         <StackPanel Grid.Column="2">
-            <TextBlock Text="Trigger Actions" Foreground="{StaticResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
+            <TextBlock Text="Trigger Actions" Foreground="{DynamicResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
             
-            <Border Background="{StaticResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
+            <Border Background="{DynamicResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
                 <StackPanel>
-                    <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,12" />
+                    <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" />
                     
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
@@ -120,8 +120,8 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="1." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBlock Text="1." VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                         <TextBox Grid.Column="2" Text="{Binding AutoOffKey1, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="Key1TextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
@@ -133,8 +133,8 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="2." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBlock Text="2." VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                         <TextBox Grid.Column="2" Text="{Binding AutoOffKey2, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="Key2TextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
@@ -146,8 +146,8 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="3." VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
-                        <TextBlock Grid.Column="1" Text="Stop Game Client" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}"/>
+                        <TextBlock Text="3." VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="Stop Game Client" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                         <CheckBox Grid.Column="2" IsChecked="{Binding AutoOffKillClient}" VerticalAlignment="Center" Cursor="Hand" />
                     </Grid>
                 </StackPanel>

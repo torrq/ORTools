@@ -18,9 +18,9 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="36"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="ON" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="KEY" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="SP %" Foreground="{StaticResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
+            <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="SP %" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- Slots -->
@@ -61,7 +61,7 @@
 
         <!-- Settings -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Center">
-            <TextBlock Text="Delay (ms):" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Text="Delay (ms):" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
                      helpers:InputHelper.IsNumericInput="True"
                      Style="{StaticResource NumericTextBoxStyle}" />

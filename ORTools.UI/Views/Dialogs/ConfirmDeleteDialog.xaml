@@ -4,7 +4,7 @@
         Title="Confirm Delete" Height="150" Width="350"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="{StaticResource AppBaseBrush}"
+        Background="{DynamicResource AppBaseBrush}"
         WindowStyle="ToolWindow"
         Topmost="True">
     <Grid Margin="16">
@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="MessageTextBlock" Text="Are you sure you want to delete this?" Foreground="{StaticResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,16" />
+        <TextBlock x:Name="MessageTextBlock" Text="Are you sure you want to delete this?" Foreground="{DynamicResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,16" />
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="YesButton" Content="Yes" Width="70" Height="28" Margin="0,0,8,0"

@@ -16,13 +16,13 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Text="Transfer Key:" VerticalAlignment="Center" Foreground="{StaticResource AppTextBrush}" />
+                    <TextBlock Text="Transfer Key:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" />
                     <TextBox Grid.Column="1" Text="{Binding TransferKey, Converter={StaticResource KeyToStringConverter}}"
                              PreviewKeyDown="TransferKey_PreviewKeyDown"
                              Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" />
                 </Grid>
                 <TextBlock Text="Hover over an item and press this key to instantly transfer it (simulates Alt + Right Click). Works between Inventory, Storage, and Cart."
-                           TextWrapping="Wrap" Foreground="{StaticResource AppSubtleBrush}" FontSize="11" />
+                           TextWrapping="Wrap" Foreground="{DynamicResource AppSubtleBrush}" FontSize="11" />
             </StackPanel>
         </GroupBox>
     </Grid>

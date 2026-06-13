@@ -10,21 +10,32 @@
              d:DataContext="{d:DesignInstance vm:SettingsViewModel}">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="10">
-            <GroupBox Header="Profile Settings" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,10">
+            <GroupBox Header="Profile Settings" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,10">
                 <StackPanel Margin="5">
-                    <CheckBox Margin="0,0,0,8" Content="Pause when in town" IsChecked="{Binding StopBuffsCity}" Foreground="{StaticResource AppTextBrush}"/>
-                    <CheckBox Margin="0,0,0,8" Content="Sounds on" IsChecked="{Binding SoundEnabled}" Foreground="{StaticResource AppTextBrush}"/>
+                    <CheckBox Margin="0,0,0,8" Content="Pause when in town" IsChecked="{Binding StopBuffsCity}" Foreground="{DynamicResource AppTextBrush}"/>
+                    <CheckBox Margin="0,0,0,8" Content="Sounds on" IsChecked="{Binding SoundEnabled}" Foreground="{DynamicResource AppTextBrush}"/>
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="Global Settings" Foreground="{StaticResource AppTextBrush}" Margin="0,0,0,10">
+            <GroupBox Header="Global Settings" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,10">
                 <StackPanel Margin="5">
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="120" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}" 
+                                  Background="{DynamicResource AppInputBrush}" Foreground="Black" 
+                                  BorderBrush="{DynamicResource AppInputBorderBrush}" Height="24" FontSize="12" />
+                    </Grid>
+
                     <Grid Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="60" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Song Rows" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="Song Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                         <TextBox Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                  helpers:InputHelper.IsNumericInput="True"
                                  PreviewKeyDown="SongRows_PreviewKeyDown"
@@ -37,7 +48,7 @@
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Macro Switch Rows" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="Macro Switch Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                         <TextBox Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                  helpers:InputHelper.IsNumericInput="True"
                                  PreviewKeyDown="MacroSwitchRows_PreviewKeyDown"
@@ -50,7 +61,7 @@
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="ATK x DEF Rows" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="ATK x DEF Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                         <TextBox Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                  helpers:InputHelper.IsNumericInput="True"
                                  PreviewKeyDown="AtkDefRows_PreviewKeyDown"
@@ -63,25 +74,25 @@
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Default Toggle Key" Foreground="{StaticResource AppTextBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="Default Toggle Key" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                         <TextBox Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" />
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <CheckBox Content="Debug Mode" IsChecked="{Binding DebugMode}" Foreground="{StaticResource AppTextBrush}" Margin="0,0,10,0"/>
-                        <CheckBox Content="Show Log" IsChecked="{Binding DebugModeShowLog}" Foreground="{StaticResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
+                        <CheckBox Content="Debug Mode" IsChecked="{Binding DebugMode}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,10,0"/>
+                        <CheckBox Content="Show Log" IsChecked="{Binding DebugModeShowLog}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
                     </StackPanel>
 
-                    <CheckBox Margin="0,0,0,8" Content="Disable Systray Icon" IsChecked="{Binding DisableSystray}" Foreground="{StaticResource AppTextBrush}"/>
-                    <CheckBox Margin="0,0,0,8" Content="Pause when chatting" IsChecked="{Binding PauseWhenChatting}" Foreground="{StaticResource AppTextBrush}"/>
-                    <CheckBox Margin="0,0,0,8" Content="Pause when dead" IsChecked="{Binding PauseWhenDead}" Foreground="{StaticResource AppTextBrush}"/>
+                    <CheckBox Margin="0,0,0,8" Content="Disable Systray Icon" IsChecked="{Binding DisableSystray}" Foreground="{DynamicResource AppTextBrush}"/>
+                    <CheckBox Margin="0,0,0,8" Content="Pause when chatting" IsChecked="{Binding PauseWhenChatting}" Foreground="{DynamicResource AppTextBrush}"/>
+                    <CheckBox Margin="0,0,0,8" Content="Pause when dead" IsChecked="{Binding PauseWhenDead}" Foreground="{DynamicResource AppTextBrush}"/>
 
-                    <GroupBox Header="Auto-Off" Foreground="{StaticResource AppTextBrush}" Margin="0,5,0,0">
+                    <GroupBox Header="Auto-Off" Foreground="{DynamicResource AppTextBrush}" Margin="0,5,0,0">
                         <StackPanel Margin="5">
-                            <CheckBox Margin="0,0,0,8" Content="Start timer on enable" IsChecked="{Binding StartAutoOffTimerOnEnable}" Foreground="{StaticResource AppTextBrush}"/>
-                            <CheckBox Margin="0,0,0,0" Content="Stop timer on disable" IsChecked="{Binding ClearAutoOffTimerOnDisable}" Foreground="{StaticResource AppTextBrush}"/>
+                            <CheckBox Margin="0,0,0,8" Content="Start timer on enable" IsChecked="{Binding StartAutoOffTimerOnEnable}" Foreground="{DynamicResource AppTextBrush}"/>
+                            <CheckBox Margin="0,0,0,0" Content="Stop timer on disable" IsChecked="{Binding ClearAutoOffTimerOnDisable}" Foreground="{DynamicResource AppTextBrush}"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>

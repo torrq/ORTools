@@ -10,11 +10,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Autopot HP" Foreground="{StaticResource AppTextBrush}" Background="Transparent" BorderBrush="{StaticResource AppBorderBrush}" Padding="0,8,0,0">
+        <GroupBox Header="Autopot HP" Foreground="{DynamicResource AppTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AppBorderBrush}" Padding="0,8,0,0">
             <views:AutopotHPView DataContext="{Binding AutopotHP}" />
         </GroupBox>
 
-        <GroupBox Header="Autopot SP" Grid.Column="2" Foreground="{StaticResource AppTextBrush}" Background="Transparent" BorderBrush="{StaticResource AppBorderBrush}" Padding="0,8,0,0">
+        <GroupBox Header="Autopot SP" Grid.Column="2" Foreground="{DynamicResource AppTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AppBorderBrush}" Padding="0,8,0,0">
             <views:AutopotSPView DataContext="{Binding AutopotSP}" />
         </GroupBox>
     </Grid>

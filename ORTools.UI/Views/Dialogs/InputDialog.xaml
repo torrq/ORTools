@@ -4,7 +4,7 @@
         Title="Input" Height="180" Width="350"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="{StaticResource AppBaseBrush}"
+        Background="{DynamicResource AppBaseBrush}"
         WindowStyle="ToolWindow"
         Topmost="True">
     <Grid Margin="16">
@@ -14,12 +14,12 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="MessageTextBlock" Text="Enter text:" Foreground="{StaticResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,8" />
+        <TextBlock x:Name="MessageTextBlock" Text="Enter text:" Foreground="{DynamicResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,8" />
 
         <TextBox x:Name="InputTextBox" Grid.Row="1" Height="28" FontSize="14"
-                 Background="{StaticResource AppInputBrush}" 
-                 Foreground="{StaticResource AppTextBrush}" 
-                 BorderBrush="{StaticResource AppInputBorderBrush}" 
+                 Background="{DynamicResource AppInputBrush}" 
+                 Foreground="{DynamicResource AppTextBrush}" 
+                 BorderBrush="{DynamicResource AppInputBorderBrush}" 
                  VerticalContentAlignment="Center" Padding="4,0" Margin="0,0,0,16" />
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">

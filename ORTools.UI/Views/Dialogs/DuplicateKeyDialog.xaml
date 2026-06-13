@@ -4,7 +4,7 @@
         Title="Duplicate Key Warning" Height="150" Width="400"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
-        Background="{StaticResource AppBaseBrush}"
+        Background="{DynamicResource AppBaseBrush}"
         WindowStyle="ToolWindow"
         Topmost="True">
     <Grid Margin="16">
@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Name="MessageTextBlock" Text="This key is already in use by another feature. Do you want to continue?" 
-                   Foreground="{StaticResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,16" />
+                   Foreground="{DynamicResource AppTextBrush}" FontSize="14" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,16" />
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="YesButton" Content="Yes, continue" Width="100" Height="28" Margin="0,0,8,0"

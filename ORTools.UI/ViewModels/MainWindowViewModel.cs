@@ -13,6 +13,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 {
     private readonly WorkerService _worker;
 
+    [RelayCommand]
+    private void ToggleTheme()
+    {
+        if (Settings.Theme == ThemeMode.System || Settings.Theme == ThemeMode.Light)
+            Settings.Theme = ThemeMode.Dark;
+        else
+            Settings.Theme = ThemeMode.Light;
+    }
+
     // ── Connection ────────────────────────────────────────────────────────────
     [ObservableProperty] private string _connectionLabel = "Connecting...";
     [ObservableProperty] private bool   _isConnected;
@@ -47,6 +56,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _wtText = "Weight";
 
     // ── Child ViewModels ──────────────────────────────────────────────────────
+    [ObservableProperty]
+    private bool _isMiniMode;
+
+    [RelayCommand]
+    private void ToggleMiniMode()
+    {
+        IsMiniMode = !IsMiniMode;
+    }
+
     public AutopotHPViewModel AutopotHP { get; }
     public AutopotSPViewModel AutopotSP { get; }
     public DebuffsViewModel Debuffs { get; }

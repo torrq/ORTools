@@ -12,15 +12,12 @@
         
         <!-- Profiles List -->
         <ListBox Grid.Column="0" ItemsSource="{Binding ProfileList}" SelectedItem="{Binding SelectedProfile}"
-                 Background="{StaticResource AppInputBrush}" Foreground="{StaticResource AppTextBrush}"
-                 BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1"
+                 Background="{DynamicResource AppInputBrush}" Foreground="{DynamicResource AppTextBrush}"
+                 BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"
                  HorizontalContentAlignment="Stretch" Margin="0,0,16,0">
             <ListBox.Resources>
-                <!-- Override default selection colors -->
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#3A3A3A" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#E0E0E0" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#3A3A3A" />
-                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#E0E0E0" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
             </ListBox.Resources>
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
@@ -37,7 +34,7 @@
                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{StaticResource AppTextBrush}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource AppTextBrush}" />
                                     <Setter Property="FontStyle" Value="Normal" />
                                     <Setter Property="FontWeight" Value="Normal" />
                                     <Style.Triggers>
@@ -54,11 +51,13 @@
                     </Border>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                            <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#4CAF50" /> <!-- Green left border indicator -->
-                            <Setter TargetName="ItemBorder" Property="Background" Value="#1A4CAF50" /> <!-- Faint green background -->
+                            <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource AppSuccessBrush}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ItemBorder" Property="Background" Value="#33FFFFFF" />
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource AppSurfaceAltBrush}" />
                         </Trigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>

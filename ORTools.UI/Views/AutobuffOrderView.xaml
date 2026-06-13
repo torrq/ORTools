@@ -6,20 +6,20 @@
              xmlns:viewmodels="clr-namespace:ORTools.UI.ViewModels"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=viewmodels:AutobuffOrderViewModel}">
-    <Grid Margin="16">
+    <Grid Margin="16,0,16,16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
-        <TextBlock Grid.Row="0" Margin="0,0,0,16" Foreground="{StaticResource AppTextBrush}" TextWrapping="Wrap" FontSize="14">
+        <TextBlock Grid.Row="0" Margin="0,0,0,16" Foreground="{DynamicResource AppTextBrush}" TextWrapping="Wrap" FontSize="14">
             Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom). Use the Up/Down buttons to reorder them.
         </TextBlock>
 
         <ListBox Grid.Row="1" ItemsSource="{Binding ActiveItems}" 
-                 Background="{StaticResource AppSurfaceBrush}" 
-                 BorderBrush="{StaticResource AppBorderBrush}" 
-                 Foreground="{StaticResource AppTextBrush}" 
+                 Background="{DynamicResource AppSurfaceBrush}" 
+                 BorderBrush="{DynamicResource AppBorderBrush}" 
+                 Foreground="{DynamicResource AppTextBrush}" 
                  HorizontalContentAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>

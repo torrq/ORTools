@@ -203,7 +203,8 @@ public sealed record UpdateGlobalConfigCommand(
     bool PauseWhenChatting,
     bool PauseWhenDead,
     bool ExitWithRo,
-    bool AlwaysOnTop) : IIpcMessage
+    bool AlwaysOnTop,
+    ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateGlobalConfig;
 }

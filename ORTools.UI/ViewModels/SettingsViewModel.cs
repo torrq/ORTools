@@ -17,6 +17,9 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _pauseWhenDead;
     [ObservableProperty] private bool _exitWithRo;
     [ObservableProperty] private bool _alwaysOnTop;
+    [ObservableProperty] private ThemeMode _theme;
+
+    public ThemeMode[] ThemeModes { get; } = (ThemeMode[])Enum.GetValues(typeof(ThemeMode));
 
     // Placeholders for Profile Settings
     [ObservableProperty] private bool _stopBuffsCity;
@@ -55,7 +58,10 @@ public partial class SettingsViewModel : ObservableObject
         PauseWhenDead = update.PauseWhenDead;
         ExitWithRo = update.ExitWithRo;
         AlwaysOnTop = update.AlwaysOnTop;
+        Theme = update.Theme;
         _suppressUpdates = false;
+
+        ThemeService.ApplyTheme(Theme);
     }
 
     private void OnProfileSettingsReceived(ProfileSettingsUpdate update)
@@ -77,7 +83,13 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnExitWithRoChanged(bool value) => SendGlobalUpdate();
     partial void OnAlwaysOnTopChanged(bool value) => SendGlobalUpdate();
     
-    partial void OnSongRowsChanged(int value) 
+    partial void OnThemeChanged(ThemeMode value)
+    {
+        ThemeService.ApplyTheme(value);
+        SendGlobalUpdate();
+    }
+    
+    partial void OnSongRowsChanged(int value)  
     {
         if (value < 1 && !_suppressUpdates) { SongRows = 1; return; }
         SendGlobalUpdate();
@@ -118,7 +130,8 @@ public partial class SettingsViewModel : ObservableObject
             PauseWhenChatting: PauseWhenChatting,
             PauseWhenDead: PauseWhenDead,
             ExitWithRo: ExitWithRo,
-            AlwaysOnTop: AlwaysOnTop
+            AlwaysOnTop: AlwaysOnTop,
+            Theme: Theme
         );
         _worker.Send(cmd);
     }

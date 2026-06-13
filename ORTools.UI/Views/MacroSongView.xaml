@@ -11,8 +11,8 @@
         <ItemsControl ItemsSource="{Binding Rows}" Margin="10,8,10,10">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type vm:MacroSongRowViewModel}">
-                    <Border Background="{StaticResource AppSurfaceBrush}"
-                            BorderBrush="{StaticResource AppBorderBrush}"
+                    <Border Background="{DynamicResource AppSurfaceBrush}"
+                            BorderBrush="{DynamicResource AppBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"
                             Margin="0,0,0,14"
@@ -42,21 +42,21 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- Key -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
                                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TriggerKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                          Style="{StaticResource KeyTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
                                          PreviewKeyDown="TriggerKey_PreviewKeyDown" />
 
                                 <!-- Delay -->
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Delay" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Delay" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
                                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Delay, Mode=TwoWay, Delay=150}"
                                          Style="{StaticResource NumericTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
                                          PreviewKeyDown="StepDelay_PreviewKeyDown" />
-                                <TextBlock Grid.Row="2" Grid.Column="2" Text="ms" Foreground="{StaticResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,0,0" FontSize="11" />
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="ms" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,0,0" FontSize="11" />
                             </Grid>
 
                             <!-- Separator -->
-                            <Rectangle Grid.Column="1" Width="1" Fill="{StaticResource AppBorderBrush}" Margin="0,0,20,0" />
+                            <Rectangle Grid.Column="1" Width="1" Fill="{DynamicResource AppBorderBrush}" Margin="0,0,20,0" />
 
                             <!-- Middle: ZigZag Sequence Grid -->
                             <Grid Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,20,0">
@@ -83,7 +83,7 @@
                                          
                                 <!-- Arrow 1 -> 2 (Down) -->
                                 <Path Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 2 (Bottom Left) -->
                                 <TextBox Grid.Row="2" Grid.Column="0" DataContext="{Binding Steps[1]}"
@@ -93,7 +93,7 @@
 
                                 <!-- Arrow 2 -> 3 (Up-Right Diagonal) -->
                                 <Path Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 3 (Top Col 2) -->
                                 <TextBox Grid.Row="0" Grid.Column="2" DataContext="{Binding Steps[2]}"
@@ -103,7 +103,7 @@
 
                                 <!-- Arrow 3 -> 4 (Down) -->
                                 <Path Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 4 (Bottom Col 2) -->
                                 <TextBox Grid.Row="2" Grid.Column="2" DataContext="{Binding Steps[3]}"
@@ -113,7 +113,7 @@
 
                                 <!-- Arrow 4 -> 5 (Up-Right Diagonal) -->
                                 <Path Grid.Row="0" Grid.RowSpan="3" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 5 (Top Col 3) -->
                                 <TextBox Grid.Row="0" Grid.Column="4" DataContext="{Binding Steps[4]}"
@@ -123,7 +123,7 @@
 
                                 <!-- Arrow 5 -> 6 (Down) -->
                                 <Path Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 6 (Bottom Col 3) -->
                                 <TextBox Grid.Row="2" Grid.Column="4" DataContext="{Binding Steps[5]}"
@@ -133,7 +133,7 @@
 
                                 <!-- Arrow 6 -> 7 (Up-Right Diagonal) -->
                                 <Path Grid.Row="0" Grid.RowSpan="3" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,45 L15,15 M10,15 L15,15 L15,20" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 7 (Top Col 4) -->
                                 <TextBox Grid.Row="0" Grid.Column="6" DataContext="{Binding Steps[6]}"
@@ -143,7 +143,7 @@
 
                                 <!-- Arrow 7 -> 8 (Down) -->
                                 <Path Grid.Row="1" Grid.Column="6" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{StaticResource AppSubtleBrush}" StrokeThickness="2" />
+                                      Data="M0,0 L0,12 M-4,8 L0,12 L4,8" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="2" />
 
                                 <!-- Step 8 (Bottom Col 4) -->
                                 <TextBox Grid.Row="2" Grid.Column="6" DataContext="{Binding Steps[7]}"
@@ -153,7 +153,7 @@
                             </Grid>
 
                             <!-- Separator -->
-                            <Rectangle Grid.Column="3" Width="1" Fill="{StaticResource AppBorderBrush}" Margin="0,0,15,0" />
+                            <Rectangle Grid.Column="3" Width="1" Fill="{DynamicResource AppBorderBrush}" Margin="0,0,15,0" />
 
                             <!-- Instrument/Adaptation -->
                             <StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="0,0,15,0">
