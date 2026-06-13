@@ -1,14 +1,14 @@
 <div align="center">
   <img src="ORTools.UI/Views/ortools-hr.png" alt="OSRO Tools Logo" width="150"/>
   <h1>OSRO Tools</h1>
-  <p><strong>A modern Windows automation assistant for Ragnarok Online (OSRO)</strong></p>
+  <p><strong>A high-performance automation assistant for Oldschool RO (OSRO)</strong></p>
 </div>
 
 ---
 
 ## 🎯 Overview
 
-OSRO Tools is a specialized Windows automation assistant built for the Ragnarok Online private server OSRO. It handles the repetitive and time-sensitive tasks that the game client doesn't manage natively, allowing you to focus on gameplay.
+OSRO Tools is a high-performance automation assistant built for Oldschool RO. It handles the repetitive and time-sensitive tasks that the game client doesn't manage natively, allowing you to focus on gameplay.
 
 It provides extensive support for automated potion consumption, skill spamming, buff maintenance, and status recovery.
 

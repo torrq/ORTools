@@ -6,12 +6,11 @@ Read this file in full before touching any code.
 
 ## What is OSRO Tools?
 
-OSRO Tools (internally known as ORTools) is a Windows automation assistant for the private Ragnarok Online server OSRO. It automates tasks the game does not handle (Autopot, Skill Timer, Autobuff, Status Recovery, Auto Off, etc.).
+OSRO Tools (internally known as ORTools) is a high-performance automation assistant for Oldschool RO. It automates tasks the game does not handle (Autopot, Skill Timer, Autobuff, Status Recovery, Auto Off, etc.).
 
 There are two server modes: **MR** (Midrate) and **HR** (Highrate).
-`AppConfig.ServerMode` controls which memory addresses and server configs are active.
-The current active version is **HR** (`ServerMode = 1`).
-*Note: Do not hardcode version strings in the UI or codebase. The single source of truth for the application version is `Directory.Build.props` at the repository root. `AppConfig` dynamically reads this from the assembly at runtime.*
+`Directory.Build.props` at the repository root is the single source of truth for the application version and `ServerMode`.
+*Note: The `ServerMode` property in `Directory.Build.props` automatically controls the MSBuild preprocessor directives (`SERVERMODE_HR` / `SERVERMODE_MR`), which conditionally embeds the correct `.exe` icon and sets the runtime `AppConfig.ServerMode` flag in C#.*
 ---
 
 ## Architecture: New (this repo, .NET 8)
