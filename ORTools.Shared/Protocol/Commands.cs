@@ -196,7 +196,7 @@ public sealed record UpdateGlobalConfigCommand(
     int AtkDefRows,
     string DefaultToggleStateKey,
     bool DebugMode,
-    bool DebugModeShowLog,
+    bool DebugClientLog,
     bool DisableSystray,
     bool MinimizeToSystray,
     bool CloseToSystray,

@@ -40,6 +40,7 @@ public static class AppConfig
     public const string DEBUG   = "D";
     public const string STATUS  = "S";
     public static bool DebugMode => ConfigGlobal.IsLoaded && ConfigGlobal.GetConfig().DebugMode;
+    public static bool DebugClientLog => ConfigGlobal.IsLoaded && ConfigGlobal.GetConfig().DebugClientLog;
 
     // ── Default delays (ms) ───────────────────────────────────────────────────
     public static int     AutoPotDefaultDelay         = 50;

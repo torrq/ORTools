@@ -10,7 +10,7 @@ public partial class SettingsViewModel : ObservableObject
     private readonly WorkerService _worker;
 
     [ObservableProperty] private bool _debugMode;
-    [ObservableProperty] private bool _debugModeShowLog;
+    [ObservableProperty] private bool _debugClientLog;
     [ObservableProperty] private bool _disableSystray;
     [ObservableProperty] private bool _minimizeToSystray = true;
     [ObservableProperty] private bool _closeToSystray = true;
@@ -53,7 +53,7 @@ public partial class SettingsViewModel : ObservableObject
         AtkDefRows = update.AtkDefRows;
         DefaultToggleStateKey = update.DefaultToggleStateKey;
         DebugMode = update.DebugMode;
-        DebugModeShowLog = update.DebugModeShowLog;
+        DebugClientLog = update.DebugClientLog;
         DisableSystray = update.DisableSystray;
         MinimizeToSystray = update.MinimizeToSystray;
         CloseToSystray = update.CloseToSystray;
@@ -81,7 +81,7 @@ public partial class SettingsViewModel : ObservableObject
     private bool _suppressUpdates = false;
 
     partial void OnDebugModeChanged(bool value) => SendGlobalUpdate();
-    partial void OnDebugModeShowLogChanged(bool value) => SendGlobalUpdate();
+    partial void OnDebugClientLogChanged(bool value) => SendGlobalUpdate();
     partial void OnDisableSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnMinimizeToSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnCloseToSystrayChanged(bool value) => SendGlobalUpdate();
@@ -132,7 +132,7 @@ public partial class SettingsViewModel : ObservableObject
             AtkDefRows: AtkDefRows,
             DefaultToggleStateKey: DefaultToggleStateKey,
             DebugMode: DebugMode,
-            DebugModeShowLog: DebugModeShowLog,
+            DebugClientLog: DebugClientLog,
             DisableSystray: DisableSystray,
             MinimizeToSystray: MinimizeToSystray,
             CloseToSystray: CloseToSystray,

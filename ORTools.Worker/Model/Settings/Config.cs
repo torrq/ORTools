@@ -5,10 +5,10 @@ namespace ORTools.Worker;
 public class Config
 {
     public bool   DebugMode                    { get; set; } = false;
-    public bool   DebugModeShowLog             { get; set; } = true;
+    public bool   DebugClientLog               { get; set; } = false;
     public bool   DisableSystray               { get; set; } = false;
-    public bool   MinimizeToSystray            { get; set; } = true;
-    public bool   CloseToSystray               { get; set; } = true;
+    public bool   MinimizeToSystray            { get; set; } = false;
+    public bool   CloseToSystray               { get; set; } = false;
     public bool   StartAutoOffTimerOnEnable    { get; set; } = false;
     public bool   ClearAutoOffTimerOnDisable   { get; set; } = false;
     public string LastUsedProfile              { get; set; } = "Default";

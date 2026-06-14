@@ -738,7 +738,7 @@ public sealed class WorkerCore
         config.AtkDefRows = Math.Max(1, cmd.AtkDefRows);
         config.DefaultToggleStateKey = cmd.DefaultToggleStateKey;
         config.DebugMode = cmd.DebugMode;
-        config.DebugModeShowLog = cmd.DebugModeShowLog;
+        config.DebugClientLog = cmd.DebugClientLog;
         config.DisableSystray = cmd.DisableSystray;
         config.MinimizeToSystray = cmd.MinimizeToSystray;
         config.CloseToSystray = cmd.CloseToSystray;
@@ -1276,7 +1276,7 @@ public sealed class WorkerCore
             config.AtkDefRows,
             config.DefaultToggleStateKey,
             config.DebugMode,
-            config.DebugModeShowLog,
+            config.DebugClientLog,
             config.DisableSystray,
             config.MinimizeToSystray,
             config.CloseToSystray,
