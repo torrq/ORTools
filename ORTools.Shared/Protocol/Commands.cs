@@ -206,6 +206,7 @@ public sealed record UpdateGlobalConfigCommand(
     bool PauseWhenDead,
     bool ExitWithRo,
     bool AlwaysOnTop,
+    bool AllowResizingWindow,
     ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateGlobalConfig;

@@ -4,14 +4,13 @@
   <assemblyIdentity version="1.0.0.0" name="ORTools"/>
 
   <!--
-    asInvoker: the UI runs at NORMAL (medium) integrity so DWM compositing is fast.
-    All Win32 operations that need admin are in ORTools.Worker (requireAdministrator).
-    Do NOT elevate this process — that is the whole point of the two-process split.
+    requireAdministrator: The UI now runs in the same process as the WorkerCore.
+    It MUST be elevated so ReadProcessMemory and OpenProcess work on the game client.
   -->
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges>
-        <requestedExecutionLevel level="asInvoker" uiAccess="false"/>
+        <requestedExecutionLevel level="requireAdministrator" uiAccess="false"/>
       </requestedPrivileges>
     </security>
   </trustInfo>

@@ -13,6 +13,16 @@
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         FontFamily="Segoe UI" Background="{DynamicResource AppBaseBrush}">
+    <Window.Style>
+        <Style TargetType="Window">
+            <Setter Property="ResizeMode" Value="CanMinimize"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Settings.AllowResizingWindow}" Value="True">
+                    <Setter Property="ResizeMode" Value="CanResize"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="171*"/>

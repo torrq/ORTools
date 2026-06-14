@@ -134,9 +134,12 @@
                         </GroupBox>
 
                         <GroupBox Header="Developer" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15">
-                            <StackPanel Margin="10" Orientation="Horizontal">
-                                <CheckBox Content="Debug Mode" IsChecked="{Binding DebugMode}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,20,0"/>
-                                <CheckBox Content="Show Log" IsChecked="{Binding DebugModeShowLog}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
+                            <StackPanel Margin="10">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <CheckBox Content="Debug Mode" IsChecked="{Binding DebugMode}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,20,0"/>
+                                    <CheckBox Content="Show Log" IsChecked="{Binding DebugModeShowLog}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
+                                </StackPanel>
+                                <CheckBox Content="Allow resizing window" IsChecked="{Binding AllowResizingWindow}" Foreground="{DynamicResource AppTextBrush}"/>
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>

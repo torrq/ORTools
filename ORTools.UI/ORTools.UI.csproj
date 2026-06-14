@@ -26,7 +26,7 @@
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ORTools.Shared\ORTools.Shared.csproj" />
+    <ProjectReference Include="..\ORTools.Worker\ORTools.Worker.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Views\ortools-hr.png" />
@@ -35,13 +35,4 @@
     <Resource Include="Icons\**\*.gif" />
   </ItemGroup>
   <ItemGroup />
-  <Target Name="CopyWorker" AfterTargets="Build">
-    <Copy SourceFiles="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\ORTools.Worker.exe" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\ORTools.Worker.dll" DestinationFolder="$(OutputPath)" />
-    <Copy SourceFiles="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\ORTools.Worker.runtimeconfig.json" DestinationFolder="$(OutputPath)" />
-    <ItemGroup>
-      <WorkerResources Include="..\ORTools.Worker\bin\$(Configuration)\$(TargetFramework)\Resources\**\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(WorkerResources)" DestinationFolder="$(OutputPath)Resources\%(RecursiveDir)" />
-  </Target>
 </Project>

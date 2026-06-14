@@ -5,9 +5,8 @@ namespace ORTools.Worker;
 
 public sealed class WorkerCore
 {
-    public const string PipeName = "ORTools-Worker";
+    public event Action<IIpcMessage>? OnBroadcast;
 
-    private readonly PipeServer _server;
     private readonly CommandDispatcher _dispatcher;
     private readonly StatePublisher _statePublisher;
     private readonly Thread _hookThread;
@@ -84,20 +83,35 @@ public sealed class WorkerCore
         _statePublisher.Start(); // Run continuously to keep UI synced even when OFF
 
         _dispatcher = new CommandDispatcher(this);
-        _server = new PipeServer(PipeName, _dispatcher);
     }
 
     public async Task RunAsync(CancellationToken ct)
     {
-        Console.WriteLine($"[WorkerCore] Pipe: {PipeName}  Mode: {AppConfig.GetRateTag()}");
+        Console.WriteLine($"[WorkerCore] Running in-memory IPC  Mode: {AppConfig.GetRateTag()}");
         Win32Interop.timeBeginPeriod(1);
-        try { await _server.RunAsync(ct); }
+        try
+        {
+            // Block until cancelled
+            await Task.Delay(Timeout.Infinite, ct);
+        }
+        catch (TaskCanceledException) { }
         finally
         {
             Win32Interop.timeEndPeriod(1);
             KeyboardHook.Disable();
             await HandleTurnOff();
         }
+    }
+
+    public Task HandleCommandAsync(IIpcMessage command)
+    {
+        return _dispatcher.HandleAsync(command);
+    }
+
+    public Task BroadcastAsync(IIpcMessage msg)
+    {
+        OnBroadcast?.Invoke(msg);
+        return Task.CompletedTask;
     }
 
     // ── Turn on/off ───────────────────────────────────────────────────────────
@@ -734,6 +748,7 @@ public sealed class WorkerCore
         config.PauseWhenDead = cmd.PauseWhenDead;
         config.ExitWithRo = cmd.ExitWithRo;
         config.AlwaysOnTop = cmd.AlwaysOnTop;
+        config.AllowResizingWindow = cmd.AllowResizingWindow;
         config.Theme = cmd.Theme;
         ConfigGlobal.SaveConfig();
 
@@ -1271,6 +1286,7 @@ public sealed class WorkerCore
             config.PauseWhenDead,
             config.ExitWithRo,
             config.AlwaysOnTop,
+            config.AllowResizingWindow,
             config.Theme
         );
     }
@@ -1368,11 +1384,6 @@ public sealed class WorkerCore
         }
         return changed;
     }
-
-    // ── Broadcast ─────────────────────────────────────────────────────────────
-
-    public Task BroadcastAsync<T>(T update) where T : IIpcMessage
-        => _server.BroadcastAsync(update);
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 

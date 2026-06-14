@@ -34,7 +34,7 @@ public static class DebugLogger
         Console.WriteLine(line);
         try
         {
-            if (!string.IsNullOrEmpty(AppConfig.DebugLogFile))
+            if (IsDebugMode && !string.IsNullOrEmpty(AppConfig.DebugLogFile))
                 File.AppendAllText(AppConfig.DebugLogFile, line + Environment.NewLine);
         }
         catch { /* don't let logging failures crash threads */ }

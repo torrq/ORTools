@@ -19,6 +19,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _pauseWhenDead;
     [ObservableProperty] private bool _exitWithRo;
     [ObservableProperty] private bool _alwaysOnTop;
+    [ObservableProperty] private bool _allowResizingWindow;
     [ObservableProperty] private ThemeMode _theme;
 
     public ThemeMode[] ThemeModes { get; } = (ThemeMode[])Enum.GetValues(typeof(ThemeMode));
@@ -62,6 +63,7 @@ public partial class SettingsViewModel : ObservableObject
         PauseWhenDead = update.PauseWhenDead;
         ExitWithRo = update.ExitWithRo;
         AlwaysOnTop = update.AlwaysOnTop;
+        AllowResizingWindow = update.AllowResizingWindow;
         Theme = update.Theme;
         _suppressUpdates = false;
 
@@ -88,6 +90,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnPauseWhenDeadChanged(bool value) => SendGlobalUpdate();
     partial void OnExitWithRoChanged(bool value) => SendGlobalUpdate();
     partial void OnAlwaysOnTopChanged(bool value) => SendGlobalUpdate();
+    partial void OnAllowResizingWindowChanged(bool value) => SendGlobalUpdate();
     
     partial void OnThemeChanged(ThemeMode value)
     {
@@ -139,6 +142,7 @@ public partial class SettingsViewModel : ObservableObject
             PauseWhenDead: PauseWhenDead,
             ExitWithRo: ExitWithRo,
             AlwaysOnTop: AlwaysOnTop,
+            AllowResizingWindow: AllowResizingWindow,
             Theme: Theme
         );
         _worker.Send(cmd);

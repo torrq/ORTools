@@ -480,26 +480,26 @@ public static class BuffService
     }
 
     // Skill buffs
-    public static List<Buff> GetArcherBuffs()      => ServerList(BuffDefinitions.ArcherBuffs);
-    public static List<Buff> GetSwordmanBuffs()    => ServerList(BuffDefinitions.SwordmanBuffs);
-    public static List<Buff> GetMageBuffs()        => ServerList(BuffDefinitions.MageBuffs);
-    public static List<Buff> GetMerchantBuffs()    => ServerList(BuffDefinitions.MerchantBuffs);
-    public static List<Buff> GetThiefBuffs()       => ServerList(BuffDefinitions.ThiefBuffs);
-    public static List<Buff> GetAcolyteBuffs()     => ServerList(BuffDefinitions.AcolyteBuffs);
-    public static List<Buff> GetNinjaBuffs()       => ServerList(BuffDefinitions.NinjaBuffs);
-    public static List<Buff> GetTaekwonBuffs()     => ServerList(BuffDefinitions.TaekwonBuffs);
-    public static List<Buff> GetGunslingerBuffs()  => ServerList(BuffDefinitions.GunslingerBuffs);
-    public static List<Buff> GetPadawanBuffs()     => ServerList(BuffDefinitions.PadawanBuffs);
+    public static List<Buff> GetArcherBuffs()      { Initialize(); return ServerList(BuffDefinitions.ArcherBuffs); }
+    public static List<Buff> GetSwordmanBuffs()    { Initialize(); return ServerList(BuffDefinitions.SwordmanBuffs); }
+    public static List<Buff> GetMageBuffs()        { Initialize(); return ServerList(BuffDefinitions.MageBuffs); }
+    public static List<Buff> GetMerchantBuffs()    { Initialize(); return ServerList(BuffDefinitions.MerchantBuffs); }
+    public static List<Buff> GetThiefBuffs()       { Initialize(); return ServerList(BuffDefinitions.ThiefBuffs); }
+    public static List<Buff> GetAcolyteBuffs()     { Initialize(); return ServerList(BuffDefinitions.AcolyteBuffs); }
+    public static List<Buff> GetNinjaBuffs()       { Initialize(); return ServerList(BuffDefinitions.NinjaBuffs); }
+    public static List<Buff> GetTaekwonBuffs()     { Initialize(); return ServerList(BuffDefinitions.TaekwonBuffs); }
+    public static List<Buff> GetGunslingerBuffs()  { Initialize(); return ServerList(BuffDefinitions.GunslingerBuffs); }
+    public static List<Buff> GetPadawanBuffs()     { Initialize(); return ServerList(BuffDefinitions.PadawanBuffs); }
 
     // Item buffs
-    public static List<Buff> GetPotionBuffs()  => new(BuffDefinitions.PotionBuffs);
-    public static List<Buff> GetElementBuffs() => ServerList(BuffDefinitions.ElementBuffs);
-    public static List<Buff> GetFoodBuffs()    => new(BuffDefinitions.FoodBuffs);
-    public static List<Buff> GetBoxBuffs()     => new(BuffDefinitions.BoxBuffs);
-    public static List<Buff> GetScrollBuffs()  => new(BuffDefinitions.ScrollBuffs);
-    public static List<Buff> GetEtcBuffs()     => new(BuffDefinitions.EtcBuffs);
-    public static List<Buff> GetFishBuffs()    => new(BuffDefinitions.FishBuffs);
+    public static List<Buff> GetPotionBuffs()  { Initialize(); return new(BuffDefinitions.PotionBuffs); }
+    public static List<Buff> GetElementBuffs() { Initialize(); return ServerList(BuffDefinitions.ElementBuffs); }
+    public static List<Buff> GetFoodBuffs()    { Initialize(); return new(BuffDefinitions.FoodBuffs); }
+    public static List<Buff> GetBoxBuffs()     { Initialize(); return new(BuffDefinitions.BoxBuffs); }
+    public static List<Buff> GetScrollBuffs()  { Initialize(); return new(BuffDefinitions.ScrollBuffs); }
+    public static List<Buff> GetEtcBuffs()     { Initialize(); return new(BuffDefinitions.EtcBuffs); }
+    public static List<Buff> GetFishBuffs()    { Initialize(); return new(BuffDefinitions.FishBuffs); }
 
     // Debuffs
-    public static List<Buff> GetDebuffs() => new(BuffDefinitions.Debuffs);
+    public static List<Buff> GetDebuffs() { Initialize(); return new(BuffDefinitions.Debuffs); }
 }

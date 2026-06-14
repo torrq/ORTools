@@ -165,6 +165,7 @@ public sealed record GlobalConfigUpdate(
     bool PauseWhenDead,
     bool ExitWithRo,
     bool AlwaysOnTop,
+    bool AllowResizingWindow,
     ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.GlobalConfigUpdate;

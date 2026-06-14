@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <NoWarn>8618;8600;8602;8625;8604;8601;8603;8622;WFAC010;0168</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyName>ORTools.Worker</AssemblyName>
     <RootNamespace>ORTools.Worker</RootNamespace>
     <Optimize>true</Optimize>
