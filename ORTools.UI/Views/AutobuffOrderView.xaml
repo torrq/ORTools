@@ -12,7 +12,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Margin="0,0,0,8" Foreground="{DynamicResource AppTextBrush}" TextWrapping="Wrap" FontStyle="Italic" FontSize="13" HorizontalAlignment="Center" Text="Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom)."/>
+        <TextBlock Grid.Row="0" Margin="0,0,0,8" Foreground="{DynamicResource AppTextBrush}" TextWrapping="Wrap" FontSize="13" HorizontalAlignment="Center" Text="Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom)"/>
 
         <ListBox Grid.Row="1" ItemsSource="{Binding ActiveItems}" 
                  Background="{DynamicResource AppSurfaceBrush}" 
@@ -25,19 +25,35 @@
                     <Grid Margin="4,2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         
-                        <Border Grid.Column="0" Width="24" Height="24" Background="Transparent" CornerRadius="2" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <Button Grid.Column="0" Content="✕" Margin="0,0,12,0" Width="24" Height="24" Padding="0"
+                                Style="{StaticResource DangerButtonStyle}"
+                                ToolTip="Unset Hotkey"
+                                Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" 
+                                CommandParameter="{Binding}" VerticalAlignment="Center" />
+
+                        <Border Grid.Column="1" Background="{DynamicResource AppSurfaceBrush}" 
+                                BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" 
+                                CornerRadius="4" MinWidth="26" Height="24" Padding="6,0" Margin="0,0,12,0"
+                                VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding DisplayKey}" Foreground="{DynamicResource AppTextBrush}" 
+                                       FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Border>
+
+                        <Border Grid.Column="2" Width="24" Height="24" Background="Transparent" CornerRadius="2" Margin="0,0,12,0" VerticalAlignment="Center">
                             <!-- Fallback for image load failure isn't built into standard WPF Image easily, so we just let it be blank if not found -->
                             <Image Source="{Binding IconPath}" Stretch="None"
                                    RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
                         </Border>
                         
-                        <TextBlock Grid.Column="1" Text="{Binding DisplayName}" VerticalAlignment="Center" FontSize="14" />
+                        <TextBlock Grid.Column="3" Text="{Binding DisplayName}" VerticalAlignment="Center" FontSize="14" />
                         
-                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <StackPanel Grid.Column="4" Orientation="Horizontal">
                             <Button Content="↑" Margin="0,0,4,0" Width="28" Height="28" Padding="0"
                                     Style="{StaticResource PrimaryButtonStyle}"
                                     Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=ListBox}}" 

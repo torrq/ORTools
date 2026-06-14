@@ -157,6 +157,8 @@ public sealed record GlobalConfigUpdate(
     bool DebugMode,
     bool DebugModeShowLog,
     bool DisableSystray,
+    bool MinimizeToSystray,
+    bool CloseToSystray,
     bool StartAutoOffTimerOnEnable,
     bool ClearAutoOffTimerOnDisable,
     bool PauseWhenChatting,

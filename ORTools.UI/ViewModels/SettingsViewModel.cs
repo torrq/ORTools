@@ -12,6 +12,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _debugMode;
     [ObservableProperty] private bool _debugModeShowLog;
     [ObservableProperty] private bool _disableSystray;
+    [ObservableProperty] private bool _minimizeToSystray = true;
+    [ObservableProperty] private bool _closeToSystray = true;
     [ObservableProperty] private bool _clearAutoOffTimerOnDisable;
     [ObservableProperty] private bool _pauseWhenChatting;
     [ObservableProperty] private bool _pauseWhenDead;
@@ -52,6 +54,8 @@ public partial class SettingsViewModel : ObservableObject
         DebugMode = update.DebugMode;
         DebugModeShowLog = update.DebugModeShowLog;
         DisableSystray = update.DisableSystray;
+        MinimizeToSystray = update.MinimizeToSystray;
+        CloseToSystray = update.CloseToSystray;
         StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
         ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
         PauseWhenChatting = update.PauseWhenChatting;
@@ -77,6 +81,8 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnDebugModeChanged(bool value) => SendGlobalUpdate();
     partial void OnDebugModeShowLogChanged(bool value) => SendGlobalUpdate();
     partial void OnDisableSystrayChanged(bool value) => SendGlobalUpdate();
+    partial void OnMinimizeToSystrayChanged(bool value) => SendGlobalUpdate();
+    partial void OnCloseToSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnClearAutoOffTimerOnDisableChanged(bool value) => SendGlobalUpdate();
     partial void OnPauseWhenChattingChanged(bool value) => SendGlobalUpdate();
     partial void OnPauseWhenDeadChanged(bool value) => SendGlobalUpdate();
@@ -125,6 +131,8 @@ public partial class SettingsViewModel : ObservableObject
             DebugMode: DebugMode,
             DebugModeShowLog: DebugModeShowLog,
             DisableSystray: DisableSystray,
+            MinimizeToSystray: MinimizeToSystray,
+            CloseToSystray: CloseToSystray,
             StartAutoOffTimerOnEnable: StartAutoOffTimerOnEnable,
             ClearAutoOffTimerOnDisable: ClearAutoOffTimerOnDisable,
             PauseWhenChatting: PauseWhenChatting,

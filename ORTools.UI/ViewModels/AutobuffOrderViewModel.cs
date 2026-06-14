@@ -12,6 +12,7 @@ public partial class AutobuffOrderItemViewModel : ObservableObject
     public string Name { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string Key { get; set; } = string.Empty;
+    public string DisplayKey => Key.ToUpper();
     public string ItemType { get; set; } = string.Empty;
     public string IconName { get; set; } = string.Empty;
 
@@ -112,6 +113,19 @@ public partial class AutobuffOrderViewModel : ObservableObject
         {
             ActiveItems.Move(index, index + 1);
             SendOrderUpdate();
+        }
+    }
+
+    [RelayCommand]
+    private void DeleteItem(AutobuffOrderItemViewModel item)
+    {
+        if (item.ItemType == "Skill")
+        {
+            _worker.Send(new UpdateAutobuffSkillItemCommand(item.Name, "None"));
+        }
+        else if (item.ItemType == "Item")
+        {
+            _worker.Send(new UpdateAutobuffItemCommand(item.Name, "None"));
         }
     }
 

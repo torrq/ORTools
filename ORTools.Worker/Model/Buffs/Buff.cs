@@ -438,7 +438,8 @@ public static class BuffService
     public static Buff? GetBuff(EffectStatusIDs statusId)
     {
         Initialize();
-        var allLists = new[]
+        
+        var currentLists = new[]
         {
             ServerList(BuffDefinitions.ArcherBuffs), ServerList(BuffDefinitions.SwordmanBuffs),
             ServerList(BuffDefinitions.MageBuffs), ServerList(BuffDefinitions.MerchantBuffs),
@@ -450,11 +451,31 @@ public static class BuffService
             BuffDefinitions.ScrollBuffs, BuffDefinitions.EtcBuffs,
             BuffDefinitions.FishBuffs, BuffDefinitions.Debuffs
         };
-        foreach (var list in allLists)
+        foreach (var list in currentLists)
         {
             var buff = list.FirstOrDefault(b => b.EffectStatusID == statusId);
             if (buff != null) return buff;
         }
+
+        // Fallback: search all dictionaries regardless of server mode
+        var allDictionaries = new[]
+        {
+            BuffDefinitions.ArcherBuffs, BuffDefinitions.SwordmanBuffs,
+            BuffDefinitions.MageBuffs, BuffDefinitions.MerchantBuffs,
+            BuffDefinitions.ThiefBuffs, BuffDefinitions.AcolyteBuffs,
+            BuffDefinitions.NinjaBuffs, BuffDefinitions.TaekwonBuffs,
+            BuffDefinitions.GunslingerBuffs, BuffDefinitions.PadawanBuffs,
+            BuffDefinitions.ElementBuffs
+        };
+        foreach (var dict in allDictionaries)
+        {
+            foreach (var kvp in dict)
+            {
+                var buff = kvp.Value.FirstOrDefault(b => b.EffectStatusID == statusId);
+                if (buff != null) return buff;
+            }
+        }
+
         return null;
     }
 

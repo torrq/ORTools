@@ -55,10 +55,13 @@ public class Profile
         var profiles = new List<string>();
         try
         {
-            foreach (string file in Directory.GetFiles(AppConfig.ProfileFolder))
+            foreach (string file in Directory.GetFiles(AppConfig.ProfileFolder, "*.json"))
             {
-                string[] parts = file.Split('\\');
-                profiles.Add(parts[^1].Split('.')[0]);
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                if (!string.IsNullOrWhiteSpace(fileName))
+                {
+                    profiles.Add(fileName);
+                }
             }
         }
         catch (Exception ex)

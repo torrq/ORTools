@@ -185,6 +185,7 @@
                               SelectedItem="{Binding SelectedProcess}"
                               DisplayMemberPath="DisplayName"
                               DropDownOpened="ProcessList_DropDownOpened"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               Width="130" Height="24" FontSize="12"
                               Background="{DynamicResource AppInputBrush}"
                               Foreground="Black" BorderBrush="{DynamicResource AppInputBorderBrush}" Margin="0,0,0,6">
@@ -193,6 +194,7 @@
                     <TextBlock Text="Profile" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,0,2"/>
                     <ComboBox x:Name="ProfileComboBox" ItemsSource="{Binding ProfileList}"
                               SelectedItem="{Binding CurrentProfile}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               Width="130" Height="24" FontSize="12"
                               Background="{DynamicResource AppInputBrush}"
                               BorderBrush="{DynamicResource AppInputBorderBrush}" Foreground="Black" Margin="0,0,0,8">

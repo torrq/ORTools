@@ -198,6 +198,8 @@ public sealed record UpdateGlobalConfigCommand(
     bool DebugMode,
     bool DebugModeShowLog,
     bool DisableSystray,
+    bool MinimizeToSystray,
+    bool CloseToSystray,
     bool StartAutoOffTimerOnEnable,
     bool ClearAutoOffTimerOnDisable,
     bool PauseWhenChatting,

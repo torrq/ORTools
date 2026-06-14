@@ -726,6 +726,8 @@ public sealed class WorkerCore
         config.DebugMode = cmd.DebugMode;
         config.DebugModeShowLog = cmd.DebugModeShowLog;
         config.DisableSystray = cmd.DisableSystray;
+        config.MinimizeToSystray = cmd.MinimizeToSystray;
+        config.CloseToSystray = cmd.CloseToSystray;
         config.StartAutoOffTimerOnEnable = cmd.StartAutoOffTimerOnEnable;
         config.ClearAutoOffTimerOnDisable = cmd.ClearAutoOffTimerOnDisable;
         config.PauseWhenChatting = cmd.PauseWhenChatting;
@@ -1261,6 +1263,8 @@ public sealed class WorkerCore
             config.DebugMode,
             config.DebugModeShowLog,
             config.DisableSystray,
+            config.MinimizeToSystray,
+            config.CloseToSystray,
             config.StartAutoOffTimerOnEnable,
             config.ClearAutoOffTimerOnDisable,
             config.PauseWhenChatting,

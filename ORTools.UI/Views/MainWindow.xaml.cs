@@ -64,17 +64,30 @@ public partial class MainWindow : Window
             this.DragMove();
     }
 
+    protected override void OnStateChanged(EventArgs e)
+    {
+        if (WindowState == WindowState.Minimized && DataContext is MainWindowViewModel vm)
+        {
+            if (vm.Settings.MinimizeToSystray && !vm.Settings.DisableSystray)
+            {
+                this.Hide();
+            }
+        }
+        base.OnStateChanged(e);
+    }
+
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
         if (DataContext is MainWindowViewModel vm && !vm.ForceExit)
         {
-            e.Cancel = true;
-            this.Hide();
+            if (vm.Settings.CloseToSystray && !vm.Settings.DisableSystray)
+            {
+                e.Cancel = true;
+                this.Hide();
+                return;
+            }
         }
-        else
-        {
-            base.OnClosing(e);
-        }
+        base.OnClosing(e);
     }
 
     private void ProcessList_DropDownOpened(object sender, System.EventArgs e)
