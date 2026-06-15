@@ -12,7 +12,10 @@ public partial class AutobuffItemItemViewModel : ObservableObject
     public string Name { get; set; } = "";
     public string DisplayName { get; set; } = "";
 
-    public string ImagePath => $"pack://application:,,,/Icons/Items/{Name}.png";
+    [ObservableProperty]
+    private string _iconName = "";
+    partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(ImagePath));
+    public string ImagePath => $"pack://application:,,,/Icons/Items/{IconName}.png";
 
     [ObservableProperty]
     private string _key = "None";
@@ -67,7 +70,8 @@ public partial class AutobuffItemViewModel : ObservableObject
                         {
                             Name = itemData.Name,
                             DisplayName = itemData.DisplayName,
-                            Key = itemData.Key
+                            Key = itemData.Key,
+                            IconName = itemData.IconName
                         };
                         itemVm.OnKeyUpdated += (sender, key) =>
                         {
@@ -108,4 +112,6 @@ public partial class AutobuffItemViewModel : ObservableObject
             _worker.Send(new UpdateAutobuffItemSettingsCommand(value));
     }
 }
+
+
 

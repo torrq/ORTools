@@ -90,6 +90,10 @@ public static class ProfileSingleton
             if (rawObject != null)
             {
                 _profile.Name            = profileName;
+                if (rawObject["UnifiedAutobuffOrder"] != null)
+                {
+                    _profile.UnifiedAutobuffOrder = rawObject["UnifiedAutobuffOrder"].ToObject<List<string>>();
+                }
                 _profile.UserPreferences = JsonConvert.DeserializeObject<ConfigProfile>(Profile.GetByAction(rawObject, _profile.UserPreferences));
                 _profile.SkillSpammer    = JsonConvert.DeserializeObject<SkillSpammer>(Profile.GetByAction(rawObject, _profile.SkillSpammer));
                 _profile.AutopotHP       = JsonConvert.DeserializeObject<AutopotHP>(Profile.GetByAction(rawObject, _profile.AutopotHP));
@@ -199,6 +203,26 @@ public static class ProfileSingleton
                 File.WriteAllText(filePath, JsonConvert.SerializeObject(jObj, Formatting.Indented));
             }
             catch (Exception ex) { DebugLogger.Error(ex, $"SetConfiguration failed for '{action.GetActionName()}'"); }
+        }
+    }
+
+    public static void SaveUnifiedAutobuffOrder()
+    {
+        if (_profile == null) return;
+        string filePath = AppConfig.ProfileFolder + _profile.Name + ".json";
+        lock (_lock)
+        {
+            try
+            {
+                if (!File.Exists(filePath)) Create(_profile.Name);
+                string json = File.ReadAllText(filePath);
+                var jObj = !string.IsNullOrEmpty(json)
+                            ? JsonConvert.DeserializeObject<JObject>(json)!
+                            : new JObject();
+                jObj["UnifiedAutobuffOrder"] = Newtonsoft.Json.Linq.JArray.FromObject(_profile.UnifiedAutobuffOrder);
+                File.WriteAllText(filePath, JsonConvert.SerializeObject(jObj, Formatting.Indented));
+            }
+            catch (Exception ex) { DebugLogger.Error(ex, "SaveUnifiedAutobuffOrder failed"); }
         }
     }
 

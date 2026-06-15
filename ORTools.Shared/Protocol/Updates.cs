@@ -97,7 +97,7 @@ public sealed record SkillTimerConfigUpdate(
     public string Type => MessageTypes.SkillTimerConfig;
 }
 
-public sealed record DebuffRecoveryItemData(string Name, string Key);
+public sealed record DebuffRecoveryItemData(string Name, string Key, string IconName);
 
 public sealed record DebuffRecoveryConfigUpdate(
     List<DebuffRecoveryItemData> Items,
@@ -106,7 +106,7 @@ public sealed record DebuffRecoveryConfigUpdate(
     public string Type => MessageTypes.DebuffRecoveryConfig;
 }
 
-public sealed record AutobuffSkillItemData(string Name, string DisplayName, string Key);
+public sealed record AutobuffSkillItemData(string Name, string DisplayName, string Key, string IconName);
 
 public sealed record AutobuffSkillGroupData(string GroupName, List<AutobuffSkillItemData> Items);
 
@@ -125,7 +125,7 @@ public sealed record AutobuffOrderConfigUpdate(
     public string Type => MessageTypes.AutobuffOrderConfig;
 }
 
-public sealed record AutobuffItemItemData(string Name, string DisplayName, string Key);
+public sealed record AutobuffItemItemData(string Name, string DisplayName, string Key, string IconName);
 
 public sealed record AutobuffItemGroupData(string GroupName, List<AutobuffItemItemData> Items);
 

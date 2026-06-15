@@ -32,7 +32,6 @@ public partial class DebuffsViewModel : ObservableObject
     {
         var knownDebuffs = new[]
         {
-            ("Bleeding", "NPC_BLEEDING"),
             ("Burning", "BURNING"),
             ("Chaos / Confusion", "CONFUSION"),
             ("Critical Wound", "NPC_CRITICALWOUND"),
@@ -40,7 +39,6 @@ public partial class DebuffsViewModel : ObservableObject
             ("Decrease AGI", "AL_DECAGI"),
             ("Freezing", "FREEZING"),
             ("Frozen", "FROZEN"),
-            ("Hallucination", "NPC_HALLUCINATION"),
             ("Poison", "POISON"),
             ("Silence", "SILENCE"),
             ("Sit", "SIT"),
@@ -131,6 +129,7 @@ public partial class DebuffsViewModel : ObservableObject
             if (vm != null)
             {
                 vm.Key = item.Key;
+                vm.IconName = item.IconName;
             }
         }
 
@@ -160,7 +159,10 @@ public partial class DebuffRecoveryItemViewModel : ObservableObject
     
     public string DisplayName { get; set; } = "";
     
-    public string ImagePath => $"pack://application:,,,/Icons/Debuffs/{Name}.png";
+    [ObservableProperty]
+    private string _iconName = "";
+    partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(ImagePath));
+    public string ImagePath => $"pack://application:,,,/Icons/Debuffs/{IconName}.png";
     
     [ObservableProperty]
     private string _key = "None";
@@ -172,3 +174,5 @@ public partial class DebuffRecoveryItemViewModel : ObservableObject
         OnKeyUpdated?.Invoke(this, value);
     }
 }
+
+

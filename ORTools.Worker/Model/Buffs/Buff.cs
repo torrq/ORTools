@@ -5,12 +5,14 @@ public class Buff
 {
     public string         Name          { get; set; } = "";
     public EffectStatusIDs EffectStatusID { get; set; }
+    public string IconName { get; set; } = "";
 
     public Buff() { }
-    public Buff(string name, EffectStatusIDs effectStatus)
+    public Buff(string name, EffectStatusIDs effectStatus, string iconName = "")
     {
         Name          = name;
         EffectStatusID = effectStatus;
+        IconName = iconName;
     }
 }
 
@@ -56,11 +58,11 @@ public static class BuffDefinitions
 
 
     // B() helper — parses effectStatusName and creates a data-only Buff
-    private static Buff B(string name, string effectStatusName)
+    private static Buff B(string name, string effectStatusName, string iconName)
     {
         if (!Enum.TryParse<EffectStatusIDs>(effectStatusName, out var effect))
             DebugLogger.Debug($"[Buff] Unknown EffectStatusID: {effectStatusName} for buff: {name}");
-        return new Buff(name, effect);
+        return new Buff(name, effect, iconName);
     }
 
     public static void Initialize()
@@ -70,222 +72,218 @@ public static class BuffDefinitions
         InitializeDebuffs();
     }
 
-    private static void InitializeSkillBuffs()
-    {
-
+    private static void InitializeSkillBuffs() { 
         ArcherBuffs[0] = new List<Buff>
         {
-            B("Improve Concentration", "AC_CONCENTRATION"),
-            B("True Sight", "SN_SIGHT"),
-            B("Wind Walk", "SN_WINDWALK")
+            B("Improve Concentration", "AC_CONCENTRATION", "ac_concentration"),
+            B("True Sight", "SN_SIGHT", "sn_sight"),
+            B("Wind Walk", "SN_WINDWALK", "sn_windwalk")
         };
 
         SwordmanBuffs[0] = new List<Buff>
         {
-            B("Endure", "SM_ENDURE"),
-            B("Auto Berserk", "SM_AUTOBERSERK"),
-            B("Auto Guard", "CR_AUTOGUARD"),
-            B("Reflect Shield", "CR_REFLECTSHIELD"),
-            B("Spear Quicken", "CR_SPEARQUICKEN"),
-            B("Defender", "CR_DEFENDER"),
-            B("Concentration", "LK_CONCENTRATION"),
-            B("Berserk", "LK_BERSERK"),
-            B("Two-Hand Quicken", "KN_TWOHANDQUICKEN"),
-            B("Parry", "LK_PARRYING"),
-            B("Aura Blade", "LK_AURABLADE"),
-            B("Shrink", "CR_SHRINK"),
-            B("Magnum Break", "SM_MAGNUM"),
-            B("One-Hand Quicken", "KN_ONEHAND"),
-            B("Provoke", "SM_PROVOKE"),
-            B("Providence", "CR_PROVIDENCE")
+            B("Endure", "SM_ENDURE", "sm_endure"),
+            B("Auto Berserk", "SM_AUTOBERSERK", "sm_autoberserk"),
+            B("Auto Guard", "CR_AUTOGUARD", "cr_autoguard"),
+            B("Reflect Shield", "CR_REFLECTSHIELD", "cr_reflectshield"),
+            B("Spear Quicken", "CR_SPEARQUICKEN", "cr_spearquicken"),
+            B("Defender", "CR_DEFENDER", "cr_defender"),
+            B("Concentration", "LK_CONCENTRATION", "lk_concentration"),
+            B("Berserk", "LK_BERSERK", "lk_berserk"),
+            B("Two-Hand Quicken", "KN_TWOHANDQUICKEN", "mer_quicken"),
+            B("Parry", "LK_PARRYING", "ms_parrying"),
+            B("Aura Blade", "LK_AURABLADE", "lk_aurablade"),
+            B("Shrink", "CR_SHRINK", "cr_shrink"),
+            B("Magnum Break", "SM_MAGNUM", "magnum"),
+            B("One-Hand Quicken", "KN_ONEHAND", "lk_onehand"),
+            B("Provoke", "SM_PROVOKE", "provoke"),
+            B("Providence", "CR_PROVIDENCE", "providence")
         };
         SwordmanBuffs[1] = new List<Buff>
         {
-            B("Endure", "SM_ENDURE"),
-            B("Auto Berserk", "SM_AUTOBERSERK"),
-            B("Auto Guard", "CR_AUTOGUARD"),
-            B("Reflect Shield", "CR_REFLECTSHIELD"),
-            B("Spear Quicken", "CR_SPEARQUICKEN"),
-            B("Defender", "CR_DEFENDER"),
-            B("Concentration", "LK_CONCENTRATION"),
-            B("Berserk", "LK_BERSERK"),
-            B("Two-Hand Quicken", "KN_TWOHANDQUICKEN"),
-            B("Parry", "LK_PARRYING"),
-            B("Aura Blade", "LK_AURABLADE"),
-            B("Shrink", "CR_SHRINK"),
-            B("Magnum Break", "SM_MAGNUM"),
-            B("One-Hand Quicken", "KN_ONEHAND"),
-            B("Provoke", "SM_PROVOKE"),
-            B("Providence", "CR_PROVIDENCE"),
-            B("Mana Shield", "MANA_SHIELD")
+            B("Endure", "SM_ENDURE", "sm_endure"),
+            B("Auto Berserk", "SM_AUTOBERSERK", "sm_autoberserk"),
+            B("Auto Guard", "CR_AUTOGUARD", "cr_autoguard"),
+            B("Reflect Shield", "CR_REFLECTSHIELD", "cr_reflectshield"),
+            B("Spear Quicken", "CR_SPEARQUICKEN", "cr_spearquicken"),
+            B("Defender", "CR_DEFENDER", "cr_defender"),
+            B("Concentration", "LK_CONCENTRATION", "lk_concentration"),
+            B("Berserk", "LK_BERSERK", "lk_berserk"),
+            B("Two-Hand Quicken", "KN_TWOHANDQUICKEN", "mer_quicken"),
+            B("Parry", "LK_PARRYING", "ms_parrying"),
+            B("Aura Blade", "LK_AURABLADE", "lk_aurablade"),
+            B("Shrink", "CR_SHRINK", "cr_shrink"),
+            B("Magnum Break", "SM_MAGNUM", "magnum"),
+            B("One-Hand Quicken", "KN_ONEHAND", "lk_onehand"),
+            B("Provoke", "SM_PROVOKE", "provoke"),
+            B("Providence", "CR_PROVIDENCE", "providence"),
+            B("Mana Shield", "MANA_SHIELD", "manashield")
         };
 
         MageBuffs[0] = new List<Buff>
         {
-            B("Energy Coat", "MG_ENERGYCOAT"),
-            B("Sight Blaster", "WZ_SIGHTBLASTER"),
-            B("Autospell", "SA_AUTOSPELL"),
-            B("Double Casting", "PF_DOUBLECASTING"),
-            B("Memorize", "PF_MEMORIZE"),
-            B("Amplify Magic Power / Mystical Amplification", "HW_MAGICPOWER"),
-            B("Mind Breaker", "PF_MINDBREAKER")
+            B("Energy Coat", "MG_ENERGYCOAT", "mg_energycoat"),
+            B("Sight Blaster", "WZ_SIGHTBLASTER", "wz_sightblaster"),
+            B("Autospell", "SA_AUTOSPELL", "sa_autospell"),
+            B("Double Casting", "PF_DOUBLECASTING", "pf_doublecasting"),
+            B("Memorize", "PF_MEMORIZE", "pf_memorize"),
+            B("Amplify Magic Power / Mystical Amplification", "HW_MAGICPOWER", "amplify"),
+            B("Mind Breaker", "PF_MINDBREAKER", "mindbreaker")
         };
 
         MerchantBuffs[0] = new List<Buff>
         {
-            B("Crazy Uproar", "MC_LOUD"),
-            B("Overthrust", "BS_OVERTHRUST"),
-            B("Adrenaline Rush", "BS_ADRENALINE"),
-            B("Full Adrenaline Rush", "BS_ADRENALINE2"),
-            B("Weapon Perfection", "BS_WEAPONPERFECT"),
-            B("Maximize Power", "BS_MAXIMIZE"),
-            B("Cart Boost", "WS_CARTBOOST"),
-            B("Meltdown", "WS_MELTDOWN"),
-            B("Maximum Overthrust", "WS_OVERTHRUSTMAX"),
-            B("Greed Parry", "WS_GREEDPARRY")
+            B("Crazy Uproar", "MC_LOUD", "mc_loud"),
+            B("Overthrust", "BS_OVERTHRUST", "bs_overthrust"),
+            B("Adrenaline Rush", "BS_ADRENALINE", "bs_adrenaline"),
+            B("Full Adrenaline Rush", "BS_ADRENALINE2", "bs_adrenaline2"),
+            B("Weapon Perfection", "BS_WEAPONPERFECT", "bs_weaponperfect"),
+            B("Maximize Power", "BS_MAXIMIZE", "bs_maximize"),
+            B("Cart Boost", "WS_CARTBOOST", "ws_cartboost"),
+            B("Meltdown", "WS_MELTDOWN", "ws_meltdown"),
+            B("Maximum Overthrust", "WS_OVERTHRUSTMAX", "ws_overthrustmax"),
+            B("Greed Parry", "WS_GREEDPARRY", "ws_greedparry")
         };
         MerchantBuffs[1] = new List<Buff>
         {
-            B("Crazy Uproar", "MC_LOUD"),
-            B("Overthrust", "BS_OVERTHRUST"),
-            B("Adrenaline Rush", "BS_ADRENALINE"),
-            B("Full Adrenaline Rush", "BS_ADRENALINE2"),
-            B("Weapon Perfection", "BS_WEAPONPERFECT"),
-            B("Maximize Power", "BS_MAXIMIZE"),
-            B("Cart Boost", "WS_CARTBOOST"),
-            B("Meltdown", "WS_MELTDOWN"),
-            B("Maximum Overthrust", "WS_OVERTHRUSTMAX"),
-            B("Greed Parry", "RESIST_PROPERTY_FIRE")
+            B("Crazy Uproar", "MC_LOUD", "mc_loud"),
+            B("Overthrust", "BS_OVERTHRUST", "bs_overthrust"),
+            B("Adrenaline Rush", "BS_ADRENALINE", "bs_adrenaline"),
+            B("Full Adrenaline Rush", "BS_ADRENALINE2", "bs_adrenaline2"),
+            B("Weapon Perfection", "BS_WEAPONPERFECT", "bs_weaponperfect"),
+            B("Maximize Power", "BS_MAXIMIZE", "bs_maximize"),
+            B("Cart Boost", "WS_CARTBOOST", "ws_cartboost"),
+            B("Meltdown", "WS_MELTDOWN", "ws_meltdown"),
+            B("Maximum Overthrust", "WS_OVERTHRUSTMAX", "ws_overthrustmax"),
+            B("Greed Parry", "RESIST_PROPERTY_FIRE", "ws_greedparry")
         };
 
         ThiefBuffs[0] = new List<Buff>
         {
-            B("Poison React", "AS_POISONREACT"),
-            B("Reject Sword", "ST_REJECTSWORD"),
-            B("Preserve", "ST_PRESERVE"),
-            B("Enchant Deadly Poison", "ASC_EDP"),
-            B("Hide", "TF_HIDING"),
-            B("Cloak", "AS_CLOAKING"),
-            B("Chase Walk", "ST_CHASEWALK")
+            B("Poison React", "AS_POISONREACT", "as_poisonreact"),
+            B("Reject Sword", "ST_REJECTSWORD", "st_rejectsword"),
+            B("Preserve", "ST_PRESERVE", "st_preserve"),
+            B("Enchant Deadly Poison", "ASC_EDP", "asc_edp"),
+            B("Hide", "TF_HIDING", "hiding"),
+            B("Cloak", "AS_CLOAKING", "cloaking"),
+            B("Chase Walk", "ST_CHASEWALK", "chase_walk")
         };
         ThiefBuffs[1] = new List<Buff>
         {
-            B("Poison React", "AS_POISONREACT"),
-            B("Reject Sword", "ST_REJECTSWORD"),
-            B("Preserve", "ST_PRESERVE"),
-            B("Enchant Deadly Poison", "ASC_EDP"),
-            B("Hide", "TF_HIDING"),
-            B("Cloak", "AS_CLOAKING"),
-            B("Chase Walk", "ST_CHASEWALK"),
-            B("Enchant Poison Armor", "ENCHANT_POISON_ARMOR")
+            B("Poison React", "AS_POISONREACT", "as_poisonreact"),
+            B("Reject Sword", "ST_REJECTSWORD", "st_rejectsword"),
+            B("Preserve", "ST_PRESERVE", "st_preserve"),
+            B("Enchant Deadly Poison", "ASC_EDP", "asc_edp"),
+            B("Hide", "TF_HIDING", "hiding"),
+            B("Cloak", "AS_CLOAKING", "cloaking"),
+            B("Chase Walk", "ST_CHASEWALK", "chase_walk"),
+            B("Enchant Poison Armor", "ENCHANT_POISON_ARMOR", "enchantpoisonarmor")
         };
 
         AcolyteBuffs[0] = new List<Buff>
         {
-            B("Blessing", "AL_BLESSING"),
-            B("Increase Agility", "AL_INCAGI"),
-            B("Gloria", "PR_GLORIA"),
-            B("Magnificat", "PR_MAGNIFICAT"),
-            B("Angelus", "AL_ANGELUS"),
-            B("Impositio Manus", "PR_IMPOSITIO"),
-            B("Basilica", "HP_BASILICA"),
-            B("Fury", "MO_EXPLOSIONSPIRITS"),
-            B("Steel Body", "MO_STEELBODY"),
+            B("Blessing", "AL_BLESSING", "al_blessing"),
+            B("Increase Agility", "AL_INCAGI", "al_incagi"),
+            B("Gloria", "PR_GLORIA", "pr_gloria"),
+            B("Magnificat", "PR_MAGNIFICAT", "pr_magnificat"),
+            B("Angelus", "AL_ANGELUS", "al_angelus"),
+            B("Impositio Manus", "PR_IMPOSITIO", "impositio_manus"),
+            B("Basilica", "HP_BASILICA", "basilica"),
+            B("Fury", "MO_EXPLOSIONSPIRITS", "fury"),
+            B("Steel Body", "MO_STEELBODY", "steel_body"),
         };
         AcolyteBuffs[1] = new List<Buff>
         {
-            B("Blessing", "AL_BLESSING"),
-            B("Increase Agility", "AL_INCAGI"),
-            B("Gloria", "PR_GLORIA"),
-            B("Magnificat", "PR_MAGNIFICAT"),
-            B("Angelus", "AL_ANGELUS"),
-            B("Impositio Manus", "PR_IMPOSITIO"),
-            B("Basilica", "HP_BASILICA"),
-            B("Fury", "MO_EXPLOSIONSPIRITS"),
-            B("Steel Body", "MO_STEELBODY"),
-            B("Refraction", "REFRACTION"),
-            B("Shallow Grave", "SL_KAIZEL")
+            B("Blessing", "AL_BLESSING", "al_blessing"),
+            B("Increase Agility", "AL_INCAGI", "al_incagi"),
+            B("Gloria", "PR_GLORIA", "pr_gloria"),
+            B("Magnificat", "PR_MAGNIFICAT", "pr_magnificat"),
+            B("Angelus", "AL_ANGELUS", "al_angelus"),
+            B("Impositio Manus", "PR_IMPOSITIO", "impositio_manus"),
+            B("Basilica", "HP_BASILICA", "basilica"),
+            B("Fury", "MO_EXPLOSIONSPIRITS", "fury"),
+            B("Steel Body", "MO_STEELBODY", "steel_body"),
+            B("Refraction", "REFRACTION", "refraction"),
+            B("Shallow Grave", "SL_KAIZEL", "shallowgrave")
         };
 
         NinjaBuffs[0] = new List<Buff>
         {
-            B("Ninja Aura", "NJ_NEN"),
-            B("Cast-off Cicada / Cicada SS", "NJ_UTSUSEMI"),
-            B("Illusion Shadow / Mirror Image", "NJ_BUNSINJYUTSU")
+            B("Ninja Aura", "NJ_NEN", "nj_nen"),
+            B("Cast-off Cicada / Cicada SS", "NJ_UTSUSEMI", "nj_utsusemi"),
+            B("Illusion Shadow / Mirror Image", "NJ_BUNSINJYUTSU", "bunsinjyutsu")
         };
 
         TaekwonBuffs[0] = new List<Buff>
         {
-            B("Mild Wind (Earth)", "SA_SEISMICWEAPON"),
-            B("Mild Wind (Fire)", "SA_FLAMELAUNCHER"),
-            B("Mild Wind (Water)", "SA_FROSTWEAPON"),
-            B("Mild Wind (Wind)", "SA_LIGHTNINGLOADER"),
-            B("Mild Wind (Ghost)", "PROPERTYTELEKINESIS"),
-            B("Mild Wind (Holy)", "PR_ASPERSIO"),
-            B("Mild Wind (Shadow)", "PROPERTYDARK"),
-            B("Tumbling", "MO_DODGE"),
-            B("Solar, Lunar, and Stellar Warmth", "WARM"),
-            B("Comfort of the Sun", "SG_SUN_COMFORT"),
-            B("Comfort of the Moon", "SG_MOON_COMFORT"),
-            B("Comfort of the Stars", "SG_STAR_COMFORT"),
-            B("Kaupe", "SL_KAUPE"),
-            B("Kaite", "SL_KAITE"),
-            B("Kaizel", "SL_KAIZEL"),
-            B("Kaahi", "SL_KAAHI")
+            B("Mild Wind (Earth)", "SA_SEISMICWEAPON", "tk_mild_earth"),
+            B("Mild Wind (Fire)", "SA_FLAMELAUNCHER", "tk_mild_fire"),
+            B("Mild Wind (Water)", "SA_FROSTWEAPON", "tk_mild_water"),
+            B("Mild Wind (Wind)", "SA_LIGHTNINGLOADER", "tk_mild_wind"),
+            B("Mild Wind (Ghost)", "PROPERTYTELEKINESIS", "tk_mild_ghost"),
+            B("Mild Wind (Holy)", "PR_ASPERSIO", "tk_mild_holy"),
+            B("Mild Wind (Shadow)", "PROPERTYDARK", "tk_mild_shadow"),
+            B("Tumbling", "MO_DODGE", "tumbling"),
+            B("Solar, Lunar, and Stellar Warmth", "WARM", "sun_warm"),
+            B("Comfort of the Sun", "SG_SUN_COMFORT", "sun_comfort"),
+            B("Comfort of the Moon", "SG_MOON_COMFORT", "moon_comfort"),
+            B("Comfort of the Stars", "SG_STAR_COMFORT", "star_comfort"),
+            B("Kaupe", "SL_KAUPE", "kaupe"),
+            B("Kaite", "SL_KAITE", "kaite"),
+            B("Kaizel", "SL_KAIZEL", "kaizel"),
+            B("Kaahi", "SL_KAAHI", "kaahi")
         };
 
         GunslingerBuffs[0] = new List<Buff>
         {
-            B("Gatling Fever", "GS_GATLINGFEVER"),
-            B("Last Stand", "GS_MADNESSCANCEL"),
-            B("Adjustment", "GS_ADJUSTMENT"),
-            B("Increased Accuracy", "GS_INCREASING")
+            B("Gatling Fever", "GS_GATLINGFEVER", "gatling_fever"),
+            B("Last Stand", "GS_MADNESSCANCEL", "madnesscancel"),
+            B("Adjustment", "GS_ADJUSTMENT", "adjustment"),
+            B("Increased Accuracy", "GS_INCREASING", "increase_accuracy")
         };
 
         PadawanBuffs[1] = new List<Buff>
         {
-            B("Force Element (Earth)", "SA_SEISMICWEAPON"),
-            B("Force Element (Wind)", "SA_LIGHTNINGLOADER"),
-            B("Force Element (Water)", "SA_FROSTWEAPON"),
-            B("Force Element (Fire)", "SA_FLAMELAUNCHER"),
-            B("Force Element (Ghost)", "PROPERTYTELEKINESIS"),
-            B("Force Element (Shadow)", "PROPERTYDARK"),
-            B("Force Element (Holy)", "PR_ASPERSIO"),
-            B("Force Projection", "HR_PROJECTION"),
-            B("Cold Skin", "RESIST_PROPERTY_WATER"),
-            B("Saber Parry", "HR_SABERPARRY"),
-            B("Force Concentration", "HR_FORCECONCENTRATE"),
-            B("Saber Thrust", "LK_CONCENTRATION"),
-            B("Force Persuasion", "HR_FORCEPERSUASION"),
-            B("Force Haste", "HR_FORCEHASTE"),
-            B("Force Sacrifice", "HR_FORCESACRIFICE"),
-            B("Jedi Frenzy", "HR_JEDIFRENZY")
+            B("Force Element (Earth)", "SA_SEISMICWEAPON", "forceelement_earth"),
+            B("Force Element (Wind)", "SA_LIGHTNINGLOADER", "forceelement_wind"),
+            B("Force Element (Water)", "SA_FROSTWEAPON", "forceelement_water"),
+            B("Force Element (Fire)", "SA_FLAMELAUNCHER", "forceelement_fire"),
+            B("Force Element (Ghost)", "PROPERTYTELEKINESIS", "forceelement_ghost"),
+            B("Force Element (Shadow)", "PROPERTYDARK", "forceelement_shadow"),
+            B("Force Element (Holy)", "PR_ASPERSIO", "forceelement_holy"),
+            B("Force Projection", "HR_PROJECTION", "hr_forceprojection"),
+            B("Cold Skin", "RESIST_PROPERTY_WATER", "hr_coldskin"),
+            B("Saber Parry", "HR_SABERPARRY", "hr_saberparry"),
+            B("Force Concentration", "HR_FORCECONCENTRATE", "hr_forceconcentrate"),
+            B("Saber Thrust", "LK_CONCENTRATION", "hr_saberthrust"),
+            B("Force Persuasion", "HR_FORCEPERSUASION", "hr_forcepersuasion"),
+            B("Force Haste", "HR_FORCEHASTE", "forcehaste"),
+            B("Force Sacrifice", "HR_FORCESACRIFICE", "hr_forcesacrifice"),
+            B("Jedi Frenzy", "HR_JEDIFRENZY", "hr_jedifrenzy")
         };
         PadawanBuffs[0] = new List<Buff>
         {
-            B("Force Element (Earth)", "PD_ELEMENT_EARTH"),
-            B("Force Element (Wind)", "PD_ELEMENT_WIND"),
-            B("Force Element (Water)", "PD_ELEMENT_WATER"),
-            B("Force Element (Fire)", "PD_ELEMENT_FIRE"),
-            B("Force Element (Ghost)", "PD_ELEMENT_GHOST"),
-            B("Force Element (Shadow)", "PD_ELEMENT_SHADOW"),
-            B("Force Element (Holy)", "PD_ELEMENT_HOLY"),
-            B("Force Projection", "SI_PROJECTION"),
-            B("Cold Skin", "SI_COLDSKIN"),
-            B("Saber Parry", "JS_SABERPARRY"),
-            B("Force Concentration", "JS_CONCENTRATE"),
-            B("Saber Thrust", "SI_SABERTHRUST"),
-            B("Force Persuasion", "JS_PERSUADE"),
-            B("Jedi Stealth", "JE_STEALTH"),
-            B("Force Levitate", "JE_LEVITATE"),
-            B("Jedi Frenzy", "JE_FRENZY"),
-            B("Force Sacrifice", "JE_SACRIFICE")
+            B("Force Element (Earth)", "PD_ELEMENT_EARTH", "forceelement_earth"),
+            B("Force Element (Wind)", "PD_ELEMENT_WIND", "forceelement_wind"),
+            B("Force Element (Water)", "PD_ELEMENT_WATER", "forceelement_water"),
+            B("Force Element (Fire)", "PD_ELEMENT_FIRE", "forceelement_fire"),
+            B("Force Element (Ghost)", "PD_ELEMENT_GHOST", "forceelement_ghost"),
+            B("Force Element (Shadow)", "PD_ELEMENT_SHADOW", "forceelement_shadow"),
+            B("Force Element (Holy)", "PD_ELEMENT_HOLY", "forceelement_holy"),
+            B("Force Projection", "SI_PROJECTION", "forceprojection"),
+            B("Cold Skin", "SI_COLDSKIN", "coldskin"),
+            B("Saber Parry", "JS_SABERPARRY", "saberparry"),
+            B("Force Concentration", "JS_CONCENTRATE", "forceconcentrate"),
+            B("Saber Thrust", "SI_SABERTHRUST", "saberthrust"),
+            B("Force Persuasion", "JS_PERSUADE", "forcepersuasion"),
+            B("Jedi Stealth", "JE_STEALTH", "jedistealth"),
+            B("Force Levitate", "JE_LEVITATE", "forcelevitate"),
+            B("Jedi Frenzy", "JE_FRENZY", "jedifrenzy"),
+            B("Force Sacrifice", "JE_SACRIFICE", "forcesacrifice")
         };
-    }
+     }
 
-    private static void InitializeItemBuffs()
-    {
-
+    private static void InitializeItemBuffs() { 
         // Clear collections before adding to prevent duplicates
         PotionBuffs.Clear();
         ElementBuffs.Clear();
@@ -297,127 +295,123 @@ public static class BuffDefinitions
 
         PotionBuffs.AddRange(new[]
         {
-            B("Concentration Potion", "ATTHASTE_POTION1"),
-            B("Awakening Potion", "ATTHASTE_POTION2"),
-            B("Berserk Potion", "ATTHASTE_POTION3")
+            B("Concentration Potion", "ATTHASTE_POTION1", "concentration_potion"),
+            B("Awakening Potion", "ATTHASTE_POTION2", "awakening_potion"),
+            B("Berserk Potion", "ATTHASTE_POTION3", "berserk_potion")
         });
 
         ElementBuffs.Clear();
 
         ElementBuffs[0] = new List<Buff>
         {
-            B("Fire Elemental Converter", "ENDOW_FIRE"),
-            B("Wind Elemental Converter", "ENDOW_WIND"),
-            B("Earth Elemental Converter", "ENDOW_EARTH"),
-            B("Box of Storms / Water Converter", "BOX_OF_STORMS"),
-            B("Cursed Water", "ENDOW_DARK"),
-            B("Fireproof Potion", "RESIST_PROPERTY_FIRE"),
-            B("Coldproof Potion", "RESIST_PROPERTY_WATER"),
-            B("Thunderproof Potion", "RESIST_PROPERTY_WIND"),
-            B("Earthproof Potion", "RESIST_PROPERTY_GROUND")
+            B("Fire Elemental Converter", "ENDOW_FIRE", "ele_fire_converter"),
+            B("Wind Elemental Converter", "ENDOW_WIND", "ele_wind_converter"),
+            B("Earth Elemental Converter", "ENDOW_EARTH", "ele_earth_converter"),
+            B("Box of Storms / Water Converter", "BOX_OF_STORMS", "boxofstorms"),
+            B("Cursed Water", "ENDOW_DARK", "cursed_water"),
+            B("Fireproof Potion", "RESIST_PROPERTY_FIRE", "fireproof"),
+            B("Coldproof Potion", "RESIST_PROPERTY_WATER", "coldproof"),
+            B("Thunderproof Potion", "RESIST_PROPERTY_WIND", "thunderproof"),
+            B("Earthproof Potion", "RESIST_PROPERTY_GROUND", "earthproof")
         };
 
         ElementBuffs[1] = new List<Buff>
         {
-            B("Fire Elemental Converter", "ENDOW_FIRE"),
-            B("Wind Elemental Converter", "ENDOW_WIND"),
-            B("Earth Elemental Converter", "ENDOW_EARTH"),
-            B("Box of Storms / Water Converter", "SA_FROSTWEAPON"),
-            B("Cursed Water", "ENDOW_DARK"),
-            B("Fireproof Potion", "RESIST_PROPERTY_FIRE"),
-            B("Coldproof Potion", "RESIST_PROPERTY_WATER"),
-            B("Thunderproof Potion", "RESIST_PROPERTY_WIND"),
-            B("Earthproof Potion", "RESIST_PROPERTY_GROUND")
+            B("Fire Elemental Converter", "ENDOW_FIRE", "ele_fire_converter"),
+            B("Wind Elemental Converter", "ENDOW_WIND", "ele_wind_converter"),
+            B("Earth Elemental Converter", "ENDOW_EARTH", "ele_earth_converter"),
+            B("Box of Storms / Water Converter", "SA_FROSTWEAPON", "boxofstorms"),
+            B("Cursed Water", "ENDOW_DARK", "cursed_water"),
+            B("Fireproof Potion", "RESIST_PROPERTY_FIRE", "fireproof"),
+            B("Coldproof Potion", "RESIST_PROPERTY_WATER", "coldproof"),
+            B("Thunderproof Potion", "RESIST_PROPERTY_WIND", "thunderproof"),
+            B("Earthproof Potion", "RESIST_PROPERTY_GROUND", "earthproof")
         };
 
         BoxBuffs.AddRange(new[]
         {
-            B("Box of Drowsiness / Tasty W. Ration", "PLUSMAGICPOWER"),
-            B("Box of Resentment / Tasty P. Ration / Chewy Ricecake", "PLUSATTACKPOWER"),
-            B("Box of Gloom", "AC_CONCENTRATION"),
-            B("Box of Thunder / Speed Potion", "BOX_OF_THUNDER"),
-            B("Anodyne", "SM_ENDURE"),
-            B("Aloe Vera", "SM_PROVOKE"),
-            B("Abrasive", "CRITICALPERCENT"),
+            B("Box of Drowsiness / Tasty W. Ration", "PLUSMAGICPOWER", "drowsiness"),
+            B("Box of Resentment / Tasty P. Ration / Chewy Ricecake", "PLUSATTACKPOWER", "resentment"),
+            B("Box of Gloom", "AC_CONCENTRATION", "gloom"),
+            B("Box of Thunder / Speed Potion", "BOX_OF_THUNDER", "boxofthunder"),
+            B("Anodyne", "SM_ENDURE", "anodyne"),
+            B("Aloe Vera", "SM_PROVOKE", "aloevera"),
+            B("Abrasive", "CRITICALPERCENT", "abrasive"),
         });
 
         FoodBuffs.AddRange(new[]
         {
-            B("Steamed Tongue (STR+10)", "FOOD_STR"),
-            B("Steamed Scorpion (AGI+10)", "FOOD_AGI"),
-            B("Stew of Immortality (VIT+10)", "FOOD_VIT"),
-            B("Dragon Breath Cocktail (INT+10)", "FOOD_INT"),
-            B("Hwergelmir's Tonic (DEX+10)", "FOOD_DEX"),
-            B("Cooked Nine Tail's Tails (LUK+10)", "FOOD_LUK"),
-            B("Glass of Illusion", "GLASS_OF_ILLUSION")
+            B("Steamed Tongue (STR+10)", "FOOD_STR", "food_str"),
+            B("Steamed Scorpion (AGI+10)", "FOOD_AGI", "food_agi"),
+            B("Stew of Immortality (VIT+10)", "FOOD_VIT", "food_vit"),
+            B("Dragon Breath Cocktail (INT+10)", "FOOD_INT", "food_int"),
+            B("Hwergelmir's Tonic (DEX+10)", "FOOD_DEX", "food_dex"),
+            B("Cooked Nine Tail's Tails (LUK+10)", "FOOD_LUK", "food_luk"),
+            B("Glass of Illusion", "GLASS_OF_ILLUSION", "Glass_Of_Illusion")
         });
 
         ScrollBuffs.AddRange(new[]
         {
-            B("Increase Agility Scroll", "AL_INCAGI"),
-            B("Bless Scroll", "AL_BLESSING"),
-            B("Talisman / Link Scroll", "SOULLINK"),
-            B("Assumptio Scroll", "HP_ASSUMPTIO"),
-            B("Spray of Flowers / Flee Scroll", "FOOD_BASICAVOIDANCE"),
+            B("Increase Agility Scroll", "AL_INCAGI", "al_incagi"),
+            B("Bless Scroll", "AL_BLESSING", "al_blessing"),
+            B("Talisman / Link Scroll", "SOULLINK", "sl_soullinker"),
+            B("Assumptio Scroll", "HP_ASSUMPTIO", "assumptio"),
+            B("Spray of Flowers / Flee Scroll", "FOOD_BASICAVOIDANCE", "flee_scroll"),
         });
 
         EtcBuffs.AddRange(new[]
         {
-            B("VIP Ticket", "VIP_BONUS"),
+            B("VIP Ticket", "VIP_BONUS", "vip_ticket"),
          /*
           * This one won't work because the item is a box type with a dialog which can't be assigned to a hotkey.
-          * B("SVIP Ticket", "SVIP_BONUS"),
+          * B("SVIP Ticket", "SVIP_BONUS", "vip_ticket"),
           */
-            B("Field Manual 100% / 300%", "FIELD_MANUAL"),
-            B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM"),
-            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM")
+            B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
+            B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
+            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
         });
 
         FishBuffs.AddRange(new[]
         {
-            B("Energy Drink", "ENERGY_DRINK"),
-            B("Max Potion", "MAX_POTION"),
-            B("Dash Juice", "DASH_JUICE"),
-            B("Demon Extract", "DEMON_EXTRACT"),
-            B("Stoneskin Extract", "STONESKIN_EXTRACT"),
-            B("Psychoserum", "PSYCHOSERUM"),
-            B("STR Tonic", "STR_TONIC"),
-            B("AGI Tonic", "AGI_TONIC"),
-            B("VIT Tonic", "VIT_TONIC"),
-            B("INT Tonic", "INT_TONIC"),
-            B("DEX Tonic", "DEX_TONIC"),
-            B("LUK Tonic", "LUK_TONIC")
+            B("Energy Drink", "ENERGY_DRINK", "energy_drink"),
+            B("Max Potion", "MAX_POTION", "max_potion"),
+            B("Dash Juice", "DASH_JUICE", "dash_juice"),
+            B("Demon Extract", "DEMON_EXTRACT", "demon_extract"),
+            B("Stoneskin Extract", "STONESKIN_EXTRACT", "stoneskin_extract"),
+            B("Psychoserum", "PSYCHOSERUM", "psychoserum"),
+            B("STR Tonic", "STR_TONIC", "str_tonic"),
+            B("AGI Tonic", "AGI_TONIC", "agi_tonic"),
+            B("VIT Tonic", "VIT_TONIC", "vit_tonic"),
+            B("INT Tonic", "INT_TONIC", "int_tonic"),
+            B("DEX Tonic", "DEX_TONIC", "dex_tonic"),
+            B("LUK Tonic", "LUK_TONIC", "luk_tonic")
         });
-    }
+     }
 
-    private static void InitializeDebuffs()
-    {
-
+    private static void InitializeDebuffs() { 
         // Clear collection before adding to prevent duplicates
         Debuffs.Clear();
 
-        Debuffs.AddRange(new[]
+        Debuffs.AddRange(new List<Buff>
         {
-            B("Bleeding", "NPC_BLEEDING"),
-            B("Burning", "BURNING"),
-            B("Chaos / Confusion", "CONFUSION"),
-            B("Critical Wound", "NPC_CRITICALWOUND"),
-            B("Curse", "CURSE"),
-            B("Decrease AGI", "AL_DECAGI"),
-            B("Freezing", "FREEZING"),
-            B("Frozen", "FROZEN"),
-            B("Hallucination", "NPC_HALLUCINATION"),
-            B("Poison", "POISON"),
-            B("Silence", "SILENCE"),
-            B("Sit", "SIT"),
-            B("Deep Sleep", "DEEP_SLEEP"),
-            B("Sleep", "SLEEP"),
-            B("Slow Cast", "NPC_SLOWCAST"),
-            B("Stone Curse (initial stage)", "STONECURSE_ING"),
-            B("Stone Curse (petrified)", "STONECURSE"),
-            B("Stun", "STUN")
+            B("Burning", "BURNING", "burning"),
+            B("Chaos / Confusion", "CONFUSION", "chaos"),
+            B("Critical Wound", "NPC_CRITICALWOUND", "critical_wound"),
+            B("Curse", "CURSE", "curse"),
+            B("Decrease AGI", "AL_DECAGI", "decrease_agi"),
+            B("Freezing", "FREEZING", "freezing"),
+            B("Frozen", "FROZEN", "frozen"),
+            B("Poison", "POISON", "poison_status"),
+            B("Silence", "SILENCE", "silence"),
+            B("Sit", "SIT", "sit"),
+            B("Deep Sleep", "DEEP_SLEEP", "deep_sleep"),
+            B("Sleep", "SLEEP", "sleep"),
+            B("Slow Cast", "NPC_SLOWCAST", "slow_cast"),
+            B("Stone Curse (initial stage)", "STONECURSE_ING", "stonecurse1"),
+            B("Stone Curse (petrified)", "STONECURSE", "stonecurse2"),
+            B("Stun", "STUN", "stun")
         });
-    }
+     }
 }
 
 // ── Static facade ─────────────────────────────────────────────────────────────
@@ -503,3 +497,5 @@ public static class BuffService
     // Debuffs
     public static List<Buff> GetDebuffs() { Initialize(); return new(BuffDefinitions.Debuffs); }
 }
+
+

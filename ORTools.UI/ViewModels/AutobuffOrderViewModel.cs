@@ -13,8 +13,14 @@ public partial class AutobuffOrderItemViewModel : ObservableObject
     public string DisplayName { get; set; } = string.Empty;
     public string Key { get; set; } = string.Empty;
     public string DisplayKey => Key.ToUpper();
-    public string ItemType { get; set; } = string.Empty;
-    public string IconName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    private string _itemType = string.Empty;
+    partial void OnItemTypeChanged(string value) => OnPropertyChanged(nameof(IconPath));
+
+    [ObservableProperty]
+    private string _iconName = string.Empty;
+    partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(IconPath));
 
     public string IconPath => ItemType == "Skill" 
         ? $"pack://application:,,,/Icons/Skills/{IconName}.png" 
@@ -45,50 +51,17 @@ public partial class AutobuffOrderViewModel : ObservableObject
     {
         _isUpdatingFromServer = true;
 
-        // In-place sync for Autobuff Order
-        // 1. Remove items that are no longer in config
-        var configNames = config.Items.Select(x => x.Name).ToHashSet();
-        for (int i = ActiveItems.Count - 1; i >= 0; i--)
+        ActiveItems.Clear();
+        foreach (var itemData in config.Items)
         {
-            if (!configNames.Contains(ActiveItems[i].Name))
+            ActiveItems.Add(new AutobuffOrderItemViewModel
             {
-                ActiveItems.RemoveAt(i);
-            }
-        }
-
-        // 2. Add or update items in the correct order
-        for (int i = 0; i < config.Items.Count; i++)
-        {
-            var itemData = config.Items[i];
-            var existingItem = ActiveItems.FirstOrDefault(x => x.Name == itemData.Name);
-
-            if (existingItem != null)
-            {
-                // Update properties
-                existingItem.DisplayName = itemData.DisplayName;
-                existingItem.Key = itemData.Key;
-                existingItem.ItemType = itemData.ItemType;
-                existingItem.IconName = itemData.IconName;
-
-                // Move if order changed
-                int currentIndex = ActiveItems.IndexOf(existingItem);
-                if (currentIndex != i)
-                {
-                    ActiveItems.Move(currentIndex, i);
-                }
-            }
-            else
-            {
-                // Insert new item at correct index
-                ActiveItems.Insert(i, new AutobuffOrderItemViewModel
-                {
-                    Name = itemData.Name,
-                    DisplayName = itemData.DisplayName,
-                    Key = itemData.Key,
-                    ItemType = itemData.ItemType,
-                    IconName = itemData.IconName
-                });
-            }
+                Name = itemData.Name,
+                DisplayName = itemData.DisplayName,
+                Key = itemData.Key,
+                ItemType = itemData.ItemType,
+                IconName = itemData.IconName
+            });
         }
 
         _isUpdatingFromServer = false;

@@ -555,9 +555,11 @@ public sealed class WorkerCore
     private DebuffRecoveryConfigUpdate BuildDebuffRecoveryConfig()
     {
         var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
-        return new DebuffRecoveryConfigUpdate(
-            Items: dr.buffMapping.Select(kvp => new DebuffRecoveryItemData(kvp.Key.ToString(), kvp.Value.ToString())).ToList(),
-            Delay: dr.Delay);
+        var update = new DebuffRecoveryConfigUpdate(
+            Items: BuffService.GetDebuffs().Select(b => new DebuffRecoveryItemData(b.EffectStatusID.ToString(), dr.buffMapping.TryGetValue(b.EffectStatusID, out var key) ? key.ToString() : "None", b.IconName)).ToList(),
+            Delay: dr.Delay
+        );
+        return update;
     }
 
     // ── Autobuff Skill ────────────────────────────────────────────────────────
@@ -597,7 +599,7 @@ public sealed class WorkerCore
         var map = abs.buffMapping;
         
         List<AutobuffSkillItemData> Build(List<Buff> buffs) => buffs
-            .Select(b => new AutobuffSkillItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var k) ? k.ToString() : "None"))
+            .Select(b => new AutobuffSkillItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var k) ? k.ToString() : "None", b.IconName))
             .ToList();
 
         var groups = new List<AutobuffSkillGroupData>
@@ -1070,7 +1072,7 @@ public sealed class WorkerCore
         var map = abi.buffMapping;
 
         List<AutobuffItemItemData> Build(List<Buff> buffs) => buffs
-            .Select(b => new AutobuffItemItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var kList) && kList.Count > 0 ? kList[0].ToString() : "None"))
+            .Select(b => new AutobuffItemItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var kList) && kList.Count > 0 ? kList[0].ToString() : "None", b.IconName))
             .ToList();
 
         var groups = new List<AutobuffItemGroupData>
@@ -1116,6 +1118,7 @@ public sealed class WorkerCore
         
         ProfileSingleton.SetConfiguration(abs);
         ProfileSingleton.SetConfiguration(abi);
+        ProfileSingleton.SaveUnifiedAutobuffOrder();
         
         await BroadcastAsync(BuildAutobuffOrderConfig());
     }
@@ -1144,14 +1147,14 @@ public sealed class WorkerCore
                 if (abs.buffMapping.TryGetValue(statusId, out var sk) && !addedStatuses.Contains(statusId))
                 {
                     var buff = BuffService.GetBuff(statusId);
-                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), sk.ToString(), "Skill", statusId.ToString()));
+                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), sk.ToString(), "Skill", buff?.IconName ?? "None"));
                     addedStatuses.Add(statusId);
                 }
                 
                 if (abi.buffMapping.TryGetValue(statusId, out var ik) && !addedStatuses.Contains(statusId))
                 {
                     var buff = BuffService.GetBuff(statusId);
-                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), string.Join(", ", ik), "Item", statusId.ToString()));
+                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), string.Join(", ", ik), "Item", buff?.IconName ?? "None"));
                     addedStatuses.Add(statusId);
                 }
             }
@@ -1163,7 +1166,7 @@ public sealed class WorkerCore
             if (!addedStatuses.Contains(kvp.Key))
             {
                 var buff = BuffService.GetBuff(kvp.Key);
-                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), kvp.Value.ToString(), "Skill", kvp.Key.ToString()));
+                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), kvp.Value.ToString(), "Skill", buff?.IconName ?? "None"));
                 profile.UnifiedAutobuffOrder.Add(kvp.Key.ToString());
                 addedStatuses.Add(kvp.Key);
             }
@@ -1173,7 +1176,7 @@ public sealed class WorkerCore
             if (!addedStatuses.Contains(kvp.Key))
             {
                 var buff = BuffService.GetBuff(kvp.Key);
-                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), string.Join(", ", kvp.Value), "Item", kvp.Key.ToString()));
+                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), string.Join(", ", kvp.Value), "Item", buff?.IconName ?? "None"));
                 profile.UnifiedAutobuffOrder.Add(kvp.Key.ToString());
                 addedStatuses.Add(kvp.Key);
             }
