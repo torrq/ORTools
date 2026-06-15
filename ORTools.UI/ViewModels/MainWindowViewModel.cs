@@ -16,7 +16,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void ToggleTheme()
     {
-        if (Settings.Theme == ThemeMode.System || Settings.Theme == ThemeMode.Light)
+        if (ThemeService.IsCurrentThemeLight)
             Settings.Theme = ThemeMode.Dark;
         else
             Settings.Theme = ThemeMode.Light;

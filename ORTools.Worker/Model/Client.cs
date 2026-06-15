@@ -174,6 +174,25 @@ namespace ORTools.Worker
         {
             return client;
         }
+
+        public static bool IsForegroundWindowRelevant()
+        {
+            IntPtr fgWindow = Win32Interop.GetForegroundWindow();
+            if (fgWindow == IntPtr.Zero) return false;
+
+            Win32Interop.GetWindowThreadProcessId(fgWindow, out uint fgPid);
+            
+            // Check if the foreground window is our own UI process
+            if (fgPid == (uint)Environment.ProcessId) return true;
+
+            // Check if the foreground window is the game client we are attached to
+            if (client?.Process != null)
+            {
+                if (fgPid == (uint)client.Process.Id) return true;
+            }
+
+            return false;
+        }
     }
 
     public class Client : IDisposable

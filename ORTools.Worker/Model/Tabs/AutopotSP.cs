@@ -19,7 +19,6 @@ namespace ORTools.Worker
         }
 
         public static string ACTION_NAME_AUTOPOT_SP = "AutopotSP";
-        private static readonly int AUTOPOT_SP_ROWS = 5;
         private static readonly int MIN_CYCLE_DELAY = 1; // Minimum 1ms between cycles
 
         public List<SPSlot> SPSlots { get; set; } = new List<SPSlot>();
@@ -49,23 +48,20 @@ namespace ORTools.Worker
 
         private void InitializeSlots()
         {
-            if (this.SPSlots == null || this.SPSlots.Count == 0)
+            if (this.SPSlots == null)
             {
                 this.SPSlots = new List<SPSlot>();
-                for (int i = 1; i <= AUTOPOT_SP_ROWS; i++)
-                {
-                    this.SPSlots.Add(new SPSlot { Id = i });
-                }
+            }
+            while (this.SPSlots.Count < AppConfig.AutoPotRows)
+            {
+                this.SPSlots.Add(new SPSlot { Id = this.SPSlots.Count + 1 });
             }
         }
 
         [System.Runtime.Serialization.OnDeserialized]
         private void OnDeserialized(System.Runtime.Serialization.StreamingContext context)
         {
-            if (SPSlots == null || SPSlots.Count == 0)
-            {
-                InitializeSlots();
-            }
+            InitializeSlots();
         }
 
         public void Start()

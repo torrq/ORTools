@@ -61,6 +61,11 @@ public static class KeyboardHook
         _keysUp.Add(key, cb); return true;
     }
 
+    public static void ClearKeyDowns()
+    {
+        _keysDown.Clear();
+    }
+
     public static bool RemoveDown(Keys key) => _keysDown.Remove(key);
     public static bool RemoveUp(Keys key)   => _keysUp.Remove(key);
     public static bool Add(Keys key, KeyPressed cb) => AddKeyDown(key, cb);

@@ -1318,71 +1318,7 @@ public sealed class WorkerCore
 
     private bool UnbindKeyGlobally(Keys key)
     {
-        if (key == Keys.None) return false;
-        bool changed = false;
-        var p = ProfileSingleton.GetCurrent();
-        var prefs = p.UserPreferences;
-        
-        if (Enum.TryParse<Keys>(prefs.ToggleStateKey, out var tk) && tk == key)
-        {
-            prefs.ToggleStateKey = "None";
-            changed = true;
-        }
-
-        foreach (var slot in p.AutopotHP.HPSlots) if (slot.Key == key) { slot.Key = Keys.None; changed = true; }
-        foreach (var slot in p.AutopotSP.SPSlots) if (slot.Key == key) { slot.Key = Keys.None; changed = true; }
-        foreach (var slot in p.SkillTimer.skillTimer) if (slot.Value.Key == key) { slot.Value.Key = Keys.None; changed = true; }
-        
-        foreach (var kvp in p.AutobuffSkill.buffMapping.ToList())
-        {
-            if (kvp.Value == key) { p.AutobuffSkill.buffMapping.Remove(kvp.Key); changed = true; }
-        }
-        foreach (var kvp in p.AutobuffItem.buffMapping.ToList())
-        {
-            if (kvp.Value.Contains(key)) 
-            { 
-                kvp.Value.Remove(key); 
-                if (kvp.Value.Count == 0) p.AutobuffItem.buffMapping.Remove(kvp.Key);
-                changed = true; 
-            }
-        }
-        foreach (var list in p.StatusRecovery.statusLists.Values)
-        {
-            if (list.Key == key) { list.Key = Keys.None; changed = true; }
-        }
-        foreach (var kvp in p.DebuffsRecovery.buffMapping.ToList())
-        {
-            if (kvp.Value == key) { p.DebuffsRecovery.buffMapping.Remove(kvp.Key); changed = true; }
-        }
-        foreach (var kvp in p.SkillSpammer.SpammerEntries)
-        {
-            if (kvp.Value.Key == key) { kvp.Value.Key = Keys.None; changed = true; }
-        }
-        if (p.SkillSpammer.ToggleModeKey == key) { p.SkillSpammer.ToggleModeKey = Keys.None; changed = true; }
-        
-        foreach (var chain in p.MacroSwitch.ChainConfigs)
-        {
-            if (chain.TriggerKey == key) { chain.TriggerKey = Keys.None; changed = true; }
-            foreach (var step in chain.macroEntries)
-            {
-                if (step.Key == key) { step.Key = Keys.None; changed = true; }
-            }
-        }
-
-        if (changed)
-        {
-            ProfileSingleton.SetConfiguration(prefs);
-            ProfileSingleton.SetConfiguration(p.AutopotHP);
-            ProfileSingleton.SetConfiguration(p.AutopotSP);
-            ProfileSingleton.SetConfiguration(p.SkillTimer);
-            ProfileSingleton.SetConfiguration(p.AutobuffSkill);
-            ProfileSingleton.SetConfiguration(p.AutobuffItem);
-            ProfileSingleton.SetConfiguration(p.StatusRecovery);
-            ProfileSingleton.SetConfiguration(p.DebuffsRecovery);
-            ProfileSingleton.SetConfiguration(p.SkillSpammer);
-            ProfileSingleton.SetConfiguration(p.MacroSwitch);
-        }
-        return changed;
+        return false;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -1395,6 +1331,7 @@ public sealed class WorkerCore
             && Enum.TryParse<Keys>(prefs.ToggleStateKey, out Keys toggleKey)
             && toggleKey != Keys.None)
         {
+            KeyboardHook.ClearKeyDowns();
             KeyboardHook.KeyDown = null;
             KeyboardHook.AddKeyDown(toggleKey, () =>
             {

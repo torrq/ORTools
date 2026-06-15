@@ -211,11 +211,27 @@
                     </ComboBox>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                        <Button Command="{Binding ToggleThemeCommand}" ToolTip="Toggle Theme"
+                                FontFamily="Segoe MDL2 Assets" Content="&#xEA80;" FontSize="13" Cursor="Hand"
+                                Foreground="{DynamicResource AppTextBrush}"
+                                Background="Transparent" BorderThickness="0" 
+                                VerticalAlignment="Center" Margin="0,-1,8,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" Background="Transparent" />
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                         <Button Command="{Binding ToggleMiniModeCommand}" ToolTip="Toggle Mini Mode"
                                 FontFamily="Segoe MDL2 Assets" FontSize="11" Cursor="Hand"
                                 Foreground="{DynamicResource AppTextBrush}"
                                 Background="Transparent" BorderThickness="0" 
                                 VerticalAlignment="Center" Margin="0,-1,8,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" Background="Transparent" />
+                                </ControlTemplate>
+                            </Button.Template>
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Content" Value="&#xE70E;" /> <!-- ChevronDown/Expand -->
@@ -227,13 +243,10 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        <Button Command="{Binding ToggleThemeCommand}" ToolTip="Toggle Theme"
-                                FontFamily="Segoe MDL2 Assets" Content="&#xEA80;" FontSize="13" Cursor="Hand"
-                                Foreground="{DynamicResource AppTextBrush}"
-                                Background="Transparent" BorderThickness="0" 
-                                VerticalAlignment="Center" Margin="0,-1,8,0" />
+                        <!--
                         <Ellipse x:Name="ConnectionDot" Width="6" Height="6" Fill="{Binding ConnectionDotBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                         <TextBlock x:Name="ConnectionLabelTextBlock" Text="{Binding ConnectionLabel}" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" />
+                        -->
                     </StackPanel>
                 </StackPanel>
             </Grid>

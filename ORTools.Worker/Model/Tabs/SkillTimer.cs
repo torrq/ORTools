@@ -167,36 +167,12 @@ namespace ORTools.Worker
 
         private void TryClickAtCurrentPosition(IntPtr hWnd)
         {
-            ClientInput.SendLeftClick(hWnd);
+            ClientInput.ClickAtCurrentPosition(hWnd);
         }
 
         private void TryClickAtCenter(IntPtr hWnd)
         {
-            System.Drawing.Rectangle clientRect = ClientInput.GetClientRect(hWnd);
-            if (clientRect == System.Drawing.Rectangle.Empty)
-                return;
-
-            // Calculate the center of the client area
-            int centerX = clientRect.Right / 2;
-            int centerY = clientRect.Bottom / 2;
-
-            // Convert client coordinates to screen coordinates
-            System.Drawing.Point centerPoint = new System.Drawing.Point(centerX, centerY);
-            centerPoint = ClientInput.ClientToScreen(hWnd, centerPoint);
-
-            // Save current cursor position
-            System.Drawing.Point originalPos = ClientInput.GetCursorPos();
-
-            // Move cursor to center, click, then restore position
-            ClientInput.SetCursorPos(centerPoint.X, centerPoint.Y);
-            // SetCursorPos is synchronous — no sleep needed before the click
-
-            ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN);
-            Thread.Sleep(25);
-            ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP);
-
-            // Restore original cursor position
-            ClientInput.SetCursorPos(originalPos.X, originalPos.Y);
+            ClientInput.ClickAtWindowCenter(hWnd);
         }
 
     }

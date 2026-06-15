@@ -23,7 +23,7 @@ public sealed partial class AutopotHPViewModel : ViewModelBase
         _worker = worker;
         _worker.AutopotHPConfigReceived += OnConfigReceived;
 
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= 8; i++)
         {
             Slots.Add(new AutopotSlotViewModel(i, "None", 0, false, OnSlotChanged));
         }
@@ -59,6 +59,10 @@ public sealed partial class AutopotHPViewModel : ViewModelBase
                 if (slot != null)
                 {
                     slot.UpdateFromWorker(slotData.Key, slotData.Percent, slotData.Enabled);
+                }
+                else
+                {
+                    Slots.Add(new AutopotSlotViewModel(slotData.Id, slotData.Key, slotData.Percent, slotData.Enabled, OnSlotChanged));
                 }
             }
 

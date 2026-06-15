@@ -148,16 +148,10 @@ public static class ClientInput
         int centerX = clientRect.Width / 2;
         int centerY = clientRect.Height / 2;
 
-        var centerPoint = ClientToScreen(hWnd, new Point(centerX, centerY));
-        var originalPos = GetCursorPos();
-
-        SetCursorPos(centerPoint.X, centerPoint.Y);
+        int lParam = (centerY << 16) | (centerX & 0xFFFF);
+        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONDOWN, (IntPtr)1, (IntPtr)lParam);
         Thread.Sleep(25);
-        SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN);
-        Thread.Sleep(50);
-        SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP);
-
-        SetCursorPos(originalPos.X, originalPos.Y);
+        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, (IntPtr)lParam);
 
         return true;
     }

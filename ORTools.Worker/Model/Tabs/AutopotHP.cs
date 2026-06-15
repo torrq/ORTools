@@ -19,7 +19,6 @@ namespace ORTools.Worker
         }
 
         public static string ACTION_NAME_AUTOPOT_HP = "AutopotHP";
-        private static readonly int AUTOPOT_HP_ROWS = 5;
         private static readonly int MIN_CYCLE_DELAY = 1; // Minimum 1ms between cycles
 
         public List<HPSlot> HPSlots { get; set; } = new List<HPSlot>();
@@ -53,21 +52,18 @@ namespace ORTools.Worker
         [System.Runtime.Serialization.OnDeserialized]
         private void OnDeserialized(System.Runtime.Serialization.StreamingContext context)
         {
-            if (HPSlots == null || HPSlots.Count == 0)
-            {
-                InitializeSlots();
-            }
+            InitializeSlots();
         }
 
         private void InitializeSlots()
         {
-            if (this.HPSlots == null || this.HPSlots.Count == 0)
+            if (this.HPSlots == null)
             {
                 this.HPSlots = new List<HPSlot>();
-                for (int i = 1; i <= AUTOPOT_HP_ROWS; i++)
-                {
-                    this.HPSlots.Add(new HPSlot { Id = i });
-                }
+            }
+            while (this.HPSlots.Count < AppConfig.AutoPotRows)
+            {
+                this.HPSlots.Add(new HPSlot { Id = this.HPSlots.Count + 1 });
             }
         }
 

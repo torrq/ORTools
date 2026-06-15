@@ -29,6 +29,7 @@ public static class AppConfig
 
     // ── Feature limits ────────────────────────────────────────────────────────
     public const int ATKDEFLanes = 2;
+    public const int AutoPotRows = 10;
 
     // ── String constants ──────────────────────────────────────────────────────
     public const string TEXT_NONE = "None";

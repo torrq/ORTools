@@ -43,18 +43,20 @@ namespace ORTools.Worker
         {
             Func<int, int> send_click = (evt) =>
             {
-                ClientInput.SendRightClick(roClient.Process.MainWindowHandle);
+                Win32Interop.PostMessage(roClient.Process.MainWindowHandle, Constants.WM_RBUTTONDOWN, Keys.None, 0);
+                Thread.Sleep(1);
+                Win32Interop.PostMessage(roClient.Process.MainWindowHandle, Constants.WM_RBUTTONUP, Keys.None, 0);
                 return 0;
             };
 
-            ClientInput.HoldAlt();
+            Win32Interop.keybd_event(Constants.VK_LMENU, 0xA4, Constants.KEYEVENTF_EXTENDEDKEY, 0);
 
             while (ClientInput.IsKeyPressed(config.Key))
             {
                 send_click(0);
                 Thread.Sleep(10);
             }
-            ClientInput.ReleaseAlt();
+            Win32Interop.keybd_event(Constants.VK_LMENU, 0xA4, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
         }
 
         public void Start()

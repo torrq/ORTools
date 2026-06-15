@@ -11,6 +11,8 @@ public static class ThemeService
     private static ThemeMode _currentMode = ThemeMode.System;
     private static int _serverMode = 1; // 1 = HR, 0 = MR
 
+    public static bool IsCurrentThemeLight { get; private set; }
+
     public static void SetServerMode(int serverMode)
     {
         if (_serverMode != serverMode)
@@ -39,6 +41,7 @@ public static class ThemeService
         {
             useLight = mode == ThemeMode.Light;
         }
+        IsCurrentThemeLight = useLight;
 
         string themeUri = useLight 
             ? "pack://application:,,,/ORTools;component/Themes/ThemeLight.xaml" 
