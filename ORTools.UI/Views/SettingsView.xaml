@@ -8,6 +8,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance vm:SettingsViewModel}">
+    <UserControl.Resources>
+        <helpers:ThemeModeToStringConverter x:Key="ThemeModeToStringConverter" />
+    </UserControl.Resources>
     <TabControl Style="{StaticResource SubTabControlStyle}">
         <TabItem Header="Profile Settings" Style="{StaticResource SubTabItemStyle}">
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,15,0,0">
@@ -43,7 +46,13 @@
                                     <TextBlock Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                                     <ComboBox Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}" 
                                               Background="{DynamicResource AppInputBrush}" Foreground="Black" 
-                                              BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14" />
+                                              BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Converter={StaticResource ThemeModeToStringConverter}}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
                                 </Grid>
                                 <Grid Margin="0,0,0,12">
                                     <Grid.ColumnDefinitions>

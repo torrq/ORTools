@@ -251,7 +251,7 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <TabControl Margin="0,3,0,2" Grid.Row="1" Grid.ColumnSpan="2">
+        <TabControl Margin="0,0,0,2" Grid.Row="1" Grid.ColumnSpan="2">
             <TabControl.Style>
                 <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
                     <Setter Property="Visibility" Value="Visible" />
@@ -269,7 +269,9 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <helpers:CenteredWrapPanel x:Name="HeaderPanel" IsItemsHost="True" Grid.Row="0" Margin="0,0,0,2"/>
+                        <Border Grid.Row="0" Background="{DynamicResource AppHeaderBrush}">
+                            <helpers:CenteredWrapPanel x:Name="HeaderPanel" IsItemsHost="True" Margin="0,4,0,0"/>
+                        </Border>
                         <Border x:Name="ContentPanel" Grid.Row="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}"/>
                         </Border>

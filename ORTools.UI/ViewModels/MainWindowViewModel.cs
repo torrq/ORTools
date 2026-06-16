@@ -16,10 +16,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void ToggleTheme()
     {
-        if (ThemeService.IsCurrentThemeLight)
-            Settings.Theme = ThemeMode.Dark;
-        else
-            Settings.Theme = ThemeMode.Light;
+        Settings.Theme = ThemeService.GetInvertedTheme();
     }
 
     // ── Connection ────────────────────────────────────────────────────────────

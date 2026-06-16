@@ -22,7 +22,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _allowResizingWindow;
     [ObservableProperty] private ThemeMode _theme;
 
-    public ThemeMode[] ThemeModes { get; } = (ThemeMode[])Enum.GetValues(typeof(ThemeMode));
+    public ThemeMode[] ThemeModes => ThemeService.GetAvailableThemes();
 
     // Placeholders for Profile Settings
     [ObservableProperty] private bool _stopBuffsCity;
@@ -43,6 +43,12 @@ public partial class SettingsViewModel : ObservableObject
         AutobuffSkill = autobuffSkill;
         _worker.GlobalConfigReceived += OnGlobalConfigReceived;
         _worker.ProfileSettingsReceived += OnProfileSettingsReceived;
+        _worker.AppStateReceived += OnAppStateReceived;
+    }
+
+    private void OnAppStateReceived(AppStateUpdate update)
+    {
+        OnPropertyChanged(nameof(ThemeModes));
     }
 
     private void OnGlobalConfigReceived(GlobalConfigUpdate update)
