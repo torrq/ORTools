@@ -10,6 +10,8 @@ public partial class SettingsViewModel : ObservableObject
     private readonly WorkerService _worker;
 
     [ObservableProperty] private bool _debugMode;
+    [ObservableProperty] private bool _debugView;
+    [ObservableProperty] private double _debugViewHeight = 200;
     [ObservableProperty] private bool _debugClientLog;
     [ObservableProperty] private bool _disableSystray;
     [ObservableProperty] private bool _minimizeToSystray = true;
@@ -59,6 +61,8 @@ public partial class SettingsViewModel : ObservableObject
         AtkDefRows = update.AtkDefRows;
         DefaultToggleStateKey = update.DefaultToggleStateKey;
         DebugMode = update.DebugMode;
+        DebugView = update.DebugView;
+        DebugViewHeight = update.DebugViewHeight;
         DebugClientLog = update.DebugClientLog;
         DisableSystray = update.DisableSystray;
         MinimizeToSystray = update.MinimizeToSystray;
@@ -87,6 +91,8 @@ public partial class SettingsViewModel : ObservableObject
     private bool _suppressUpdates = false;
 
     partial void OnDebugModeChanged(bool value) => SendGlobalUpdate();
+    partial void OnDebugViewChanged(bool value) => SendGlobalUpdate();
+    partial void OnDebugViewHeightChanged(double value) => SendGlobalUpdate();
     partial void OnDebugClientLogChanged(bool value) => SendGlobalUpdate();
     partial void OnDisableSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnMinimizeToSystrayChanged(bool value) => SendGlobalUpdate();
@@ -138,6 +144,8 @@ public partial class SettingsViewModel : ObservableObject
             AtkDefRows: AtkDefRows,
             DefaultToggleStateKey: DefaultToggleStateKey,
             DebugMode: DebugMode,
+            DebugView: DebugView,
+            DebugViewHeight: Math.Clamp(DebugViewHeight, 10, 1200),
             DebugClientLog: DebugClientLog,
             DisableSystray: DisableSystray,
             MinimizeToSystray: MinimizeToSystray,

@@ -33,6 +33,6 @@
     <Resource Include="Views\ortools-mr.png" />
     <Resource Include="Icons\**\*.png" />
     <Resource Include="Icons\**\*.gif" />
+    <Resource Include="Fonts\**\*.ttf" />
   </ItemGroup>
-  <ItemGroup />
 </Project>

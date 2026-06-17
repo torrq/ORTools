@@ -155,6 +155,8 @@ public sealed record GlobalConfigUpdate(
     int AtkDefRows,
     string DefaultToggleStateKey,
     bool DebugMode,
+    bool DebugView,
+    double DebugViewHeight,
     bool DebugClientLog,
     bool DisableSystray,
     bool MinimizeToSystray,

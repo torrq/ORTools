@@ -31,6 +31,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <tb:TaskbarIcon x:Name="AppTrayIcon"
@@ -328,5 +329,39 @@
                 <views:AboutView />
             </TabItem>
         </TabControl>
+
+        <!-- Debug View Panel -->
+        <Border Grid.Row="2" Grid.ColumnSpan="2" Height="{Binding Settings.DebugViewHeight}" 
+                Background="#0c0c0c" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,1,0,0">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Settings.DebugView}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            
+            <RichTextBox views:LogViewHelper.LogMessages="{Binding LogMessages}"
+                         views:LogViewHelper.AutoScroll="True"
+                         Background="Transparent" 
+                         BorderThickness="0"
+                         IsReadOnly="True" 
+                         IsDocumentEnabled="True"
+                         Margin="0,6,0,6"
+                         Padding="0"
+                         FontFamily="pack://application:,,,/Fonts/#Cascadia Code"
+                         FontSize="10"
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0,1"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
+        </Border>
     </Grid>
 </Window>

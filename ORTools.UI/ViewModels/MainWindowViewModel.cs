@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -146,9 +148,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         worker.ConnectionChanged   += OnConnectionChanged;
         worker.ProfileListReceived += OnProfileList;
         worker.ErrorReceived       += OnError;
+        worker.LogMessageReceived  += OnLogMessage;
     }
 
     public ObservableCollection<object> Tabs { get; }
+    public ObservableCollection<LogMessageItem> LogMessages { get; } = new();
 
     // ── Commands ──────────────────────────────────────────────────────────────
 
@@ -331,6 +335,64 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void OnError(ErrorUpdate u) =>
         Post(() => Console.WriteLine($"[Worker Error] {u.Message}"));
         // Phase 3: show in a status bar or toast notification
+
+    private void OnLogMessage(LogMessageUpdate u) =>
+        Post(() =>
+        {
+            if (LogMessages.Count > 500)
+                LogMessages.RemoveAt(0);
+
+            var timeMatch = Regex.Match(u.Message, @"^\[(\d{2}:\d{2}:\d{2})\]\[(.*?)\] (.*)$");
+            string timestamp = timeMatch.Success ? timeMatch.Groups[1].Value : DateTime.Now.ToString("HH:mm:ss");
+            string text = timeMatch.Success ? timeMatch.Groups[3].Value : u.Message;
+            
+            SolidColorBrush defaultColor = u.Level switch
+            {
+                "I" => CreateBrush("#4CAF50"), // Green
+                "W" => CreateBrush("#FF9800"), // Orange
+                "E" => CreateBrush("#F44336"), // Red
+                "D" => CreateBrush("#9E9E9E"), // Grey
+                "S" => CreateBrush("#9C27B0"), // Purple
+                _ => CreateBrush("#E0E0E0")
+            };
+
+            var item = new LogMessageItem(timestamp, u.Level, defaultColor);
+            item.Segments.Add(new LogTextSegment("[", CreateBrush("#757575")));
+            item.Segments.Add(new LogTextSegment(timestamp, CreateBrush("#757575")));
+            item.Segments.Add(new LogTextSegment("][", CreateBrush("#757575")));
+            item.Segments.Add(new LogTextSegment(u.Level, defaultColor));
+            item.Segments.Add(new LogTextSegment("] ", CreateBrush("#757575")));
+
+            if (u.Level == "S")
+            {
+                string[] statuses = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var statusEntry in statuses)
+                {
+                    string[] parts = statusEntry.Split(':');
+                    if (parts.Length == 2)
+                    {
+                        item.Segments.Add(new LogTextSegment(parts[0], CreateBrush("#64B5F6"))); // ID in Blue
+                        item.Segments.Add(new LogTextSegment(":", CreateBrush("#E0E0E0")));
+                        
+                        if (parts[1] == "**UNKNOWN**")
+                            item.Segments.Add(new LogTextSegment(parts[1], CreateBrush("#F44336"))); // Red
+                        else
+                            item.Segments.Add(new LogTextSegment(parts[1], CreateBrush("#81C784"))); // Light Green
+                    }
+                    else
+                    {
+                        item.Segments.Add(new LogTextSegment(statusEntry, CreateBrush("#E0E0E0")));
+                    }
+                    item.Segments.Add(new LogTextSegment(" ", CreateBrush("#E0E0E0")));
+                }
+            }
+            else
+            {
+                item.Segments.Add(new LogTextSegment(text, defaultColor));
+            }
+
+            LogMessages.Add(item);
+        });
 
     private static void Post(Action action)
         => Application.Current?.Dispatcher.BeginInvoke(action, DispatcherPriority.Background);

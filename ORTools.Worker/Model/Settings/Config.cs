@@ -5,6 +5,8 @@ namespace ORTools.Worker;
 public class Config
 {
     public bool   DebugMode                    { get; set; } = false;
+    public bool   DebugView                    { get; set; } = false;
+    public double DebugViewHeight              { get; set; } = 200;
     public bool   DebugClientLog               { get; set; } = false;
     public bool   DisableSystray               { get; set; } = false;
     public bool   MinimizeToSystray            { get; set; } = false;

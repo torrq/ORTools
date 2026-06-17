@@ -23,6 +23,9 @@ public static class AppConfig
     public static string ProfileFolder = "Profiles\\";
     public static string ConfigFolder  = "Config\\";
     public static string ConfigFile    = ConfigFolder + "config.json";
+
+    public const double MinDebugViewHeight = 10;
+    public const double MaxDebugViewHeight = 1200;
     public static string ServersFile   = ConfigFolder + "servers.json";
     public static string CitiesFile    = ConfigFolder + "cities.json";
     public static string DebugLogFile  = "debug.log";

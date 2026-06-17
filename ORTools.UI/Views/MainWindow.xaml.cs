@@ -8,6 +8,7 @@ public partial class MainWindow : Window
 {
     private double _expandedHeight = 675;
     private double _expandedWidth = 731;
+    private double _currentDebugHeight = 0;
 
     public MainWindow()
     {
@@ -18,9 +19,47 @@ public partial class MainWindow : Window
     private void MainWindow_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (e.OldValue is MainWindowViewModel oldVm)
+        {
             oldVm.PropertyChanged -= Vm_PropertyChanged;
+            if (oldVm.Settings != null) oldVm.Settings.PropertyChanged -= Settings_PropertyChanged;
+        }
         if (e.NewValue is MainWindowViewModel newVm)
+        {
             newVm.PropertyChanged += Vm_PropertyChanged;
+            if (newVm.Settings != null) newVm.Settings.PropertyChanged += Settings_PropertyChanged;
+        }
+    }
+
+    private void Settings_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (DataContext is MainWindowViewModel vm)
+        {
+            if (e.PropertyName == nameof(SettingsViewModel.DebugView))
+            {
+                if (vm.Settings.DebugView)
+                {
+                    _currentDebugHeight = vm.Settings.DebugViewHeight;
+                    this.Height += _currentDebugHeight;
+                    _expandedHeight += _currentDebugHeight;
+                }
+                else
+                {
+                    this.Height -= _currentDebugHeight;
+                    _expandedHeight -= _currentDebugHeight;
+                    _currentDebugHeight = 0;
+                }
+            }
+            else if (e.PropertyName == nameof(SettingsViewModel.DebugViewHeight))
+            {
+                if (vm.Settings.DebugView)
+                {
+                    double delta = vm.Settings.DebugViewHeight - _currentDebugHeight;
+                    this.Height += delta;
+                    _expandedHeight += delta;
+                    _currentDebugHeight = vm.Settings.DebugViewHeight;
+                }
+            }
+        }
     }
 
     private void Vm_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
