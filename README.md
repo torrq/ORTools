@@ -39,6 +39,25 @@ OSRO Tools is built on **.NET 8** and utilizes a modern, dual-process architectu
 
 The two processes communicate seamlessly using a lightweight, JSON-based Inter-Process Communication (IPC) protocol over Named Pipes, enabling real-time feedback and state syncing without UI lockups.
 
+## 📋 Changelog (Legacy to Modern .NET 8)
+
+```text
+* Architecture & Framework
+  - Upgraded entire codebase from legacy .NET Framework to modern .NET 8
+  - Split architecture into distinct Worker Core and UI layers to eliminate UI lockups
+  - Replaced the heavy MDI WinForms container with a hardware-accelerated WPF interface
+* User Interface (UI)
+  - Implemented the MVVM pattern via CommunityToolkit.Mvvm for responsive data binding
+  - Separated UI logic completely from data models (e.g., Buff models are now strictly data-only)
+  - Consolidated Autobuff Skills and Items into a unified Search interface
+  - Introduced a centralized AppColors palette for consistent theming and easy customization
+  - Added a rich, colorized Debug Log view panel for monitoring backend worker events
+* Core Features
+  - Rebuilt unified Key Input handling with global duplicate interception across all tabs
+  - Refactored auto-off conditions, particularly overweight handling and timer integrations
+  - Standardized all UI inputs with consistent styling
+```
+
 ## 🚀 Getting Started
 
 ### Prerequisites

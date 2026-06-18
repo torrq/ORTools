@@ -434,6 +434,9 @@ namespace ORTools.Worker
         [Description("Expiatio")]
         EXPIATIO = 335,
 
+        [Description("Paralyze")]
+        PARALYZE = 343,
+
         [Description("Freezing")]
         FREEZING = 351,
 

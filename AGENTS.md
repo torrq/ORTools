@@ -11,6 +11,28 @@ OSRO Tools (internally known as ORTools) is a high-performance automation assist
 There are two server modes: **MR** (Midrate) and **HR** (Highrate).
 `Directory.Build.props` at the repository root is the single source of truth for the application version and `ServerMode`.
 *Note: The `ServerMode` property in `Directory.Build.props` automatically controls the MSBuild preprocessor directives (`SERVERMODE_HR` / `SERVERMODE_MR`), which conditionally embeds the correct `.exe` icon and sets the runtime `AppConfig.ServerMode` flag in C#.*
+
+---
+
+## Changelog (Legacy to Modern .NET 8)
+
+```text
+* Architecture & Framework
+  - Upgraded entire codebase from legacy .NET Framework to modern .NET 8
+  - Split architecture into distinct Worker Core and UI layers to eliminate UI lockups
+  - Replaced the heavy MDI WinForms container with a hardware-accelerated WPF interface
+* User Interface (UI)
+  - Implemented the MVVM pattern via CommunityToolkit.Mvvm for responsive data binding
+  - Separated UI logic completely from data models (e.g., Buff models are now strictly data-only)
+  - Consolidated Autobuff Skills and Items into a unified Search interface
+  - Introduced a centralized AppColors palette for consistent theming and easy customization
+  - Added a rich, colorized Debug Log view panel for monitoring backend worker events
+* Core Features
+  - Rebuilt unified Key Input handling with global duplicate interception across all tabs
+  - Refactored auto-off conditions, particularly overweight handling and timer integrations
+  - Standardized all UI inputs with consistent styling
+```
+
 ---
 
 ## Architecture: New (this repo, .NET 8)
