@@ -24,20 +24,19 @@ It provides extensive support for automated potion consumption, skill spamming, 
 
 ## 🏗️ Architecture
 
-OSRO Tools is built on **.NET 8** and utilizes a modern, dual-process architecture to ensure maximum performance and seamless UI interaction on older hardware:
+OSRO Tools is built on **.NET 8** and utilizes a strictly decoupled architecture to ensure maximum performance and seamless UI interaction on older hardware:
 
-1. **ORTools.Worker (Elevated Console)**
-   - Runs as Administrator.
-   - Handles all `ReadProcessMemory` / `OpenProcess` Win32 API calls directly.
-   - Contains all the background logic and state management.
-   - Hosts a Named Pipe Server for IPC communication.
+1. **ORTools.Worker (Background Core)**
+   - Contains all the background logic, Win32 API calls (`ReadProcessMemory`), and state management.
+   - Runs entirely on a dedicated background thread to prevent any heavy hooking operations from blocking the UI.
+   - Publishes state changes via a decoupled event bus.
 
-2. **ORTools.UI (Non-Elevated WPF)**
-   - Runs as standard user (medium integrity).
+2. **ORTools.UI (WPF Frontend)**
    - Modern MVVM UI using the `CommunityToolkit.Mvvm`.
-   - Bypasses UIPI overhead, allowing for smooth window dragging and hardware-accelerated DWM compositing.
+   - Hardware-accelerated DWM compositing allows for smooth window dragging.
+   - Runs on the main STA thread.
 
-The two processes communicate seamlessly using a lightweight, JSON-based Inter-Process Communication (IPC) protocol over Named Pipes, enabling real-time feedback and state syncing without UI lockups.
+The Worker and UI communicate seamlessly using an in-memory event bus that passes structured payload envelopes (IPC messages). This enforces a clean separation of concerns, ensuring that the UI models are strictly data-bound and real-time state syncing never causes UI lockups.
 
 ## 📋 Changelog (Legacy to Modern .NET 8)
 
@@ -72,9 +71,8 @@ The two processes communicate seamlessly using a lightweight, JSON-based Inter-P
    dotnet build ORTools.sln
    ```
 3. Run the **ORTools.UI** executable. 
-   - The UI will attempt to launch the background Worker automatically.
-   - You will see a Windows UAC prompt once to allow the Worker to run as Administrator.
-   - The UI will connect to the Worker and you're ready to go!
+   - The application must be run as an Administrator (a UAC prompt will appear) because it requires elevated privileges to read the game's process memory.
+   - The background worker will initialize automatically on a separate thread, and you're ready to go!
 
 ## ⚙️ Development
 
