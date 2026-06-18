@@ -40,6 +40,8 @@ public partial class AutobuffSkillViewModel : ObservableObject
 
     public ObservableCollection<AutobuffSkillGroupViewModel> SkillGroups { get; } = new();
 
+    public event Action? ConfigUpdated;
+
     [ObservableProperty]
     private int _delay = 50;
 
@@ -103,6 +105,7 @@ public partial class AutobuffSkillViewModel : ObservableObject
             }
 
             _isUpdatingFromServer = false;
+            ConfigUpdated?.Invoke();
         });
     }
 

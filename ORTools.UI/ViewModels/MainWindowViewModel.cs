@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
+using ORTools.UI.Helpers;
 using ORTools.UI.Services;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -77,6 +78,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public DebuffsViewModel Debuffs { get; }
     public SkillTimerViewModel SkillTimer { get; }
     public AutoOffViewModel AutoOff { get; }
+    public AutobuffSearchViewModel AutobuffSearch { get; }
     public AutobuffSkillViewModel AutobuffSkill { get; }
     public AutobuffOrderViewModel AutobuffOrder { get; }
     public AutobuffItemViewModel AutobuffItem { get; }
@@ -95,16 +97,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool HasSelectedProcess => SelectedProcess != null;
 
     public Brush ConnectionDotBrush => IsConnected
-        ? CreateBrush("#4CAF50")
-        : CreateBrush("#FF5252");
+        ? AppColors.Connected
+        : AppColors.Disconnected;
 
     public Brush HpBarBrush => HpPercent < 25
-        ? CreateBrush("#F44336")
-        : CreateBrush("#4CAF50");
+        ? AppColors.HpLow
+        : AppColors.HpNormal;
 
     public Brush SpBarBrush => SpPercent < 25
-        ? CreateBrush("#FF9800")
-        : CreateBrush("#2196F3");
+        ? AppColors.SpLow
+        : AppColors.SpNormal;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -120,6 +122,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         AutobuffSkill = new AutobuffSkillViewModel(_worker);
         AutobuffOrder = new AutobuffOrderViewModel(_worker);
         AutobuffItem = new AutobuffItemViewModel(_worker);
+        AutobuffSearch = new AutobuffSearchViewModel(AutobuffSkill, AutobuffItem);
         SkillSpammer = new SkillSpammerViewModel(_worker);
         Settings = new SettingsViewModel(worker, AutobuffSkill);
         Profiles = new ProfilesViewModel(worker);
@@ -135,6 +138,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             AutopotSP,
             Debuffs,
             SkillTimer,
+            AutobuffSearch,
             AutobuffSkill,
             AutobuffItem,
             SkillSpammer,
@@ -348,20 +352,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             
             SolidColorBrush defaultColor = u.Level switch
             {
-                "I" => CreateBrush("#4CAF50"), // Green
-                "W" => CreateBrush("#FF9800"), // Orange
-                "E" => CreateBrush("#F44336"), // Red
-                "D" => CreateBrush("#9E9E9E"), // Grey
-                "S" => CreateBrush("#9C27B0"), // Purple
-                _ => CreateBrush("#E0E0E0")
+                "I" => AppColors.Info,
+                "W" => AppColors.Warning,
+                "E" => AppColors.Error,
+                "D" => AppColors.Debug,
+                "S" => AppColors.Status,
+                _ => AppColors.Default
             };
 
             var item = new LogMessageItem(timestamp, u.Level, defaultColor);
-            item.Segments.Add(new LogTextSegment("[", CreateBrush("#757575")));
-            item.Segments.Add(new LogTextSegment(timestamp, CreateBrush("#757575")));
-            item.Segments.Add(new LogTextSegment("][", CreateBrush("#757575")));
+            item.Segments.Add(new LogTextSegment("[", AppColors.Bracket));
+            item.Segments.Add(new LogTextSegment(timestamp, AppColors.Bracket));
+            item.Segments.Add(new LogTextSegment("][", AppColors.Bracket));
             item.Segments.Add(new LogTextSegment(u.Level, defaultColor));
-            item.Segments.Add(new LogTextSegment("] ", CreateBrush("#757575")));
+            item.Segments.Add(new LogTextSegment("] ", AppColors.Bracket));
 
             if (u.Level == "S")
             {
@@ -371,19 +375,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     string[] parts = statusEntry.Split(':');
                     if (parts.Length == 2)
                     {
-                        item.Segments.Add(new LogTextSegment(parts[0], CreateBrush("#64B5F6"))); // ID in Blue
-                        item.Segments.Add(new LogTextSegment(":", CreateBrush("#E0E0E0")));
+                        item.Segments.Add(new LogTextSegment(parts[0], AppColors.StatusId));
+                        item.Segments.Add(new LogTextSegment(":", AppColors.Separator));
                         
                         if (parts[1] == "**UNKNOWN**")
-                            item.Segments.Add(new LogTextSegment(parts[1], CreateBrush("#F44336"))); // Red
+                            item.Segments.Add(new LogTextSegment(parts[1], AppColors.StatusUnknown));
                         else
-                            item.Segments.Add(new LogTextSegment(parts[1], CreateBrush("#81C784"))); // Light Green
+                            item.Segments.Add(new LogTextSegment(parts[1], AppColors.StatusKnown));
                     }
                     else
                     {
-                        item.Segments.Add(new LogTextSegment(statusEntry, CreateBrush("#E0E0E0")));
+                        item.Segments.Add(new LogTextSegment(statusEntry, AppColors.Separator));
                     }
-                    item.Segments.Add(new LogTextSegment(" ", CreateBrush("#E0E0E0")));
+                    item.Segments.Add(new LogTextSegment(" ", AppColors.Separator));
                 }
             }
             else
@@ -397,6 +401,5 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private static void Post(Action action)
         => Application.Current?.Dispatcher.BeginInvoke(action, DispatcherPriority.Background);
 
-    private static SolidColorBrush CreateBrush(string hex)
-        => new((Color)ColorConverter.ConvertFromString(hex)!);
+
 }

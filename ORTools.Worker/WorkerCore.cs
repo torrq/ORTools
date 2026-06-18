@@ -630,8 +630,8 @@ public sealed class WorkerCore
             if (Enum.TryParse<Keys>(cmd.Key, ignoreCase: true, out var key))
             {
                 unbindChanged = UnbindKeyGlobally(key);
-                if (key == Keys.None) abi.RemoveKeyFromBuff(statusId);
-                else abi.AddKeyToBuff(statusId, key);
+                abi.RemoveKeyFromBuff(statusId);
+                if (key != Keys.None) abi.AddKeyToBuff(statusId, key);
             }
         }
         ProfileSingleton.SetConfiguration(abi);

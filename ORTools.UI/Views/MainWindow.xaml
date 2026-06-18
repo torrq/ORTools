@@ -290,6 +290,15 @@
             </TabItem>
             <TabItem Header="Autobuff" Padding="20,6">
                 <TabControl Style="{StaticResource SubTabControlStyle}">
+                    <TabItem Style="{StaticResource SubTabItemStyle}" Width="80">
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🔍 " FontSize="12" Margin="0,0,2,0"/>
+                                <TextBlock Text="Search" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </TabItem.Header>
+                        <views:AutobuffSearchView DataContext="{Binding AutobuffSearch}" />
+                    </TabItem>
                     <TabItem Header="Skills" Style="{StaticResource SubTabItemStyle}">
                         <views:AutobuffSkillView DataContext="{Binding AutobuffSkill}" />
                     </TabItem>

@@ -40,6 +40,8 @@ public partial class AutobuffItemViewModel : ObservableObject
 
     public ObservableCollection<AutobuffItemGroupViewModel> ItemGroups { get; } = new();
 
+    public event Action? ConfigUpdated;
+
     [ObservableProperty]
     private int _delay = 50;
 
@@ -101,8 +103,8 @@ public partial class AutobuffItemViewModel : ObservableObject
                     }
                 }
             }
-
             _isUpdatingFromServer = false;
+            ConfigUpdated?.Invoke();
         });
     }
 
