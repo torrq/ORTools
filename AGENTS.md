@@ -178,16 +178,4 @@ The application features the following tabs, implemented as individual WPF views
 | `ORTools.UI/Views/MainWindow.xaml` | Main window layout (WPF) |
 | `ORTools.UI/App.xaml` | Application resources and color palette |
 
----
 
-## TODO List
-
-**Features & Logic**
-- Complete remaining UI placeholders in the Settings tab (ATK x DEF, Songs, Macro Switch).
-
-**Polish & System Integration**
-- System tray icon (use `System.Windows.Forms.NotifyIcon` from Worker side, or `Hardcodet.NotifyIcon.Wpf` in the UI).
-- Debug log panel (forward `LogMessageUpdate` to a scrolling TextBox).
-- Minimize to tray on close.
-- Hide Worker console window in release builds (re-add `ConsoleHelper.Hide()` guarded by `#if !DEBUG`).
-- Installer / release packaging.
