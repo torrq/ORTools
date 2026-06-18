@@ -127,14 +127,11 @@ To keep inputs styled consistently across tabs, we define `NumericTextBoxStyle` 
 If the UI crashes instantly on startup after adding new UI elements to a tab (especially when copying from another location), check the Windows Event Viewer (`Application` log, `.NET Runtime` source). 
 A very common cause is a `XamlParseException` related to missing `StaticResource` references (e.g. `System.Exception: Cannot find resource named '...Brush'`). `StaticResource` strictly demands the resource to exist in `App.xaml` at load time, and if it doesn't (due to a typo or copy-pasting an old generic name like `AppTextMutedBrush` instead of `AppSubtleBrush`), the entire WPF application will crash at startup instead of ignoring it.
 
-**6. Utility Scripts (`ORTools\Scripts\`)**
-Any python scripts or small utility tools written to automate codebase refactoring (like the `update_bindings.py` script used to bulk-update XAML text box bindings) are stored in the `Scripts/` directory at the repository root. Ensure scripts are kept there so the project tree stays clean.
-
-**7. WPF Dispatcher & IPC Events (InvalidOperationException)**
+**6. WPF Dispatcher & IPC Events (InvalidOperationException)**
 The `WorkerService` runs the `WorkerCore` IPC client on a background thread. This means all events fired by `WorkerService` (e.g. `AppStateReceived`, `GlobalConfigReceived`) execute on a background threadpool thread. If ViewModels subscribe to these events and update `ObservableProperty` fields that trigger UI updates, or try to interact with WPF singletons like `Application.Current.Resources`, WPF will throw an `InvalidOperationException` and instantly terminate the IPC callback thread.
 **Fix**: Always wrap background event callbacks that touch the UI in `Application.Current.Dispatcher.BeginInvoke(action)`.
 
-**8. Profile Loading Data Bleed**
+**7. Profile Loading Data Bleed**
 The application uses `ProfileSingleton` to hold the currently loaded configuration. Historically, `Profile.Load` updated the static `_profile` object incrementally by deserializing JSON sections. If an older profile was loaded that was missing a section (e.g., `UserPreferences`), the deserializer would fall back to the defaults of the *currently running* memory instance, causing data like `ToggleStateKey` to invisibly bleed from the previous profile into the loaded profile.
 **Fix**: Always create a completely fresh instance (`_profile = new Profile(profileName);`) before loading JSON into singletons to guarantee a clean slate that correctly falls back to system defaults.
 
