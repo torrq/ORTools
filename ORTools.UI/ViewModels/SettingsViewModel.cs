@@ -50,42 +50,56 @@ public partial class SettingsViewModel : ObservableObject
 
     private void OnAppStateReceived(AppStateUpdate update)
     {
-        OnPropertyChanged(nameof(ThemeModes));
+        // CRITICAL (Gotcha #7): IPC events fire on a background threadpool thread.
+        // We MUST marshal any PropertyChanged events or UI-bound updates to the Dispatcher
+        // to prevent WPF from throwing an InvalidOperationException and crashing the IPC loop.
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => 
+        {
+            OnPropertyChanged(nameof(ThemeModes));
+        });
     }
 
     private void OnGlobalConfigReceived(GlobalConfigUpdate update)
     {
-        _suppressUpdates = true;
-        SongRows = update.SongRows;
-        MacroSwitchRows = update.MacroSwitchRows;
-        AtkDefRows = update.AtkDefRows;
-        DefaultToggleStateKey = update.DefaultToggleStateKey;
-        DebugMode = update.DebugMode;
-        DebugView = update.DebugView;
-        DebugViewHeight = update.DebugViewHeight;
-        DebugClientLog = update.DebugClientLog;
-        DisableSystray = update.DisableSystray;
-        MinimizeToSystray = update.MinimizeToSystray;
-        CloseToSystray = update.CloseToSystray;
-        StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
-        ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
-        PauseWhenChatting = update.PauseWhenChatting;
-        PauseWhenDead = update.PauseWhenDead;
-        ExitWithRo = update.ExitWithRo;
-        AlwaysOnTop = update.AlwaysOnTop;
-        AllowResizingWindow = update.AllowResizingWindow;
-        Theme = update.Theme;
-        _suppressUpdates = false;
+        // CRITICAL (Gotcha #7): We must marshal to the UI thread because ThemeService touches
+        // Application.Current.Resources, which has thread affinity and will throw otherwise.
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => 
+        {
+            _suppressUpdates = true;
+            SongRows = update.SongRows;
+            MacroSwitchRows = update.MacroSwitchRows;
+            AtkDefRows = update.AtkDefRows;
+            DefaultToggleStateKey = update.DefaultToggleStateKey;
+            DebugMode = update.DebugMode;
+            DebugView = update.DebugView;
+            DebugViewHeight = update.DebugViewHeight;
+            DebugClientLog = update.DebugClientLog;
+            DisableSystray = update.DisableSystray;
+            MinimizeToSystray = update.MinimizeToSystray;
+            CloseToSystray = update.CloseToSystray;
+            StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
+            ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
+            PauseWhenChatting = update.PauseWhenChatting;
+            PauseWhenDead = update.PauseWhenDead;
+            ExitWithRo = update.ExitWithRo;
+            AlwaysOnTop = update.AlwaysOnTop;
+            AllowResizingWindow = update.AllowResizingWindow;
+            Theme = update.Theme;
+            _suppressUpdates = false;
 
-        ThemeService.ApplyTheme(Theme);
+            ThemeService.ApplyTheme(Theme);
+        });
     }
 
     private void OnProfileSettingsReceived(ProfileSettingsUpdate update)
     {
-        _suppressUpdates = true;
-        StopBuffsCity = update.StopBuffsCity;
-        SoundEnabled = update.SoundEnabled;
-        _suppressUpdates = false;
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(() => 
+        {
+            _suppressUpdates = true;
+            StopBuffsCity = update.StopBuffsCity;
+            SoundEnabled = update.SoundEnabled;
+            _suppressUpdates = false;
+        });
     }
 
     private bool _suppressUpdates = false;

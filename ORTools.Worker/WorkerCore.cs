@@ -138,8 +138,15 @@ public sealed class WorkerCore
             _autoOff.StartTimer();
         }
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
-        DebugLogger.Info("[WorkerCore] Turned ON");
+        try
+        {
+            await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
+            DebugLogger.Info("[WorkerCore] Turned ON");
+        }
+        catch (Exception ex)
+        {
+            DebugLogger.Error($"[WorkerCore] HandleTurnOn broadcast failed: {ex.GetType().Name}: {ex.Message}");
+        }
 
         if (p.UserPreferences.SoundEnabled)
         {
@@ -166,8 +173,15 @@ public sealed class WorkerCore
             _autoOff.StopTimer();
         }
         
-        await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
-        DebugLogger.Info("[WorkerCore] Turned OFF");
+        try
+        {
+            await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
+            DebugLogger.Info("[WorkerCore] Turned OFF");
+        }
+        catch (Exception ex)
+        {
+            DebugLogger.Error($"[WorkerCore] HandleTurnOff broadcast failed: {ex.GetType().Name}: {ex.Message}");
+        }
 
         if (p.UserPreferences.SoundEnabled)
         {
@@ -1342,14 +1356,19 @@ public sealed class WorkerCore
             KeyboardHook.KeyDown = null;
             KeyboardHook.AddKeyDown(toggleKey, () =>
             {
-                if (_isOn) _ = HandleTurnOff();
-                else _ = HandleTurnOn();
+                _ = Task.Run(async () =>
+                {
+                    if (_isOn) await HandleTurnOff();
+                    else await HandleTurnOn();
+                });
                 return true;
             });
+            DebugLogger.Debug($"[WorkerCore] Toggle hotkey registered: {prefs.ToggleStateKey} → {toggleKey}");
         }
         else
         {
             KeyboardHook.KeyDown = null;
+            DebugLogger.Debug($"[WorkerCore] Toggle hotkey cleared (key='{prefs?.ToggleStateKey}')");
         }
     }
 

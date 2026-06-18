@@ -84,6 +84,12 @@ public static class ProfileSingleton
             string filePath = AppConfig.ProfileFolder + profileName + ".json";
             if (!File.Exists(filePath)) { Create(profileName); return; }
 
+            // CRITICAL (Gotcha #8): Ensure we don't bleed state from the previously loaded profile.
+            // DO NOT remove or swap the order of this instantiation.
+            // If missing sections in JSON fall back to defaults, they must pull from a clean slate
+            // instead of inheriting the ghost data of the last loaded profile.
+            _profile = new Profile(profileName);
+
             string  json      = File.ReadAllText(filePath);
             dynamic rawObject = JsonConvert.DeserializeObject(json)!;
 
