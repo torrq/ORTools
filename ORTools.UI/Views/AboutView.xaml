@@ -3,10 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="clr-namespace:ORTools.UI.Views.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="400">
-    <Grid Margin="12">
-        <Border Background="{DynamicResource AppSurfaceAltBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="20">
+    <Grid>
+        <!-- Background Toasters Effect -->
+        <controls:Toasters x:Name="ToastersBackground" MinOpacity="0.3" MaxOpacity="0.8" MaxProps="40" />
+
+        <!-- Content Overlay -->
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12">
+            <Border Background="{DynamicResource AppSurfaceAltBrush}" Opacity="0.9" CornerRadius="4"/>
+            <Border BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="20">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Text="{Binding AppTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,24"/>
                 
@@ -22,6 +29,7 @@
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
-        </Border>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

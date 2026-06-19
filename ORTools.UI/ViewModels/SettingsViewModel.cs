@@ -104,7 +104,14 @@ public partial class SettingsViewModel : ObservableObject
 
     private bool _suppressUpdates = false;
 
-    partial void OnDebugModeChanged(bool value) => SendGlobalUpdate();
+    partial void OnDebugModeChanged(bool value)
+    {
+        if (!value && DebugView)
+        {
+            DebugView = false;
+        }
+        SendGlobalUpdate();
+    }
     partial void OnDebugViewChanged(bool value) => SendGlobalUpdate();
     partial void OnDebugViewHeightChanged(double value) => SendGlobalUpdate();
     partial void OnDebugClientLogChanged(bool value) => SendGlobalUpdate();

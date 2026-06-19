@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance vm:SettingsViewModel}">
     <UserControl.Resources>
         <helpers:ThemeModeToStringConverter x:Key="ThemeModeToStringConverter" />
-        
+
         <Style x:Key="SidebarTabControlStyle" TargetType="TabControl">
             <Setter Property="TabStripPlacement" Value="Left"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -20,16 +20,16 @@
                     <ControlTemplate TargetType="TabControl">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="190"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            
+
                             <Border Grid.Column="0" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,0,1,0" Padding="0,15,0,15" Background="Transparent">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <StackPanel IsItemsHost="True"/>
                                 </ScrollViewer>
                             </Border>
-                            
+
                             <ContentPresenter Grid.Column="1" ContentSource="SelectedContent"/>
                         </Grid>
                     </ControlTemplate>
@@ -72,8 +72,8 @@
         </Style>
     </UserControl.Resources>
 
-    <TabControl Style="{StaticResource SidebarTabControlStyle}">
-        
+    <TabControl Style="{StaticResource SidebarTabControlStyle}" TabStripPlacement="Left">
+
         <!-- Per-Profile Settings -->
         <TabItem Style="{StaticResource SidebarTabItemStyle}">
             <TabItem.Header>
@@ -83,15 +83,27 @@
                 </StackPanel>
             </TabItem.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
-                <StackPanel Margin="40,10">
-                    <GroupBox Header="Profile Behavior" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+                <StackPanel Margin="40,10" Orientation="Horizontal" VerticalAlignment="Top">
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,40,15" MaxWidth="500" HorizontalAlignment="Left" Width="190">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8F2;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Profile Behavior" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox.Header>
                         <StackPanel Margin="10">
                             <CheckBox Margin="0,0,0,12" Content="Pause when in town" IsChecked="{Binding StopBuffsCity}" Foreground="{DynamicResource AppTextBrush}"/>
                             <CheckBox Margin="0,0,0,0" Content="Sounds on" IsChecked="{Binding SoundEnabled}" Foreground="{DynamicResource AppTextBrush}"/>
                         </StackPanel>
                     </GroupBox>
-                    
-                    <GroupBox Header="Auto-Off Options" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left" Width="190">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE916;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Auto-Off Options" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox.Header>
                         <StackPanel Margin="10">
                             <CheckBox Margin="0,0,0,12" Content="Start timer on enable" IsChecked="{Binding StartAutoOffTimerOnEnable}" Foreground="{DynamicResource AppTextBrush}"/>
                             <CheckBox Margin="0,0,0,0" Content="Stop timer on disable" IsChecked="{Binding ClearAutoOffTimerOnDisable}" Foreground="{DynamicResource AppTextBrush}"/>
@@ -111,92 +123,96 @@
             </TabItem.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
                 <StackPanel Margin="40,10">
-                    <GroupBox Header="Interface Layout" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
-                        <StackPanel Margin="10">
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="160" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                                <ComboBox Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}" 
-                                          Background="{DynamicResource AppInputBrush}" Foreground="Black" 
-                                          BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Converter={StaticResource ThemeModeToStringConverter}}" />
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Grid>
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="160" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Song Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                                <TextBox Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
-                                         helpers:InputHelper.IsNumericInput="True"
-                                         PreviewKeyDown="SongRows_PreviewKeyDown"
-                                         TextChanged="RowsTextBox_TextChanged"
-                                         Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Stretch" Height="28" FontSize="14"/>
-                            </Grid>
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="160" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Macro Switch Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                                <TextBox Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
-                                         helpers:InputHelper.IsNumericInput="True"
-                                         PreviewKeyDown="MacroSwitchRows_PreviewKeyDown"
-                                         TextChanged="RowsTextBox_TextChanged"
-                                         Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Stretch" Height="28" FontSize="14"/>
-                            </Grid>
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="160" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="ATK x DEF Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                                <TextBox Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
-                                         helpers:InputHelper.IsNumericInput="True"
-                                         PreviewKeyDown="AtkDefRows_PreviewKeyDown"
-                                         TextChanged="RowsTextBox_TextChanged"
-                                         Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Stretch" Height="28" FontSize="14"/>
-                            </Grid>
-                            <Grid Margin="0,0,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="160" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Default Toggle Key" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                                <TextBox Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
-                                         PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
-                                         Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Stretch" Height="28" FontSize="14"/>
-                            </Grid>
-                        </StackPanel>
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7F4;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Interface Layout" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox.Header>
+                        <Grid Margin="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}" 
+                                      Background="{DynamicResource AppInputBrush}" Foreground="Black" 
+                                      BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14" HorizontalAlignment="Stretch" Margin="0,0,0,12">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Converter={StaticResource ThemeModeToStringConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <TextBlock Grid.Row="1" Text="Song Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                                     helpers:InputHelper.IsNumericInput="True"
+                                     PreviewKeyDown="SongRows_PreviewKeyDown"
+                                     TextChanged="RowsTextBox_TextChanged"
+                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,12"/>
+
+                            <TextBlock Grid.Row="2" Text="Macro Switch Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                                     helpers:InputHelper.IsNumericInput="True"
+                                     PreviewKeyDown="MacroSwitchRows_PreviewKeyDown"
+                                     TextChanged="RowsTextBox_TextChanged"
+                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,12"/>
+
+                            <TextBlock Grid.Row="3" Text="ATK x DEF Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                                     helpers:InputHelper.IsNumericInput="True"
+                                     PreviewKeyDown="AtkDefRows_PreviewKeyDown"
+                                     TextChanged="RowsTextBox_TextChanged"
+                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,12"/>
+
+                            <TextBlock Grid.Row="4" Text="Default Toggle Key" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
+                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                                     PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
+                                     Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14"/>
+                        </Grid>
                     </GroupBox>
 
-                    <GroupBox Header="System Tray" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left" Width="252">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEE40;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="System Tray" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox.Header>
                         <StackPanel Margin="10">
-                            <CheckBox x:Name="CbDisableSystray" Margin="0,0,0,12" Content="Disable Systray Icon" IsChecked="{Binding DisableSystray}" Foreground="{DynamicResource AppTextBrush}"/>
-                            
-                            <StackPanel Margin="20,0,0,0">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Setter Property="IsEnabled" Value="True"/>
+                            <CheckBox x:Name="CbDisableSystray" Margin="0,4,0,4" Content="Disable Systray Icon" IsChecked="{Binding DisableSystray}" Foreground="{DynamicResource AppTextBrush}"/>
+                            <CheckBox Content="Minimize to systray" IsChecked="{Binding MinimizeToSystray}" Foreground="{DynamicResource AppTextBrush}" Margin="0,4,0,4">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsChecked, ElementName=CbDisableSystray}" Value="True">
+                                            <DataTrigger Binding="{Binding DisableSystray}" Value="True">
                                                 <Setter Property="IsEnabled" Value="False"/>
-                                                <Setter Property="Opacity" Value="0.5"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
-                                </StackPanel.Style>
-                                <CheckBox Margin="0,0,0,12" Content="Minimize to systray" IsChecked="{Binding MinimizeToSystray}" Foreground="{DynamicResource AppTextBrush}"/>
-                                <CheckBox Margin="0,0,0,0" Content="Close to systray" IsChecked="{Binding CloseToSystray}" Foreground="{DynamicResource AppTextBrush}"/>
-                            </StackPanel>
+                                </CheckBox.Style>
+                            </CheckBox>
+                            <CheckBox Content="Close to systray" IsChecked="{Binding CloseToSystray}" Foreground="{DynamicResource AppTextBrush}" Margin="0,4,0,4">
+                                <CheckBox.Style>
+                                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding DisableSystray}" Value="True">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </CheckBox.Style>
+                            </CheckBox>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
@@ -213,7 +229,13 @@
             </TabItem.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
                 <StackPanel Margin="40,10">
-                    <GroupBox Header="General Behavior" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE909;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="General Behavior" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox.Header>
                         <StackPanel Margin="10">
                             <CheckBox Margin="0,0,0,12" Content="Pause when chatting" IsChecked="{Binding PauseWhenChatting}" Foreground="{DynamicResource AppTextBrush}"/>
                             <CheckBox Margin="0,0,0,0" Content="Pause when dead" IsChecked="{Binding PauseWhenDead}" Foreground="{DynamicResource AppTextBrush}"/>
@@ -233,12 +255,18 @@
             </TabItem.Header>
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
                 <StackPanel Margin="40,10">
-                    <GroupBox Header="Developer Tools" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="600" HorizontalAlignment="Left">
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="600" HorizontalAlignment="Left">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEBE8;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Developer Tools" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </GroupBox.Header>
                         <StackPanel Margin="10">
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                                 <CheckBox Content="Debug Mode" IsChecked="{Binding DebugMode}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,20,0"/>
                                 <CheckBox Content="Debug View" IsChecked="{Binding DebugView}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}" Margin="0,0,20,0"/>
-                                <CheckBox Content="Debug Client Log" IsChecked="{Binding DebugClientLog}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
+                                <CheckBox Content="Client Log" IsChecked="{Binding DebugClientLog}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,12" IsEnabled="{Binding DebugMode}">
                                 <TextBlock Text="Debug View Height:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,10,0"/>
