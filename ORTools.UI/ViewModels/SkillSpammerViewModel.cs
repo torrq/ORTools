@@ -56,6 +56,12 @@ public partial class SkillSpammerViewModel : ObservableObject
     [ObservableProperty]
     private string _toggleModeKey = "None";
 
+    [ObservableProperty]
+    private string _questImageSource = "pack://application:,,,/Icons/ui/osro_quests_mr.png";
+
+    [ObservableProperty]
+    private string _questUrl = "https://torrq.github.io/osro-quests-mr/";
+
     public ObservableCollection<SpammerKeyViewModel> AllKeys { get; } = new();
     public ObservableCollection<SpammerKeyViewModel> FKeys { get; } = new();
     public ObservableCollection<SpammerKeyViewModel> NumKeys { get; } = new();
@@ -70,6 +76,7 @@ public partial class SkillSpammerViewModel : ObservableObject
         InitializeKeyGrid();
 
         _worker.SkillSpammerConfigReceived += OnConfigReceived;
+        _worker.AppStateReceived += OnAppState;
     }
 
     private void InitializeKeyGrid()
@@ -85,6 +92,23 @@ public partial class SkillSpammerViewModel : ObservableObject
         foreach (var k in qKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); QKeys.Add(vm); AllKeys.Add(vm); }
         foreach (var k in aKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); AKeys.Add(vm); AllKeys.Add(vm); }
         foreach (var k in zKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); ZKeys.Add(vm); AllKeys.Add(vm); }
+    }
+
+    private void OnAppState(AppStateUpdate u)
+    {
+        App.Current.Dispatcher.Invoke(() =>
+        {
+            if (u.ServerMode == 1)
+            {
+                QuestImageSource = "pack://application:,,,/Icons/ui/osro_quests_hr.png";
+                QuestUrl = "https://torrq.github.io/osro-quests-hr/";
+            }
+            else
+            {
+                QuestImageSource = "pack://application:,,,/Icons/ui/osro_quests_mr.png";
+                QuestUrl = "https://torrq.github.io/osro-quests-mr/";
+            }
+        });
     }
 
     private void OnConfigReceived(SkillSpammerConfigUpdate config)
@@ -143,5 +167,11 @@ public partial class SkillSpammerViewModel : ObservableObject
         // In a real WPF app, this would involve a dialog or capturing key input.
         // For now, since the legacy app allowed you to just type it in a TextBox, 
         // we might just bind a TextBox in the View to the ToggleModeKey property directly.
+    }
+
+    [RelayCommand]
+    private void OpenQuestLink()
+    {
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(QuestUrl) { UseShellExecute = true });
     }
 }

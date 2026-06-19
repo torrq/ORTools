@@ -20,8 +20,10 @@ public partial class Toasters : UserControl
     public double MinOpacity { get; set; } = 0.15;
     public double MaxOpacity { get; set; } = 0.45;
     public int MaxProps { get; set; } = 20;
+    public double SpecialFrequency { get; set; } = 0.25;
 
     private List<BitmapImage>? _cachedImages;
+    private List<BitmapImage>? _specialImages;
 
     private class Prop
     {
@@ -43,6 +45,7 @@ public partial class Toasters : UserControl
         if (_cachedImages == null)
         {
             _cachedImages = new List<BitmapImage>();
+            _specialImages = new List<BitmapImage>();
             
             try
             {
@@ -60,6 +63,12 @@ public partial class Toasters : UserControl
                             var bi = new BitmapImage(new Uri("pack://application:,,,/" + path));
                             bi.Freeze(); // Crucial for performance across threads/controls
                             _cachedImages.Add(bi);
+                        }
+                        else if (path == "icons/ui/aus.png")
+                        {
+                            var bi = new BitmapImage(new Uri("pack://application:,,,/" + path));
+                            bi.Freeze();
+                            _specialImages.Add(bi);
                         }
                     }
                 }
@@ -98,8 +107,6 @@ public partial class Toasters : UserControl
     {
         var img = new Image
         {
-            Width = 32,
-            Height = 32,
             RenderTransformOrigin = new Point(0.5, 0.5)
         };
 
@@ -121,7 +128,21 @@ public partial class Toasters : UserControl
     {
         if (_cachedImages == null || _cachedImages.Count == 0) return;
 
-        p.ImageElement.Source = _cachedImages[_rng.Next(_cachedImages.Count)];
+        bool isSpecial = _specialImages != null && _specialImages.Count > 0 && _rng.NextDouble() < SpecialFrequency;
+        
+        if (isSpecial)
+        {
+            p.ImageElement.Source = _specialImages![_rng.Next(_specialImages.Count)];
+            p.ImageElement.Width = double.NaN;
+            p.ImageElement.Height = double.NaN;
+        }
+        else
+        {
+            p.ImageElement.Source = _cachedImages[_rng.Next(_cachedImages.Count)];
+            p.ImageElement.Width = 32;
+            p.ImageElement.Height = 32;
+        }
+
         p.ImageElement.Opacity = MinOpacity + _rng.NextDouble() * (MaxOpacity - MinOpacity);
 
         double startX, startY;

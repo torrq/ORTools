@@ -114,6 +114,25 @@
             </GroupBox>
         </StackPanel>
 
+        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" 
+                Command="{Binding OpenQuestLinkCommand}" 
+                Cursor="Hand" 
+                Margin="0,0,0,0" 
+                Padding="0" 
+                BorderThickness="0" 
+                Background="Transparent"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom">
+            <Image Source="{Binding QuestImageSource}" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" />
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="Transparent">
+                        <ContentPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
         <!-- Bottom Panel (Key Config & Delay) -->
         <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,10,0,0" VerticalAlignment="Top">
             <Grid.ColumnDefinitions>
