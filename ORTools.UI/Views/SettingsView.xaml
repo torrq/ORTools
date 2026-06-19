@@ -7,7 +7,8 @@
              xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance vm:SettingsViewModel}">
+             d:DataContext="{d:DesignInstance vm:SettingsViewModel}"
+             FontSize="13">
     <UserControl.Resources>
         <helpers:ThemeModeToStringConverter x:Key="ThemeModeToStringConverter" />
 
@@ -45,14 +46,14 @@
             <Setter Property="Margin" Value="0,2,0,2"/>
             <Setter Property="BorderThickness" Value="4,0,0,0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
                         <Border Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                Padding="{TemplateBinding Padding}">
+                                Padding="{TemplateBinding Padding}"
+                                Cursor="Hand">
                             <ContentPresenter ContentSource="Header" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -143,10 +144,10 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBlock Grid.Row="0" Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}" 
                                       Background="{DynamicResource AppInputBrush}" Foreground="Black" 
-                                      BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14" HorizontalAlignment="Stretch" Margin="0,0,0,12">
+                                      BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14" HorizontalAlignment="Stretch" Margin="0,0,0,6">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Converter={StaticResource ThemeModeToStringConverter}}" />
@@ -154,26 +155,26 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="1" Text="Song Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBlock Grid.Row="1" Text="Song Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
                                      PreviewKeyDown="SongRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
-                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,12"/>
+                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,6"/>
 
-                            <TextBlock Grid.Row="2" Text="Macro Switch Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBlock Grid.Row="2" Text="Macro Switch Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
                                      PreviewKeyDown="MacroSwitchRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
-                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,12"/>
+                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,6"/>
 
-                            <TextBlock Grid.Row="3" Text="ATK x DEF Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,12" />
+                            <TextBlock Grid.Row="3" Text="ATK x DEF Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
                                      PreviewKeyDown="AtkDefRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
-                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,12"/>
+                                     Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,6"/>
 
                             <TextBlock Grid.Row="4" Text="Default Toggle Key" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                             <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
@@ -190,8 +191,8 @@
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Margin="10">
-                            <CheckBox x:Name="CbDisableSystray" Margin="0,4,0,4" Content="Disable Systray Icon" IsChecked="{Binding DisableSystray}" Foreground="{DynamicResource AppTextBrush}"/>
-                            <CheckBox Content="Minimize to systray" IsChecked="{Binding MinimizeToSystray}" Foreground="{DynamicResource AppTextBrush}" Margin="0,4,0,4">
+                            <CheckBox x:Name="CbDisableSystray" Margin="0,6,0,6" Content="Disable Systray Icon" IsChecked="{Binding DisableSystray}" Foreground="{DynamicResource AppTextBrush}"/>
+                            <CheckBox Content="Minimize to systray" IsChecked="{Binding MinimizeToSystray}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6">
                                 <CheckBox.Style>
                                     <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                                         <Style.Triggers>
@@ -202,7 +203,7 @@
                                     </Style>
                                 </CheckBox.Style>
                             </CheckBox>
-                            <CheckBox Content="Close to systray" IsChecked="{Binding CloseToSystray}" Foreground="{DynamicResource AppTextBrush}" Margin="0,4,0,4">
+                            <CheckBox Content="Close to systray" IsChecked="{Binding CloseToSystray}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6">
                                 <CheckBox.Style>
                                     <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
                                         <Style.Triggers>

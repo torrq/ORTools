@@ -240,7 +240,8 @@
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="4,4,0,0"
-                    Padding="{TemplateBinding Padding}">
+                    Padding="{TemplateBinding Padding}"
+                    Cursor="Hand">
               <ContentPresenter x:Name="HeaderContent" HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 ContentSource="Header" />
@@ -287,7 +288,6 @@
       <Setter Property="Margin" Value="6,0" />
       <Setter Property="Width" Value="150" />
       <Setter Property="Padding" Value="0,4" />
-      <Setter Property="Cursor" Value="Hand" />
       <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="Template">
         <Setter.Value>
@@ -297,7 +297,8 @@
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="18"
-                    Padding="{TemplateBinding Padding}">
+                    Padding="{TemplateBinding Padding}"
+                    Cursor="Hand">
               <ContentPresenter x:Name="HeaderContent" HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 ContentSource="Header" />
