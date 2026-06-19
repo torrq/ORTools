@@ -132,8 +132,8 @@ public sealed class WorkerCore
         p.MacroSwitch.Start(); p.SongMacro.Start();
         p.TransferHelper.Start(); p.ATKDEFMode.Start();
         
-        var config = ConfigGlobal.GetConfig();
-        if (config.StartAutoOffTimerOnEnable && !_autoOff.IsTimerRunning)
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        if (prefs.StartAutoOffTimerOnEnable && !_autoOff.IsTimerRunning)
         {
             _autoOff.StartTimer();
         }
@@ -167,8 +167,8 @@ public sealed class WorkerCore
         p.MacroSwitch.Stop(); p.SongMacro.Stop();
         p.TransferHelper.Stop(); p.ATKDEFMode.Stop();
         
-        var config = ConfigGlobal.GetConfig();
-        if (config.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        if (prefs.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
         {
             _autoOff.StopTimer();
         }
@@ -760,8 +760,6 @@ public sealed class WorkerCore
         config.DisableSystray = cmd.DisableSystray;
         config.MinimizeToSystray = cmd.MinimizeToSystray;
         config.CloseToSystray = cmd.CloseToSystray;
-        config.StartAutoOffTimerOnEnable = cmd.StartAutoOffTimerOnEnable;
-        config.ClearAutoOffTimerOnDisable = cmd.ClearAutoOffTimerOnDisable;
         config.PauseWhenChatting = cmd.PauseWhenChatting;
         config.PauseWhenDead = cmd.PauseWhenDead;
         config.ExitWithRo = cmd.ExitWithRo;
@@ -782,10 +780,12 @@ public sealed class WorkerCore
 
     public Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
     {
-        var profile = ProfileSingleton.GetCurrent();
-        profile.UserPreferences.StopBuffsCity = cmd.StopBuffsCity;
-        profile.UserPreferences.SoundEnabled = cmd.SoundEnabled;
-        ProfileSingleton.SetConfiguration(profile.UserPreferences);
+        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        prefs.StopBuffsCity = cmd.StopBuffsCity;
+        prefs.SoundEnabled = cmd.SoundEnabled;
+        prefs.StartAutoOffTimerOnEnable = cmd.StartAutoOffTimerOnEnable;
+        prefs.ClearAutoOffTimerOnDisable = cmd.ClearAutoOffTimerOnDisable;
+        ProfileSingleton.SetConfiguration(prefs);
         return Task.CompletedTask;
     }
 
@@ -1301,8 +1301,6 @@ public sealed class WorkerCore
             config.DisableSystray,
             config.MinimizeToSystray,
             config.CloseToSystray,
-            config.StartAutoOffTimerOnEnable,
-            config.ClearAutoOffTimerOnDisable,
             config.PauseWhenChatting,
             config.PauseWhenDead,
             config.ExitWithRo,
@@ -1317,7 +1315,9 @@ public sealed class WorkerCore
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
         return new ProfileSettingsUpdate(
             prefs.StopBuffsCity,
-            prefs.SoundEnabled
+            prefs.SoundEnabled,
+            prefs.StartAutoOffTimerOnEnable,
+            prefs.ClearAutoOffTimerOnDisable
         );
     }
 

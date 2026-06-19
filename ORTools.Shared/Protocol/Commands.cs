@@ -202,8 +202,6 @@ public sealed record UpdateGlobalConfigCommand(
     bool DisableSystray,
     bool MinimizeToSystray,
     bool CloseToSystray,
-    bool StartAutoOffTimerOnEnable,
-    bool ClearAutoOffTimerOnDisable,
     bool PauseWhenChatting,
     bool PauseWhenDead,
     bool ExitWithRo,
@@ -216,7 +214,9 @@ public sealed record UpdateGlobalConfigCommand(
 
 public sealed record UpdateProfileSettingsCommand(
     bool StopBuffsCity,
-    bool SoundEnabled) : IIpcMessage
+    bool SoundEnabled,
+    bool StartAutoOffTimerOnEnable,
+    bool ClearAutoOffTimerOnDisable) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateProfileSettings;
 }

@@ -16,7 +16,6 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _disableSystray;
     [ObservableProperty] private bool _minimizeToSystray = true;
     [ObservableProperty] private bool _closeToSystray = true;
-    [ObservableProperty] private bool _clearAutoOffTimerOnDisable;
     [ObservableProperty] private bool _pauseWhenChatting;
     [ObservableProperty] private bool _pauseWhenDead;
     [ObservableProperty] private bool _exitWithRo;
@@ -29,13 +28,14 @@ public partial class SettingsViewModel : ObservableObject
     // Placeholders for Profile Settings
     [ObservableProperty] private bool _stopBuffsCity;
     [ObservableProperty] private bool _soundEnabled;
+    [ObservableProperty] private bool _clearAutoOffTimerOnDisable;
+    [ObservableProperty] private bool _startAutoOffTimerOnEnable;
 
     // Placeholders for Global Settings
     [ObservableProperty] private int _songRows = 4;
     [ObservableProperty] private int _macroSwitchRows = 4;
     [ObservableProperty] private int _atkDefRows = 2;
     [ObservableProperty] private string _defaultToggleStateKey = "None";
-    [ObservableProperty] private bool _startAutoOffTimerOnEnable;
 
     public AutobuffSkillViewModel AutobuffSkill { get; }
 
@@ -77,8 +77,6 @@ public partial class SettingsViewModel : ObservableObject
             DisableSystray = update.DisableSystray;
             MinimizeToSystray = update.MinimizeToSystray;
             CloseToSystray = update.CloseToSystray;
-            StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
-            ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
             PauseWhenChatting = update.PauseWhenChatting;
             PauseWhenDead = update.PauseWhenDead;
             ExitWithRo = update.ExitWithRo;
@@ -98,6 +96,8 @@ public partial class SettingsViewModel : ObservableObject
             _suppressUpdates = true;
             StopBuffsCity = update.StopBuffsCity;
             SoundEnabled = update.SoundEnabled;
+            StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
+            ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
             _suppressUpdates = false;
         });
     }
@@ -111,7 +111,6 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnDisableSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnMinimizeToSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnCloseToSystrayChanged(bool value) => SendGlobalUpdate();
-    partial void OnClearAutoOffTimerOnDisableChanged(bool value) => SendGlobalUpdate();
     partial void OnPauseWhenChattingChanged(bool value) => SendGlobalUpdate();
     partial void OnPauseWhenDeadChanged(bool value) => SendGlobalUpdate();
     partial void OnExitWithRoChanged(bool value) => SendGlobalUpdate();
@@ -143,10 +142,11 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     partial void OnDefaultToggleStateKeyChanged(string value) => SendGlobalUpdate();
-    partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendGlobalUpdate();
 
     partial void OnStopBuffsCityChanged(bool value) => SendProfileUpdate();
     partial void OnSoundEnabledChanged(bool value) => SendProfileUpdate();
+    partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendProfileUpdate();
+    partial void OnClearAutoOffTimerOnDisableChanged(bool value) => SendProfileUpdate();
 
     private void SendGlobalUpdate()
     {
@@ -164,8 +164,6 @@ public partial class SettingsViewModel : ObservableObject
             DisableSystray: DisableSystray,
             MinimizeToSystray: MinimizeToSystray,
             CloseToSystray: CloseToSystray,
-            StartAutoOffTimerOnEnable: StartAutoOffTimerOnEnable,
-            ClearAutoOffTimerOnDisable: ClearAutoOffTimerOnDisable,
             PauseWhenChatting: PauseWhenChatting,
             PauseWhenDead: PauseWhenDead,
             ExitWithRo: ExitWithRo,
@@ -182,7 +180,9 @@ public partial class SettingsViewModel : ObservableObject
 
         var cmd = new UpdateProfileSettingsCommand(
             StopBuffsCity: StopBuffsCity,
-            SoundEnabled: SoundEnabled
+            SoundEnabled: SoundEnabled,
+            StartAutoOffTimerOnEnable: StartAutoOffTimerOnEnable,
+            ClearAutoOffTimerOnDisable: ClearAutoOffTimerOnDisable
         );
         _worker.Send(cmd);
     }

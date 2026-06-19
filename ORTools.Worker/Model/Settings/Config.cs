@@ -11,8 +11,6 @@ public class Config
     public bool   DisableSystray               { get; set; } = false;
     public bool   MinimizeToSystray            { get; set; } = false;
     public bool   CloseToSystray               { get; set; } = false;
-    public bool   StartAutoOffTimerOnEnable    { get; set; } = false;
-    public bool   ClearAutoOffTimerOnDisable   { get; set; } = false;
     public string LastUsedProfile              { get; set; } = "Default";
     public bool   MiniMode                     { get; set; } = false;
     public int    SongRows                     { get; set; } = 4;
