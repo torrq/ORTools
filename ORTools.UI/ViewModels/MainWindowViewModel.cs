@@ -22,6 +22,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Settings.Theme = ThemeService.GetInvertedTheme();
     }
 
+    [RelayCommand]
+    private void ToggleColor()
+    {
+        Settings.Theme = ThemeService.GetNextColorTheme();
+    }
+
     // ── Connection ────────────────────────────────────────────────────────────
     [ObservableProperty] private string _connectionLabel = "Connecting...";
     [ObservableProperty] private bool   _isConnected;

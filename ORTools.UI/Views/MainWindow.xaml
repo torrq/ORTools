@@ -212,6 +212,17 @@
                     </ComboBox>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                        <Button Command="{Binding ToggleColorCommand}" ToolTip="Cycle Color"
+                                FontFamily="Segoe MDL2 Assets" Content="&#xE790;" FontSize="13" Cursor="Hand"
+                                Foreground="{DynamicResource AppTextBrush}"
+                                Background="Transparent" BorderThickness="0" 
+                                VerticalAlignment="Center" Margin="0,-1,8,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" Background="Transparent" />
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                         <Button Command="{Binding ToggleThemeCommand}" ToolTip="Toggle Theme"
                                 FontFamily="Segoe MDL2 Assets" Content="&#xEA80;" FontSize="13" Cursor="Hand"
                                 Foreground="{DynamicResource AppTextBrush}"
@@ -289,7 +300,8 @@
                 <views:AutopotView DataContext="{Binding}" />
             </TabItem>
             <TabItem Header="Autobuff" Padding="20,6">
-                <TabControl Style="{StaticResource SubTabControlStyle}">
+                <TabControl x:Name="AutobuffTabControl" Style="{StaticResource SubTabControlStyle}" 
+                            Loaded="AutobuffTabControl_Loaded" SelectionChanged="AutobuffTabControl_SelectionChanged">
                     <TabItem Style="{StaticResource SubTabItemStyle}" Width="80">
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">

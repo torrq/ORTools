@@ -26,7 +26,7 @@
                                          Style="{StaticResource KeyTextBoxStyle}" 
                                          PreviewKeyDown="TriggerKey_PreviewKeyDown"
                                          HorizontalAlignment="Stretch" Margin="0,0,0,10" Height="22"/>
-                                <Button Content="Reset" Command="{Binding ResetRowCommand}" Style="{StaticResource SecondaryButtonStyle}" Padding="6,2"/>
+                                <Button Content="Reset" Command="{Binding ResetRowCommand}" Style="{StaticResource DangerButtonStyle}" Padding="6,2"/>
                             </StackPanel>
 
                             <!-- Right Side: Centered Labels & Steps -->

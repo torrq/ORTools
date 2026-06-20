@@ -7,7 +7,8 @@
              xmlns:system="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
-             Background="Transparent">
+             Background="Transparent"
+             IsVisibleChanged="UserControl_IsVisibleChanged">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         
@@ -51,7 +52,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Search:" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,8,0"/>
-                <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                <TextBox x:Name="SearchTextBox" Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                          Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AppTextBrush}" 
                          VerticalAlignment="Center" Padding="0,2"/>
             </Grid>
@@ -87,6 +88,29 @@
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
                 </StackPanel>
+                
+                <!-- Empty State Message -->
+                <TextBlock Text="No active buffs. Type in the search box above to find skills and items."
+                           Foreground="{DynamicResource AppMutedBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,40,0,0"
+                           FontSize="14">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding HasActiveSlots}" Value="False" />
+                                        <Condition Binding="{Binding HasSearchResults}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>

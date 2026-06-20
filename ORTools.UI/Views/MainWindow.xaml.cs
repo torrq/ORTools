@@ -136,4 +136,24 @@ public partial class MainWindow : Window
             vm.RefreshProcessListCommand.Execute(null);
         }
     }
+
+    private int _savedAutobuffIndex = 0;
+
+    private void AutobuffTabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        // Only save index if the change comes directly from the TabControl itself (not inner listboxes)
+        // and only if it's currently loaded/visible in the visual tree, to avoid saving -1 or 0 during teardown.
+        if (e.Source == sender && sender is System.Windows.Controls.TabControl tc && tc.IsLoaded && tc.SelectedIndex >= 0)
+        {
+            _savedAutobuffIndex = tc.SelectedIndex;
+        }
+    }
+
+    private void AutobuffTabControl_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.TabControl tc)
+        {
+            tc.SelectedIndex = _savedAutobuffIndex;
+        }
+    }
 }

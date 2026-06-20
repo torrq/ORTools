@@ -183,16 +183,16 @@
                 
                 <!-- MR Links -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock><Hyperlink NavigateUri="https://osro.mr" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">Website</Hyperlink></TextBlock>
-                    <TextBlock Margin="35,0"><Hyperlink NavigateUri="https://wiki.osro.mr" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">Wiki</Hyperlink></TextBlock>
-                    <TextBlock><Hyperlink NavigateUri="https://discord.com/invite/osro2" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">Discord</Hyperlink></TextBlock>
+                    <TextBlock><Hyperlink NavigateUri="https://osro.mr" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">Website</Hyperlink></TextBlock>
+                    <TextBlock Margin="35,0"><Hyperlink NavigateUri="https://wiki.osro.mr" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">Wiki</Hyperlink></TextBlock>
+                    <TextBlock><Hyperlink NavigateUri="https://discord.com/invite/osro2" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">Discord</Hyperlink></TextBlock>
                 </StackPanel>
 
                 <!-- HR Links -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBlock><Hyperlink NavigateUri="https://osro.gg" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">Website</Hyperlink></TextBlock>
-                    <TextBlock Margin="35,0"><Hyperlink NavigateUri="https://wiki.osro.gg" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">Wiki</Hyperlink></TextBlock>
-                    <TextBlock><Hyperlink NavigateUri="https://discord.com/invite/osro" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppPrimaryBrush}" TextDecorations="None">Discord</Hyperlink></TextBlock>
+                    <TextBlock><Hyperlink NavigateUri="https://osro.gg" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">Website</Hyperlink></TextBlock>
+                    <TextBlock Margin="35,0"><Hyperlink NavigateUri="https://wiki.osro.gg" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">Wiki</Hyperlink></TextBlock>
+                    <TextBlock><Hyperlink NavigateUri="https://discord.com/invite/osro" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">Discord</Hyperlink></TextBlock>
                 </StackPanel>
             </Grid>
         </StackPanel>

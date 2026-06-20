@@ -19,4 +19,12 @@ public partial class AutobuffSearchView : UserControl
             InputHelper.HandleKeyInput(tb, e, newKey => vm.Key = newKey);
         }
     }
+
+    private void UserControl_IsVisibleChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+    {
+        if (this.IsVisible)
+        {
+            Dispatcher.BeginInvoke(new System.Action(() => SearchTextBox.Focus()), System.Windows.Threading.DispatcherPriority.Input);
+        }
+    }
 }
