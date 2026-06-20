@@ -32,12 +32,4 @@ public partial class SkillTimerView : UserControl
         e.Handled = !int.TryParse(e.Text, out _);
     }
 
-    private void DelayTextBox_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (sender is TextBox tb && string.IsNullOrWhiteSpace(tb.Text))
-        {
-            tb.Text = "0";
-            tb.CaretIndex = 1;
-        }
-    }
 }

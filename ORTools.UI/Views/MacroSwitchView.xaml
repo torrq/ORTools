@@ -55,7 +55,7 @@
                                             
                                             <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=250}"
                                                      Style="{StaticResource NumericTextBoxStyle}" Height="22"
-                                                     helpers:InputHelper.IsNumericInput="True"
+                                                     helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="100"
                                                      PreviewKeyDown="StepDelay_PreviewKeyDown"
                                                      Margin="0,0,0,6"/>
 

@@ -59,7 +59,7 @@ public partial class AutobuffItemViewModel : ObservableObject
         {
             _isUpdatingFromServer = true;
 
-            Delay = Math.Max(Delay, config.Delay);
+            Delay = config.Delay;
 
             if (ItemGroups.Count == 0)
             {

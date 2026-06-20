@@ -1,4 +1,4 @@
-﻿
+
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace ORTools.Worker
         private int _delay = AppConfig.MacroDefaultDelay;
         public int Delay
         {
-            get => _delay <= 0 ? AppConfig.MacroDefaultDelay : _delay;
+            get => _delay < 0 ? AppConfig.MacroDefaultDelay : _delay;
             set => _delay = value;
         }
 

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
+             xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="700">
 
@@ -50,6 +51,7 @@
                                 <!-- Delay -->
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Delay" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
                                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Delay, Mode=TwoWay, Delay=150}"
+                                         helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="100"
                                          Style="{StaticResource NumericTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
                                          PreviewKeyDown="StepDelay_PreviewKeyDown" />
                                 <TextBlock Grid.Row="2" Grid.Column="2" Text="ms" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,0,0" FontSize="11" />

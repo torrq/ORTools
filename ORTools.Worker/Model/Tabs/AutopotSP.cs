@@ -26,7 +26,7 @@ namespace ORTools.Worker
         private int _delay = AppConfig.AutoPotDefaultDelay;
         public int Delay
         {
-            get => _delay <= 0 ? AppConfig.AutoPotDefaultDelay : _delay;
+            get => _delay < 0 ? AppConfig.AutoPotDefaultDelay : _delay;
             set => _delay = value;
         }
 

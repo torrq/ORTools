@@ -29,15 +29,6 @@ public partial class SkillSpammerView : UserControl
         }
     }
 
-    private void SpammerDelay_TextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (sender is TextBox tb && string.IsNullOrWhiteSpace(tb.Text))
-        {
-            tb.Text = "0";
-            tb.CaretIndex = 1;
-        }
-    }
-
     private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
     {
         Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });

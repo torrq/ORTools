@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using ORTools.Shared;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
 using System;
@@ -60,7 +61,7 @@ public sealed partial class SkillTimerViewModel : ViewModelBase
         _worker = worker;
         _worker.SkillTimerConfigReceived += OnConfigReceived;
 
-        for (int i = 1; i <= 10; i++)
+        for (int i = 1; i <= AppConstants.MaxSkillTimers; i++)
         {
             Slots.Add(new SkillTimerSlotViewModel(i, "None", 1000, 0, false, false, OnSlotChanged));
         }

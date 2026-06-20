@@ -17,7 +17,7 @@ namespace ORTools.Worker
 
         public int Delay
         {
-            get => _delay <= 0 ? AppConfig.AutoBuffItemsDefaultDelay : _delay;
+            get => _delay < 0 ? AppConfig.AutoBuffItemsDefaultDelay : _delay;
             set => _delay = value;
         }
 

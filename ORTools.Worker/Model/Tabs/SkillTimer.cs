@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using ORTools.Shared;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,7 +14,7 @@ namespace ORTools.Worker
     public class SkillTimer : IAction
     {
         #region Constants
-        public const int MAX_SKILL_TIMERS = 10;
+        public const int MAX_SKILL_TIMERS = AppConstants.MaxSkillTimers;
         #endregion
 
         private readonly string ACTION_NAME = "SkillTimer";

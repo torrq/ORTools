@@ -71,7 +71,7 @@ public partial class DebuffsViewModel : ObservableObject
     {
         _isUpdatingFromServer = true;
 
-        Delay = Math.Max(Delay, config.Delay);
+        Delay = config.Delay;
 
         foreach (var item in config.Items)
         {
@@ -114,7 +114,7 @@ public partial class DebuffsViewModel : ObservableObject
     {
         _isUpdatingFromServer = true;
 
-        Delay = Math.Max(Delay, config.Delay);
+        Delay = config.Delay;
 
         // Reset all keys to None first
         foreach (var item in DebuffItems)

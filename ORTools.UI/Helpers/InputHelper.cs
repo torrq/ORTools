@@ -44,16 +44,8 @@ public static class InputHelper
 
     public static void HandleNumericUpDown(TextBox textBox, KeyEventArgs e, int min, int max, int step, Action<int> onValueSet)
     {
-        if (e.Key == Key.Up || e.Key == Key.Down)
-        {
-            e.Handled = true;
-            if (int.TryParse(textBox.Text, out int currentValue))
-            {
-                int newValue = e.Key == Key.Up ? currentValue + step : currentValue - step;
-                newValue = Math.Clamp(newValue, min, max);
-                onValueSet(newValue);
-            }
-        }
+        // Handled entirely by the attached property behavior now (NumericTextBox_PreviewKeyDown).
+        // Emptying this avoids double-execution and removes hardcoded limits in code-behinds.
     }
 
     // ── Attached Properties for Unified Numeric Input ─────────────────────────
@@ -70,8 +62,14 @@ public static class InputHelper
     public static void SetNumericMin(System.Windows.DependencyObject element, int value) => element.SetValue(NumericMinProperty, value);
     public static int GetNumericMin(System.Windows.DependencyObject element) => (int)element.GetValue(NumericMinProperty);
 
+    public static readonly System.Windows.DependencyProperty NumericDefaultProperty =
+        System.Windows.DependencyProperty.RegisterAttached("NumericDefault", typeof(int), typeof(InputHelper), new System.Windows.PropertyMetadata(0));
+
+    public static void SetNumericDefault(System.Windows.DependencyObject element, int value) => element.SetValue(NumericDefaultProperty, value);
+    public static int GetNumericDefault(System.Windows.DependencyObject element) => (int)element.GetValue(NumericDefaultProperty);
+
     public static readonly System.Windows.DependencyProperty NumericMaxProperty =
-        System.Windows.DependencyProperty.RegisterAttached("NumericMax", typeof(int), typeof(InputHelper), new System.Windows.PropertyMetadata(1000000));
+        System.Windows.DependencyProperty.RegisterAttached("NumericMax", typeof(int), typeof(InputHelper), new System.Windows.PropertyMetadata(100000000));
 
     public static void SetNumericMax(System.Windows.DependencyObject element, int value) => element.SetValue(NumericMaxProperty, value);
     public static int GetNumericMax(System.Windows.DependencyObject element) => (int)element.GetValue(NumericMaxProperty);
@@ -91,13 +89,23 @@ public static class InputHelper
                 textBox.PreviewTextInput += NumericTextBox_PreviewTextInput;
                 textBox.TextChanged += NumericTextBox_TextChanged;
                 textBox.PreviewKeyDown += NumericTextBox_PreviewKeyDown;
+                textBox.GotFocus += NumericTextBox_GotFocus;
+                textBox.LostFocus += NumericTextBox_LostFocus;
                 DataObject.AddPastingHandler(textBox, NumericTextBox_Pasting);
+                
+                // Initial formatting if not currently focused
+                if (!textBox.IsFocused)
+                {
+                    FormatWithCommas(textBox);
+                }
             }
             else
             {
                 textBox.PreviewTextInput -= NumericTextBox_PreviewTextInput;
                 textBox.TextChanged -= NumericTextBox_TextChanged;
                 textBox.PreviewKeyDown -= NumericTextBox_PreviewKeyDown;
+                textBox.GotFocus -= NumericTextBox_GotFocus;
+                textBox.LostFocus -= NumericTextBox_LostFocus;
                 DataObject.RemovePastingHandler(textBox, NumericTextBox_Pasting);
             }
         }
@@ -112,19 +120,70 @@ public static class InputHelper
     {
         if (sender is TextBox tb)
         {
-            if (string.IsNullOrWhiteSpace(tb.Text) || tb.Text == "-")
+            string cleanText = tb.Text.Replace(",", "");
+            if (string.IsNullOrWhiteSpace(cleanText) || cleanText == "-")
             {
-                tb.Text = GetNumericMin(tb).ToString();
+                tb.Text = GetNumericDefault(tb).ToString();
                 tb.CaretIndex = tb.Text.Length;
             }
-            else if (int.TryParse(tb.Text, out int val))
+            else if (int.TryParse(cleanText, out int val))
             {
                 int max = GetNumericMax(tb);
                 if (val > max)
                 {
-                    tb.Text = max.ToString();
-                    tb.CaretIndex = tb.Text.Length;
+                    val = max;
                 }
+                
+                if (!tb.IsFocused)
+                {
+                    string formatted = val.ToString("N0");
+                    if (tb.Text != formatted)
+                    {
+                        tb.Text = formatted;
+                    }
+                }
+                else
+                {
+                    string unformatted = val.ToString();
+                    if (tb.Text != unformatted)
+                    {
+                        int caret = tb.CaretIndex;
+                        tb.Text = unformatted;
+                        tb.CaretIndex = caret;
+                    }
+                }
+            }
+        }
+    }
+
+    private static void NumericTextBox_GotFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox tb)
+        {
+            string clean = tb.Text.Replace(",", "");
+            if (tb.Text != clean)
+            {
+                tb.Text = clean;
+            }
+        }
+    }
+
+    private static void NumericTextBox_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox tb)
+        {
+            FormatWithCommas(tb);
+        }
+    }
+
+    private static void FormatWithCommas(TextBox tb)
+    {
+        if (int.TryParse(tb.Text.Replace(",", ""), out int val))
+        {
+            string formatted = val.ToString("N0");
+            if (tb.Text != formatted)
+            {
+                tb.Text = formatted;
             }
         }
     }
@@ -160,6 +219,7 @@ public static class InputHelper
         if (e.DataObject.GetDataPresent(typeof(string)))
         {
             string text = (string)e.DataObject.GetData(typeof(string));
+            text = text.Replace(",", "");
             if (!int.TryParse(text, out _))
             {
                 e.CancelCommand();

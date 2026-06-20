@@ -164,9 +164,8 @@
             <GroupBox Grid.Column="1" Header="Spammer Delay" Foreground="{DynamicResource AppTextBrush}" BorderBrush="{DynamicResource AppBorderBrush}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10,5">
                     <TextBox Text="{Binding SpammerDelay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
-                             helpers:InputHelper.IsNumericInput="True"
+                             helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="50"
                              PreviewKeyDown="SpammerDelay_PreviewKeyDown"
-                             TextChanged="SpammerDelay_TextChanged"
                              Style="{StaticResource NumericTextBoxStyle}" Width="50" />
                     <TextBlock Text="ms" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="{DynamicResource AppTextBrush}"/>
                 </StackPanel>

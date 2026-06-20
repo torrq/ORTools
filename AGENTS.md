@@ -135,6 +135,10 @@ The `WorkerService` runs the `WorkerCore` IPC client on a background thread. Thi
 The application uses `ProfileSingleton` to hold the currently loaded configuration. Historically, `Profile.Load` updated the static `_profile` object incrementally by deserializing JSON sections. If an older profile was loaded that was missing a section (e.g., `UserPreferences`), the deserializer would fall back to the defaults of the *currently running* memory instance, causing data like `ToggleStateKey` to invisibly bleed from the previous profile into the loaded profile.
 **Fix**: Always create a completely fresh instance (`_profile = new Profile(profileName);`) before loading JSON into singletons to guarantee a clean slate that correctly falls back to system defaults.
 
+**8. Worker Model Getters Overriding 0**
+When porting models, watch out for legacy C# getters that intercept `0` values. Many delay configurations previously used `get => _delay <= 0 ? AppConfig.DefaultDelay : _delay;`. If a user intentionally sets a delay to `0` via the UI, this getter will silently override it back to the default when the Worker broadcasts the config back to the UI, causing confusing UI "rubberbanding" back to defaults.
+**Fix**: Always use strict `< 0` checks (`get => _delay < 0 ? AppConfig.DefaultDelay : _delay;`) so that `0` is allowed as a valid user input.
+
 ---
 
 ## The Feature Tabs

@@ -13,7 +13,7 @@ public class AtkDefEquipConfig
     [JsonPropertyName("keySpammerDelay")]
     public int KeySpammerDelay
     {
-        get => _keySpammerDelay <= 0 ? AppConfig.ATKDEFSpammerDefaultDelay : _keySpammerDelay;
+        get => _keySpammerDelay < 0 ? AppConfig.ATKDEFSpammerDefaultDelay : _keySpammerDelay;
         set => _keySpammerDelay = value;
     }
 
@@ -21,7 +21,7 @@ public class AtkDefEquipConfig
     [JsonPropertyName("switchDelay")]
     public int SwitchDelay
     {
-        get => _switchDelay <= 0 ? AppConfig.ATKDEFSwitchDefaultDelay : _switchDelay;
+        get => _switchDelay < 0 ? AppConfig.ATKDEFSwitchDefaultDelay : _switchDelay;
         set => _switchDelay = value;
     }
 

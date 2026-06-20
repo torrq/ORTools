@@ -68,7 +68,7 @@ namespace ORTools.Worker
 
         public int SpammerDelay
         {
-            get => _delay <= 0 ? AppConfig.SkillSpammerDefaultDelay : _delay;
+            get => _delay < 0 ? AppConfig.SkillSpammerDefaultDelay : _delay;
             set => _delay = value;
         }
 

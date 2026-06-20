@@ -12,43 +12,77 @@
         <!-- Header -->
         <Grid Margin="0,0,0,12">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="60"/>
-                <ColumnDefinition Width="60"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="70"/>
-                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="30"/> <!-- Spacing -->
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <!-- Left Header -->
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Right Header -->
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
         </Grid>
 
-        <!-- Slots -->
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Slots}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="0,0,0,8">
+        <!-- Slots Area -->
+        <Grid Grid.Row="1">
+            <!-- Divider -->
+            <Border HorizontalAlignment="Center" Width="1" Background="{DynamicResource AppSubtleBrush}" Opacity="0.2" Margin="0,0,0,10"/>
+
+            <ItemsControl ItemsSource="{Binding Slots}" Margin="0,0,-30,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" HorizontalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,0,30,8">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
 
-                        <CheckBox IsChecked="{Binding Enabled}" 
-                                  HorizontalAlignment="Center" 
+                        <CheckBox IsChecked="{Binding Enabled}"
+                                  HorizontalAlignment="Center"
                                   VerticalAlignment="Center"/>
 
                         <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="KeyTextBox_PreviewKeyDown"
-                                 Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" Width="40" />
+                                 Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" Width="60" />
 
-                        <TextBox Grid.Column="2" Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
-                                 helpers:InputHelper.IsNumericInput="True"
-                                 Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Left" Margin="12,0,0,0" />
+                        <TextBox Grid.Column="2" Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                                 helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="1000"
+                                 Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Center" Width="70" />
 
                         <ComboBox Grid.Column="3" SelectedIndex="{Binding ClickMode}"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -60,12 +94,13 @@
                             <ComboBoxItem Content="Center"/>
                         </ComboBox>
 
-                        <CheckBox Grid.Column="4" IsChecked="{Binding AltKey}" 
-                                  HorizontalAlignment="Center" 
+                        <CheckBox Grid.Column="4" IsChecked="{Binding AltKey}"
+                                  HorizontalAlignment="Center"
                                   VerticalAlignment="Center"/>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        </Grid>
     </Grid>
 </UserControl>

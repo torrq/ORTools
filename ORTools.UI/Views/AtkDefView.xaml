@@ -61,8 +61,8 @@
                                             <ColumnDefinition Width="8"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox Grid.Column="0" Text="{Binding SpammerDelay, UpdateSourceTrigger=PropertyChanged, Delay=250}" Style="{StaticResource NumericTextBoxStyle}" Height="24" FontSize="12" HorizontalAlignment="Stretch" Width="NaN" helpers:InputHelper.IsNumericInput="True" PreviewKeyDown="SpammerDelay_PreviewKeyDown"/>
-                                        <TextBox Grid.Column="2" Text="{Binding SwitchDelay, UpdateSourceTrigger=PropertyChanged, Delay=250}" Style="{StaticResource NumericTextBoxStyle}" Height="24" FontSize="12" HorizontalAlignment="Stretch" Width="NaN" helpers:InputHelper.IsNumericInput="True" PreviewKeyDown="SwitchDelay_PreviewKeyDown"/>
+                                        <TextBox Grid.Column="0" Text="{Binding SpammerDelay, UpdateSourceTrigger=PropertyChanged, Delay=250}" Style="{StaticResource NumericTextBoxStyle}" Height="24" FontSize="12" HorizontalAlignment="Stretch" Width="NaN" helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="100" PreviewKeyDown="SpammerDelay_PreviewKeyDown"/>
+                                        <TextBox Grid.Column="2" Text="{Binding SwitchDelay, UpdateSourceTrigger=PropertyChanged, Delay=250}" Style="{StaticResource NumericTextBoxStyle}" Height="24" FontSize="12" HorizontalAlignment="Stretch" Width="NaN" helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="100" PreviewKeyDown="SwitchDelay_PreviewKeyDown"/>
                                     </Grid>
 
                                     <Button Grid.Row="4" Content="Reset" Command="{Binding ResetCommand}" Style="{StaticResource SecondaryButtonStyle}" Padding="6,4" HorizontalAlignment="Stretch"/>

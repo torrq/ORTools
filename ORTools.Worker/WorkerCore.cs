@@ -404,7 +404,7 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutopotHPSettings(UpdateAutopotHPSettingsCommand cmd)
     {
         var hp = ProfileSingleton.GetCurrent().AutopotHP;
-        hp.Delay = Math.Max(1, cmd.Delay);
+        hp.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
         hp.StopOnCriticalInjury = cmd.StopOnCriticalInjury;
         ProfileSingleton.SetConfiguration(hp);
         await BroadcastAsync(BuildAutopotHPConfig());
@@ -445,7 +445,7 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutopotSPSettings(UpdateAutopotSPSettingsCommand cmd)
     {
         var sp = ProfileSingleton.GetCurrent().AutopotSP;
-        sp.Delay = Math.Max(1, cmd.Delay);
+        sp.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
         ProfileSingleton.SetConfiguration(sp);
         await BroadcastAsync(BuildAutopotSPConfig());
     }
@@ -475,7 +475,7 @@ public sealed class WorkerCore
     public async Task HandleUpdateStatusRecoverySettings(UpdateStatusRecoverySettingsCommand cmd)
     {
         var sr = ProfileSingleton.GetCurrent().StatusRecovery;
-        sr.Delay = Math.Max(1, cmd.Delay);
+        sr.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
         ProfileSingleton.SetConfiguration(sr);
         await BroadcastAsync(BuildStatusRecoveryConfig());
     }
@@ -561,7 +561,7 @@ public sealed class WorkerCore
     public async Task HandleUpdateDebuffRecoverySettings(UpdateDebuffRecoverySettingsCommand cmd)
     {
         var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
-        dr.Delay = Math.Max(1, cmd.Delay);
+        dr.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
         ProfileSingleton.SetConfiguration(dr);
         await BroadcastAsync(BuildDebuffRecoveryConfig());
     }
@@ -602,7 +602,7 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutobuffSkillSettings(UpdateAutobuffSkillSettingsCommand cmd)
     {
         var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
-        abs.Delay = Math.Max(1, cmd.Delay);
+        abs.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
         ProfileSingleton.SetConfiguration(abs);
         await BroadcastAsync(BuildAutobuffSkillConfig());
     }
@@ -659,7 +659,7 @@ public sealed class WorkerCore
     public async Task HandleUpdateAutobuffItemSettings(UpdateAutobuffItemSettingsCommand cmd)
     {
         var abi = ProfileSingleton.GetCurrent().AutobuffItem;
-        abi.Delay = Math.Max(1, cmd.Delay);
+        abi.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
         ProfileSingleton.SetConfiguration(abi);
         await BroadcastAsync(BuildAutobuffItemConfig());
     }

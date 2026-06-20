@@ -63,7 +63,7 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Center">
             <TextBlock Text="Delay (ms):" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
-                     helpers:InputHelper.IsNumericInput="True"
+                     helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="50"
                      Style="{StaticResource NumericTextBoxStyle}" />
 
             <CheckBox IsChecked="{Binding StopOnCriticalInjury}" 

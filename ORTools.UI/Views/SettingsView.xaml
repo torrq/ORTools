@@ -158,6 +158,8 @@
                             <TextBlock Grid.Row="1" Text="Song Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
+                                     helpers:InputHelper.NumericMax="100"
+                                     helpers:InputHelper.NumericMin="1"
                                      PreviewKeyDown="SongRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,6"/>
@@ -165,6 +167,8 @@
                             <TextBlock Grid.Row="2" Text="Macro Switch Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
+                                     helpers:InputHelper.NumericMax="100"
+                                     helpers:InputHelper.NumericMin="1"
                                      PreviewKeyDown="MacroSwitchRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,6"/>
@@ -172,6 +176,8 @@
                             <TextBlock Grid.Row="3" Text="ATK x DEF Rows" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
+                                     helpers:InputHelper.NumericMax="100"
+                                     helpers:InputHelper.NumericMin="1"
                                      PreviewKeyDown="AtkDefRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14" Margin="0,0,0,6"/>
@@ -271,7 +277,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,12" IsEnabled="{Binding DebugMode}">
                                 <TextBlock Text="Debug View Height:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,10,0"/>
-                                <TextBox Text="{Binding DebugViewHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" Style="{StaticResource NumericTextBoxStyle}"/>
+                                <TextBox Text="{Binding DebugViewHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" Style="{StaticResource NumericTextBoxStyle}" helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericMax="1200" helpers:InputHelper.NumericMin="10" />
                             </StackPanel>
                             <CheckBox Content="Allow resizing window" IsChecked="{Binding AllowResizingWindow}" Foreground="{DynamicResource AppTextBrush}"/>
                         </StackPanel>

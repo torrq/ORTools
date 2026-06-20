@@ -59,7 +59,7 @@ public partial class AutobuffSkillViewModel : ObservableObject
         {
             _isUpdatingFromServer = true;
 
-            Delay = Math.Max(Delay, config.Delay);
+            Delay = config.Delay;
 
             if (SkillGroups.Count == 0)
             {
