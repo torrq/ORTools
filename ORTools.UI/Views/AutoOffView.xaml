@@ -18,15 +18,16 @@
 
         <!-- Left Column: Timer Settings -->
         <StackPanel Grid.Column="0">
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif" 
-                       Stretch="None" Margin="0,0,8,0"
-                       Visibility="{Binding IsTimerRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <TextBlock Text="Auto Off Timer" Foreground="{DynamicResource AppMutedBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <Border Background="{DynamicResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,16">
-                <StackPanel>
+            <GroupBox Margin="0,0,0,16" Padding="12">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif" 
+                               Stretch="None" Margin="0,0,8,0"
+                               Visibility="{Binding IsTimerRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBlock Text="Auto Off Timer" FontWeight="SemiBold" />
+                    </StackPanel>
+                </GroupBox.Header>
+                <StackPanel TextElement.FontSize="13">
                     <Grid Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -70,12 +71,10 @@
                         </Button.Style>
                     </Button>
                 </StackPanel>
-            </Border>
+            </GroupBox>
 
-            <TextBlock Text="Overweight Auto Off" Foreground="{DynamicResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
-            
-            <Border Background="{DynamicResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
-                <StackPanel>
+            <GroupBox Header="Overweight Auto Off" Margin="0,0,0,10" Padding="12">
+                <StackPanel TextElement.FontSize="13">
                     <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
                     
                     <StackPanel Orientation="Horizontal" IsEnabled="{Binding AutoOffOverweight}" HorizontalAlignment="Center" RenderTransformOrigin="0.122,0.507">
@@ -103,15 +102,13 @@
                         </RadioButton>
                     </StackPanel>
                 </StackPanel>
-            </Border>
+            </GroupBox>
         </StackPanel>
 
         <!-- Right Column: Actions -->
         <StackPanel Grid.Column="2">
-            <TextBlock Text="Trigger Actions" Foreground="{DynamicResource AppMutedBrush}" FontWeight="SemiBold" Margin="0,0,0,8" />
-            
-            <Border Background="{DynamicResource AppSurfaceBrush}" CornerRadius="6" Padding="12" Margin="0,0,0,10">
-                <StackPanel>
+            <GroupBox Header="Trigger Actions" Margin="0,0,0,10" Padding="12">
+                <StackPanel TextElement.FontSize="13">
                     <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" />
                     
                     <Grid Margin="0,0,0,12">
@@ -151,7 +148,7 @@
                         <CheckBox Grid.Column="2" IsChecked="{Binding AutoOffKillClient}" VerticalAlignment="Center" Cursor="Hand" />
                     </Grid>
                 </StackPanel>
-            </Border>
+            </GroupBox>
         </StackPanel>
     </Grid>
 </UserControl>

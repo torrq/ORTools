@@ -48,9 +48,9 @@ public static class BuffDefinitions
     public static readonly List<Buff> PotionBuffs = new List<Buff>();
     public static readonly Dictionary<int, List<Buff>> ElementBuffs = new Dictionary<int, List<Buff>>();
     public static readonly List<Buff> FoodBuffs = new List<Buff>();
-    public static readonly List<Buff> BoxBuffs = new List<Buff>();
-    public static readonly List<Buff> ScrollBuffs = new List<Buff>();
-    public static readonly List<Buff> EtcBuffs = new List<Buff>();
+    public static readonly Dictionary<int, List<Buff>> BoxBuffs = new Dictionary<int, List<Buff>>();
+    public static readonly Dictionary<int, List<Buff>> ScrollBuffs = new Dictionary<int, List<Buff>>();
+    public static readonly Dictionary<int, List<Buff>> EtcBuffs = new Dictionary<int, List<Buff>>();
     public static readonly List<Buff> FishBuffs = new List<Buff>();
 
     // DEBUFFS
@@ -72,7 +72,7 @@ public static class BuffDefinitions
         InitializeDebuffs();
     }
 
-    private static void InitializeSkillBuffs() { 
+    private static void InitializeSkillBuffs() {
         ArcherBuffs[0] = new List<Buff>
         {
             B("Improve Concentration", "AC_CONCENTRATION", "ac_concentration"),
@@ -283,7 +283,7 @@ public static class BuffDefinitions
         };
      }
 
-    private static void InitializeItemBuffs() { 
+    private static void InitializeItemBuffs() {
         // Clear collections before adding to prevent duplicates
         PotionBuffs.Clear();
         ElementBuffs.Clear();
@@ -317,18 +317,20 @@ public static class BuffDefinitions
 
         ElementBuffs[1] = new List<Buff>
         {
-            B("Fire Elemental Converter", "ENDOW_FIRE", "ele_fire_converter"),
-            B("Wind Elemental Converter", "ENDOW_WIND", "ele_wind_converter"),
-            B("Earth Elemental Converter", "ENDOW_EARTH", "ele_earth_converter"),
+            B("Fire Elemental Converter", "SA_FLAMELAUNCHER", "ele_fire_converter"),
+            B("Wind Elemental Converter", "SA_LIGHTNINGLOADER", "ele_wind_converter"),
+            B("Earth Elemental Converter", "SA_SEISMICWEAPON", "ele_earth_converter"),
             B("Box of Storms / Water Converter", "SA_FROSTWEAPON", "boxofstorms"),
-            B("Cursed Water", "ENDOW_DARK", "cursed_water"),
+            B("Cursed Water", "PROPERTYDARK", "cursed_water"),
+/* HR has no statuses for these (yet)
             B("Fireproof Potion", "RESIST_PROPERTY_FIRE", "fireproof"),
             B("Coldproof Potion", "RESIST_PROPERTY_WATER", "coldproof"),
             B("Thunderproof Potion", "RESIST_PROPERTY_WIND", "thunderproof"),
             B("Earthproof Potion", "RESIST_PROPERTY_GROUND", "earthproof")
+*/
         };
 
-        BoxBuffs.AddRange(new[]
+        BoxBuffs[0] = new List<Buff>
         {
             B("Box of Drowsiness / Tasty W. Ration", "PLUSMAGICPOWER", "drowsiness"),
             B("Box of Resentment / Tasty P. Ration / Chewy Ricecake", "PLUSATTACKPOWER", "resentment"),
@@ -337,7 +339,18 @@ public static class BuffDefinitions
             B("Anodyne", "SM_ENDURE", "anodyne"),
             B("Aloe Vera", "SM_PROVOKE", "aloevera"),
             B("Abrasive", "CRITICALPERCENT", "abrasive"),
-        });
+        };
+
+        BoxBuffs[1] = new List<Buff>
+        {
+            B("Box of Drowsiness", "PLUSMAGICPOWER", "drowsiness"),
+            B("Box of Resentment", "PLUSATTACKPOWER", "resentment"),
+            B("Box of Gloom", "AC_CONCENTRATION", "gloom"),
+            B("Speed Potion", "MOVHASTE_POTION", "speedpotion"),
+            B("Anodyne", "SM_ENDURE", "anodyne"),
+            B("Aloe Vera", "SM_PROVOKE", "aloevera"),
+            B("Abrasive", "CRITICALPERCENT", "abrasive"),
+        };
 
         FoodBuffs.AddRange(new[]
         {
@@ -350,16 +363,24 @@ public static class BuffDefinitions
             B("Glass of Illusion", "GLASS_OF_ILLUSION", "Glass_Of_Illusion")
         });
 
-        ScrollBuffs.AddRange(new[]
+        ScrollBuffs[0] = new List<Buff>
         {
-            B("Increase Agility Scroll", "AL_INCAGI", "al_incagi"),
-            B("Bless Scroll", "AL_BLESSING", "al_blessing"),
+            B("Increase AGI", "AL_INCAGI", "al_incagi"),
+            B("Blessing", "AL_BLESSING", "al_blessing"),
             B("Talisman / Link Scroll", "SOULLINK", "sl_soullinker"),
-            B("Assumptio Scroll", "HP_ASSUMPTIO", "assumptio"),
+            B("Assumptio", "HP_ASSUMPTIO", "assumptio"),
             B("Spray of Flowers / Flee Scroll", "FOOD_BASICAVOIDANCE", "flee_scroll"),
-        });
+        };
 
-        EtcBuffs.AddRange(new[]
+        ScrollBuffs[1] = new List<Buff>
+        {
+            B("Increase AGI / Box of Thunder", "AL_INCAGI", "al_incagi"),
+            B("Blessing", "AL_BLESSING", "al_blessing"),
+            B("Talisman / Link Scroll", "SOULLINK", "sl_soullinker_hr"),
+            B("Assumptio", "HP_ASSUMPTIO", "assumptio"),
+        };
+
+        EtcBuffs[0] = new List<Buff>
         {
             B("VIP Ticket", "VIP_BONUS", "vip_ticket"),
          /*
@@ -369,7 +390,17 @@ public static class BuffDefinitions
             B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
             B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
             B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
-        });
+        };
+
+        EtcBuffs[1] = new List<Buff>
+        {
+            /* not a useable item on HR
+            B("VIP Ticket", "VIP_BONUS", "vip_ticket"),
+            */
+            B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
+            B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
+            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
+        };
 
         FishBuffs.AddRange(new[]
         {
@@ -388,7 +419,7 @@ public static class BuffDefinitions
         });
      }
 
-    private static void InitializeDebuffs() { 
+    private static void InitializeDebuffs() {
         // Clear collection before adding to prevent duplicates
         Debuffs.Clear();
 
@@ -432,7 +463,7 @@ public static class BuffService
     public static Buff? GetBuff(EffectStatusIDs statusId)
     {
         Initialize();
-        
+
         var currentLists = new[]
         {
             ServerList(BuffDefinitions.ArcherBuffs), ServerList(BuffDefinitions.SwordmanBuffs),
@@ -441,8 +472,8 @@ public static class BuffService
             ServerList(BuffDefinitions.NinjaBuffs), ServerList(BuffDefinitions.TaekwonBuffs),
             ServerList(BuffDefinitions.GunslingerBuffs), ServerList(BuffDefinitions.PadawanBuffs),
             BuffDefinitions.PotionBuffs, ServerList(BuffDefinitions.ElementBuffs),
-            BuffDefinitions.FoodBuffs, BuffDefinitions.BoxBuffs,
-            BuffDefinitions.ScrollBuffs, BuffDefinitions.EtcBuffs,
+            BuffDefinitions.FoodBuffs, ServerList(BuffDefinitions.BoxBuffs),
+            ServerList(BuffDefinitions.ScrollBuffs), ServerList(BuffDefinitions.EtcBuffs),
             BuffDefinitions.FishBuffs, BuffDefinitions.Debuffs
         };
         foreach (var list in currentLists)
@@ -489,9 +520,9 @@ public static class BuffService
     public static List<Buff> GetPotionBuffs()  { Initialize(); return new(BuffDefinitions.PotionBuffs); }
     public static List<Buff> GetElementBuffs() { Initialize(); return ServerList(BuffDefinitions.ElementBuffs); }
     public static List<Buff> GetFoodBuffs()    { Initialize(); return new(BuffDefinitions.FoodBuffs); }
-    public static List<Buff> GetBoxBuffs()     { Initialize(); return new(BuffDefinitions.BoxBuffs); }
-    public static List<Buff> GetScrollBuffs()  { Initialize(); return new(BuffDefinitions.ScrollBuffs); }
-    public static List<Buff> GetEtcBuffs()     { Initialize(); return new(BuffDefinitions.EtcBuffs); }
+    public static List<Buff> GetBoxBuffs()     { Initialize(); return ServerList(BuffDefinitions.BoxBuffs); }
+    public static List<Buff> GetScrollBuffs()  { Initialize(); return ServerList(BuffDefinitions.ScrollBuffs); }
+    public static List<Buff> GetEtcBuffs()     { Initialize(); return ServerList(BuffDefinitions.EtcBuffs); }
     public static List<Buff> GetFishBuffs()    { Initialize(); return new(BuffDefinitions.FishBuffs); }
 
     // Debuffs

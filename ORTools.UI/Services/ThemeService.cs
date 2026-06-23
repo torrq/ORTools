@@ -25,6 +25,22 @@ public static class ThemeService
     public static void Initialize()
     {
         SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+
+        try
+        {
+            string configPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config", "config.json");
+            if (System.IO.File.Exists(configPath))
+            {
+                string json = System.IO.File.ReadAllText(configPath);
+                using var doc = System.Text.Json.JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("Theme", out var themeProp) && themeProp.TryGetInt32(out int themeVal))
+                {
+                    _currentMode = (ThemeMode)themeVal;
+                }
+            }
+        }
+        catch { }
+
         ApplyTheme(_currentMode);
     }
 

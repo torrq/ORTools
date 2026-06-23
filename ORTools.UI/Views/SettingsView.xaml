@@ -89,7 +89,7 @@
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8F2;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Profile Behavior" VerticalAlignment="Center"/>
+                                <TextBlock Text="Profile Behavior" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Margin="10">
@@ -102,7 +102,7 @@
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE916;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Auto-Off Options" VerticalAlignment="Center"/>
+                                <TextBlock Text="Auto-Off Options" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Margin="10">
@@ -128,7 +128,7 @@
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7F4;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Interface Layout" VerticalAlignment="Center"/>
+                                <TextBlock Text="Interface Layout" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </GroupBox.Header>
                         <Grid Margin="10">
@@ -193,7 +193,7 @@
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEE40;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="System Tray" VerticalAlignment="Center"/>
+                                <TextBlock Text="System Tray" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Margin="10">
@@ -240,7 +240,7 @@
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE909;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="General Behavior" VerticalAlignment="Center"/>
+                                <TextBlock Text="General Behavior" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Margin="10">
@@ -266,7 +266,7 @@
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEBE8;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Developer Tools" VerticalAlignment="Center"/>
+                                <TextBlock Text="Developer Tools" VerticalAlignment="Center" FontWeight="SemiBold"/>
                             </StackPanel>
                         </GroupBox.Header>
                         <StackPanel Margin="10">

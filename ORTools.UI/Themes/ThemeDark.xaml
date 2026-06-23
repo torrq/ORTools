@@ -6,8 +6,8 @@
         <GradientStop Color="#161E10" Offset="0.0" />
         <GradientStop Color="#2B3D1F" Offset="1.0" />
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#222222" />
-    <SolidColorBrush x:Key="AppPanelBrush" Color="#111111" />
+    <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#111111" />
+    <SolidColorBrush x:Key="AppPanelBrush" Color="#181818" />
     <SolidColorBrush x:Key="AppTextBrush" Color="#E0E0E0" />
     <SolidColorBrush x:Key="AppMutedBrush" Color="#606060" />
     <SolidColorBrush x:Key="AppSubtleBrush" Color="#808080" />

@@ -59,15 +59,33 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string _characterName = "—";
     [ObservableProperty] private string _jobName       = "";
     [ObservableProperty] private string _mapName       = "";
-    [ObservableProperty] private string _infoLine      = "";
+    [ObservableProperty] private string _infoLvLabel1Text = "";
+    [ObservableProperty] private string _infoLvValue1Text = "";
+    [ObservableProperty] private string _infoSeparator1Text = "";
+    [ObservableProperty] private string _infoLvLabel2Text = "";
+    [ObservableProperty] private string _infoLvValue2Text = "";
+    [ObservableProperty] private string _infoSeparator2Text = "";
+    [ObservableProperty] private string _infoExpLabelText = "";
+    [ObservableProperty] private string _infoExpValueText = "";
 
     [ObservableProperty] private double _hpPercent;
     [ObservableProperty] private double _spPercent;
     [ObservableProperty] private double _wtPercent;
 
-    [ObservableProperty] private string _hpText = "HP";
-    [ObservableProperty] private string _spText = "SP";
-    [ObservableProperty] private string _wtText = "Weight";
+    [ObservableProperty] private string _hpCurrentText = "";
+    [ObservableProperty] private string _hpMaxText = "";
+    [ObservableProperty] private string _hpSeparatorText = "";
+
+    [ObservableProperty] private string _spCurrentText = "";
+    [ObservableProperty] private string _spMaxText = "";
+    [ObservableProperty] private string _spSeparatorText = "";
+
+    [ObservableProperty] private string _wtCurrentText = "";
+    [ObservableProperty] private string _wtMaxText = "";
+    [ObservableProperty] private string _wtSeparatorText = "";
+    [ObservableProperty] private string _wtPercentLeftBracketText = "";
+    [ObservableProperty] private string _wtPercentValueText = "";
+    [ObservableProperty] private string _wtPercentRightBracketText = "";
 
     // ── Child ViewModels ──────────────────────────────────────────────────────
     [ObservableProperty]
@@ -119,7 +137,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(WorkerService worker)
     {
         _worker = worker;
-        
+
         AutopotHP = new AutopotHPViewModel(_worker);
         AutopotSP = new AutopotSPViewModel(_worker);
         Debuffs = new DebuffsViewModel(_worker);
@@ -263,13 +281,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         });
 
     private void OnAppState(AppStateUpdate u) =>
-        Post(() => 
+        Post(() =>
         {
             IsApplicationOn = u.IsOn;
             ToggleKey       = u.ToggleKey ?? "None";
             AppTitle        = u.AppTitle ?? "OSRO Tools";
-            AppLogoSource   = u.ServerMode == 1 
-                ? "pack://application:,,,/ORTools;component/Views/ortools-hr.png" 
+            AppLogoSource   = u.ServerMode == 1
+                ? "pack://application:,,,/ORTools;component/Views/ortools-hr.png"
                 : "pack://application:,,,/ORTools;component/Views/ortools-mr.png";
             ORTools.UI.Services.ThemeService.SetServerMode(u.ServerMode);
         });
@@ -297,8 +315,32 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             HpPercent = u.MaxHp > 0 ? (double)u.CurrentHp / u.MaxHp * 100.0 : 0;
             SpPercent = u.MaxSp > 0 ? (double)u.CurrentSp / u.MaxSp * 100.0 : 0;
-            HpText    = $"{u.CurrentHp:N0} / {u.MaxHp:N0}";
-            SpText    = $"{u.CurrentSp:N0} / {u.MaxSp:N0}";
+
+            if (u.MaxHp > 0)
+            {
+                HpCurrentText = $"{u.CurrentHp:N0}";
+                HpSeparatorText = "/";
+                HpMaxText = $"{u.MaxHp:N0}";
+            }
+            else
+            {
+                HpCurrentText = "";
+                HpSeparatorText = "";
+                HpMaxText = "";
+            }
+
+            if (u.MaxSp > 0)
+            {
+                SpCurrentText = $"{u.CurrentSp:N0}";
+                SpSeparatorText = "/";
+                SpMaxText = $"{u.MaxSp:N0}";
+            }
+            else
+            {
+                SpCurrentText = "";
+                SpSeparatorText = "";
+                SpMaxText = "";
+            }
         });
 
     private void OnCharacter(CharacterUpdate u) =>
@@ -308,19 +350,45 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             JobName       = JobList.GetNameById((int)u.JobId);
             MapName       = u.Map;
             WtPercent     = u.WeightMax > 0 ? (double)u.WeightCur / u.WeightMax * 100.0 : 0;
-            WtText        = $"{u.WeightCur} / {u.WeightMax}";
+
+            if (u.WeightMax > 0)
+            {
+                WtCurrentText = $"{u.WeightCur:N0}";
+                WtSeparatorText = "/";
+                WtMaxText = $"{u.WeightMax:N0}";
+                WtPercentLeftBracketText = " (";
+                WtPercentValueText = $"{(int)WtPercent}%";
+                WtPercentRightBracketText = ")";
+            }
+            else
+            {
+                WtCurrentText = "";
+                WtSeparatorText = "";
+                WtMaxText = "";
+                WtPercentLeftBracketText = "";
+                WtPercentValueText = "";
+                WtPercentRightBracketText = "";
+            }
 
             string expPct = u.ExpToLevel > 0
                 ? $"{(double)u.Exp / u.ExpToLevel * 100:0.00}%"
                 : "100%";
-            InfoLine = $"Lv{u.Level} / Lv{u.JobLevel} / Exp {expPct}";
+
+            InfoLvLabel1Text = "Lv";
+            InfoLvValue1Text = $"{u.Level}";
+            InfoSeparator1Text = "/";
+            InfoLvLabel2Text = "Lv";
+            InfoLvValue2Text = $"{u.JobLevel}";
+            InfoSeparator2Text = "/";
+            InfoExpLabelText = "Exp ";
+            InfoExpValueText = expPct;
         });
 
     private void OnProcessList(ProcessListUpdate u) =>
-        Post(() => 
+        Post(() =>
         {
             ProcessList = u.Processes;
-            
+
             if (IsClientConnected && !string.IsNullOrEmpty(ConnectedProcessName))
             {
                 var match = ProcessList.FirstOrDefault(p => p.Id == ConnectedProcessName);
@@ -355,7 +423,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             var timeMatch = Regex.Match(u.Message, @"^\[(\d{2}:\d{2}:\d{2})\]\[(.*?)\] (.*)$");
             string timestamp = timeMatch.Success ? timeMatch.Groups[1].Value : DateTime.Now.ToString("HH:mm:ss");
             string text = timeMatch.Success ? timeMatch.Groups[3].Value : u.Message;
-            
+
             SolidColorBrush defaultColor = u.Level switch
             {
                 "I" => AppColors.Info,
@@ -383,7 +451,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     {
                         item.Segments.Add(new LogTextSegment(parts[0], AppColors.StatusId));
                         item.Segments.Add(new LogTextSegment(":", AppColors.Separator));
-                        
+
                         if (parts[1] == "**UNKNOWN**")
                             item.Segments.Add(new LogTextSegment(parts[1], AppColors.StatusUnknown));
                         else

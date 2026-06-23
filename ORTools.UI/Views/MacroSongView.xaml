@@ -12,7 +12,7 @@
         <ItemsControl ItemsSource="{Binding Rows}" Margin="10,8,10,10">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type vm:MacroSongRowViewModel}">
-                    <Border Background="{DynamicResource AppSurfaceBrush}"
+                    <Border Background="{DynamicResource AppSurfaceAltBrush}"
                             BorderBrush="{DynamicResource AppBorderBrush}"
                             BorderThickness="1"
                             CornerRadius="8"

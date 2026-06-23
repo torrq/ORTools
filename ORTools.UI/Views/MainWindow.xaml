@@ -99,16 +99,26 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <Grid VerticalAlignment="Center">
-                                <TextBlock Text="{Binding CharacterName}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                <TextBlock x:Name="MapNameTextBlock" Text="{Binding MapName}" FontSize="16" Foreground="{DynamicResource AppMapNameBrush}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                            <TextBlock Text="{Binding CharacterName}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Left" />
+                            <Grid Margin="0,1,0,0">
+                                <TextBlock x:Name="JobNameTextBlock" Text="{Binding JobName}"
+                                           FontSize="11" Foreground="{DynamicResource AppSubtleBrush}"
+                                           HorizontalAlignment="Left" />
+                                <TextBlock x:Name="MapNameTextBlock" Text="{Binding MapName}" 
+                                           FontSize="11" FontWeight="Bold" Foreground="{DynamicResource AppMapNameBrush}" 
+                                           HorizontalAlignment="Right" />
                             </Grid>
-                            <TextBlock x:Name="JobNameTextBlock" Text="{Binding JobName}"
-                                       FontSize="11" Foreground="{DynamicResource AppSubtleBrush}"
-                                       Margin="0,1,0,0" HorizontalAlignment="Left" />
-                                <TextBlock Text="{Binding InfoLine}" 
-                                       FontSize="11" Margin="0,3,0,0" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Left" />
-                            </StackPanel>
+                            <TextBlock FontSize="11" Margin="0,3,0,0" HorizontalAlignment="Left">
+                                <Run Text="{Binding InfoLvLabel1Text}" Foreground="{DynamicResource AppSubtleBrush}" />
+                                <Run Text="{Binding InfoLvValue1Text}" Foreground="{DynamicResource AppTextBrush}" />
+                                <Run Text="{Binding InfoSeparator1Text}" Foreground="{DynamicResource AppSubtleBrush}" />
+                                <Run Text="{Binding InfoLvLabel2Text}" Foreground="{DynamicResource AppSubtleBrush}" />
+                                <Run Text="{Binding InfoLvValue2Text}" Foreground="{DynamicResource AppTextBrush}" />
+                                <Run Text="{Binding InfoSeparator2Text}" Foreground="{DynamicResource AppSubtleBrush}" />
+                                <Run Text="{Binding InfoExpLabelText}" Foreground="{DynamicResource AppSubtleBrush}" />
+                                <Run Text="{Binding InfoExpValueText}" Foreground="{DynamicResource AppTextBrush}" />
+                            </TextBlock>
+                        </StackPanel>
 
                         <StackPanel Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="6,0,0,0">
                             <Button x:Name="ToggleApplicationButton" Content="{Binding ToggleButtonText}"
@@ -138,13 +148,11 @@
                          Background="{DynamicResource AppInputBrush}"
                          Foreground="{DynamicResource AppSuccessBrush}" Grid.Column="0" />
                         <TextBlock Grid.Column="1" Text="HP" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Center" Margin="6,0,4,0" TextAlignment="Right" />
-                        <TextBlock x:Name="HpTextBlock" Grid.Column="2"
-                       Text="{Binding HpText}"
-                       FontSize="10"
-                       Foreground="{DynamicResource AppSubtleBrush}"
-                       VerticalAlignment="Center"
-                       Margin="0,0,0,0"
-                       MinWidth="100" />
+                        <TextBlock x:Name="HpTextBlock" Grid.Column="2" FontSize="10" VerticalAlignment="Center" MinWidth="100">
+                            <Run Text="{Binding HpCurrentText}" Foreground="{DynamicResource AppTextBrush}" />
+                            <Run Text="{Binding HpSeparatorText}" Foreground="{DynamicResource AppSubtleBrush}" />
+                            <Run Text="{Binding HpMaxText}" Foreground="{DynamicResource AppTextBrush}" />
+                        </TextBlock>
                     </Grid>
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
@@ -159,13 +167,11 @@
                          Background="{DynamicResource AppInputBrush}"
                          Foreground="{DynamicResource AppInfoBrush}" Grid.Column="0" Margin="0,1,0,1" />
                         <TextBlock Grid.Column="1" Text="SP" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Center" Margin="6,0,4,0" TextAlignment="Right" />
-                        <TextBlock x:Name="SpTextBlock" Grid.Column="2"
-                       Text="{Binding SpText}"
-                       FontSize="10"
-                       Foreground="{DynamicResource AppSubtleBrush}"
-                       VerticalAlignment="Center"
-                       Margin="0,0,0,0"
-                       MinWidth="100" />
+                        <TextBlock x:Name="SpTextBlock" Grid.Column="2" FontSize="10" VerticalAlignment="Center" MinWidth="100">
+                            <Run Text="{Binding SpCurrentText}" Foreground="{DynamicResource AppTextBrush}" />
+                            <Run Text="{Binding SpSeparatorText}" Foreground="{DynamicResource AppSubtleBrush}" />
+                            <Run Text="{Binding SpMaxText}" Foreground="{DynamicResource AppTextBrush}" />
+                        </TextBlock>
                     </Grid>
                     <Grid Margin="0,4,0,0">
                         <Grid.ColumnDefinitions>
@@ -180,13 +186,14 @@
                          Background="{DynamicResource AppInputBrush}"
                          Foreground="{DynamicResource AppWeightBrush}" Grid.Column="0" />
                         <TextBlock Grid.Column="1" Text="WT" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" VerticalAlignment="Bottom" Margin="6,0,4,0" TextAlignment="Right" />
-                        <TextBlock x:Name="WtTextBlock" Grid.Column="2"
-                       Text="{Binding WtText}"
-                       FontSize="10"
-                       Foreground="{DynamicResource AppSubtleBrush}"
-                       VerticalAlignment="Center"
-                       Margin="0,0,0,0"
-                       MinWidth="100" />
+                        <TextBlock x:Name="WtTextBlock" Grid.Column="2" FontSize="10" VerticalAlignment="Center" MinWidth="100">
+                            <Run Text="{Binding WtCurrentText}" Foreground="{DynamicResource AppTextBrush}" />
+                            <Run Text="{Binding WtSeparatorText}" Foreground="{DynamicResource AppSubtleBrush}" />
+                            <Run Text="{Binding WtMaxText}" Foreground="{DynamicResource AppTextBrush}" />
+                            <Run Text="{Binding WtPercentLeftBracketText}" Foreground="{DynamicResource AppSubtleBrush}" />
+                            <Run Text="{Binding WtPercentValueText}" Foreground="{DynamicResource AppTextBrush}" />
+                            <Run Text="{Binding WtPercentRightBracketText}" Foreground="{DynamicResource AppSubtleBrush}" />
+                        </TextBlock>
                     </Grid>
                 </StackPanel>
                 

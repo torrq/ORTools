@@ -180,3 +180,6 @@ The application features the following tabs, implemented as individual WPF views
 | `ORTools.UI/App.xaml` | Application resources and color palette |
 
 
+
+**9. GroupBox Headers with Complex Content**
+When adding a GroupBox with a complex header (e.g., containing icons like Segoe MDL2 Assets inside a StackPanel), WPF property inheritance fails to cleanly isolate font weights. Do not use structural inheritance tricks in App.xaml for this. Instead, explicitly add FontWeight= "SemiBold" only to the text TextBlock within the header, leaving the icon TextBlock at default weight so it doesn't render incorrectly.

@@ -1,11 +1,13 @@
 
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using ORTools.Worker.IPC;
 
 namespace ORTools.Worker
 {
@@ -362,20 +364,21 @@ namespace ORTools.Worker
         {
             try
             {
-                // Try to deserialize as the new format
-                var configData = JsonConvert.DeserializeObject<Dictionary<string, object>>(config);
-                if (configData != null)
+                var jObj = JsonConvert.DeserializeObject<JObject>(config);
+                if (jObj != null)
                 {
                     // Load action name
-                    if (configData.ContainsKey("ActionName") && configData["ActionName"] != null)
+                    var actionNameToken = jObj.GetValue("ActionName", StringComparison.OrdinalIgnoreCase);
+                    if (actionNameToken != null)
                     {
-                        this.ActionName = configData["ActionName"].ToString();
+                        this.ActionName = actionNameToken.ToString();
                     }
 
                     // Load buff mapping
-                    if (configData.ContainsKey("BuffMapping"))
+                    var mappingToken = jObj.GetValue("BuffMapping", StringComparison.OrdinalIgnoreCase);
+                    if (mappingToken != null)
                     {
-                        var mappingData = JsonConvert.DeserializeObject<Dictionary<EffectStatusIDs, Keys>>(configData["BuffMapping"].ToString());
+                        var mappingData = mappingToken.ToObject<Dictionary<EffectStatusIDs, Keys>>();
                         if (mappingData != null)
                         {
                             this.buffMapping = mappingData;
@@ -383,10 +386,12 @@ namespace ORTools.Worker
                     }
 
                     // Load delay
-                    if (configData.ContainsKey("Delay"))
+                    var delayToken = jObj.GetValue("Delay", StringComparison.OrdinalIgnoreCase);
+                    if (delayToken != null)
                     {
-                        if (int.TryParse(configData["Delay"].ToString(), out int delay))
+                        if (int.TryParse(delayToken.ToString(), out int delay))
                         {
+                            if (delay == 50) delay = AppConfig.AutoBuffSkillsDefaultDelay; // Migrate old 50ms default
                             this._delay = delay;
                         }
                     }

@@ -38,8 +38,8 @@
                             <ColumnDefinition Width="38"/>
                         </Grid.ColumnDefinitions>
 
-                        <CheckBox IsChecked="{Binding Enabled}" 
-                                  HorizontalAlignment="Center" 
+                        <CheckBox IsChecked="{Binding Enabled}"
+                                  HorizontalAlignment="Center"
                                   VerticalAlignment="Center">
                         </CheckBox>
 
@@ -51,7 +51,7 @@
                                 VerticalAlignment="Center" Margin="6,0,6,0"
                                 IsSnapToTickEnabled="True" TickFrequency="1" />
 
-                        <TextBox Grid.Column="3" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
+                        <TextBox Grid.Column="3" Text="{Binding Percent, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                  Style="{StaticResource NumericTextBoxStyle}" Width="36" Height="24" FontSize="12"
                                  VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     </Grid>
@@ -62,7 +62,7 @@
         <!-- Settings -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,0" HorizontalAlignment="Center">
             <TextBlock Text="Delay (ms):" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-            <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
+            <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                      helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="50"
                      Style="{StaticResource NumericTextBoxStyle}" />
         </StackPanel>
