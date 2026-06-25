@@ -377,16 +377,7 @@ namespace ORTools.Worker
             this.CurrentOnlineAddress = currentOnlineAddress;
             this.ProcessName = processName;
 
-            if (AppConfig.ServerMode == 1) // HR
-            {
-                this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x470;
-                //DebugLogger.Debug($"StatusBufferAddress set to: 0x{this.StatusBufferAddress:X8} for HR client.");
-            }
-            else // Default to MR (ServerMode == 0)
-            {
-                this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x474;
-                //DebugLogger.Debug($"StatusBufferAddress set to: 0x{this.StatusBufferAddress:X8} for MR client.");
-            }
+            this.StatusBufferAddress = Model.MemoryAddresses.Current.GetStatusBufferAddress(this.CurrentHPBaseAddress);
 
             //CurrentJobAddress = currentJobAddress;
         }
@@ -400,16 +391,7 @@ namespace ORTools.Worker
             this.CurrentJobAddress = Convert.ToInt32(dto.JobAdress, 16);
             this.CurrentOnlineAddress = Convert.ToInt32(dto.OnlineAddress, 16);
 
-            if (AppConfig.ServerMode == 1) // HR
-            {
-                this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x470;
-                //DebugLogger.Debug($"StatusBufferAddress set to: 0x{this.StatusBufferAddress:X8} for HR client.");
-            }
-            else // Default to MR (ServerMode == 0)
-            {
-                this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x474;
-                //DebugLogger.Debug($"StatusBufferAddress set to: 0x{this.StatusBufferAddress:X8} for MR client.");
-            }
+            this.StatusBufferAddress = Model.MemoryAddresses.Current.GetStatusBufferAddress(this.CurrentHPBaseAddress);
         }
 
         public Client(string processName)
@@ -436,14 +418,7 @@ namespace ORTools.Worker
                         this.CurrentJobAddress = dto.JobAddressPointer;
                         this.CurrentOnlineAddress = dto.OnlineAddressPointer;
                         
-                        if (AppConfig.ServerMode == 1) // HR
-                        {
-                            this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x470;
-                        }
-                        else // Default to MR (ServerMode == 0)
-                        {
-                            this.StatusBufferAddress = this.CurrentHPBaseAddress + 0x474;
-                        }
+                        this.StatusBufferAddress = Model.MemoryAddresses.Current.GetStatusBufferAddress(this.CurrentHPBaseAddress);
                     }
                     catch
                     {
@@ -659,7 +634,7 @@ namespace ORTools.Worker
         /// </summary>
         public (uint current, uint max) ReadWeight()
         {
-            int addr = AppConfig.MaxWeightAddress;
+            int addr = Model.MemoryAddresses.Current.MaxWeightAddress;
             if (addr == 0) return (0, 0);
             byte[] bytes = PMR.ReadProcessMemory((IntPtr)addr, 8u, throwOnError: false);
             if (bytes == null || bytes.Length < 8) 
@@ -693,7 +668,7 @@ namespace ORTools.Worker
         public bool IsTextInputActive()
         {
             if (!ConfigGlobal.GetConfig().PauseWhenChatting) return false;
-            int addr = AppConfig.TextInputActiveAddress;
+            int addr = Model.MemoryAddresses.Current.TextInputActiveAddress;
             if (addr == 0) return false;
             byte[] bytes = PMR.ReadProcessMemory((IntPtr)addr, 4u, throwOnError: false);
             return bytes != null && bytes.Length >= 1 && bytes[0] != 0;
@@ -703,7 +678,7 @@ namespace ORTools.Worker
 
         public uint ReadMaxSp()
         {
-            return ReadMemory(this.CurrentHPBaseAddress + 12);
+            return ReadMemory(Model.MemoryAddresses.Current.GetMaxSpAddress(this.CurrentHPBaseAddress));
         }
 
         public uint ReadCurrentJob()
@@ -713,51 +688,27 @@ namespace ORTools.Worker
 
         public uint ReadCurrentExp()
         {
-            switch (AppConfig.ServerMode)
-            {
-                case 1: // HR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 2));
-                default: // MR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + 4);
-            }
+            return ReadMemory(Model.MemoryAddresses.Current.GetExpAddress(this.CurrentJobAddress));
         }
 
         public uint ReadCurrentExpToLevel()
         {
-            switch (AppConfig.ServerMode)
-            {
-                case 1: // HR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 4));
-                default: // MR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 3));
-            }
+            return ReadMemory(Model.MemoryAddresses.Current.GetExpToLevelAddress(this.CurrentJobAddress));
         }
 
         public uint ReadCurrentLevel()
         {
-            switch (AppConfig.ServerMode)
-            {
-                case 1: // HR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 10));
-                default: // MR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 9));
-            }
+            return ReadMemory(Model.MemoryAddresses.Current.GetLevelAddress(this.CurrentJobAddress));
         }
 
         public uint ReadCurrentJobLevel()
         {
-            switch (AppConfig.ServerMode)
-            {
-                case 1: // HR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 12));
-                default: // MR - correct as of 2025-07-05
-                    return ReadMemory(this.CurrentJobAddress + (4 * 11));
-            }
+            return ReadMemory(Model.MemoryAddresses.Current.GetJobLevelAddress(this.CurrentJobAddress));
         }
 
         public uint CurrentBuffStatusCode(int effectStatusIndex)
         {
-            return ReadMemory(this.StatusBufferAddress + (effectStatusIndex * 4));
+            return ReadMemory(Model.MemoryAddresses.Current.GetBuffStatusAddress(this.StatusBufferAddress, effectStatusIndex));
         }
 
         public Client GetClientByProcess(string processName)

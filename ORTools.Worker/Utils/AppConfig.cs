@@ -60,45 +60,10 @@ public static class AppConfig
     public static decimal DefaultMinimumDelay         = 0;
 
     // ── Memory addresses ──────────────────────────────────────────────────────
-    public static int WeightAddress
-    {
-        get { switch (ServerMode) { case 0: return 0xE8BB28; case 1: return 0x10D94B0; default: return 0; } }
-    }
-    public static int MaxWeightAddress
-    {
-        get { switch (ServerMode) { case 0: return 0xE8BB24; case 1: return 0x10D94AC; default: return 0; } }
-    }
-    public static int TextInputActiveAddress
-    {
-        get { switch (ServerMode) { case 0: return 0xCE6B40; case 1: return 0xF33B48; default: return 0; } }
-    }
+
 
     // ── Server configs ────────────────────────────────────────────────────────
-    public static List<dynamic> DefaultServers
-    {
-        get
-        {
-            switch (ServerMode)
-            {
-                case 0:
-                    return new List<dynamic> { new {
-                        name = "OsRO Midrate", description = "OsRO Midrate",
-                        hpAddress = "00E8F434", nameAddress = "00E91C00",
-                        mapAddress = "00E8ABD4", jobAddress = "00E8BA54",
-                        onlineAddress = "00E884B1"
-                    }};
-                case 1:
-                    return new List<dynamic> { new {
-                        name = "OSRO", description = "OsRO Highrate",
-                        hpAddress = "010DCE10", nameAddress = "010DF5D8",
-                        mapAddress = "010D856C", jobAddress = "010D93D8",
-                        onlineAddress = "010A2FB0"
-                    }};
-                default:
-                    throw new InvalidOperationException($"Unsupported ServerMode: {ServerMode}");
-            }
-        }
-    }
+
 
     // ── Cities ────────────────────────────────────────────────────────────────
     public static List<string> DefaultCities => new List<string>

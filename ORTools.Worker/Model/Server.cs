@@ -26,16 +26,27 @@ internal static class Server
         }
     }
 
-    public static List<ClientDTO> GetLocalClients()
-    {
-        try
+        public static List<ClientDTO> GetLocalClients()
         {
-            var clients = new List<ClientDTO>();
-            foreach (var s in AppConfig.DefaultServers)
-                clients.Add(new ClientDTO(s.name, s.description,
-                    s.hpAddress, s.nameAddress, s.mapAddress, s.jobAddress, s.onlineAddress));
-            return clients;
-        }
+            try
+            {
+                var clients = new List<ClientDTO>();
+                var mem = Model.MemoryAddresses.Current;
+                
+                string serverName = AppConfig.IsHighRate ? "OSRO" : "OsRO Midrate";
+                string serverDesc = AppConfig.IsHighRate ? "OsRO Highrate" : "OsRO Midrate";
+                
+                clients.Add(new ClientDTO(
+                    serverName, 
+                    serverDesc,
+                    mem.HPBaseAddress.ToString("X8"), 
+                    mem.NameAddress.ToString("X8"), 
+                    mem.MapAddress.ToString("X8"), 
+                    mem.JobAddress.ToString("X8"), 
+                    mem.OnlineAddress.ToString("X8")
+                ));
+                return clients;
+            }
         catch (Exception ex)
         {
             DebugLogger.Error(ex, "GetLocalClients failed");
