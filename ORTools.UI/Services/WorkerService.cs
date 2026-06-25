@@ -41,6 +41,7 @@ public sealed class WorkerService : IDisposable
     public event Action<AutobuffItemConfigUpdate>? AutobuffItemConfigReceived;
     public event Action<SkillSpammerConfigUpdate>? SkillSpammerConfigReceived;
     public event Action<GlobalConfigUpdate>? GlobalConfigReceived;
+    public event Action<StatusLoggerConfigUpdate>? StatusLoggerConfigReceived;
     public event Action<ProfileSettingsUpdate>? ProfileSettingsReceived;
     public event Action<AutoOffConfigUpdate>? AutoOffConfigReceived;
     public event Action<AutoOffTimerStateUpdate>? AutoOffTimerStateReceived;
@@ -128,6 +129,7 @@ public sealed class WorkerService : IDisposable
             
             case MessageTypes.SkillSpammerConfigUpdate: SkillSpammerConfigReceived?.Invoke((SkillSpammerConfigUpdate)env); break;
             case MessageTypes.GlobalConfigUpdate: GlobalConfigReceived?.Invoke((GlobalConfigUpdate)env); break;
+            case MessageTypes.StatusLoggerConfigUpdate: StatusLoggerConfigReceived?.Invoke((StatusLoggerConfigUpdate)env); break;
             case MessageTypes.ProfileSettingsUpdate: ProfileSettingsReceived?.Invoke((ProfileSettingsUpdate)env); break;
             case MessageTypes.AutoOffConfigUpdate: AutoOffConfigReceived?.Invoke((AutoOffConfigUpdate)env); break;
             case MessageTypes.AutoOffTimerStateUpdate: AutoOffTimerStateReceived?.Invoke((AutoOffTimerStateUpdate)env); break;

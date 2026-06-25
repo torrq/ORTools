@@ -28,7 +28,8 @@ public sealed record CharacterUpdate(
     string Name, string Map,
     uint Level, uint JobLevel, uint JobId,
     uint Exp, uint ExpToLevel,
-    uint WeightCur, uint WeightMax) : IIpcMessage
+    uint WeightCur, uint WeightMax,
+    string ActiveStatuses) : IIpcMessage
 {
     public string Type => MessageTypes.Character;
 }
@@ -166,9 +167,20 @@ public sealed record GlobalConfigUpdate(
     bool ExitWithRo,
     bool AlwaysOnTop,
     bool AllowResizingWindow,
+    bool ShowExpPerHour,
     ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.GlobalConfigUpdate;
+}
+
+public sealed record StatusLoggerConfigUpdate(
+    bool LogToFile, int LogFrequency, string LogFileName,
+    bool LogName, bool LogLevel, bool LogJobLevel, bool LogExp,
+    bool LogHp, bool LogMaxHp, bool LogSp, bool LogMaxSp,
+    bool LogWeight, bool LogMaxWeight, bool LogMap, bool LogStatuses
+) : IIpcMessage
+{
+    public string Type => MessageTypes.StatusLoggerConfigUpdate;
 }
 
 public sealed record ProfileSettingsUpdate(

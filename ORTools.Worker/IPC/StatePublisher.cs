@@ -64,7 +64,7 @@ public sealed class StatePublisher : IDisposable
             }
             catch (Exception ex) { DebugLogger.Debug($"[StatePublisher.HpSp] {ex.Message}"); }
 
-            await Task.Delay(50, ct).ConfigureAwait(false);
+            try { await Task.Delay(50, ct).ConfigureAwait(false); } catch (OperationCanceledException) { break; }
         }
     }
 
@@ -91,18 +91,34 @@ public sealed class StatePublisher : IDisposable
                             ? $"{(double)j.Exp / j.ExpToLevel * 100:0.00}%"
                             : "100%";
 
+                        var statusesBuffer = client.ReadStatusBuffer();
+                        var activeStatusesList = new List<string>();
+                        if (statusesBuffer != null)
+                        {
+                            for (int i = 1; i < statusesBuffer.Length; i++)
+                            {
+                                if (StatusUtils.IsValidStatus(statusesBuffer[i]) && statusesBuffer[i] != 0)
+                                {
+                                    string statusName = Enum.GetName(typeof(EffectStatusIDs), statusesBuffer[i]) ?? $"UNKNOWN{statusesBuffer[i]}";
+                                    activeStatusesList.Add(statusName);
+                                }
+                            }
+                        }
+                        string activeStatusesStr = string.Join(" ", activeStatusesList.Distinct());
+
                         await _broadcastMsg(new CharacterUpdate(
                             Name: name, Map: map,
                             Level: j.Level, JobLevel: j.JobLevel,
                             JobId: j.JobId,
                             Exp: j.Exp, ExpToLevel: j.ExpToLevel,
-                            WeightCur: wCur, WeightMax: wMax));
+                            WeightCur: wCur, WeightMax: wMax,
+                            ActiveStatuses: activeStatusesStr));
                     }
                 }
             }
             catch (Exception ex) { DebugLogger.Debug($"[StatePublisher.Character] {ex.Message}"); }
 
-            await Task.Delay(1000, ct).ConfigureAwait(false);
+            try { await Task.Delay(1000, ct).ConfigureAwait(false); } catch (OperationCanceledException) { break; }
         }
     }
 }

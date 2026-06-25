@@ -56,7 +56,30 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string       _currentProfile = "Default";
 
     // ── Character info ────────────────────────────────────────────────────────
+    private DateTime _sessionStartTime;
+    private long _totalExpGained;
+    private uint _lastExp;
+    private uint _lastLevel;
+    private uint _lastExpToLevel;
+    private string _lastCharName = "";
+    private uint _currentHp;
+    private uint _maxHp;
+    private uint _currentSp;
+    private uint _maxSp;
+
+
+    private string FormatExp(double exp)
+    {
+        if (exp < 0) return "-" + FormatExp(-exp);
+        if (exp >= 1_000_000_000) return (exp / 1_000_000_000D).ToString("#,##0.##") + "B";
+        if (exp >= 1_000_000) return (exp / 1_000_000D).ToString("#,##0.##") + "M";
+        if (exp >= 1_000) return (exp / 1_000D).ToString("#,##0.##") + "K";
+        return exp.ToString("#,##0");
+    }
+
     [ObservableProperty] private string _characterName = "—";
+    [ObservableProperty] private string _infoExpPerHourText = "";
+    [ObservableProperty] private string _infoExpPerHourTooltip = "";
     [ObservableProperty] private string _jobName       = "";
     [ObservableProperty] private string _mapName       = "";
     [ObservableProperty] private string _infoLvLabel1Text = "";
@@ -109,6 +132,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public SkillSpammerViewModel SkillSpammer { get; }
     public SettingsViewModel Settings { get; }
     public ProfilesViewModel Profiles { get; }
+    public StatusLoggerViewModel StatusLogger { get; }
     public MiscViewModel Misc { get; }
     public MacroSwitchViewModel MacroSwitch { get; }
     public MacroSongViewModel MacroSong { get; }
@@ -150,6 +174,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SkillSpammer = new SkillSpammerViewModel(_worker);
         Settings = new SettingsViewModel(worker, AutobuffSkill);
         Profiles = new ProfilesViewModel(worker);
+        StatusLogger = new StatusLoggerViewModel(worker);
         Misc = new MiscViewModel(worker);
         MacroSwitch = new MacroSwitchViewModel(_worker);
         MacroSong = new MacroSongViewModel(_worker);
@@ -233,6 +258,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void ResetExpTracker()
+    {
+        _sessionStartTime = default;
+        _totalExpGained = 0;
+        InfoExpPerHourText = "XP/h: Calc...";
+        InfoExpPerHourTooltip = "Waiting for EXP gain...\nClick to reset";
+    }
+
+    [RelayCommand]
     private void RefreshProcessList()
         => _worker.Send(new RequestProcessListCommand());
 
@@ -313,6 +347,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void OnHpSp(HpSpUpdate u) =>
         Post(() =>
         {
+            _currentHp = u.CurrentHp;
+            _maxHp = u.MaxHp;
+            _currentSp = u.CurrentSp;
+            _maxSp = u.MaxSp;
+
             HpPercent = u.MaxHp > 0 ? (double)u.CurrentHp / u.MaxHp * 100.0 : 0;
             SpPercent = u.MaxSp > 0 ? (double)u.CurrentSp / u.MaxSp * 100.0 : 0;
 
@@ -370,9 +409,75 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 WtPercentRightBracketText = "";
             }
 
+            if (_sessionStartTime == default || _lastCharName != u.Name)
+            {
+                _sessionStartTime = DateTime.Now;
+                _totalExpGained = 0;
+            }
+            else
+            {
+                long diff = 0;
+                if (u.Level == _lastLevel)
+                {
+                    diff = (long)u.Exp - _lastExp;
+                }
+                else if (u.Level > _lastLevel)
+                {
+                    diff = (long)_lastExpToLevel - _lastExp + u.Exp;
+                }
+
+                // Start the clock on the very first EXP gain, so town idle time doesn't ruin the average
+                if (_totalExpGained <= 0 && diff > 0)
+                {
+                    _sessionStartTime = DateTime.Now;
+                }
+
+                _totalExpGained += diff;
+
+                if (_totalExpGained < 0)
+                {
+                    _totalExpGained = 0; // Prevent negative total if they die immediately after login
+                }
+            }
+
+
+
+            _lastExp = u.Exp;
+            _lastLevel = u.Level;
+            _lastExpToLevel = u.ExpToLevel;
+            _lastCharName = u.Name;
+
             string expPct = u.ExpToLevel > 0
                 ? $"{(double)u.Exp / u.ExpToLevel * 100:0.00}%"
                 : "100%";
+
+            if (Settings.ShowExpPerHour)
+            {
+                if (_totalExpGained > 0)
+                {
+                    var timeElapsed = DateTime.Now - _sessionStartTime;
+                    InfoExpPerHourTooltip = $"Logging for: {(int)timeElapsed.TotalHours:00}:{timeElapsed.Minutes:00}:{timeElapsed.Seconds:00}\nClick to reset";
+
+                    if (timeElapsed.TotalMinutes >= 1)
+                    {
+                        double expPerHour = _totalExpGained / timeElapsed.TotalHours;
+                        InfoExpPerHourText = $"XP/h: {FormatExp(expPerHour)}";
+                    }
+                    else
+                    {
+                        InfoExpPerHourText = "XP/h: Calc...";
+                    }
+                }
+                else
+                {
+                    InfoExpPerHourText = "";
+                    InfoExpPerHourTooltip = "Waiting for EXP gain...\nClick to reset";
+                }
+            }
+            else
+            {
+                InfoExpPerHourText = "";
+            }
 
             InfoLvLabel1Text = "Lv";
             InfoLvValue1Text = $"{u.Level}";

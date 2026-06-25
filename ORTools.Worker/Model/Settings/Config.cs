@@ -22,7 +22,29 @@ public class Config
     public bool   ExitWithRo                   { get; set; } = false;
     public bool   AlwaysOnTop                  { get; set; } = false;
     public bool   AllowResizingWindow          { get; set; } = false;
+    public bool   ShowExpPerHour               { get; set; } = false;
     public Shared.Protocol.ThemeMode Theme     { get; set; } = Shared.Protocol.ThemeMode.System;
+    
+    public StatusLoggerConfig StatusLogger { get; set; } = new();
+}
+
+public class StatusLoggerConfig
+{
+    public bool LogToFile { get; set; } = false;
+    public int LogFrequency { get; set; } = 10;
+    
+    public bool LogName { get; set; } = true;
+    public bool LogLevel { get; set; } = true;
+    public bool LogJobLevel { get; set; } = true;
+    public bool LogExp { get; set; } = true;
+    public bool LogHp { get; set; } = true;
+    public bool LogMaxHp { get; set; } = true;
+    public bool LogSp { get; set; } = true;
+    public bool LogMaxSp { get; set; } = true;
+    public bool LogWeight { get; set; } = true;
+    public bool LogMaxWeight { get; set; } = true;
+    public bool LogMap { get; set; } = true;
+    public bool LogStatuses { get; set; } = true;
 }
 
 public static class ConfigGlobal

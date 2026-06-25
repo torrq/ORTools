@@ -21,6 +21,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _exitWithRo;
     [ObservableProperty] private bool _alwaysOnTop;
     [ObservableProperty] private bool _allowResizingWindow;
+    [ObservableProperty] private bool _showExpPerHour;
     [ObservableProperty] private ThemeMode _theme;
 
     public ThemeMode[] ThemeModes => ThemeService.GetAvailableThemes();
@@ -82,6 +83,7 @@ public partial class SettingsViewModel : ObservableObject
             ExitWithRo = update.ExitWithRo;
             AlwaysOnTop = update.AlwaysOnTop;
             AllowResizingWindow = update.AllowResizingWindow;
+            ShowExpPerHour = update.ShowExpPerHour;
             Theme = update.Theme;
             _suppressUpdates = false;
 
@@ -123,6 +125,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnExitWithRoChanged(bool value) => SendGlobalUpdate();
     partial void OnAlwaysOnTopChanged(bool value) => SendGlobalUpdate();
     partial void OnAllowResizingWindowChanged(bool value) => SendGlobalUpdate();
+    partial void OnShowExpPerHourChanged(bool value) => SendGlobalUpdate();
     
     partial void OnThemeChanged(ThemeMode value)
     {
@@ -176,6 +179,7 @@ public partial class SettingsViewModel : ObservableObject
             ExitWithRo: ExitWithRo,
             AlwaysOnTop: AlwaysOnTop,
             AllowResizingWindow: AllowResizingWindow,
+            ShowExpPerHour: ShowExpPerHour,
             Theme: Theme
         );
         _worker.Send(cmd);

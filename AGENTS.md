@@ -179,7 +179,21 @@ The application features the following tabs, implemented as individual WPF views
 | `ORTools.UI/Views/MainWindow.xaml` | Main window layout (WPF) |
 | `ORTools.UI/App.xaml` | Application resources and color palette |
 
-
-
 **9. GroupBox Headers with Complex Content**
 When adding a GroupBox with a complex header (e.g., containing icons like Segoe MDL2 Assets inside a StackPanel), WPF property inheritance fails to cleanly isolate font weights. Do not use structural inheritance tricks in App.xaml for this. Instead, explicitly add FontWeight= "SemiBold" only to the text TextBlock within the header, leaving the icon TextBlock at default weight so it doesn't render incorrectly.
+
+**10. Status Buffer Index Offset (The `SM_ENDURE` Bug)**
+When reading the active statuses from memory (`client.ReadStatusBuffer()`), the value at index `0` of the returned array represents the *count* of active statuses, not a status itself. Therefore, when iterating through the `statusesBuffer`, you **must** start the loop at `i = 1`. 
+*Note: If you start at `i = 0` and the character has exactly 1 active status, the loop will read the value `1`, which inadvertently corresponds to `EffectStatusIDs.SM_ENDURE`.*
+**Fix**: Always use `for (int i = 1; i < statusesBuffer.Length; i++)` or `i < Constants.MAX_BUFF_LIST_INDEX_SIZE`.
+
+---
+
+## How Statuses Work in Memory
+
+Statuses (buffs, debuffs, active skills) are stored in the client's memory as an array of `uint` values. 
+- The size of this block is defined by `Constants.MAX_BUFF_LIST_INDEX_SIZE` (currently 100).
+- `client.ReadStatusBuffer()` reads this block in a single `ReadProcessMemory` call.
+- **Index 0** holds the total count of active statuses.
+- **Indices 1 through N** hold the actual `EffectStatusIDs` of active statuses.
+- Empty or unused slots beyond the active count might contain leftover data or `uint.MaxValue` (`0xFFFFFFFF`), which should be filtered out by checking `StatusUtils.IsValidStatus(statusId)`.

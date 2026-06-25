@@ -29,6 +29,7 @@ public static class AppConfig
     public static string ServersFile   = ConfigFolder + "servers.json";
     public static string CitiesFile    = ConfigFolder + "cities.json";
     public static string DebugLogFile  = "debug.log";
+    public static string ExpLogFile    => IsHighRate ? "osro_tools_hr.log" : "osro_tools_mr.log";
 
     // ── Feature limits ────────────────────────────────────────────────────────
     public const int ATKDEFLanes = 2;

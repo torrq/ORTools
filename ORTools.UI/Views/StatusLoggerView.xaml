@@ -1,0 +1,105 @@
+<UserControl x:Class="ORTools.UI.Views.StatusLoggerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewmodels="clr-namespace:ORTools.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=viewmodels:StatusLoggerViewModel, IsDesignTimeCreatable=False}"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="Foreground" Value="{DynamicResource AppTextBrush}"/>
+        </Style>
+        <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+            <Setter Property="Foreground" Value="{DynamicResource AppTextBrush}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
+        <StackPanel>
+            
+            <GroupBox Header="Status Logger Configuration" Margin="0,0,0,20">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Log your character's stats to a CSV file in real-time." 
+                               Foreground="{DynamicResource AppSubtleBrush}" 
+                               Margin="0,0,0,15" TextWrapping="Wrap"/>
+                               
+                    <Grid Margin="0,0,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <CheckBox Grid.Column="0" 
+                                  Content="Enable CSV Log" 
+                                  IsChecked="{Binding LogToFile}" 
+                                  VerticalAlignment="Center"/>
+                        
+                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                            <TextBlock Text="Interval:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource AppSubtleBrush}"/>
+                            <ComboBox ItemsSource="{Binding LogFrequencies}" 
+                                      SelectedValue="{Binding LogFrequency}" 
+                                      SelectedValuePath="Seconds"
+                                      DisplayMemberPath="Label"
+                                      Background="{DynamicResource AppInputBrush}"
+                                      Foreground="Black"
+                                      BorderBrush="{DynamicResource AppInputBorderBrush}"
+                                      Width="100"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Button Content="Open Current Log File" 
+                            Command="{Binding OpenLogFileCommand}" 
+                            HorizontalAlignment="Left"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Padding="15,5"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Columns" IsEnabled="{Binding LogToFile}">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="150" />
+                        <ColumnDefinition Width="Auto" MinWidth="150" />
+                        <ColumnDefinition Width="Auto" MinWidth="150" />
+                    </Grid.ColumnDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.Column="0" Content="Time" IsChecked="True" IsEnabled="False" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" Content="Character Name" IsChecked="{Binding LogName}" />
+                    <CheckBox Grid.Row="0" Grid.Column="2" Content="Level" IsChecked="{Binding LogLevel}" />
+
+                    <CheckBox Grid.Row="2" Grid.Column="0" Content="Job Level" IsChecked="{Binding LogJobLevel}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" Content="Exp" IsChecked="{Binding LogExp}" />
+                    <CheckBox Grid.Row="2" Grid.Column="2" Content="Map" IsChecked="{Binding LogMap}" />
+
+                    <CheckBox Grid.Row="4" Grid.Column="0" Content="HP" IsChecked="{Binding LogHp}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" Content="Max HP" IsChecked="{Binding LogMaxHp}" />
+                    <CheckBox Grid.Row="4" Grid.Column="2" Content="Statuses" IsChecked="{Binding LogStatuses}" />
+                    
+                    <CheckBox Grid.Row="6" Grid.Column="0" Content="SP" IsChecked="{Binding LogSp}" />
+                    <CheckBox Grid.Row="6" Grid.Column="1" Content="Max SP" IsChecked="{Binding LogMaxSp}" />
+
+                    <CheckBox Grid.Row="8" Grid.Column="0" Content="Weight" IsChecked="{Binding LogWeight}" />
+                    <CheckBox Grid.Row="8" Grid.Column="1" Content="Max Weight" IsChecked="{Binding LogMaxWeight}" />
+
+                </Grid>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

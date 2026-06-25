@@ -143,7 +143,7 @@ namespace ORTools.Worker
                     }
                     else
                     {
-                        for (int i = 0; i <= Constants.MAX_BUFF_LIST_INDEX_SIZE - 1; i++)
+                        for (int i = 1; i <= Constants.MAX_BUFF_LIST_INDEX_SIZE - 1; i++)
                         {
                             uint currentStatus = statusBuffer[i];
 

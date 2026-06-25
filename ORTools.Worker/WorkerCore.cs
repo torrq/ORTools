@@ -124,7 +124,7 @@ public sealed class WorkerCore
         }
         _isOn = true;
         var p = ProfileSingleton.GetCurrent();
-        Thread.Sleep(300);
+        await Task.Delay(300);
         p.AutopotHP.Start(); p.AutopotSP.Start();
         p.SkillTimer.Start(); p.SkillSpammer.Start();
         p.StatusRecovery.Start(); p.AutobuffSkill.Start();
@@ -765,6 +765,7 @@ public sealed class WorkerCore
         config.ExitWithRo = cmd.ExitWithRo;
         config.AlwaysOnTop = cmd.AlwaysOnTop;
         config.AllowResizingWindow = cmd.AllowResizingWindow;
+        config.ShowExpPerHour = cmd.ShowExpPerHour;
         config.Theme = cmd.Theme;
         ConfigGlobal.SaveConfig();
 
@@ -776,6 +777,28 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildMacroSongConfig());
         await BroadcastAsync(BuildMacroSwitchConfig());
         await BroadcastAsync(BuildAtkDefConfig());
+    }
+
+    public Task HandleUpdateStatusLoggerConfig(UpdateStatusLoggerConfigCommand cmd)
+    {
+        var config = ConfigGlobal.GetConfig().StatusLogger;
+        config.LogToFile = cmd.LogToFile;
+        config.LogFrequency = cmd.LogFrequency;
+        config.LogName = cmd.LogName;
+        config.LogLevel = cmd.LogLevel;
+        config.LogJobLevel = cmd.LogJobLevel;
+        config.LogExp = cmd.LogExp;
+        config.LogHp = cmd.LogHp;
+        config.LogMaxHp = cmd.LogMaxHp;
+        config.LogSp = cmd.LogSp;
+        config.LogMaxSp = cmd.LogMaxSp;
+        config.LogWeight = cmd.LogWeight;
+        config.LogMaxWeight = cmd.LogMaxWeight;
+        config.LogMap = cmd.LogMap;
+        config.LogStatuses = cmd.LogStatuses;
+        ConfigGlobal.SaveConfig();
+        _ = BroadcastAsync(BuildStatusLoggerConfigUpdate());
+        return Task.CompletedTask;
     }
 
     public Task HandleUpdateProfileSettings(UpdateProfileSettingsCommand cmd)
@@ -1229,6 +1252,7 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildAutoOffConfig());
         await BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds));
         await BroadcastAsync(BuildGlobalConfigUpdate());
+        await BroadcastAsync(BuildStatusLoggerConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());
         await BroadcastAsync(BuildTransferHelperConfig());
         await BroadcastAsync(BuildMacroSwitchConfig());
@@ -1306,7 +1330,19 @@ public sealed class WorkerCore
             config.ExitWithRo,
             config.AlwaysOnTop,
             config.AllowResizingWindow,
+            config.ShowExpPerHour,
             config.Theme
+        );
+    }
+
+    private StatusLoggerConfigUpdate BuildStatusLoggerConfigUpdate()
+    {
+        var cfg = ConfigGlobal.GetConfig().StatusLogger;
+        return new StatusLoggerConfigUpdate(
+            cfg.LogToFile, cfg.LogFrequency, AppConfig.ExpLogFile,
+            cfg.LogName, cfg.LogLevel, cfg.LogJobLevel, cfg.LogExp,
+            cfg.LogHp, cfg.LogMaxHp, cfg.LogSp, cfg.LogMaxSp,
+            cfg.LogWeight, cfg.LogMaxWeight, cfg.LogMap, cfg.LogStatuses
         );
     }
 

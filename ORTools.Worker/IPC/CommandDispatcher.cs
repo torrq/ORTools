@@ -164,6 +164,11 @@ public sealed class CommandDispatcher
                 if (ugc != null) await _core.HandleUpdateGlobalConfig(ugc);
                 break;
                 
+            case MessageTypes.UpdateStatusLoggerConfig:
+                var uslcc = env as UpdateStatusLoggerConfigCommand;
+                if (uslcc != null) await _core.HandleUpdateStatusLoggerConfig(uslcc);
+                break;
+                
             case MessageTypes.UpdateTransferHelperCommand:
                 var utc = env as UpdateTransferHelperCommand;
                 if (utc != null) await _core.HandleUpdateTransferHelper(utc);

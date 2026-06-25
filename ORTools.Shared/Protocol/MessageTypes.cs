@@ -55,6 +55,8 @@ public static class MessageTypes
     // Auto Off
     public const string UpdateAutoOffSettings = "UpdateAutoOffSettings";
 
+    public const string UpdateStatusLoggerConfig = "UpdateStatusLoggerConfig";
+
     // Worker -> UI (state updates)
     public const string WorkerReady = "WorkerReady";
     public const string AppState = "AppState";
@@ -82,6 +84,7 @@ public static class MessageTypes
     public const string AutobuffOrderConfig = "AutobuffOrderConfig";
     public const string SkillSpammerConfigUpdate = "SkillSpammerConfigUpdate";
     public const string GlobalConfigUpdate = "GlobalConfigUpdate";
+    public const string StatusLoggerConfigUpdate = "StatusLoggerConfigUpdate";
     public const string ProfileSettingsUpdate = "ProfileSettingsUpdate";
     public const string AutoOffConfigUpdate = "AutoOffConfigUpdate";
     public const string TransferHelperConfigUpdate = "TransferHelperConfigUpdate";

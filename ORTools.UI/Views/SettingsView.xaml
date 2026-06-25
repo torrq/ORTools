@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
              xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
+             xmlns:views="clr-namespace:ORTools.UI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance vm:SettingsViewModel}"
@@ -142,6 +143,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
@@ -186,6 +188,8 @@
                             <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                      PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
                                      Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14"/>
+
+                            <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Content="Show Exp/Hr in UI" IsChecked="{Binding ShowExpPerHour}" Foreground="{DynamicResource AppTextBrush}" Margin="0,12,0,0"/>
                         </Grid>
                     </GroupBox>
 
@@ -248,8 +252,21 @@
                             <CheckBox Margin="0,0,0,0" Content="Pause when dead" IsChecked="{Binding PauseWhenDead}" Foreground="{DynamicResource AppTextBrush}"/>
                         </StackPanel>
                     </GroupBox>
+
+
                 </StackPanel>
             </ScrollViewer>
+        </TabItem>
+
+        <!-- Status Logger -->
+        <TabItem Style="{StaticResource SidebarTabItemStyle}">
+            <TabItem.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE81C;" FontSize="16" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Status Logger" FontSize="14" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                </StackPanel>
+            </TabItem.Header>
+            <views:StatusLoggerView DataContext="{Binding DataContext.StatusLogger, RelativeSource={RelativeSource AncestorType=Window}}" Margin="0,15,0,0"/>
         </TabItem>
 
         <!-- Developer -->

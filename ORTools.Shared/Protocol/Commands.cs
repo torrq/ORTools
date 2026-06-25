@@ -207,9 +207,20 @@ public sealed record UpdateGlobalConfigCommand(
     bool ExitWithRo,
     bool AlwaysOnTop,
     bool AllowResizingWindow,
+    bool ShowExpPerHour,
     ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateGlobalConfig;
+}
+
+public sealed record UpdateStatusLoggerConfigCommand(
+    bool LogToFile, int LogFrequency,
+    bool LogName, bool LogLevel, bool LogJobLevel, bool LogExp,
+    bool LogHp, bool LogMaxHp, bool LogSp, bool LogMaxSp,
+    bool LogWeight, bool LogMaxWeight, bool LogMap, bool LogStatuses
+) : IIpcMessage
+{
+    public string Type => MessageTypes.UpdateStatusLoggerConfig;
 }
 
 public sealed record UpdateProfileSettingsCommand(
