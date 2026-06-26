@@ -599,6 +599,11 @@ namespace ORTools.Worker
             return ReadMemoryAsString(this.CurrentNameAddress);
         }
 
+        public byte ReadCharacterSlot()
+        {
+            return (byte)ReadMemory(Model.MemoryAddresses.Current.CharacterSlotAddress);
+        }
+
         public string ReadCurrentMap()
         {
             return ReadMemoryAsString(this.CurrentMapAddress);

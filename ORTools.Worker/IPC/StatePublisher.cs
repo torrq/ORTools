@@ -72,6 +72,8 @@ public sealed class StatePublisher : IDisposable
 
     private async Task CharacterLoop(CancellationToken ct)
     {
+        string lastReportedName = string.Empty;
+
         while (!ct.IsCancellationRequested)
         {
             try
@@ -80,6 +82,14 @@ public sealed class StatePublisher : IDisposable
                 if (client?.Process != null && !client.Process.HasExited && client.IsLoggedIn)
                 {
                     string name = client.ReadCharacterName() ?? "";
+
+                    if (!string.IsNullOrEmpty(name) && name != lastReportedName)
+                    {
+                        lastReportedName = name;
+                        byte slot = client.ReadCharacterSlot();
+                        DebugLogger.Info($"[StatePublisher] Character Loaded: {name} (Slot: {slot + 1})");
+                    }
+
                     string map  = client.ReadCurrentMap()    ?? "";
                     var    job  = client.ReadJobBlock();
                     var (wCur, wMax) = client.ReadWeight();
@@ -114,6 +124,10 @@ public sealed class StatePublisher : IDisposable
                             WeightCur: wCur, WeightMax: wMax,
                             ActiveStatuses: activeStatusesStr));
                     }
+                }
+                else
+                {
+                    lastReportedName = string.Empty;
                 }
             }
             catch (Exception ex) { DebugLogger.Debug($"[StatePublisher.Character] {ex.Message}"); }

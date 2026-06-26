@@ -11,6 +11,7 @@ namespace ORTools.Worker.Model
         public int MapAddress { get; init; }
         public int JobAddress { get; init; }
         public int OnlineAddress { get; init; }
+        public int CharacterSlotAddress { get; init; }
 
         public int WeightAddress { get; init; }
         public int MaxWeightAddress { get; init; }
@@ -32,6 +33,8 @@ namespace ORTools.Worker.Model
             MapAddress = 0x010D856C,
             JobAddress = 0x010D93D8,
             OnlineAddress = 0x010A2FB0,
+            // This reads the 1-byte Character Slot Index (0-indexed). It is located at offset 0x1E from NameAddress.
+            CharacterSlotAddress = 0x010DF5F6,
             WeightAddress = 0x010D94B0,
             MaxWeightAddress = 0x010D94AC,
             TextInputActiveAddress = 0x00F33B48,
@@ -50,6 +53,8 @@ namespace ORTools.Worker.Model
             MapAddress = 0x00E8ABD4,
             JobAddress = 0x00E8BA54,
             OnlineAddress = 0x00E884B1,
+            // This reads the 1-byte Character Slot Index (0-indexed). It is located at offset 0x1E from NameAddress.
+            CharacterSlotAddress = 0x00E91C1E,
             WeightAddress = 0x00E8BB28,
             MaxWeightAddress = 0x00E8BB24,
             TextInputActiveAddress = 0x00CE6B40,
