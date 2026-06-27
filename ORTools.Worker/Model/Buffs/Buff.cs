@@ -47,7 +47,7 @@ public static class BuffDefinitions
     // ITEM buffs
     public static readonly List<Buff> PotionBuffs = new List<Buff>();
     public static readonly Dictionary<int, List<Buff>> ElementBuffs = new Dictionary<int, List<Buff>>();
-    public static readonly List<Buff> FoodBuffs = new List<Buff>();
+    public static readonly Dictionary<int, List<Buff>> FoodBuffs = new Dictionary<int, List<Buff>>();
     public static readonly Dictionary<int, List<Buff>> BoxBuffs = new Dictionary<int, List<Buff>>();
     public static readonly Dictionary<int, List<Buff>> ScrollBuffs = new Dictionary<int, List<Buff>>();
     public static readonly Dictionary<int, List<Buff>> EtcBuffs = new Dictionary<int, List<Buff>>();
@@ -300,8 +300,6 @@ public static class BuffDefinitions
             B("Berserk Potion", "ATTHASTE_POTION3", "berserk_potion")
         });
 
-        ElementBuffs.Clear();
-
         ElementBuffs[0] = new List<Buff>
         {
             B("Fire Elemental Converter", "ENDOW_FIRE", "ele_fire_converter"),
@@ -352,7 +350,7 @@ public static class BuffDefinitions
             B("Abrasive", "CRITICALPERCENT", "abrasive"),
         };
 
-        FoodBuffs.AddRange(new[]
+        FoodBuffs[0] = new List<Buff>
         {
             B("Steamed Tongue (STR+10)", "FOOD_STR", "food_str"),
             B("Steamed Scorpion (AGI+10)", "FOOD_AGI", "food_agi"),
@@ -360,8 +358,17 @@ public static class BuffDefinitions
             B("Dragon Breath Cocktail (INT+10)", "FOOD_INT", "food_int"),
             B("Hwergelmir's Tonic (DEX+10)", "FOOD_DEX", "food_dex"),
             B("Cooked Nine Tail's Tails (LUK+10)", "FOOD_LUK", "food_luk"),
-            B("Glass of Illusion", "GLASS_OF_ILLUSION", "Glass_Of_Illusion")
-        });
+        };
+
+        FoodBuffs[1] = new List<Buff>
+        {
+            B("Steamed Tongue (STR+10)", "FOOD_STR", "food_str"),
+            B("Steamed Scorpion (AGI+10)", "FOOD_AGI", "food_agi"),
+            B("Stew of Immortality (VIT+10)", "FOOD_VIT", "food_vit"),
+            B("Dragon Breath Cocktail (INT+10)", "FOOD_INT", "food_int"),
+            B("Hwergelmir's Tonic (DEX+10)", "FOOD_DEX", "food_dex"),
+            B("Cooked Nine Tail's Tails (LUK+10)", "FOOD_LUK", "food_luk"),
+        };
 
         ScrollBuffs[0] = new List<Buff>
         {
@@ -369,7 +376,8 @@ public static class BuffDefinitions
             B("Blessing", "AL_BLESSING", "al_blessing"),
             B("Talisman / Link Scroll", "SOULLINK", "sl_soullinker"),
             B("Assumptio", "HP_ASSUMPTIO", "assumptio"),
-            B("Spray of Flowers / Flee Scroll", "FOOD_BASICAVOIDANCE", "flee_scroll"),
+            B("Spray of Flowers / Flee Scrol", "FOOD_BASICAVOIDANCE", "flee_scroll"),
+            B("Glass of Illusion", "GLASS_OF_ILLUSION", "Glass_Of_Illusion"),
         };
 
         ScrollBuffs[1] = new List<Buff>
@@ -378,6 +386,11 @@ public static class BuffDefinitions
             B("Blessing", "AL_BLESSING", "al_blessing"),
             B("Talisman / Link Scroll", "SOULLINK", "sl_soullinker_hr"),
             B("Assumptio", "HP_ASSUMPTIO", "assumptio"),
+            B("Glass of Illusion", "GLASS_OF_ILLUSION", "Glass_Of_Illusion"),
+            B("HP Increase Potion (Large)", "HP_INCREASE_POTION_LARGE", "hp_increase_potion_large"),
+            B("Military Ration B", "ACCURACY_SCROLL", "military_ration"),
+            B("Military Ration C", "FOOD_BASICAVOIDANCE", "military_ration"),
+            B("SP Consumption Decrease Potion", "SPELLBREAKER", "sp_consumption_potion")
         };
 
         EtcBuffs[0] = new List<Buff>
@@ -472,7 +485,7 @@ public static class BuffService
             ServerList(BuffDefinitions.NinjaBuffs), ServerList(BuffDefinitions.TaekwonBuffs),
             ServerList(BuffDefinitions.GunslingerBuffs), ServerList(BuffDefinitions.PadawanBuffs),
             BuffDefinitions.PotionBuffs, ServerList(BuffDefinitions.ElementBuffs),
-            BuffDefinitions.FoodBuffs, ServerList(BuffDefinitions.BoxBuffs),
+            ServerList(BuffDefinitions.FoodBuffs), ServerList(BuffDefinitions.BoxBuffs),
             ServerList(BuffDefinitions.ScrollBuffs), ServerList(BuffDefinitions.EtcBuffs),
             BuffDefinitions.FishBuffs, BuffDefinitions.Debuffs
         };
@@ -519,7 +532,7 @@ public static class BuffService
     // Item buffs
     public static List<Buff> GetPotionBuffs()  { Initialize(); return new(BuffDefinitions.PotionBuffs); }
     public static List<Buff> GetElementBuffs() { Initialize(); return ServerList(BuffDefinitions.ElementBuffs); }
-    public static List<Buff> GetFoodBuffs()    { Initialize(); return new(BuffDefinitions.FoodBuffs); }
+    public static List<Buff> GetFoodBuffs()    { Initialize(); return ServerList(BuffDefinitions.FoodBuffs); }
     public static List<Buff> GetBoxBuffs()     { Initialize(); return ServerList(BuffDefinitions.BoxBuffs); }
     public static List<Buff> GetScrollBuffs()  { Initialize(); return ServerList(BuffDefinitions.ScrollBuffs); }
     public static List<Buff> GetEtcBuffs()     { Initialize(); return ServerList(BuffDefinitions.EtcBuffs); }
