@@ -69,71 +69,77 @@ public partial class DebuffsViewModel : ObservableObject
 
     private void OnStatusConfigReceived(StatusRecoveryConfigUpdate config)
     {
-        _isUpdatingFromServer = true;
-
-        Delay = config.Delay;
-
-        foreach (var item in config.Items)
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            var vm = StatusRecoveryItems.FirstOrDefault(x => x.Name == item.Name);
-            if (vm == null)
+            _isUpdatingFromServer = true;
+
+            Delay = config.Delay;
+
+            foreach (var item in config.Items)
             {
-                vm = new StatusRecoveryItemViewModel
+                var vm = StatusRecoveryItems.FirstOrDefault(x => x.Name == item.Name);
+                if (vm == null)
                 {
-                    Name = item.Name,
-                    DisplayName = GetStatusDisplayName(item.Name),
-                    Key = item.Key
-                };
-                vm.OnKeyUpdated += (sender, key) =>
+                    vm = new StatusRecoveryItemViewModel
+                    {
+                        Name = item.Name,
+                        DisplayName = GetStatusDisplayName(item.Name),
+                        Key = item.Key
+                    };
+                    vm.OnKeyUpdated += (sender, key) =>
+                    {
+                        if (!_isUpdatingFromServer && sender is StatusRecoveryItemViewModel itemVm)
+                            _worker.Send(new UpdateStatusRecoveryItemCommand(itemVm.Name, key));
+                    };
+                    StatusRecoveryItems.Add(vm);
+                }
+                else
                 {
-                    if (!_isUpdatingFromServer && sender is StatusRecoveryItemViewModel itemVm)
-                        _worker.Send(new UpdateStatusRecoveryItemCommand(itemVm.Name, key));
-                };
-                StatusRecoveryItems.Add(vm);
+                    vm.Key = item.Key;
+                }
             }
-            else
-            {
-                vm.Key = item.Key;
-            }
-        }
 
-        // Sort items to match requested order: Green Potion, Panacea, Royal Jelly
-        var greenPotion = StatusRecoveryItems.FirstOrDefault(x => x.Name == "GreenPotion");
-        var panacea = StatusRecoveryItems.FirstOrDefault(x => x.Name == "Panacea");
-        var royalJelly = StatusRecoveryItems.FirstOrDefault(x => x.Name == "RoyalJelly");
+            // Sort items to match requested order: Green Potion, Panacea, Royal Jelly
+            var greenPotion = StatusRecoveryItems.FirstOrDefault(x => x.Name == "GreenPotion");
+            var panacea = StatusRecoveryItems.FirstOrDefault(x => x.Name == "Panacea");
+            var royalJelly = StatusRecoveryItems.FirstOrDefault(x => x.Name == "RoyalJelly");
 
-        StatusRecoveryItems.Clear();
-        if (greenPotion != null) StatusRecoveryItems.Add(greenPotion);
-        if (panacea != null) StatusRecoveryItems.Add(panacea);
-        if (royalJelly != null) StatusRecoveryItems.Add(royalJelly);
+            StatusRecoveryItems.Clear();
+            if (greenPotion != null) StatusRecoveryItems.Add(greenPotion);
+            if (panacea != null) StatusRecoveryItems.Add(panacea);
+            if (royalJelly != null) StatusRecoveryItems.Add(royalJelly);
 
-        _isUpdatingFromServer = false;
+            _isUpdatingFromServer = false;
+        });
     }
 
     private void OnDebuffConfigReceived(DebuffRecoveryConfigUpdate config)
     {
-        _isUpdatingFromServer = true;
-
-        Delay = config.Delay;
-
-        // Reset all keys to None first
-        foreach (var item in DebuffItems)
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            item.Key = "None";
-        }
+            _isUpdatingFromServer = true;
 
-        // Apply mapped keys
-        foreach (var item in config.Items)
-        {
-            var vm = DebuffItems.FirstOrDefault(x => x.Name == item.Name);
-            if (vm != null)
+            Delay = config.Delay;
+
+            // Reset all keys to None first
+            foreach (var item in DebuffItems)
             {
-                vm.Key = item.Key;
-                vm.IconName = item.IconName;
+                item.Key = "None";
             }
-        }
 
-        _isUpdatingFromServer = false;
+            // Apply mapped keys
+            foreach (var item in config.Items)
+            {
+                var vm = DebuffItems.FirstOrDefault(x => x.Name == item.Name);
+                if (vm != null)
+                {
+                    vm.Key = item.Key;
+                    vm.IconName = item.IconName;
+                }
+            }
+
+            _isUpdatingFromServer = false;
+        });
     }
 
     partial void OnDelayChanged(int value)

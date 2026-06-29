@@ -19,7 +19,10 @@ public partial class MiscViewModel : ViewModelBase
 
     private void OnTransferConfigUpdate(TransferHelperConfigUpdate update)
     {
-        TransferKey = update.TransferKey;
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
+        {
+            TransferKey = update.TransferKey;
+        });
     }
 
     partial void OnTransferKeyChanged(string value)

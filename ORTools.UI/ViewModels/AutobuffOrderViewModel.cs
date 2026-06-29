@@ -49,22 +49,25 @@ public partial class AutobuffOrderViewModel : ObservableObject
 
     private void OnConfigReceived(AutobuffOrderConfigUpdate config)
     {
-        _isUpdatingFromServer = true;
-
-        ActiveItems.Clear();
-        foreach (var itemData in config.Items)
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            ActiveItems.Add(new AutobuffOrderItemViewModel
-            {
-                Name = itemData.Name,
-                DisplayName = itemData.DisplayName,
-                Key = itemData.Key,
-                ItemType = itemData.ItemType,
-                IconName = itemData.IconName
-            });
-        }
+            _isUpdatingFromServer = true;
 
-        _isUpdatingFromServer = false;
+            ActiveItems.Clear();
+            foreach (var itemData in config.Items)
+            {
+                ActiveItems.Add(new AutobuffOrderItemViewModel
+                {
+                    Name = itemData.Name,
+                    DisplayName = itemData.DisplayName,
+                    Key = itemData.Key,
+                    ItemType = itemData.ItemType,
+                    IconName = itemData.IconName
+                });
+            }
+
+            _isUpdatingFromServer = false;
+        });
     }
 
     [RelayCommand]

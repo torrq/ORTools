@@ -67,6 +67,7 @@ public static class ClientInput
 
     public static bool IsKeyPressed(Keys key)
     {
+        if (key == Keys.None) return false;
         return Win32Interop.IsKeyPressed(key);
     }
 

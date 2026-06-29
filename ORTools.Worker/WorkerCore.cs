@@ -1403,6 +1403,7 @@ public sealed class WorkerCore
         }
         else
         {
+            KeyboardHook.ClearKeyDowns();
             KeyboardHook.KeyDown = null;
             DebugLogger.Debug($"[WorkerCore] Toggle hotkey cleared (key='{prefs?.ToggleStateKey}')");
         }
