@@ -227,7 +227,8 @@ public sealed record UpdateProfileSettingsCommand(
     bool StopBuffsCity,
     bool SoundEnabled,
     bool StartAutoOffTimerOnEnable,
-    bool ClearAutoOffTimerOnDisable) : IIpcMessage
+    bool ClearAutoOffTimerOnDisable,
+    bool KeepDeadClientInfo) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateProfileSettings;
 }

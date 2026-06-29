@@ -31,6 +31,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _soundEnabled;
     [ObservableProperty] private bool _clearAutoOffTimerOnDisable;
     [ObservableProperty] private bool _startAutoOffTimerOnEnable;
+    [ObservableProperty] private bool _keepDeadClientInfo;
 
     // Placeholders for Global Settings
     [ObservableProperty] private int _songRows = 4;
@@ -100,6 +101,7 @@ public partial class SettingsViewModel : ObservableObject
             SoundEnabled = update.SoundEnabled;
             StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
             ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
+            KeepDeadClientInfo = update.KeepDeadClientInfo;
             _suppressUpdates = false;
         });
     }
@@ -157,6 +159,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnSoundEnabledChanged(bool value) => SendProfileUpdate();
     partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendProfileUpdate();
     partial void OnClearAutoOffTimerOnDisableChanged(bool value) => SendProfileUpdate();
+    partial void OnKeepDeadClientInfoChanged(bool value) => SendProfileUpdate();
 
     private void SendGlobalUpdate()
     {
@@ -193,7 +196,8 @@ public partial class SettingsViewModel : ObservableObject
             StopBuffsCity: StopBuffsCity,
             SoundEnabled: SoundEnabled,
             StartAutoOffTimerOnEnable: StartAutoOffTimerOnEnable,
-            ClearAutoOffTimerOnDisable: ClearAutoOffTimerOnDisable
+            ClearAutoOffTimerOnDisable: ClearAutoOffTimerOnDisable,
+            KeepDeadClientInfo: KeepDeadClientInfo
         );
         _worker.Send(cmd);
     }

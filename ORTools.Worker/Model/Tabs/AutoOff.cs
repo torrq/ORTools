@@ -1,6 +1,8 @@
-﻿
+
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ORTools.Worker
@@ -31,6 +33,7 @@ namespace ORTools.Worker
         private int remainingSeconds;
         private bool isTimerRunning;
         private bool isInitializing;
+        private CancellationTokenSource? _overweightMonitorCts;
         #endregion
 
         #region Public Properties
@@ -114,6 +117,63 @@ namespace ORTools.Worker
             remainingSeconds = 0;
 
             TimerStopped?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning));
+        }
+
+        public void StartOverweightMonitor()
+        {
+            StopOverweightMonitor();
+            _overweightMonitorCts = new CancellationTokenSource();
+            _ = Task.Run(() => OverweightMonitorLoop(_overweightMonitorCts.Token), _overweightMonitorCts.Token);
+        }
+
+        public void StopOverweightMonitor()
+        {
+            _overweightMonitorCts?.Cancel();
+            _overweightMonitorCts?.Dispose();
+            _overweightMonitorCts = null;
+        }
+
+        private async Task OverweightMonitorLoop(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+                    if (prefs.AutoOffOverweight)
+                    {
+                        var client = ClientSingleton.GetClient();
+                        if (client?.Process != null && !client.Process.HasExited && client.IsLoggedIn)
+                        {
+                            var statusBuffer = client.ReadStatusBuffer();
+                            if (statusBuffer != null)
+                            {
+                                for (int i = 1; i < Constants.MAX_BUFF_LIST_INDEX_SIZE; i++)
+                                {
+                                    uint val = statusBuffer[i];
+                                    if (val == uint.MaxValue) continue;
+                                    EffectStatusIDs status = (EffectStatusIDs)val;
+
+                                    bool shouldAutoOff =
+                                        (prefs.AutoOffOverweightMode == ConfigProfile.OverweightAutoOffMode.Weight50 && status == EffectStatusIDs.WEIGHT50) ||
+                                        (prefs.AutoOffOverweightMode == ConfigProfile.OverweightAutoOffMode.Weight90 && status == EffectStatusIDs.WEIGHT90);
+
+                                    if (shouldAutoOff)
+                                    {
+                                        DebugLogger.Info($"Overweight {(int)prefs.AutoOffOverweightMode}%, disable now");
+                                        WorkerNotifier.RequestTurnOff("AutoOff_Overweight");
+                                        WeightLimitMacro.SendOverweightMacro();
+                                        return; // Stop monitoring after triggering
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex) { DebugLogger.Debug($"[AutoOff] OverweightMonitor exception: {ex.Message}"); }
+
+                try { await Task.Delay(1000, ct); } catch (OperationCanceledException) { break; }
+            }
         }
 
         public void LoadFromProfile()

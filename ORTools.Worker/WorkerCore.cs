@@ -19,6 +19,7 @@ public sealed class WorkerCore
     {
         ConfigGlobal.Initialize();
         Server.Initialize();
+        ClientListSingleton.StartCleanupMonitor();
 
         // Load server configs into ClientListSingleton
         foreach (var dto in Server.GetLocalClients())
@@ -43,6 +44,18 @@ public sealed class WorkerCore
         }
         
         HookSkillSpammerEvents();
+
+        ClientListSingleton.OnClientRemoved += (removedClient) =>
+        {
+            if (ClientSingleton.GetClient() == removedClient)
+            {
+                if (_isOn)
+                {
+                    DebugLogger.Debug("Client process closed. Automation disabled.");
+                }
+                _ = HandleDisconnectClient();
+            }
+        };
 
         _autoOff = new AutoOff();
         _autoOff.TimerStarted += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.SelectedMinutes, e.RemainingSeconds));
@@ -118,25 +131,23 @@ public sealed class WorkerCore
 
     public async Task HandleTurnOn()
     {
-        if (ClientSingleton.GetClient() == null)
+        var client = ClientSingleton.GetClient();
+        if (client == null || client.Process == null || client.Process.HasExited)
         {
-            await BroadcastAsync(new ErrorUpdate("No client connected.")); return;
+            await BroadcastAsync(new ErrorUpdate("Client is disconnected or has exited.")); return;
         }
         _isOn = true;
         var p = ProfileSingleton.GetCurrent();
         await Task.Delay(300);
-        p.AutopotHP.Start(); p.AutopotSP.Start();
-        p.SkillTimer.Start(); p.SkillSpammer.Start();
-        p.StatusRecovery.Start(); p.AutobuffSkill.Start();
-        p.AutobuffItem.Start(); p.DebuffsRecovery.Start();
-        p.MacroSwitch.Start(); p.SongMacro.Start();
-        p.TransferHelper.Start(); p.ATKDEFMode.Start();
+        p.StartAll();
         
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
         if (prefs.StartAutoOffTimerOnEnable && !_autoOff.IsTimerRunning)
         {
             _autoOff.StartTimer();
         }
+        
+        _autoOff.StartOverweightMonitor();
         
         try
         {
@@ -160,18 +171,15 @@ public sealed class WorkerCore
         if (!_isOn) return;
         _isOn = false;
         var p = ProfileSingleton.GetCurrent();
-        p.AutopotHP.Stop(); p.AutopotSP.Stop();
-        p.SkillTimer.Stop(); p.SkillSpammer.Stop();
-        p.StatusRecovery.Stop(); p.AutobuffSkill.Stop();
-        p.AutobuffItem.Stop(); p.DebuffsRecovery.Stop();
-        p.MacroSwitch.Stop(); p.SongMacro.Stop();
-        p.TransferHelper.Stop(); p.ATKDEFMode.Stop();
+        p.StopAll();
         
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
         if (prefs.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
         {
             _autoOff.StopTimer();
         }
+        
+        _autoOff.StopOverweightMonitor();
         
         try
         {
@@ -190,6 +198,7 @@ public sealed class WorkerCore
         }
     }
 
+
     public async Task HandleUpdateToggleKey(string keyStr)
     {
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
@@ -206,56 +215,10 @@ public sealed class WorkerCore
 
     public async Task HandleRequestProcessList()
     {
-        await BroadcastAsync(new ProcessListUpdate(ListLocalProcesses()));
+        await BroadcastAsync(new ProcessListUpdate(Utils.ProcessManager.GetActiveProcesses()));
     }
 
-    private List<ProcessEntry> ListLocalProcesses()
-    {
-        var result = new List<ProcessEntry>();
-        foreach (var server in Server.GetLocalClients())
-        {
-            try
-            {
-                var processes = System.Diagnostics.Process.GetProcessesByName(server.Name);
-                foreach (var p in processes)
-                {
-                    string id = $"{p.ProcessName}.exe - {p.Id}";
-                    string displayName = $"Client [{p.Id}]"; // Prettified default
-                    try
-                    {
-                        using var tempClient = new Client(id);
-                        tempClient.RefreshLoginStatus();
-                        if (tempClient.IsLoggedIn)
-                        {
-                            string name = tempClient.ReadCharacterName();
-                            string map = tempClient.ReadCurrentMap();
-                            
-                            if (!string.IsNullOrWhiteSpace(name))
-                            {
-                                displayName = string.IsNullOrWhiteSpace(map) ? name : $"{name} @ {map}";
-                            }
-                            else
-                            {
-                                displayName = "Loading Character...";
-                            }
-                        }
-                        else
-                        {
-                            displayName = "Login / Select Screen";
-                        }
-                    }
-                    catch { }
 
-                    result.Add(new ProcessEntry(id, displayName));
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.Warning($"Failed to get processes for {server.Name}: {ex.Message}");
-            }
-        }
-        return result;
-    }
 
     // ── Profile ───────────────────────────────────────────────────────────────
 
@@ -274,6 +237,7 @@ public sealed class WorkerCore
             }
 
             ClientSingleton.SetClient(client);
+            ClientListSingleton.AddClient(client);
             await BroadcastAsync(new ClientStateUpdate(Connected: true, ProcessName: processName));
             DebugLogger.Info($"[WorkerCore] Client connected: {processName}");
         }
@@ -283,7 +247,10 @@ public sealed class WorkerCore
     public async Task HandleDisconnectClient()
     {
         if (_isOn) await HandleTurnOff();
+        var client = ClientSingleton.GetClient();
+        if (client != null) ClientListSingleton.RemoveClient(client);
         ClientSingleton.SetClient(null);
+        _statePublisher.ClearCache();
         await BroadcastAsync(new ClientStateUpdate(Connected: false, ProcessName: null));
         DebugLogger.Info("[WorkerCore] Client disconnected");
     }
@@ -808,6 +775,7 @@ public sealed class WorkerCore
         prefs.SoundEnabled = cmd.SoundEnabled;
         prefs.StartAutoOffTimerOnEnable = cmd.StartAutoOffTimerOnEnable;
         prefs.ClearAutoOffTimerOnDisable = cmd.ClearAutoOffTimerOnDisable;
+        prefs.KeepDeadClientInfo = cmd.KeepDeadClientInfo;
         ProfileSingleton.SetConfiguration(prefs);
         return Task.CompletedTask;
     }
@@ -1234,7 +1202,7 @@ public sealed class WorkerCore
             Connected: client != null,
             ProcessName: client != null ? _GetConnectedProcessName() : null));
         await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
-        await BroadcastAsync(new ProcessListUpdate(ListLocalProcesses()));
+        await BroadcastAsync(new ProcessListUpdate(ORTools.Worker.Utils.ProcessManager.GetActiveProcesses()));
         await PushAllConfigs();
     }
 
@@ -1353,7 +1321,8 @@ public sealed class WorkerCore
             prefs.StopBuffsCity,
             prefs.SoundEnabled,
             prefs.StartAutoOffTimerOnEnable,
-            prefs.ClearAutoOffTimerOnDisable
+            prefs.ClearAutoOffTimerOnDisable,
+            prefs.KeepDeadClientInfo
         );
     }
 

@@ -46,6 +46,12 @@ public sealed class StatePublisher : IDisposable
         _cts = null;
     }
 
+    public void ClearCache()
+    {
+        _lastHpSp = null;
+        _lastCharacter = null;
+    }
+
     public void Dispose() => Stop();
 
     // ── HP/SP loop — 50ms ─────────────────────────────────────────────────────

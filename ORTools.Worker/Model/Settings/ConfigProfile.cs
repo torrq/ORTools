@@ -22,6 +22,7 @@ public class ConfigProfile : IAction
     public Keys                 Ammo1Key               { get; set; }
     public Keys                 Ammo2Key               { get; set; }
     public int                  AutoOffTime            { get; set; } = 1;
+    public bool                 KeepDeadClientInfo         { get; set; } = false;
 
     public void   Start() { }
     public void   Stop()  { }

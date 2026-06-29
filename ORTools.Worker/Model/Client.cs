@@ -69,10 +69,42 @@ namespace ORTools.Worker
             return Clients;
         }
 
+        private static CancellationTokenSource? _cleanupCts;
+
+        public static void StartCleanupMonitor()
+        {
+            if (_cleanupCts != null) return;
+            _cleanupCts = new CancellationTokenSource();
+            Task.Run(async () =>
+            {
+                while (!_cleanupCts.Token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        RemoveDeadClients();
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugLogger.Debug($"[CleanupMonitor] error: {ex.Message}");
+                    }
+                    await Task.Delay(5000, _cleanupCts.Token);
+                }
+            }, _cleanupCts.Token);
+        }
+
+        public static void StopCleanupMonitor()
+        {
+            _cleanupCts?.Cancel();
+            _cleanupCts?.Dispose();
+            _cleanupCts = null;
+        }
+
+        public static event Action<Client>? OnClientRemoved;
+
         /// <summary>
         /// Removes clients whose processes have actually exited (not just having memory read issues).
         /// </summary>
-        public static void RemoveDeadClients()
+        private static void RemoveDeadClients()
         {
             var deadClients = new List<Client>();
 
@@ -103,19 +135,11 @@ namespace ORTools.Worker
 
             foreach (var deadClient in deadClients)
             {
-                DebugLogger.Debug($"Removing truly dead client: {deadClient.ProcessName}");
+                DebugLogger.Debug($"Removing dead client: {deadClient.ProcessName}");
                 Clients.Remove(deadClient);
+                OnClientRemoved?.Invoke(deadClient);
                 deadClient.Dispose();
             }
-        }
-
-        /// <summary>
-        /// Forces cleanup of dead clients immediately.
-        /// </summary>
-        public static void ForceCleanup()
-        {
-            RemoveDeadClients();
-            _lastCleanup = DateTime.Now;
         }
 
         public static bool ExistsByProcessName(string processName)
@@ -207,6 +231,8 @@ namespace ORTools.Worker
         public int CurrentJobAddress { get; set; }
         public int CurrentOnlineAddress { get; set; }
         private int StatusBufferAddress { get; set; }
+
+        private readonly MapCache _mapCache = new();
 
         // Caching for login status
         private bool? _cachedLoginStatus = null;
@@ -304,10 +330,14 @@ namespace ORTools.Worker
             }
         }
 
+        private bool _forceOffline = false;
+
         public bool IsLoggedIn
         {
             get
             {
+                if (_forceOffline) return false;
+
                 if (Process == null || Process.HasExited)
                 {
                     DebugLogger.Debug($"IsLoggedIn: Process is null or has exited for {ProcessName}.");
@@ -330,6 +360,11 @@ namespace ORTools.Worker
                 _lastLoginStatusCheck = DateTime.Now;
 
                 return loginStatus;
+            }
+            set
+            {
+                if (value == false) _forceOffline = true;
+                else _forceOffline = false;
             }
         }
 
@@ -616,19 +651,9 @@ namespace ORTools.Worker
 
         // Shared 1-second map cache — all macro threads call this instead of ReadCurrentMap()
         // so at most one RPM read per second regardless of how many macros are running.
-        private volatile string _cachedMap = string.Empty;
-        private long _mapCacheTicks = 0;
-        private const long MAP_CACHE_TICKS = 10_000_000; // 1s in ticks
-
         public string ReadCurrentMapCached()
         {
-            long now = DateTime.UtcNow.Ticks;
-            if (now - System.Threading.Interlocked.Read(ref _mapCacheTicks) > MAP_CACHE_TICKS)
-            {
-                _cachedMap = ReadCurrentMap() ?? string.Empty;
-                System.Threading.Interlocked.Exchange(ref _mapCacheTicks, now);
-            }
-            return _cachedMap;
+            return _mapCache.GetCachedMap(ReadCurrentMap);
         }
 
         /// <summary>
@@ -734,15 +759,19 @@ namespace ORTools.Worker
             return null;
         }
 
+        public bool Matches(ClientDTO dto)
+        {
+            if (dto == null) return false;
+            return ProcessName == dto.Name &&
+                   CurrentHPBaseAddress == dto.HPAddressPointer &&
+                   CurrentNameAddress == dto.NameAddressPointer &&
+                   CurrentJobAddress == dto.JobAddressPointer &&
+                   CurrentOnlineAddress == dto.OnlineAddressPointer;
+        }
+
         public static Client FromDTO(ClientDTO dto)
         {
-            return ClientListSingleton.GetAll()
-                .Where(c => c.ProcessName == dto.Name)
-                .Where(c => c.CurrentHPBaseAddress == dto.HPAddressPointer)
-                .Where(c => c.CurrentNameAddress == dto.NameAddressPointer)
-                .Where(c => c.CurrentJobAddress == dto.JobAddressPointer)
-                .Where(c => c.CurrentOnlineAddress == dto.OnlineAddressPointer)
-                .FirstOrDefault();
+            return ClientListSingleton.GetAll().FirstOrDefault(c => c.Matches(dto));
         }
 
 

@@ -134,8 +134,6 @@ namespace ORTools.Worker
                                     EffectStatusIDs status = (EffectStatusIDs)currentStatusValue;
                                     currentBuffs.Add(status);
 
-                                    HandleOverweightStatus(c, status);
-
                                     if (status == EffectStatusIDs.WS_OVERTHRUSTMAX && buffsToApply.ContainsKey(EffectStatusIDs.BS_OVERTHRUST))
                                     {
                                         buffsToApply.TryRemove(EffectStatusIDs.BS_OVERTHRUST, out var _);
@@ -239,30 +237,6 @@ namespace ORTools.Worker
             return autobuffItemThread;
         }
 
-        private void HandleOverweightStatus(Client c, EffectStatusIDs status)
-        {
-            try
-            {
-                ConfigProfile prefs = ProfileSingleton.GetCurrent().UserPreferences;
-                if (!prefs.AutoOffOverweight)
-                    return;
-
-                bool shouldAutoOff =
-                    (prefs.AutoOffOverweightMode == ConfigProfile.OverweightAutoOffMode.Weight50 && status == EffectStatusIDs.WEIGHT50) ||
-                    (prefs.AutoOffOverweightMode == ConfigProfile.OverweightAutoOffMode.Weight90 && status == EffectStatusIDs.WEIGHT90);
-
-                if (shouldAutoOff)
-                {
-                    DebugLogger.Info($"Overweight {(int)prefs.AutoOffOverweightMode}%, disable now");
-                    WorkerNotifier.RequestTurnOff("AutobuffSkill_Overweight");
-                    WeightLimitMacro.SendOverweightMacro();
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.Debug($"AutoBuffSkill: Error handling overweight status: {ex.Message}");
-            }
-        }
 
         private bool ShouldSkipBuffDueToQuag(bool foundQuag, EffectStatusIDs buffKey)
         {

@@ -20,7 +20,13 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20">
         <StackPanel>
             
-            <GroupBox Header="Status Logger Configuration" Margin="0,0,0,20">
+            <GroupBox Margin="0,0,0,20">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE81C;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Status Logger Configuration" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </GroupBox.Header>
                 <StackPanel Margin="10">
                     <TextBlock Text="Log your character's stats to a CSV file in real-time." 
                                Foreground="{DynamicResource AppSubtleBrush}" 
@@ -59,7 +65,13 @@
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="Columns" IsEnabled="{Binding LogToFile}">
+            <GroupBox IsEnabled="{Binding LogToFile}">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE152;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Columns" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </GroupBox.Header>
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

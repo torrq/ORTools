@@ -199,30 +199,7 @@ namespace ORTools.Worker
                                     }
                                 }
 
-                                // Re-read status buffer in one call after autobuff actions
-                                if (!hadError)
-                                {
-                                    try
-                                    {
-                                        statusList.Clear();
-                                        var statusBuffer2 = c.ReadStatusBuffer();
-                                        if (statusBuffer2 != null)
-                                        {
-                                            for (int i = 1; i < Constants.MAX_BUFF_LIST_INDEX_SIZE; i++)
-                                            {
-                                                uint currentStatus = statusBuffer2[i];
-                                                if (StatusUtils.IsValidStatus(currentStatus))
-                                                    statusList.Add((i, currentStatus));
-                                            }
-                                        }
-                                        StatusEffectLogger.LogAllStatuses(statusList);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        DebugLogger.Debug($"AutoBuffItem: Error re-reading statuses: {ex.Message}");
-                                        hadError = true;
-                                    }
-                                }
+
                             }
                         }
                         else

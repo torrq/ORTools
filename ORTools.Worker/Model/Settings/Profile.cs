@@ -43,6 +43,26 @@ public class Profile
         TransferHelper          = new TransferHelper();
     }
 
+    public void StartAll()
+    {
+        AutopotHP.Start(); AutopotSP.Start();
+        SkillTimer.Start(); SkillSpammer.Start();
+        StatusRecovery.Start(); AutobuffSkill.Start();
+        AutobuffItem.Start(); DebuffsRecovery.Start();
+        MacroSwitch.Start(); SongMacro.Start();
+        TransferHelper.Start(); ATKDEFMode.Start();
+    }
+
+    public void StopAll()
+    {
+        AutopotHP.Stop(); AutopotSP.Stop();
+        SkillTimer.Stop(); SkillSpammer.Stop();
+        StatusRecovery.Stop(); AutobuffSkill.Stop();
+        AutobuffItem.Stop(); DebuffsRecovery.Stop();
+        MacroSwitch.Stop(); SongMacro.Stop();
+        TransferHelper.Stop(); ATKDEFMode.Stop();
+    }
+
     public static object GetByAction(dynamic obj, IAction action)
     {
         if (obj != null && obj[action.GetActionName()] != null)

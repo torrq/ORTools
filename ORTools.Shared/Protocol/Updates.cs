@@ -187,7 +187,8 @@ public sealed record ProfileSettingsUpdate(
     bool StopBuffsCity,
     bool SoundEnabled,
     bool StartAutoOffTimerOnEnable,
-    bool ClearAutoOffTimerOnDisable) : IIpcMessage
+    bool ClearAutoOffTimerOnDisable,
+    bool KeepDeadClientInfo) : IIpcMessage
 {
     public string Type => MessageTypes.ProfileSettingsUpdate;
 }

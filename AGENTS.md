@@ -114,8 +114,8 @@ Every message is a single newline-terminated JSON line:
 When a UI slider is bound to a property that triggers an IPC command to the worker, the worker will eventually broadcast an update back to the UI. Since the slider triggers continuous updates while dragging, the worker's delayed echo of older values will overwrite the UI slider's current value, causing violent rubberbanding.
 **Fix**: Always apply a `Delay` to the binding in XAML, e.g., `Value="{Binding AutoOffTime, Delay=150}"`. This ensures the UI waits 150ms after dragging stops before sending the final value, effectively debouncing the IPC loop.
 
-**2. Duplicate Key Binding Interception**
-We use a unified `InputHelper.HandleKeyInput()` utility to detect keystrokes in `TextBoxes`. When a user assigns a key, this helper checks if it's already in use across the entire application via `MainWindowViewModel.IsKeyInUse()`. Always route key bindings through this helper instead of raw `PreviewKeyDown` events.
+**2. Key Binding Handling**
+We use a unified `InputHelper.HandleKeyInput()` utility to detect keystrokes in `TextBoxes`. Always route key bindings through this helper instead of raw `PreviewKeyDown` events. Note that we intentionally allow duplicate key bindings across different tabs, as it has practical uses in certain automation setups.
 
 **3. Data-Only Worker Models**
 The legacy `Buff.cs` and other models had tightly coupled UI rendering logic (`Bitmap`, `GroupBox`, etc.). The new worker models must be strictly data-only. For example, UI image resolution is handled entirely by WPF using static `pack://application:,,,/Icons/` references.

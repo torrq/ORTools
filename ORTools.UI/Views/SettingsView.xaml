@@ -84,9 +84,15 @@
                     <TextBlock Text="Per-Profile Settings" FontSize="14" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </StackPanel>
             </TabItem.Header>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
-                <StackPanel Margin="40,10" Orientation="Horizontal" VerticalAlignment="Top">
-                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,40,15" MaxWidth="500" HorizontalAlignment="Left" Width="190">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
+                <Grid VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <GroupBox Grid.Column="0" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8F2;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -99,7 +105,7 @@
                         </StackPanel>
                     </GroupBox>
 
-                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left" Width="190">
+                    <GroupBox Grid.Column="2" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE916;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -111,7 +117,7 @@
                             <CheckBox Margin="0,0,0,0" Content="Stop timer on disable" IsChecked="{Binding ClearAutoOffTimerOnDisable}" Foreground="{DynamicResource AppTextBrush}"/>
                         </StackPanel>
                     </GroupBox>
-                </StackPanel>
+                </Grid>
             </ScrollViewer>
         </TabItem>
 
@@ -123,9 +129,9 @@
                     <TextBlock Text="Interface" FontSize="14" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </StackPanel>
             </TabItem.Header>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
-                <StackPanel Margin="40,10">
-                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
+                <StackPanel>
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7F4;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -138,7 +144,6 @@
                                 <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -189,11 +194,17 @@
                                      PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
                                      Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Right" Height="28" FontSize="14"/>
 
-                            <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Content="Show Exp/Hr in UI" IsChecked="{Binding ShowExpPerHour}" Foreground="{DynamicResource AppTextBrush}" Margin="0,12,0,0"/>
                         </Grid>
                     </GroupBox>
 
-                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left" Width="252">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <GroupBox Grid.Column="0" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEE40;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -225,7 +236,21 @@
                                 </CheckBox.Style>
                             </CheckBox>
                         </StackPanel>
-                    </GroupBox>
+                        </GroupBox>
+
+                        <GroupBox Grid.Column="2" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
+                            <GroupBox.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE713;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Advanced" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </GroupBox.Header>
+                            <StackPanel Margin="10">
+                                <CheckBox Content="Show Exp/Hr in UI" IsChecked="{Binding ShowExpPerHour}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6"/>
+                                <CheckBox Content="Keep dead client info" IsChecked="{Binding KeepDeadClientInfo}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
@@ -238,9 +263,9 @@
                     <TextBlock Text="Behavior" FontSize="14" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </StackPanel>
             </TabItem.Header>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
-                <StackPanel Margin="40,10">
-                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="500" HorizontalAlignment="Left">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
+                <StackPanel>
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE909;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
@@ -277,9 +302,9 @@
                     <TextBlock Text="Developer" FontSize="14" VerticalAlignment="Center" FontWeight="SemiBold"/>
                 </StackPanel>
             </TabItem.Header>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,15,0,0">
-                <StackPanel Margin="40,10">
-                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,15" MaxWidth="600" HorizontalAlignment="Left">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
+                <StackPanel>
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
                         <GroupBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEBE8;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>

@@ -68,14 +68,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private uint _maxSp;
 
 
-    private string FormatExp(double exp)
-    {
-        if (exp < 0) return "-" + FormatExp(-exp);
-        if (exp >= 1_000_000_000) return (exp / 1_000_000_000D).ToString("#,##0.##") + "B";
-        if (exp >= 1_000_000) return (exp / 1_000_000D).ToString("#,##0.##") + "M";
-        if (exp >= 1_000) return (exp / 1_000D).ToString("#,##0.##") + "K";
-        return exp.ToString("#,##0");
-    }
+    // NumberFormatter logic moved to Utils/NumberFormatter.cs
 
     [ObservableProperty] private string _characterName = "—";
     [ObservableProperty] private string _infoExpPerHourText = "";
@@ -332,6 +325,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             IsClientConnected    = u.Connected;
             ConnectedProcessName = u.ProcessName ?? "";
 
+            if (!IsClientConnected)
+            {
+                _suppressProcessCommand = true;
+                SelectedProcess = null;
+                _suppressProcessCommand = false;
+
+                if (!Settings.KeepDeadClientInfo)
+                {
+                    ClearCharacterInfo();
+                }
+            }
+
             if (IsClientConnected && !string.IsNullOrEmpty(ConnectedProcessName) && ProcessList.Count > 0)
             {
                 var match = ProcessList.FirstOrDefault(p => p.Id == ConnectedProcessName);
@@ -347,6 +352,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void OnHpSp(HpSpUpdate u) =>
         Post(() =>
         {
+            if (!IsClientConnected) return;
+
             _currentHp = u.CurrentHp;
             _maxHp = u.MaxHp;
             _currentSp = u.CurrentSp;
@@ -385,6 +392,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void OnCharacter(CharacterUpdate u) =>
         Post(() =>
         {
+            if (!IsClientConnected) return;
+
             CharacterName = u.Name;
             JobName       = JobList.GetNameById((int)u.JobId);
             MapName       = u.Map;
@@ -461,7 +470,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     if (timeElapsed.TotalMinutes >= 1)
                     {
                         double expPerHour = _totalExpGained / timeElapsed.TotalHours;
-                        InfoExpPerHourText = $"XP/h: {FormatExp(expPerHour)}";
+                        InfoExpPerHourText = $"XP/h: {Utils.NumberFormatter.FormatExp(expPerHour)}";
                     }
                     else
                     {
@@ -580,5 +589,37 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private static void Post(Action action)
         => Application.Current?.Dispatcher.BeginInvoke(action, DispatcherPriority.Background);
 
+    private void ClearCharacterInfo()
+    {
+        CharacterName = "—";
+        JobName = "";
+        MapName = "";
+        InfoLvLabel1Text = "";
+        InfoLvValue1Text = "";
+        InfoSeparator1Text = "";
+        InfoLvLabel2Text = "";
+        InfoLvValue2Text = "";
+        InfoSeparator2Text = "";
+        InfoExpLabelText = "";
+        InfoExpValueText = "";
+        InfoExpPerHourText = "";
+        InfoExpPerHourTooltip = "";
 
+        HpPercent = 0;
+        SpPercent = 0;
+        WtPercent = 0;
+
+        HpCurrentText = "";
+        HpMaxText = "";
+        HpSeparatorText = "";
+        SpCurrentText = "";
+        SpMaxText = "";
+        SpSeparatorText = "";
+        WtCurrentText = "";
+        WtMaxText = "";
+        WtSeparatorText = "";
+        WtPercentLeftBracketText = "";
+        WtPercentValueText = "";
+        WtPercentRightBracketText = "";
+    }
 }
