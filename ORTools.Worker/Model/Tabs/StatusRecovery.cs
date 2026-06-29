@@ -1,6 +1,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace ORTools.Worker
         private ThreadRunner thread;
 
         // Dictionary to store multiple status lists with their associated keys
-        public Dictionary<string, StatusRecoveryList> statusLists = new Dictionary<string, StatusRecoveryList>();
+        public ConcurrentDictionary<string, StatusRecoveryList> statusLists = new ConcurrentDictionary<string, StatusRecoveryList>();
 
         // Legacy property for backward compatibility with old JSON format
         [JsonIgnore]

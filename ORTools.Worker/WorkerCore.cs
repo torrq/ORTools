@@ -991,7 +991,7 @@ public sealed class WorkerCore
             
             if (cmd.Key == "None" || string.IsNullOrWhiteSpace(cmd.Key))
             {
-                dict.Remove(cmd.SlotName);
+                dict.TryRemove(cmd.SlotName, out var _);
             }
             else
             {
@@ -1152,7 +1152,7 @@ public sealed class WorkerCore
         }
         
         abs.SetBuffMapping(newSkillMapping);
-        abi.buffMapping = newItemMapping;
+        abi.buffMapping = new System.Collections.Concurrent.ConcurrentDictionary<EffectStatusIDs, List<Keys>>(newItemMapping);
         profile.UnifiedAutobuffOrder = cmd.OrderedStatusNames;
         
         ProfileSingleton.SetConfiguration(abs);

@@ -45,7 +45,7 @@ namespace ORTools.Worker
             foreach (var k in oldKeys)
             {
                 var val = profile.SkillSpammer.SpammerEntries[k];
-                profile.SkillSpammer.SpammerEntries.Remove(k);
+                profile.SkillSpammer.SpammerEntries.TryRemove(k, out var _);
                 
                 // Re-insert using the clean enum string (e.g., "R" instead of "chkR")
                 profile.SkillSpammer.SpammerEntries[val.Key.ToString()] = val;

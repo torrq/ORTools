@@ -1,7 +1,7 @@
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -23,7 +23,7 @@ namespace ORTools.Worker
         }
 
         // Keys per status — List<Keys> allows multiple items sharing the same status ID (e.g. Water Converter + Box of Thunder)
-        public Dictionary<EffectStatusIDs, List<Keys>> buffMapping = new Dictionary<EffectStatusIDs, List<Keys>>();
+        public ConcurrentDictionary<EffectStatusIDs, List<Keys>> buffMapping = new ConcurrentDictionary<EffectStatusIDs, List<Keys>>();
 
 
         // Add error tracking
@@ -134,7 +134,7 @@ namespace ORTools.Worker
                             {
                                 // Process buffs
                                 List<EffectStatusIDs> buffs = new List<EffectStatusIDs>();
-                                Dictionary<EffectStatusIDs, List<Keys>> bmClone = new Dictionary<EffectStatusIDs, List<Keys>>(this.buffMapping);
+                                ConcurrentDictionary<EffectStatusIDs, List<Keys>> bmClone = new ConcurrentDictionary<EffectStatusIDs, List<Keys>>(this.buffMapping);
 
                                 foreach (var (i, currentStatus) in statusList)
                                 {
@@ -147,13 +147,13 @@ namespace ORTools.Worker
                                     {
                                         if (buffMapping.ContainsKey(EffectStatusIDs.BS_OVERTHRUST))
                                         {
-                                            bmClone.Remove(EffectStatusIDs.BS_OVERTHRUST);
+                                            bmClone.TryRemove(EffectStatusIDs.BS_OVERTHRUST, out var _);
                                         }
                                     }
 
                                     if (buffMapping.ContainsKey(status))
                                     {
-                                        bmClone.Remove(status);
+                                        bmClone.TryRemove(status, out var _);
                                     }
 
                                     if (status == EffectStatusIDs.WZ_QUAGMIRE) foundQuag = true;
@@ -261,7 +261,7 @@ namespace ORTools.Worker
             // Invalid/None key means the user cleared the slot — remove the mapping
             if (!WorkerNotifier.IsValidKey(key))
             {
-                buffMapping.Remove(status);
+                buffMapping.TryRemove(status, out _);
                 return;
             }
             if (!buffMapping.ContainsKey(status))
@@ -276,7 +276,7 @@ namespace ORTools.Worker
             {
                 buffMapping[status].Remove(oldKey);
                 if (buffMapping[status].Count == 0)
-                    buffMapping.Remove(status);
+                    buffMapping.TryRemove(status, out _);
             }
             if (WorkerNotifier.IsValidKey(newKey))
                 AddKeyToBuff(status, newKey);
@@ -286,7 +286,7 @@ namespace ORTools.Worker
         {
             if (buffMapping.ContainsKey(status))
             {
-                buffMapping.Remove(status);
+                buffMapping.TryRemove(status, out _);
                 DebugLogger.Debug($"AutoBuffItem: Removed mapping for status {status}");
             }
         }
@@ -369,9 +369,11 @@ namespace ORTools.Worker
                         var mappingData = mappingToken.ToObject<Dictionary<EffectStatusIDs, Keys>>();
                         if (mappingData != null)
                         {
-                            this.buffMapping = new Dictionary<EffectStatusIDs, List<Keys>>();
+                            this.buffMapping = new ConcurrentDictionary<EffectStatusIDs, List<Keys>>();
                             foreach (var kvp in mappingData)
-                                this.buffMapping[kvp.Key] = new List<Keys> { kvp.Value };
+                            {
+                                this.buffMapping.TryAdd(kvp.Key, new List<Keys> { kvp.Value });
+                            }
                         }
                     }
 

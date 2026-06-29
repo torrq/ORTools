@@ -1,6 +1,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -25,7 +26,7 @@ namespace ORTools.Worker
 
     public class SkillSpammer : IAction
     {
-        private Dictionary<Keys, bool> toggledKeys = new Dictionary<Keys, bool>();
+        private ConcurrentDictionary<Keys, bool> toggledKeys = new ConcurrentDictionary<Keys, bool>();
 
         /// <summary>
         /// Clears which keys are actively firing in toggle mode, without disabling toggle mode itself.
@@ -35,7 +36,7 @@ namespace ORTools.Worker
         {
             toggledKeys.Clear();
         }
-        private Dictionary<Keys, bool> keyPressedLastFrame = new Dictionary<Keys, bool>();
+        private ConcurrentDictionary<Keys, bool> keyPressedLastFrame = new ConcurrentDictionary<Keys, bool>();
 
         public event EventHandler<bool> ToggleModeChanged;
 
@@ -62,7 +63,7 @@ namespace ORTools.Worker
 
         private const string ACTION_NAME = "SkillSpammer";
         private ThreadRunner thread;
-        public Dictionary<string, KeyConfig> SpammerEntries { get; set; } = new Dictionary<string, KeyConfig>();
+        public ConcurrentDictionary<string, KeyConfig> SpammerEntries { get; set; } = new ConcurrentDictionary<string, KeyConfig>();
 
         private int _delay = AppConfig.SkillSpammerDefaultDelay;
 
@@ -218,16 +219,12 @@ namespace ORTools.Worker
 
         public void AddSkillSpammerEntry(string entryName, KeyConfig value)
         {
-            if (this.SpammerEntries.ContainsKey(entryName))
-            {
-                RemoveSkillSpammerEntry(entryName);
-            }
-            this.SpammerEntries.Add(entryName, value);
+            this.SpammerEntries[entryName] = value;
         }
 
         public void RemoveSkillSpammerEntry(string entryName)
         {
-            this.SpammerEntries.Remove(entryName);
+            this.SpammerEntries.TryRemove(entryName, out _);
         }
 
         public void Stop()

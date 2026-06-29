@@ -1,4 +1,5 @@
 using ORTools.Shared.Protocol;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 
@@ -32,10 +33,10 @@ public class AtkDefEquipConfig
     public bool KeySpammerWithClick { get; set; } = true;
 
     [JsonPropertyName("defKeys")]
-    public Dictionary<string, string> DefKeys { get; set; } = new();
+    public ConcurrentDictionary<string, string> DefKeys { get; set; } = new();
 
     [JsonPropertyName("atkKeys")]
-    public Dictionary<string, string> AtkKeys { get; set; } = new();
+    public ConcurrentDictionary<string, string> AtkKeys { get; set; } = new();
 
     public AtkDefEquipConfig() { }
 

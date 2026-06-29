@@ -2,6 +2,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -14,7 +15,7 @@ namespace ORTools.Worker
         public static string ACTION_NAME_DEBUFF_RECOVERY = "DebuffsRecovery";
 
         private ThreadRunner thread;
-        public Dictionary<EffectStatusIDs, Keys> buffMapping = new Dictionary<EffectStatusIDs, Keys>();
+        public ConcurrentDictionary<EffectStatusIDs, Keys> buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>();
         public int Delay { get; set; } = 50;
 
         private readonly string ActionName;
@@ -163,7 +164,7 @@ namespace ORTools.Worker
                         var mappingData = JsonConvert.DeserializeObject<Dictionary<EffectStatusIDs, Keys>>(configData["BuffMapping"].ToString());
                         if (mappingData != null)
                         {
-                            this.buffMapping = mappingData;
+                            this.buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>(mappingData);
                         }
                     }
 
@@ -225,11 +226,11 @@ namespace ORTools.Worker
         {
             if (buffMapping.ContainsKey(status))
             {
-                buffMapping.Remove(status);
+                buffMapping.TryRemove(status, out var _);
             }
             if (WorkerNotifier.IsValidKey(key))
             {
-                buffMapping.Add(status, key);
+                buffMapping.TryAdd(status, key);
             }
         }
 
@@ -237,7 +238,7 @@ namespace ORTools.Worker
         {
             if (buffMapping.ContainsKey(status))
             {
-                buffMapping.Remove(status);
+                buffMapping.TryRemove(status, out _);
                 DebugLogger.Debug($"DebuffRecovery: Removed mapping for status {status}");
             }
         }

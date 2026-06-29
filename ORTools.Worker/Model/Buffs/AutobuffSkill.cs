@@ -3,6 +3,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -23,11 +24,11 @@ namespace ORTools.Worker
             set => _delay = value;
         }
 
-        public Dictionary<EffectStatusIDs, Keys> buffMapping = new Dictionary<EffectStatusIDs, Keys>();
+        public ConcurrentDictionary<EffectStatusIDs, Keys> buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>();
 
         // Per-buff cast cooldown: prevents re-casting a buff before the server has had time
         // to reflect the new status in memory (avoids toggling-off skills like Force Projection)
-        private readonly Dictionary<EffectStatusIDs, DateTime> _lastCastTime = new Dictionary<EffectStatusIDs, DateTime>();
+        private readonly ConcurrentDictionary<EffectStatusIDs, DateTime> _lastCastTime = new ConcurrentDictionary<EffectStatusIDs, DateTime>();
         private static readonly TimeSpan CastCooldown = TimeSpan.FromMilliseconds(300);
 
         // Set false by Stop() so an in-flight iteration stops sending keys immediately
@@ -119,7 +120,7 @@ namespace ORTools.Worker
                             // Read entire status buffer in one RPM call instead of 99 individual reads
                             var statusBuffer = c.ReadStatusBuffer();
                             List<EffectStatusIDs> currentBuffs = new List<EffectStatusIDs>();
-                            Dictionary<EffectStatusIDs, Keys> buffsToApply = new Dictionary<EffectStatusIDs, Keys>(this.buffMapping);
+                            ConcurrentDictionary<EffectStatusIDs, Keys> buffsToApply = new ConcurrentDictionary<EffectStatusIDs, Keys>(this.buffMapping);
                             bool statusReadError = statusBuffer == null;
 
                             if (!statusReadError)
@@ -137,12 +138,12 @@ namespace ORTools.Worker
 
                                     if (status == EffectStatusIDs.WS_OVERTHRUSTMAX && buffsToApply.ContainsKey(EffectStatusIDs.BS_OVERTHRUST))
                                     {
-                                        buffsToApply.Remove(EffectStatusIDs.BS_OVERTHRUST);
+                                        buffsToApply.TryRemove(EffectStatusIDs.BS_OVERTHRUST, out var _);
                                     }
 
                                     if (buffMapping.ContainsKey(status)) //CHECK IF STATUS EXISTS IN STATUS LIST AND DO ACTION
                                     {
-                                        buffsToApply.Remove(status);
+                                        buffsToApply.TryRemove(status, out var _);
                                     }
 
                                     if (status == EffectStatusIDs.WZ_QUAGMIRE) foundQuag = true;
@@ -288,12 +289,12 @@ namespace ORTools.Worker
         {
             if (buffMapping.ContainsKey(status))
             {
-                buffMapping.Remove(status);
+                buffMapping.TryRemove(status, out var _);
             }
 
             if (WorkerNotifier.IsValidKey(key))
             {
-                buffMapping.Add(status, key);
+                buffMapping.TryAdd(status, key);
             }
         }
 
@@ -301,14 +302,14 @@ namespace ORTools.Worker
         {
             if (buffMapping.ContainsKey(status))
             {
-                buffMapping.Remove(status);
+                buffMapping.TryRemove(status, out _);
                 DebugLogger.Debug($"AutoBuffSkill: Removed mapping for status {status}");
             }
         }
 
         public void SetBuffMapping(Dictionary<EffectStatusIDs, Keys> buffs)
         {
-            this.buffMapping = new Dictionary<EffectStatusIDs, Keys>(buffs);
+            this.buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>(buffs);
         }
 
         public void ClearKeyMapping()
@@ -381,7 +382,7 @@ namespace ORTools.Worker
                         var mappingData = mappingToken.ToObject<Dictionary<EffectStatusIDs, Keys>>();
                         if (mappingData != null)
                         {
-                            this.buffMapping = mappingData;
+                            this.buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>(mappingData);
                         }
                     }
 

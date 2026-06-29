@@ -264,6 +264,11 @@ namespace ORTools.Worker
                 DebugLogger.Debug($"IsProcessValid check failed for {ProcessName}: {ex.Message}");
                 isValid = false;
             }
+            
+            if (!isValid)
+            {
+                _cachedMainWindowHandle = IntPtr.Zero;
+            }
 
             // Update cache
             _cachedProcessValid = isValid;

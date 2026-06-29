@@ -1,6 +1,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using ORTools.Shared;
 using System.Drawing;
@@ -18,9 +19,9 @@ namespace ORTools.Worker
         #endregion
 
         private readonly string ACTION_NAME = "SkillTimer";
-        public Dictionary<int, SkillTimerKey> skillTimer = new Dictionary<int, SkillTimerKey>();
+        public ConcurrentDictionary<int, SkillTimerKey> skillTimer = new ConcurrentDictionary<int, SkillTimerKey>();
 
-        private readonly Dictionary<int, ThreadRunner> threads = new Dictionary<int, ThreadRunner>();
+        private readonly ConcurrentDictionary<int, ThreadRunner> threads = new ConcurrentDictionary<int, ThreadRunner>();
 
         // Map cache — shared across all timer threads; avoids an RPM call every tick.
         // Refreshed at most once per second so city-check stays accurate without hammering memory.
@@ -79,7 +80,7 @@ namespace ORTools.Worker
             {
                 ThreadRunner.Stop(thread);
                 thread.Terminate();
-                threads.Remove(timerId);
+                threads.TryRemove(timerId, out _);
             }
         }
 

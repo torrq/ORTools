@@ -14,6 +14,9 @@ public sealed class StatePublisher : IDisposable
 {
     private readonly Func<Task> _broadcast;   // WorkerCore.BroadcastAsync wrapper
     private CancellationTokenSource? _cts;
+    
+    private HpSpUpdate? _lastHpSp;
+    private CharacterUpdate? _lastCharacter;
 
     /// <param name="broadcast">
     /// Async delegate that sends one update; already wraps BroadcastAsync generically.
@@ -57,9 +60,15 @@ public sealed class StatePublisher : IDisposable
                 if (client?.Process != null && !client.Process.HasExited && client.IsLoggedIn)
                 {
                     var snap = client.ReadHpSp();
-                    await _broadcastMsg(new HpSpUpdate(
+                    var newHpSp = new HpSpUpdate(
                         snap.CurrentHp, snap.MaxHp,
-                        snap.CurrentSp, snap.MaxSp));
+                        snap.CurrentSp, snap.MaxSp);
+                    
+                    if (_lastHpSp != newHpSp)
+                    {
+                        _lastHpSp = newHpSp;
+                        await _broadcastMsg(newHpSp);
+                    }
                 }
             }
             catch (Exception ex) { DebugLogger.Debug($"[StatePublisher.HpSp] {ex.Message}"); }
@@ -116,13 +125,19 @@ public sealed class StatePublisher : IDisposable
                         }
                         string activeStatusesStr = string.Join(" ", activeStatusesList.Distinct());
 
-                        await _broadcastMsg(new CharacterUpdate(
+                        var newChar = new CharacterUpdate(
                             Name: name, Map: map,
                             Level: j.Level, JobLevel: j.JobLevel,
                             JobId: j.JobId,
                             Exp: j.Exp, ExpToLevel: j.ExpToLevel,
                             WeightCur: wCur, WeightMax: wMax,
-                            ActiveStatuses: activeStatusesStr));
+                            ActiveStatuses: activeStatusesStr);
+                            
+                        if (_lastCharacter != newChar)
+                        {
+                            _lastCharacter = newChar;
+                            await _broadcastMsg(newChar);
+                        }
                     }
                 }
                 else

@@ -96,7 +96,7 @@ public partial class SkillSpammerViewModel : ObservableObject
 
     private void OnAppState(AppStateUpdate u)
     {
-        App.Current.Dispatcher.Invoke(() =>
+        App.Current.Dispatcher.BeginInvoke(() =>
         {
             if (u.ServerMode == 1)
             {
@@ -113,7 +113,7 @@ public partial class SkillSpammerViewModel : ObservableObject
 
     private void OnConfigReceived(SkillSpammerConfigUpdate config)
     {
-        App.Current.Dispatcher.Invoke(() =>
+        App.Current.Dispatcher.BeginInvoke(() =>
         {
             _suppressCommands = true;
 
