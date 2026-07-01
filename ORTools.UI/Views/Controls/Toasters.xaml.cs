@@ -17,10 +17,10 @@ public partial class Toasters : UserControl
     private TimeSpan _lastRenderTime;
     private readonly TimeSpan _frameTarget = TimeSpan.FromMilliseconds(1000.0 / 60.0); // 60 fps smooth moving
 
-    public double MinOpacity { get; set; } = 0.15;
-    public double MaxOpacity { get; set; } = 0.45;
+    public double MinOpacity { get; set; } = 0.10;
+    public double MaxOpacity { get; set; } = 0.5;
     public int MaxProps { get; set; } = 20;
-    public double SpecialFrequency { get; set; } = 0.25;
+    public double SpecialFrequency { get; set; } = 0.12;
 
     private List<BitmapImage>? _cachedImages;
     private List<BitmapImage>? _specialImages;
@@ -46,7 +46,7 @@ public partial class Toasters : UserControl
         {
             _cachedImages = new List<BitmapImage>();
             _specialImages = new List<BitmapImage>();
-            
+
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();
@@ -112,7 +112,7 @@ public partial class Toasters : UserControl
 
         var transform = new TranslateTransform();
         img.RenderTransform = transform;
-        
+
         RenderOptions.SetBitmapScalingMode(img, BitmapScalingMode.HighQuality);
 
         ContainerCanvas.Children.Add(img);
@@ -129,7 +129,7 @@ public partial class Toasters : UserControl
         if (_cachedImages == null || _cachedImages.Count == 0) return;
 
         bool isSpecial = _specialImages != null && _specialImages.Count > 0 && _rng.NextDouble() < SpecialFrequency;
-        
+
         if (isSpecial)
         {
             p.ImageElement.Source = _specialImages![_rng.Next(_specialImages.Count)];
@@ -146,7 +146,7 @@ public partial class Toasters : UserControl
         p.ImageElement.Opacity = MinOpacity + _rng.NextDouble() * (MaxOpacity - MinOpacity);
 
         double startX, startY;
-        
+
         if (randomPosition)
         {
             startX = _rng.NextDouble() * (ActualWidth > 0 ? ActualWidth : 800);
@@ -154,9 +154,19 @@ public partial class Toasters : UserControl
         }
         else
         {
-            // Spawn off-screen right
-            startX = (ActualWidth > 0 ? ActualWidth : 800) + 50;
-            startY = -50 + _rng.NextDouble() * ((ActualHeight > 0 ? ActualHeight : 600) + 100);
+            // Spawn off-screen right OR off-screen top to fill the whole screen
+            if (_rng.NextDouble() < 0.5)
+            {
+                // Spawn on the right edge
+                startX = (ActualWidth > 0 ? ActualWidth : 800) + 50;
+                startY = -50 + _rng.NextDouble() * ((ActualHeight > 0 ? ActualHeight : 600) + 100);
+            }
+            else
+            {
+                // Spawn on the top edge
+                startX = -50 + _rng.NextDouble() * ((ActualWidth > 0 ? ActualWidth : 800) + 100);
+                startY = -50;
+            }
         }
 
         p.X = startX;
@@ -202,7 +212,7 @@ public partial class Toasters : UserControl
             ResetProp(p, false);
             _props.Add(p);
         }
-        
+
         // Remove excess props if MaxProps was lowered dynamically
         while (_props.Count > MaxProps)
         {

@@ -12,7 +12,7 @@ using System.Windows.Threading;
 
 namespace ORTools.UI.ViewModels;
 
-public sealed partial class MainWindowViewModel : ViewModelBase
+public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
 {
     private readonly WorkerService _worker;
 
@@ -149,18 +149,38 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         ? AppColors.SpLow
         : AppColors.SpNormal;
 
+    // ── Dialog Overlay ────────────────────────────────────────────────────────
+    [ObservableProperty] private bool _isDialogVisible;
+    [ObservableProperty] private ViewModelBase? _currentDialogContent;
+
+    public async Task ShowDialogAsync(ViewModelBase dialogViewModel)
+    {
+        CurrentDialogContent = dialogViewModel;
+        IsDialogVisible = true;
+        // Wait until IsDialogVisible becomes false (managed by CloseDialog)
+        // This is a simple implementation, a better way is for the caller to await
+        // the specific TaskCompletionSource of the dialog. The IDialogService doesn't 
+        // necessarily need to block here if the dialogViewModel has its own TCS.
+        await Task.CompletedTask;
+    }
+
+    public void CloseDialog()
+    {
+        IsDialogVisible = false;
+        CurrentDialogContent = null;
+    }
+
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public MainWindowViewModel(WorkerService worker)
     {
         _worker = worker;
-
-        AutopotHP = new AutopotHPViewModel(_worker);
         AutopotSP = new AutopotSPViewModel(_worker);
         Debuffs = new DebuffsViewModel(_worker);
-        SkillTimer = new SkillTimerViewModel(_worker);
+        SkillTimer = new SkillTimerViewModel(_worker, this);
         AutoOff = new AutoOffViewModel(_worker);
         AutobuffSkill = new AutobuffSkillViewModel(_worker);
+        AutopotHP = new AutopotHPViewModel(_worker);
         AutobuffOrder = new AutobuffOrderViewModel(_worker);
         AutobuffItem = new AutobuffItemViewModel(_worker);
         AutobuffSearch = new AutobuffSearchViewModel(AutobuffSkill, AutobuffItem);

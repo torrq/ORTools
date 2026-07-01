@@ -1,12 +1,12 @@
 <UserControl x:Class="ORTools.UI.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
              xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
              xmlns:views="clr-namespace:ORTools.UI.Views"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance vm:SettingsViewModel}"
              FontSize="13">
@@ -50,8 +50,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Border Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}" 
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 Padding="{TemplateBinding Padding}"
                                 Cursor="Hand">
@@ -152,8 +152,8 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Text="App Theme" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
-                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}" 
-                                      Background="{DynamicResource AppInputBrush}" Foreground="Black" 
+                            <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}"
+                                      Background="{DynamicResource AppInputBrush}" Foreground="Black"
                                       BorderBrush="{DynamicResource AppInputBorderBrush}" Height="28" FontSize="14" HorizontalAlignment="Stretch" Margin="0,0,0,6">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
@@ -246,7 +246,7 @@
                                 </StackPanel>
                             </GroupBox.Header>
                             <StackPanel Margin="10">
-                                <CheckBox Content="Show Exp/Hr in UI" IsChecked="{Binding ShowExpPerHour}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6"/>
+                                <CheckBox Content="Show Exp/hour at top" IsChecked="{Binding ShowExpPerHour}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6"/>
                                 <CheckBox Content="Keep dead client info" IsChecked="{Binding KeepDeadClientInfo}" Foreground="{DynamicResource AppTextBrush}" Margin="0,6,0,6"/>
                             </StackPanel>
                         </GroupBox>

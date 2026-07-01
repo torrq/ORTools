@@ -20,33 +20,33 @@
             <!-- Left Header -->
             <Grid Grid.Column="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="60"/>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="70"/>
-                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="105"/>
+                    <ColumnDefinition Width="68"/>
+                    <ColumnDefinition Width="48"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,30,0"/>
+                <TextBlock Grid.Column="3" Text="CLICK" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="4" Text="ALT" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
 
             <!-- Right Header -->
             <Grid Grid.Column="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="60"/>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="70"/>
-                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="105"/>
+                    <ColumnDefinition Width="68"/>
+                    <ColumnDefinition Width="48"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="ON" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="1" Text="KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="3" Text="CLICK MODE" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="4" Text="ALT-KEY" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" Text="DELAY (ms)" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,30,0"/>
+                <TextBlock Grid.Column="3" Text="CLICK" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="4" Text="ALT" Foreground="{DynamicResource AppSubtleBrush}" FontWeight="SemiBold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
         </Grid>
 
@@ -65,11 +65,11 @@
                     <DataTemplate>
                         <Grid Margin="0,0,30,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition Width="60"/>
-                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="40"/>
                             <ColumnDefinition Width="70"/>
-                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition Width="105"/>
+                            <ColumnDefinition Width="68"/>
+                            <ColumnDefinition Width="48"/>
                         </Grid.ColumnDefinitions>
 
                         <CheckBox IsChecked="{Binding Enabled}"
@@ -80,13 +80,35 @@
                                  PreviewKeyDown="KeyTextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" Width="60" />
 
-                        <TextBox Grid.Column="2" Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
-                                 helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="1000"
-                                 Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Center" Width="70" />
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                                     helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="1000"
+                                     Style="{StaticResource NumericTextBoxStyle}" Width="75" />
+                            <Button Command="{Binding OpenTimePickerCommand}" 
+                                    Content="&#xE823;" FontFamily="Segoe MDL2 Assets" 
+                                    FontSize="14" Width="24" Height="24" 
+                                    Margin="2,0,4,0" Padding="0"
+                                    Foreground="{DynamicResource AppSubtleBrush}" 
+                                    Background="Transparent" BorderThickness="0"
+                                    Cursor="Hand" ToolTip="Open Time Picker">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                            <TextBlock x:Name="IconText" Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="IconText" Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
 
                         <ComboBox Grid.Column="3" SelectedIndex="{Binding ClickMode}"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
-                                  Width="70" Height="24"
+                                  Width="60" Height="24"
                                   Foreground="Black"
                                   BorderBrush="{DynamicResource AppInputBorderBrush}">
                             <ComboBoxItem Content="None"/>
@@ -95,8 +117,30 @@
                         </ComboBox>
 
                         <CheckBox Grid.Column="4" IsChecked="{Binding AltKey}"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"/>
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand">
+                            <CheckBox.Template>
+                                <ControlTemplate TargetType="CheckBox">
+                                    <Image x:Name="Icon" Source="pack://application:,,,/Icons/Key/key_alt.png" 
+                                           Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Opacity="0.35"/>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Icon" Property="Opacity" Value="0.6"/>
+                                        </Trigger>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Icon" Property="Opacity" Value="1.0"/>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsChecked" Value="True"/>
+                                                <Condition Property="IsMouseOver" Value="True"/>
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="Icon" Property="Opacity" Value="0.8"/>
+                                        </MultiTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </CheckBox.Template>
+                        </CheckBox>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

@@ -1,0 +1,133 @@
+<UserControl x:Class="ORTools.UI.Views.TimePickerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:helpers="clr-namespace:ORTools.UI.Helpers"
+             Background="Transparent">
+    
+    <Border Background="{DynamicResource AppSurfaceBrush}" 
+            BorderBrush="{DynamicResource AppBorderBrush}" 
+            BorderThickness="1" 
+            CornerRadius="8" 
+            Padding="24"
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center">
+        
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.5" Direction="270" ShadowDepth="5"/>
+        </Border.Effect>
+
+        <Grid>
+            <Button Command="{Binding ResetToZeroCommand}" 
+                    Content="0" FontFamily="Segoe UI" FontWeight="Bold"
+                    FontSize="14" Width="28" Height="28" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,-8,-8,0" Padding="0"
+                    Foreground="{DynamicResource AppDangerBrush}" 
+                    Background="Transparent" BorderThickness="0"
+                    Cursor="Hand" ToolTip="Reset to 0 ms">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                            <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" FontWeight="{TemplateBinding FontWeight}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,1"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AppDangerHoverBrush}" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <Button Command="{Binding ResetCommand}" 
+                    Content="&#xE72C;" FontFamily="Segoe MDL2 Assets" 
+                    FontSize="12" Width="28" Height="28" 
+                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Margin="-8,-8,0,0" Padding="0"
+                    Foreground="{DynamicResource AppDangerBrush}" 
+                    Background="Transparent" BorderThickness="0"
+                    Cursor="Hand" ToolTip="Reset to default">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                            <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AppDangerHoverBrush}" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <StackPanel Margin="0,16,0,0">
+                <TextBlock Text="Set Delay" Foreground="{DynamicResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,24" HorizontalAlignment="Center"/>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,24">
+                <!-- Hours -->
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="HOURS" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource NumericTextBoxStyle}"
+                             helpers:InputHelper.IsNumericInput="True"
+                             helpers:InputHelper.NumericStep="1"
+                             Width="60" Height="40" FontSize="18" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock Text=":" Foreground="{DynamicResource AppSubtleBrush}" FontSize="24" FontWeight="SemiBold" Margin="0,20,16,0"/>
+
+                <!-- Minutes -->
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="MINUTES" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding Minutes, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource NumericTextBoxStyle}"
+                             helpers:InputHelper.IsNumericInput="True"
+                             helpers:InputHelper.NumericStep="1"
+                             Width="60" Height="40" FontSize="18" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock Text=":" Foreground="{DynamicResource AppSubtleBrush}" FontSize="24" FontWeight="SemiBold" Margin="0,20,16,0"/>
+
+                <!-- Seconds -->
+                <StackPanel Margin="0,0,16,0">
+                    <TextBlock Text="SECONDS" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding Seconds, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource NumericTextBoxStyle}"
+                             helpers:InputHelper.IsNumericInput="True"
+                             helpers:InputHelper.NumericStep="1"
+                             Width="60" Height="40" FontSize="18" TextAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock Text=":" Foreground="{DynamicResource AppSubtleBrush}" FontSize="24" FontWeight="SemiBold" Margin="0,20,16,0"/>
+
+                <!-- Milliseconds -->
+                <StackPanel>
+                    <TextBlock Text="MS" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding Milliseconds, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource NumericTextBoxStyle}"
+                             helpers:InputHelper.IsNumericInput="True"
+                             helpers:InputHelper.NumericStep="1"
+                             Width="70" Height="40" FontSize="18" TextAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Cancel" Command="{Binding CancelCommand}" 
+                        IsCancel="True"
+                        Style="{StaticResource SecondaryButtonStyle}" 
+                        Width="100" Height="32" Margin="0,0,16,0"
+                        Foreground="{DynamicResource AppSubtleBrush}"
+                        Background="Transparent"/>
+                
+                <Button Content="Save" Command="{Binding SaveCommand}" 
+                        IsDefault="True"
+                        Style="{StaticResource PrimaryButtonStyle}" 
+                        Width="100" Height="32"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+    </Border>
+</UserControl>

@@ -23,7 +23,7 @@ public partial class DebuffsViewModel : ObservableObject
         _worker = worker;
         _worker.StatusRecoveryConfigReceived += OnStatusConfigReceived;
         _worker.DebuffRecoveryConfigReceived += OnDebuffConfigReceived;
-        
+
         // Initialize all known debuffs so they appear even if they don't have keys configured
         InitializeDebuffList();
     }
@@ -38,16 +38,16 @@ public partial class DebuffsViewModel : ObservableObject
             ("Curse", "CURSE"),
             ("Decrease AGI", "AL_DECAGI"),
             ("Freezing", "FREEZING"),
-            ("Frozen", "FROZEN"),
+//            ("Frozen", "FROZEN"),
             ("Poison", "POISON"),
             ("Silence", "SILENCE"),
             ("Sit", "SIT"),
             ("Deep Sleep", "DEEP_SLEEP"),
             ("Sleep", "SLEEP"),
             ("Slow Cast", "NPC_SLOWCAST"),
-            ("Stone Curse (initial stage)", "STONECURSE_ING"),
-            ("Stone Curse (petrified)", "STONECURSE"),
-            ("Stun", "STUN")
+//            ("Stone Curse (initial stage)", "STONECURSE_ING"),
+//            ("Stone Curse (petrified)", "STONECURSE"),
+//            ("Stun", "STUN")
         };
 
         foreach (var (displayName, id) in knownDebuffs)
@@ -162,14 +162,14 @@ public partial class DebuffsViewModel : ObservableObject
 public partial class DebuffRecoveryItemViewModel : ObservableObject
 {
     public string Name { get; set; } = "";
-    
+
     public string DisplayName { get; set; } = "";
-    
+
     [ObservableProperty]
     private string _iconName = "";
     partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(ImagePath));
     public string ImagePath => $"pack://application:,,,/Icons/Debuffs/{IconName}.png";
-    
+
     [ObservableProperty]
     private string _key = "None";
 

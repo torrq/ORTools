@@ -444,16 +444,16 @@ public static class BuffDefinitions
             B("Curse", "CURSE", "curse"),
             B("Decrease AGI", "AL_DECAGI", "decrease_agi"),
             B("Freezing", "FREEZING", "freezing"),
-            B("Frozen", "FROZEN", "frozen"),
+//            B("Frozen", "FROZEN", "frozen"),
             B("Poison", "POISON", "poison_status"),
             B("Silence", "SILENCE", "silence"),
             B("Sit", "SIT", "sit"),
             B("Deep Sleep", "DEEP_SLEEP", "deep_sleep"),
             B("Sleep", "SLEEP", "sleep"),
             B("Slow Cast", "NPC_SLOWCAST", "slow_cast"),
-            B("Stone Curse (initial stage)", "STONECURSE_ING", "stonecurse1"),
-            B("Stone Curse (petrified)", "STONECURSE", "stonecurse2"),
-            B("Stun", "STUN", "stun")
+//            B("Stone Curse (initial stage)", "STONECURSE_ING", "stonecurse1"),
+//            B("Stone Curse (petrified)", "STONECURSE", "stonecurse2"),
+//            B("Stun", "STUN", "stun")
         });
      }
 }

@@ -13,6 +13,11 @@
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         FontFamily="Segoe UI" Background="{DynamicResource AppBaseBrush}">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:TimePickerViewModel}">
+            <views:TimePickerView />
+        </DataTemplate>
+    </Window.Resources>
     <Window.Style>
         <Style TargetType="Window">
             <Setter Property="ResizeMode" Value="CanMinimize"/>
@@ -76,6 +81,19 @@
         </tb:TaskbarIcon>
         <Border x:Name="HeaderPanel" VerticalAlignment="Top" 
             Padding="10,8" Background="{DynamicResource AppHeaderBrush}" Grid.ColumnSpan="2">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsDialogVisible}" Value="True">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect Radius="8" KernelType="Gaussian" RenderingBias="Performance"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="70" />
@@ -285,6 +303,13 @@
                         <DataTrigger Binding="{Binding IsMiniMode}" Value="True">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding IsDialogVisible}" Value="True">
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <BlurEffect Radius="8" KernelType="Gaussian" RenderingBias="Performance"/>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </TabControl.Style>
@@ -398,5 +423,20 @@
                 </RichTextBox.Resources>
             </RichTextBox>
         </Border>
+
+        <!-- ── Dialog Overlay ────────────────────────────────────────────────────── -->
+        <Grid Visibility="{Binding IsDialogVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Panel.ZIndex="9999" Grid.RowSpan="2" Grid.ColumnSpan="2">
+            
+            <Border Background="#66000000">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding CurrentDialogContent.CancelCommand}" />
+                </Border.InputBindings>
+            </Border>
+
+            <ContentControl Content="{Binding CurrentDialogContent}" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center" />
+        </Grid>
     </Grid>
 </Window>
