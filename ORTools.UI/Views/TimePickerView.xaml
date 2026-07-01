@@ -41,7 +41,7 @@
             </Button>
 
             <Button Command="{Binding ResetCommand}" 
-                    Content="&#xE72C;" FontFamily="pack://application:,,,/Fonts/#Segoe MDL2 Assets" 
+                    Content="&#xE087;" FontFamily="pack://application:,,,/Fonts/#lucide" 
                     FontSize="12" Width="28" Height="28" 
                     HorizontalAlignment="Left" VerticalAlignment="Top"
                     Margin="-8,-8,0,0" Padding="0"
