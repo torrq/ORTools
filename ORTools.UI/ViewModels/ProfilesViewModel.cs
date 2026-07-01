@@ -25,6 +25,7 @@ public partial class ProfileItemViewModel : ObservableObject
 public partial class ProfilesViewModel : ObservableObject
 {
     private readonly WorkerService _worker;
+    private readonly IDialogService _dialogService;
 
     [ObservableProperty]
     private ObservableCollection<ProfileItemViewModel> _profileList = new();
@@ -35,9 +36,10 @@ public partial class ProfilesViewModel : ObservableObject
     [ObservableProperty]
     private ProfileItemViewModel? _selectedProfile;
 
-    public ProfilesViewModel(WorkerService worker)
+    public ProfilesViewModel(WorkerService worker, IDialogService dialogService)
     {
         _worker = worker;
+        _dialogService = dialogService;
         _worker.ProfileListReceived += OnProfileList;
     }
 
@@ -57,72 +59,82 @@ public partial class ProfilesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SaveProfile()
+    private async System.Threading.Tasks.Task SaveProfile()
     {
-        var dialog = new Views.Dialogs.InputDialog("Enter new profile name:", "Create Profile", "")
-        {
-            Owner = Application.Current?.MainWindow
-        };
+        var vm = new InputDialogViewModel("Create Profile", "Enter new profile name:", "");
+        await _dialogService.ShowDialogAsync(vm);
         
-        if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.InputText))
+        var result = await vm.ResultTask;
+        _dialogService.CloseDialog();
+
+        if (result != null && !string.IsNullOrWhiteSpace(result))
         {
-            _worker.Send(new CreateProfileCommand(dialog.InputText));
+            _worker.Send(new CreateProfileCommand(result));
         }
     }
 
     [RelayCommand]
-    private void CopyProfile()
-    {
-        if (SelectedProfile == null) return;
-        
-        var dialog = new Views.Dialogs.InputDialog("Enter name for the copied profile:", "Copy Profile", $"{SelectedProfile.Name} (1)")
-        {
-            Owner = Application.Current?.MainWindow
-        };
-        
-        if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.InputText))
-        {
-            _worker.Send(new CopyProfileCommand(SelectedProfile.Name, dialog.InputText));
-        }
-    }
-
-    [RelayCommand]
-    private void RenameProfile()
+    private async System.Threading.Tasks.Task CopyProfile()
     {
         if (SelectedProfile == null) return;
-        if (SelectedProfile.Name == "Default")
-        {
-            MessageBox.Show("Cannot rename the Default profile!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        var dialog = new Views.Dialogs.InputDialog("Enter new profile name:", "Rename Profile", SelectedProfile.Name)
-        {
-            Owner = Application.Current?.MainWindow
-        };
         
-        if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.InputText))
+        var vm = new InputDialogViewModel("Copy Profile", "Enter name for the copied profile:", $"{SelectedProfile.Name} (1)");
+        await _dialogService.ShowDialogAsync(vm);
+        
+        var result = await vm.ResultTask;
+        _dialogService.CloseDialog();
+        
+        if (result != null && !string.IsNullOrWhiteSpace(result))
         {
-            _worker.Send(new RenameProfileCommand(SelectedProfile.Name, dialog.InputText));
+            _worker.Send(new CopyProfileCommand(SelectedProfile.Name, result));
         }
     }
 
     [RelayCommand]
-    private void RemoveProfile()
+    private async System.Threading.Tasks.Task RenameProfile()
     {
         if (SelectedProfile == null) return;
         if (SelectedProfile.Name == "Default")
         {
-            MessageBox.Show("Cannot delete the Default profile!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            var alert = new AlertDialogViewModel("Error", "Cannot rename the Default profile!");
+            await _dialogService.ShowDialogAsync(alert);
+            await alert.ResultTask;
+            _dialogService.CloseDialog();
             return;
         }
 
-        var dialog = new Views.Dialogs.ConfirmDeleteDialog($"Are you sure you want to delete the profile '{SelectedProfile.Name}'?")
+        var vm = new InputDialogViewModel("Rename Profile", "Enter new profile name:", SelectedProfile.Name);
+        await _dialogService.ShowDialogAsync(vm);
+        
+        var result = await vm.ResultTask;
+        _dialogService.CloseDialog();
+        
+        if (result != null && !string.IsNullOrWhiteSpace(result))
         {
-            Owner = Application.Current?.MainWindow
-        };
+            _worker.Send(new RenameProfileCommand(SelectedProfile.Name, result));
+        }
+    }
 
-        if (dialog.ShowDialog() == true)
+    [RelayCommand]
+    private async System.Threading.Tasks.Task RemoveProfile()
+    {
+        if (SelectedProfile == null) return;
+        if (SelectedProfile.Name == "Default")
+        {
+            var alert = new AlertDialogViewModel("Error", "Cannot delete the Default profile!");
+            await _dialogService.ShowDialogAsync(alert);
+            await alert.ResultTask;
+            _dialogService.CloseDialog();
+            return;
+        }
+
+        var vm = new ConfirmDeleteDialogViewModel($"Are you sure you want to delete the profile '{SelectedProfile.Name}'?");
+        await _dialogService.ShowDialogAsync(vm);
+        
+        var result = await vm.ResultTask;
+        _dialogService.CloseDialog();
+
+        if (result)
         {
             _worker.Send(new DeleteProfileCommand(SelectedProfile.Name));
         }

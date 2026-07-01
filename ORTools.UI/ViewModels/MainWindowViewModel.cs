@@ -38,10 +38,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [ObservableProperty] private string _appTitle = "OSRO Tools";
     [ObservableProperty] private string _appLogoSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.png";
 #if SERVERMODE_HR
-    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.ico";
+    private readonly string _baseIconPath = "pack://application:,,,/ORTools;component/Views/ortools-hr.ico";
 #else
-    [ObservableProperty] private string _trayIconSource = "pack://application:,,,/ORTools;component/Views/ortools-mr.ico";
+    private readonly string _baseIconPath = "pack://application:,,,/ORTools;component/Views/ortools-mr.ico";
 #endif
+
+    private ImageSource? _trayIconOn;
+    private ImageSource? _trayIconOff;
+
+    [ObservableProperty] private ImageSource? _trayIconSource;
     [ObservableProperty] private bool   _isClientConnected;
     [ObservableProperty] private string _connectedProcessName = "";
 
@@ -87,6 +92,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [ObservableProperty] private double _hpPercent;
     [ObservableProperty] private double _spPercent;
     [ObservableProperty] private double _wtPercent;
+    
+    [ObservableProperty] private bool _isHpLow;
+    [ObservableProperty] private bool _isSpLow;
 
     [ObservableProperty] private string _hpCurrentText = "";
     [ObservableProperty] private string _hpMaxText = "";
@@ -141,13 +149,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         ? AppColors.Connected
         : AppColors.Disconnected;
 
-    public Brush HpBarBrush => HpPercent < 25
-        ? AppColors.HpLow
-        : AppColors.HpNormal;
 
-    public Brush SpBarBrush => SpPercent < 25
-        ? AppColors.SpLow
-        : AppColors.SpNormal;
 
     // ── Dialog Overlay ────────────────────────────────────────────────────────
     [ObservableProperty] private bool _isDialogVisible;
@@ -175,6 +177,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     public MainWindowViewModel(WorkerService worker)
     {
         _worker = worker;
+        GenerateTrayIcons();
         AutopotSP = new AutopotSPViewModel(_worker);
         Debuffs = new DebuffsViewModel(_worker);
         SkillTimer = new SkillTimerViewModel(_worker, this);
@@ -186,7 +189,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         AutobuffSearch = new AutobuffSearchViewModel(AutobuffSkill, AutobuffItem);
         SkillSpammer = new SkillSpammerViewModel(_worker);
         Settings = new SettingsViewModel(worker, AutobuffSkill);
-        Profiles = new ProfilesViewModel(worker);
+        Profiles = new ProfilesViewModel(worker, this);
         StatusLogger = new StatusLoggerViewModel(worker);
         Misc = new MiscViewModel(worker);
         MacroSwitch = new MacroSwitchViewModel(_worker);
@@ -306,10 +309,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     }
 
     // Recompute derived properties when their inputs change
-    partial void OnIsApplicationOnChanged(bool value)  => OnPropertyChanged(nameof(ToggleButtonText));
+    partial void OnIsApplicationOnChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ToggleButtonText));
+        if (_trayIconOn != null && _trayIconOff != null)
+        {
+            TrayIconSource = value ? _trayIconOn : _trayIconOff;
+        }
+    }
     partial void OnIsConnectedChanged(bool value)       => OnPropertyChanged(nameof(ConnectionDotBrush));
-    partial void OnHpPercentChanged(double value)       => OnPropertyChanged(nameof(HpBarBrush));
-    partial void OnSpPercentChanged(double value)       => OnPropertyChanged(nameof(SpBarBrush));
+
 
 
     // ── Event handlers — all marshal to UI thread ─────────────────────────────
@@ -381,6 +390,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
 
             HpPercent = u.MaxHp > 0 ? (double)u.CurrentHp / u.MaxHp * 100.0 : 0;
             SpPercent = u.MaxSp > 0 ? (double)u.CurrentSp / u.MaxSp * 100.0 : 0;
+            IsHpLow = HpPercent < 25;
+            IsSpLow = SpPercent < 25;
 
             if (u.MaxHp > 0)
             {
@@ -628,6 +639,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         HpPercent = 0;
         SpPercent = 0;
         WtPercent = 0;
+        IsHpLow = false;
+        IsSpLow = false;
 
         HpCurrentText = "";
         HpMaxText = "";
@@ -641,5 +654,41 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         WtPercentLeftBracketText = "";
         WtPercentValueText = "";
         WtPercentRightBracketText = "";
+        WtPercentRightBracketText = "";
+    }
+
+    private void GenerateTrayIcons()
+    {
+        try
+        {
+            var baseImage = new System.Windows.Media.Imaging.BitmapImage();
+            baseImage.BeginInit();
+            baseImage.UriSource = new System.Uri(_baseIconPath);
+            baseImage.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+            baseImage.EndInit();
+
+            _trayIconOn = CreateIconWithDot(baseImage, Brushes.LimeGreen);
+            _trayIconOff = CreateIconWithDot(baseImage, Brushes.Red);
+            TrayIconSource = _trayIconOff;
+        }
+        catch
+        {
+            // Fallback
+        }
+    }
+
+    private ImageSource CreateIconWithDot(System.Windows.Media.Imaging.BitmapImage baseImage, Brush dotColor)
+    {
+        var visual = new DrawingVisual();
+        using (var ctx = visual.RenderOpen())
+        {
+            ctx.DrawImage(baseImage, new Rect(0, 0, 16, 16));
+            var pen = new Pen(Brushes.Black, 1.0);
+            ctx.DrawEllipse(dotColor, pen, new Point(12, 12), 3.5, 3.5);
+        }
+        var rtb = new System.Windows.Media.Imaging.RenderTargetBitmap(16, 16, 96, 96, PixelFormats.Pbgra32);
+        rtb.Render(visual);
+        rtb.Freeze();
+        return rtb;
     }
 }

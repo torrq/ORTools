@@ -11,6 +11,7 @@
     <SolidColorBrush x:Key="AppTextBrush" Color="#111827" />
     <SolidColorBrush x:Key="AppMutedBrush" Color="#4B5563" />
     <SolidColorBrush x:Key="AppSubtleBrush" Color="#6B7280" />
+    <SolidColorBrush x:Key="AppJobNameBrush" Color="#4B5563" />
     <SolidColorBrush x:Key="AppBorderBrush" Color="#9CA3AF" />
     <SolidColorBrush x:Key="AppInputBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="AppInputBorderBrush" Color="#9CA3AF" />
@@ -29,6 +30,42 @@
     <SolidColorBrush x:Key="AppInfoBrush" Color="#3B82F6" />
     <SolidColorBrush x:Key="AppMapNameBrush" Color="#65A30D" />
     <SolidColorBrush x:Key="AppWeightBrush" Color="#B45309" />
+
+    <SolidColorBrush x:Key="AppProgressBarBackgroundBrush" Color="#20000000" />
+    <SolidColorBrush x:Key="AppProgressBarTextBrush" Color="#000000" />
+    <Color x:Key="AppProgressBarTextShadowColor">White</Color>
+
+    <SolidColorBrush x:Key="AppHpBorderBrush" Color="#14A014" />
+    <SolidColorBrush x:Key="AppSpBorderBrush" Color="#0066FF" />
+    <SolidColorBrush x:Key="AppWtBorderBrush" Color="#962D1E" />
+
+    <Color x:Key="AppHpGlowColor">#14A014</Color>
+    <Color x:Key="AppSpGlowColor">#0066FF</Color>
+    <Color x:Key="AppWtGlowColor">#962D1E</Color>
+
+    <LinearGradientBrush x:Key="AppHpNormalBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#50FF50" Offset="0.0" />
+        <GradientStop Color="#14A014" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AppHpLowBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FF5050" Offset="0.0" />
+        <GradientStop Color="#C81E1E" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AppSpNormalBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#33CCFF" Offset="0.0" />
+        <GradientStop Color="#0066FF" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AppSpLowBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FFB432" Offset="0.0" />
+        <GradientStop Color="#D26E00" Offset="1.0" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="AppWtNormalBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#D26450" Offset="0.0" />
+        <GradientStop Color="#962D1E" Offset="1.0" />
+    </LinearGradientBrush>
+
     <SolidColorBrush x:Key="AppPrimaryTextBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="AppTabInactiveTextBrush" Color="#4B5563" />
     <SolidColorBrush x:Key="AppTabInactiveBrush" Color="#D1D5DB" />

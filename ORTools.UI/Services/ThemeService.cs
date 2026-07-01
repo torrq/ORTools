@@ -160,9 +160,9 @@ public static class ThemeService
             if (useLight)
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#A8C0D8"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F0F6FA"), 
-                    new Point(0, 0), new Point(1, 0));
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8FC8F5"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#DFF0FF"), 
+                    new Point(0, 0), new Point(1, 1));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3A7197"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2F5C7C"));
                 newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3A7197"));
@@ -170,9 +170,9 @@ public static class ThemeService
             else
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0A0D12"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2D3E59"), 
-                    new Point(0, 0), new Point(1, 0));
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#030A1A"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#103666"), 
+                    new Point(0, 0), new Point(1, 1));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#284F6B"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#1F3D52"));
                 newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5B9CD0"));
