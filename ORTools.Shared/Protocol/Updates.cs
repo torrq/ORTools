@@ -209,6 +209,7 @@ public sealed record AutoOffConfigUpdate(
 
 public sealed record AutoOffTimerStateUpdate(
     bool IsRunning,
+    bool IsPaused,
     int SelectedMinutes,
     int RemainingSeconds) : IIpcMessage
 {

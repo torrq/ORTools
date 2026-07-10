@@ -190,6 +190,11 @@ public sealed record ToggleAutoOffTimerCommand(bool Start) : IIpcMessage
     public string Type => MessageTypes.ToggleAutoOffTimer;
 }
 
+public sealed record PauseAutoOffTimerCommand(bool Pause) : IIpcMessage
+{
+    public string Type => MessageTypes.PauseAutoOffTimer;
+}
+
 public sealed record UpdateGlobalConfigCommand(
     int SongRows,
     int MacroSwitchRows,

@@ -3,11 +3,61 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:controls="clr-namespace:ORTools.UI.Controls"
+             xmlns:converters="clr-namespace:ORTools.UI.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:HourSelectedConverter x:Key="HourSelectedConverter"/>
+
+        <Style x:Key="HourChipButtonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource AppTextBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="MinWidth" Value="32" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="Background" Value="{DynamicResource AppInputBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AppInputBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="13">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Margin="{TemplateBinding Padding}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AppPrimaryHoverBrush}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AppPrimaryHoverBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource HourSelectedConverter}">
+                            <Binding Path="." />
+                            <Binding Path="DataContext.AutoOffTime" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource AppPrimaryBrush}" />
+                    <Setter Property="Foreground" Value="{DynamicResource AppPrimaryTextBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -16,48 +66,45 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!-- Left Column: Timer Settings -->
-        <StackPanel Grid.Column="0">
-            <GroupBox Margin="0,0,0,16" Padding="12">
-                <GroupBox.Header>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif" 
-                               Stretch="None" Margin="0,0,8,0"
-                               Visibility="{Binding IsTimerRunning, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Text="Auto Off Timer" FontWeight="SemiBold" />
-                    </StackPanel>
-                </GroupBox.Header>
-                <StackPanel TextElement.FontSize="13">
-                    <Grid Margin="0,0,0,8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding RemainingTimeText}" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource AppPrimaryBrush}" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="2" Text="{Binding SelectedTimeText}" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                    </Grid>
-                    
-                    <Slider Minimum="1" Maximum="{Binding MaxTime}" Value="{Binding AutoOffTime, Delay=150}" Margin="0,0,0,12" IsSnapToTickEnabled="True" TickFrequency="1" Cursor="Hand" />
-                    
-                    <ItemsControl ItemsSource="{Binding QuickButtons}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Content="{Binding StringFormat='{}{0}h'}" 
-                                        Command="{Binding DataContext.SetTimeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                        CommandParameter="{Binding}" 
-                                        Style="{StaticResource PrimaryButtonStyle}" 
-                                        Margin="0,0,4,0" Width="30" Padding="0,2" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+        <!-- Left Column: Timer, full height -->
+        <GroupBox Grid.Column="0" Padding="16" VerticalAlignment="Stretch">
+            <GroupBox.Header>
+                <TextBlock Text="Auto Off Timer" FontWeight="SemiBold" />
+            </GroupBox.Header>
+            <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,8">
+                    <controls:RadialTimePicker Value="{Binding AutoOffTime, Delay=150, Mode=TwoWay}"
+                                                Maximum="{Binding MaxTime}"
+                                                Minimum="1"
+                                                SnapMinutes="5"
+                                                IsRunning="{Binding IsTimerRunning}"
+                                                RemainingText="{Binding RemainingCombinedText}" />
+                </StackPanel>
 
-                    <Button Command="{Binding ToggleTimerCommand}" HorizontalAlignment="Stretch" Padding="8,6">
+                <ItemsControl ItemsSource="{Binding QuickButtons}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding StringFormat='{}{0}h'}"
+                                    Command="{Binding DataContext.SetTimeCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    Style="{StaticResource HourChipButtonStyle}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0" Command="{Binding ToggleTimerCommand}" HorizontalAlignment="Stretch" Padding="8,6">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
                                 <Setter Property="Content" Value="Start Timer"/>
@@ -70,12 +117,35 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                </StackPanel>
-            </GroupBox>
 
-            <GroupBox Header="Overweight Auto Off" Margin="0,0,0,10" Padding="12">
-                <StackPanel TextElement.FontSize="13">
-                    <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
+                    <Button Grid.Column="2" Command="{Binding PauseTimerCommand}" IsEnabled="{Binding IsTimerRunning}"
+                            HorizontalAlignment="Stretch" Padding="8,6" FontSize="14" ToolTip="Pause / resume the countdown">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                <Setter Property="Content" Value="&#x23F8;"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsTimerPaused}" Value="True">
+                                        <Setter Property="Content" Value="&#x25B6;"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Right Column: Overweight + Trigger Actions, equal height -->
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <GroupBox Grid.Row="0" Header="Overweight Auto Off" Padding="12">
+                <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
+                    <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,24" HorizontalAlignment="Center" Cursor="Hand" />
                     
                     <StackPanel Orientation="Horizontal" IsEnabled="{Binding AutoOffOverweight}" HorizontalAlignment="Center" RenderTransformOrigin="0.122,0.507">
                         <RadioButton Content="50%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=50}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,16,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
@@ -103,12 +173,9 @@
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
-        </StackPanel>
 
-        <!-- Right Column: Actions -->
-        <StackPanel Grid.Column="2">
-            <GroupBox Header="Trigger Actions" Margin="0,0,0,10" Padding="12">
-                <StackPanel TextElement.FontSize="13">
+            <GroupBox Grid.Row="2" Header="Trigger Actions" Padding="12">
+                <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
                     <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" />
                     
                     <Grid Margin="0,0,0,12">
@@ -149,6 +216,6 @@
                     </Grid>
                 </StackPanel>
             </GroupBox>
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

@@ -18,8 +18,8 @@
     <SolidColorBrush x:Key="AppPrimaryBrush" Color="#4B5563" />
     <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="#374151" />
     <SolidColorBrush x:Key="AppPrimaryPressedBrush" Color="#1F2937" />
-    <SolidColorBrush x:Key="AppLinkBrush" Color="#71973A" />
-    <SolidColorBrush x:Key="AppToggleOnBrush" Color="#71973A" />
+    <SolidColorBrush x:Key="AppLinkBrush" Color="#78b10a" />
+    <SolidColorBrush x:Key="AppToggleOnBrush" Color="#78b10a" />
     <SolidColorBrush x:Key="AppToggleOnHoverBrush" Color="#5C7C2F" />
     <SolidColorBrush x:Key="AppToggleOffBrush" Color="#EF4444" />
     <SolidColorBrush x:Key="AppToggleOffHoverBrush" Color="#DC2828" />

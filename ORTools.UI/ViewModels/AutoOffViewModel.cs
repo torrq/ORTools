@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
@@ -23,8 +24,11 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     [ObservableProperty] private string _ammo2Key = "None";
     [ObservableProperty] private int _autoOffTime = 1;
     [ObservableProperty] private bool _isTimerRunning;
+    [ObservableProperty] private bool _isTimerPaused;
     [ObservableProperty] private string _selectedTimeText = "0m";
     [ObservableProperty] private string _remainingTimeText = "0m";
+    [ObservableProperty] private string _remainingSecondsText = "";
+    [ObservableProperty] private string _remainingCombinedText = "";
     [ObservableProperty] private int _maxTime = 480;
     partial void OnMaxTimeChanged(int value) => UpdateQuickButtons();
 
@@ -52,7 +56,13 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     private void UpdateQuickButtons()
     {
         QuickButtons.Clear();
-        for(int i = 1; i <= MaxTime / 60; i++) QuickButtons.Add(i);
+
+        // HR skips 6/7h (jumps straight to 8h); MR only goes up to 6h.
+        var hours = ThemeService.ServerMode == 1
+            ? new[] { 1, 2, 3, 4, 5, 8 }
+            : new[] { 1, 2, 3, 4, 5, 6 };
+
+        foreach (var h in hours) QuickButtons.Add(h);
     }
 
     private void OnTimerStateReceived(AutoOffTimerStateUpdate update)
@@ -60,6 +70,7 @@ public sealed partial class AutoOffViewModel : ViewModelBase
         Application.Current?.Dispatcher.BeginInvoke(() =>
         {
             IsTimerRunning = update.IsRunning;
+            IsTimerPaused = update.IsPaused;
             int hours = update.SelectedMinutes / 60;
             int minutes = update.SelectedMinutes % 60;
             SelectedTimeText = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
@@ -70,10 +81,25 @@ public sealed partial class AutoOffViewModel : ViewModelBase
                 int rHr = rMin / 60;
                 int rM = rMin % 60;
                 RemainingTimeText = rHr > 0 ? $"{rHr}h {rM}m" : $"{rM}m";
+
+                int secs = update.RemainingSeconds % 60;
+                RemainingSecondsText = $"{secs:00}s";
+
+                int totalRemaining = Math.Max(0, update.RemainingSeconds);
+                int hoursLeft = totalRemaining / 3600;
+                int minsLeft = (totalRemaining % 3600) / 60;
+                int secsLeft = totalRemaining % 60;
+                RemainingCombinedText = hoursLeft > 0
+                    ? $"{hoursLeft}h {minsLeft}m {secsLeft:00}s"
+                    : minsLeft > 0
+                        ? $"{minsLeft}m {secsLeft:00}s"
+                        : $"{secsLeft}s";
             }
             else
             {
                 RemainingTimeText = "0m";
+                RemainingSecondsText = "";
+                RemainingCombinedText = "";
             }
         }, DispatcherPriority.Background);
     }
@@ -94,6 +120,10 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     }
 
     [RelayCommand] private void ToggleTimer() => _worker.Send(new ToggleAutoOffTimerCommand(!IsTimerRunning));
+
+    [RelayCommand]
+    private void PauseTimer() => _worker.Send(new PauseAutoOffTimerCommand(!IsTimerPaused));
+
     [RelayCommand] private void SetTime(int hours) 
     {
         AutoOffTime = hours * 60;

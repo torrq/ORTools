@@ -25,6 +25,8 @@ namespace ORTools.Worker
         public event EventHandler<AutoOffEventArgs> TimerStarted;
         public event EventHandler<AutoOffEventArgs> TimerStopped;
         public event EventHandler<AutoOffEventArgs> TimerCompleted;
+        public event EventHandler<AutoOffEventArgs> TimerPaused;
+        public event EventHandler<AutoOffEventArgs> TimerResumed;
         #endregion
 
         #region Private Fields
@@ -32,6 +34,7 @@ namespace ORTools.Worker
         private int selectedMinutes;
         private int remainingSeconds;
         private bool isTimerRunning;
+        private bool isPaused;
         private bool isInitializing;
         private CancellationTokenSource? _overweightMonitorCts;
         #endregion
@@ -50,6 +53,8 @@ namespace ORTools.Worker
         public int RemainingSeconds => remainingSeconds;
 
         public bool IsTimerRunning => isTimerRunning;
+
+        public bool IsPaused => isPaused;
 
         private const int BUFFER_MINUTES = 30;
         public int MaxMinutes =>
@@ -103,6 +108,7 @@ namespace ORTools.Worker
             remainingSeconds = selectedMinutes * 60;
             autoOffTimer.Start();
             isTimerRunning = true;
+            isPaused = false;
 
             DebugLogger.Debug($"Auto-off timer started at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Set duration: {SelectedTimeText} ({selectedMinutes} minutes). Timer running: {isTimerRunning}.");
 
@@ -114,9 +120,40 @@ namespace ORTools.Worker
         {
             autoOffTimer.Stop();
             isTimerRunning = false;
+            isPaused = false;
             remainingSeconds = 0;
 
             TimerStopped?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning));
+        }
+
+        /// <summary>Suspends the countdown without losing the remaining time. No-op if not running or already paused.</summary>
+        public bool PauseTimer()
+        {
+            if (!isTimerRunning || isPaused)
+                return false;
+
+            autoOffTimer.Stop();
+            isPaused = true;
+
+            DebugLogger.Debug($"Auto-off timer paused at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Remaining: {remainingSeconds}s.");
+
+            TimerPaused?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: true));
+            return true;
+        }
+
+        /// <summary>Resumes a paused countdown from where it left off. No-op if not running or not paused.</summary>
+        public bool ResumeTimer()
+        {
+            if (!isTimerRunning || !isPaused)
+                return false;
+
+            autoOffTimer.Start();
+            isPaused = false;
+
+            DebugLogger.Debug($"Auto-off timer resumed at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Remaining: {remainingSeconds}s.");
+
+            TimerResumed?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false));
+            return true;
         }
 
         public void StartOverweightMonitor()
@@ -241,12 +278,14 @@ namespace ORTools.Worker
         public int SelectedMinutes { get; }
         public int RemainingSeconds { get; }
         public bool IsTimerRunning { get; }
+        public bool IsPaused { get; }
 
-        public AutoOffEventArgs(int selectedMinutes, int remainingSeconds, bool isTimerRunning)
+        public AutoOffEventArgs(int selectedMinutes, int remainingSeconds, bool isTimerRunning, bool isPaused = false)
         {
             SelectedMinutes = selectedMinutes;
             RemainingSeconds = remainingSeconds;
             IsTimerRunning = isTimerRunning;
+            IsPaused = isPaused;
         }
     }
     #endregion

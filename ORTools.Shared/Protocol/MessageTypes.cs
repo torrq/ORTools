@@ -72,8 +72,9 @@ public static class MessageTypes
     public const string AutopotHPConfig = "AutopotHPConfig";
     public const string AutopotSPConfig = "AutopotSPConfig";
     // AutoOff Timer
-    public const string ToggleAutoOffTimer = "ToggleAutoOffTimer";
-    public const string AutoOffTimerStateUpdate = "AutoOffTimerStateUpdate";
+    public const string ToggleAutoOffTimer = nameof(ToggleAutoOffTimer);
+	public const string PauseAutoOffTimer = nameof(PauseAutoOffTimer);
+	public const string AutoOffTimerStateUpdate = nameof(AutoOffTimerStateUpdate);
     
     // Status Recovery
     public const string StatusRecoveryConfigUpdate = "StatusRecoveryConfigUpdate";

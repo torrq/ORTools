@@ -13,6 +13,9 @@ public static class ThemeService
 
     public static bool IsCurrentThemeLight { get; private set; }
 
+    /// <summary>1 = HR, 0 = MR.</summary>
+    public static int ServerMode => _serverMode;
+
     public static void SetServerMode(int serverMode)
     {
         if (_serverMode != serverMode)
@@ -140,9 +143,9 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D1B0B0"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFF0F0"), 
                     new Point(0, 0), new Point(1, 0));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D34A4A"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#df3e3e"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#B03D3D"));
-                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D34A4A"));
+                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#df3e3e"));
             }
             else
             {
@@ -150,7 +153,7 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#170808"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#522828"), 
                     new Point(0, 0), new Point(1, 0));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8A3A3A"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#a51e2e"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B2D2D"));
                 newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#E56B6B"));
             }
@@ -163,9 +166,9 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8FC8F5"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#DFF0FF"), 
                     new Point(0, 0), new Point(1, 1));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3A7197"));
-                newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2F5C7C"));
-                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3A7197"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#006dd1"));
+                newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#113e99"));
+                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#006dd1"));
             }
             else
             {
@@ -187,9 +190,9 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#C7C7C7"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFFFFF"), 
                     new Point(0, 0), new Point(1, 0));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#808080"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4e4e4e"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#666666"));
-                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#808080"));
+                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4e4e4e"));
             }
             else
             {
@@ -197,7 +200,7 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#09090b"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3f3f46"), 
                     new Point(0, 0), new Point(1, 0));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#555555"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#828282"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#444444"));
                 newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#A0A0A0"));
             }
@@ -210,9 +213,9 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#B5CDA3"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F2F9ED"), 
                     new Point(0, 0), new Point(1, 0));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#71973A"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#78b10a"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5C7C2F"));
-                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#71973A"));
+                newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#78b10a"));
             }
             else
             {
@@ -220,7 +223,7 @@ public static class ThemeService
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0D1209"), 
                     (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3E572D"), 
                     new Point(0, 0), new Point(1, 0));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4F6B28"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#78b10a"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3D521F"));
                 newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8BB54C"));
             }

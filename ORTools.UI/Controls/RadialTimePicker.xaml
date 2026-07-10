@@ -1,0 +1,67 @@
+<UserControl x:Class="ORTools.UI.Controls.RadialTimePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:converters="clr-namespace:ORTools.UI.Converters"
+             mc:Ignorable="d"
+             x:Name="Root"
+             Loaded="Root_Loaded"
+             d:DesignHeight="230" d:DesignWidth="230">
+
+    <UserControl.Resources>
+        <converters:BoolToHiddenVisibilityConverter x:Key="BoolToHidden" />
+    </UserControl.Resources>
+
+    <Grid Width="230" Height="230" Background="Transparent" Cursor="Hand"
+          MouseLeftButtonDown="Dial_MouseLeftButtonDown"
+          MouseMove="Dial_MouseMove"
+          MouseLeftButtonUp="Dial_MouseLeftButtonUp"
+          MouseUp="Dial_MouseLeftButtonUp">
+
+        <!-- Hour tick marks, drawn in code-behind -->
+        <Canvas x:Name="TickCanvas" Width="230" Height="230" IsHitTestVisible="False" />
+
+        <!-- Background track -->
+        <Ellipse Width="190" Height="190" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="13" IsHitTestVisible="False" />
+
+        <!-- Progress arc -->
+        <Path x:Name="ProgressArc" Stroke="{DynamicResource AppPrimaryBrush}" StrokeThickness="13"
+              StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
+
+        <!-- Draggable knob -->
+        <Ellipse x:Name="ThumbDot" Width="20" Height="20" Fill="White" Stroke="#33000000" StrokeThickness="1"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
+            <Ellipse.RenderTransform>
+                <TranslateTransform x:Name="ThumbTransform" />
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- Content stacked inside the ring: gif (while running), main time, combined countdown -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif"
+                   Stretch="None" HorizontalAlignment="Center" Margin="0,0,0,6"
+                   RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"
+                   Visibility="{Binding IsRunning, ElementName=Root, Converter={StaticResource BoolToHidden}}">
+                <Image.LayoutTransform>
+                    <ScaleTransform ScaleX="2" ScaleY="2" />
+                </Image.LayoutTransform>
+            </Image>
+
+            <TextBlock x:Name="CenterText" HorizontalAlignment="Center"
+                       FontSize="30" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}"
+                       MouseLeftButtonDown="CenterText_MouseLeftButtonDown"
+                       ToolTip="Click to type an exact time" />
+
+            <TextBlock Text="{Binding RemainingText, ElementName=Root}" HorizontalAlignment="Center"
+                       FontSize="14" FontWeight="SemiBold" Margin="0,3,0,0"
+                       Foreground="{DynamicResource AppPrimaryBrush}"
+                       Visibility="{Binding IsRunning, ElementName=Root, Converter={StaticResource BoolToHidden}}" />
+        </StackPanel>
+
+        <TextBox x:Name="CenterEditBox" Visibility="Collapsed" Width="92" HorizontalAlignment="Center" VerticalAlignment="Center"
+                 FontSize="20" FontWeight="Bold" TextAlignment="Center" HorizontalContentAlignment="Center"
+                 KeyDown="CenterEditBox_KeyDown" LostFocus="CenterEditBox_LostFocus" />
+    </Grid>
+</UserControl>
