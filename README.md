@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="ORTools.UI/Views/Icons/ui/ortools_pixelart" alt="OSRO Tools Logo" width="256"/>
+  <img src="ORTools.UI/Views/Icons/ui/ortools_pixelart.png" alt="OSRO Tools Logo" width="256"/>
   <h1>OSRO Tools</h1>
   <p><strong>A high-performance automation assistant for Oldschool RO (OSRO)</strong></p>
 </div>
