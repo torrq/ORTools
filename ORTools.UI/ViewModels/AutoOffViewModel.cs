@@ -6,12 +6,14 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Input;
+using System.Threading.Tasks;
 
 namespace ORTools.UI.ViewModels;
 
 public sealed partial class AutoOffViewModel : ViewModelBase
 {
     private readonly WorkerService _worker;
+    private readonly MainWindowViewModel _mainWindow;
     private bool _suppressCommands;
 
     [ObservableProperty] private bool _autoOffOverweight;
@@ -37,10 +39,11 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     public ObservableCollection<string> AvailableKeys { get; } = new();
     public ObservableCollection<int> QuickButtons { get; } = new();
 
-    public AutoOffViewModel(WorkerService worker)
+    public AutoOffViewModel(WorkerService worker, MainWindowViewModel mainWindow)
     {
         _worker = worker;
-        
+        _mainWindow = mainWindow;
+
         // Populate standard keys used in ORTools UI
         AvailableKeys.Add("None");
         for (int i = 1; i <= 12; i++) AvailableKeys.Add($"F{i}");
@@ -76,7 +79,7 @@ public sealed partial class AutoOffViewModel : ViewModelBase
             int hours = update.SelectedMinutes / 60;
             int minutes = update.SelectedMinutes % 60;
             SelectedTimeText = hours > 0 ? $"{hours}h {minutes}m" : $"{minutes}m";
-            
+
             if (update.IsRunning)
             {
                 int rMin = (update.RemainingSeconds + 59) / 60;
@@ -128,12 +131,24 @@ public sealed partial class AutoOffViewModel : ViewModelBase
         }, DispatcherPriority.Background);
     }
 
-    [RelayCommand] private void ToggleTimer() => _worker.Send(new ToggleAutoOffTimerCommand(!IsTimerRunning));
+    [RelayCommand]
+    private async Task ToggleTimer()
+    {
+        if (!IsTimerRunning && !_mainWindow.IsApplicationOn)
+        {
+            var dialog = new AlertDialogViewModel("Action Denied", "App must be toggled on before you can start the Auto Off timer.");
+            await _mainWindow.ShowDialogAsync(dialog);
+            _mainWindow.CloseDialog();
+            return;
+        }
+
+        _worker.Send(new ToggleAutoOffTimerCommand(!IsTimerRunning));
+    }
 
     [RelayCommand]
     private void PauseTimer() => _worker.Send(new PauseAutoOffTimerCommand(!IsTimerPaused));
 
-    [RelayCommand] private void SetTime(int hours) 
+    [RelayCommand] private void SetTime(int hours)
     {
         AutoOffTime = hours * 60;
     }
@@ -143,7 +158,7 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     partial void OnAutoOffKey1Changed(string value) => SendUpdate();
     partial void OnAutoOffKey2Changed(string value) => SendUpdate();
     partial void OnAutoOffKillClientChanged(bool value) => SendUpdate();
-    partial void OnAutoOffTimeChanged(int value) 
+    partial void OnAutoOffTimeChanged(int value)
     {
         int hours = value / 60;
         int mins = value % 60;

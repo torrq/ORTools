@@ -172,16 +172,24 @@ public sealed class WorkerCore
     {
         if (!_isOn) return;
         _isOn = false;
+        
         var p = ProfileSingleton.GetCurrent();
-        p.StopAll();
-        
-        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
-        if (prefs.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
+        try
         {
-            _autoOff.StopTimer();
+            p.StopAll();
+            
+            var prefs = p.UserPreferences;
+            if (prefs.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
+            {
+                _autoOff.StopTimer();
+            }
+            
+            _autoOff.StopOverweightMonitor();
         }
-        
-        _autoOff.StopOverweightMonitor();
+        catch (Exception ex)
+        {
+            DebugLogger.Error($"[WorkerCore] Error during TurnOff cleanup: {ex.Message}");
+        }
         
         try
         {
@@ -267,6 +275,7 @@ public sealed class WorkerCore
             ProfileSingleton.Create(profileName);
             ProfileSingleton.Load(profileName);
             HookSkillSpammerEvents();
+            _autoOff.LoadFromProfile();
             _currentProfileName = profileName;
             ConfigGlobal.GetConfig().LastUsedProfile = profileName;
             ConfigGlobal.SaveConfig();

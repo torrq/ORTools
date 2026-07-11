@@ -181,7 +181,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         AutopotSP = new AutopotSPViewModel(_worker);
         Debuffs = new DebuffsViewModel(_worker);
         SkillTimer = new SkillTimerViewModel(_worker, this);
-        AutoOff = new AutoOffViewModel(_worker);
+        AutoOff = new AutoOffViewModel(_worker, this);
         AutobuffSkill = new AutobuffSkillViewModel(_worker);
         AutopotHP = new AutopotHPViewModel(_worker);
         AutobuffOrder = new AutobuffOrderViewModel(_worker);
