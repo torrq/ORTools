@@ -159,6 +159,11 @@ public sealed class CommandDispatcher
                 if (taot != null) await _core.HandleToggleAutoOffTimer(taot);
                 break;
 
+            case MessageTypes.PauseAutoOffTimer:
+                var paot = env as PauseAutoOffTimerCommand;
+                if (paot != null) await _core.HandlePauseAutoOffTimer(paot);
+                break;
+
             case MessageTypes.UpdateGlobalConfig:
                 var ugc = env as UpdateGlobalConfigCommand;
                 if (ugc != null) await _core.HandleUpdateGlobalConfig(ugc);

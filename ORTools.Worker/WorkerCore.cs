@@ -58,14 +58,14 @@ public sealed class WorkerCore
         };
 
         _autoOff = new AutoOff();
-        _autoOff.TimerStarted += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds));
-        _autoOff.TimerStopped += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds));
-        _autoOff.TimerTick += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds));
-        _autoOff.TimerPaused += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds));
-        _autoOff.TimerResumed += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds));
+        _autoOff.TimerStarted += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
+        _autoOff.TimerStopped += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
+        _autoOff.TimerTick += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
+        _autoOff.TimerPaused += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
+        _autoOff.TimerResumed += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
         _autoOff.TimerCompleted += (s, e) => 
         {
-            _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds));
+            _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
             if (_isOn)
             {
                 _ = HandleTurnOff();
@@ -1066,7 +1066,14 @@ public sealed class WorkerCore
     {
         if (cmd.Start)
         {
-            _autoOff.StartTimer();
+            if (_isOn)
+            {
+                _autoOff.StartTimer();
+            }
+            else
+            {
+                _ = BroadcastAsync(new AutoOffTimerStateUpdate(false, false, _autoOff.SelectedMinutes, 0, 0));
+            }
         }
         else
         {
@@ -1083,7 +1090,14 @@ public sealed class WorkerCore
         }
         else
         {
-            _autoOff.ResumeTimer();
+            if (_isOn)
+            {
+                _autoOff.ResumeTimer();
+            }
+            else
+            {
+                _ = BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, true, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds, _autoOff.RunningMinutes));
+            }
         }
         return Task.CompletedTask;
     }
@@ -1233,7 +1247,7 @@ public sealed class WorkerCore
         await BroadcastAsync(BuildSkillSpammerConfig());
         await PushSkillTimerConfig();
         await BroadcastAsync(BuildAutoOffConfig());
-        await BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, _autoOff.IsPaused, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds));
+        await BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, _autoOff.IsPaused, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds, _autoOff.RunningMinutes));
         await BroadcastAsync(BuildGlobalConfigUpdate());
         await BroadcastAsync(BuildStatusLoggerConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());

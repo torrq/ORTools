@@ -29,6 +29,8 @@ public sealed partial class AutoOffViewModel : ViewModelBase
     [ObservableProperty] private string _remainingTimeText = "0m";
     [ObservableProperty] private string _remainingSecondsText = "";
     [ObservableProperty] private string _remainingCombinedText = "";
+    [ObservableProperty] private int _runningRemainingSeconds;
+    [ObservableProperty] private int _runningTotalMinutes;
     [ObservableProperty] private int _maxTime = 480;
     partial void OnMaxTimeChanged(int value) => UpdateQuickButtons();
 
@@ -94,12 +96,19 @@ public sealed partial class AutoOffViewModel : ViewModelBase
                     : minsLeft > 0
                         ? $"{minsLeft}m {secsLeft:00}s"
                         : $"{secsLeft}s";
+
+                // Drives the dial's live countdown ring/second-hand — kept separate from
+                // AutoOffTime so dragging the dial mid-run never disturbs the active countdown.
+                RunningRemainingSeconds = update.RemainingSeconds;
+                RunningTotalMinutes = update.RunningMinutes;
             }
             else
             {
                 RemainingTimeText = "0m";
                 RemainingSecondsText = "";
                 RemainingCombinedText = "";
+                RunningRemainingSeconds = 0;
+                RunningTotalMinutes = 0;
             }
         }, DispatcherPriority.Background);
     }

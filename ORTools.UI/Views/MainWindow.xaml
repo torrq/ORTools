@@ -1,4 +1,4 @@
-﻿<Window x:Class="ORTools.UI.Views.MainWindow"
+<Window x:Class="ORTools.UI.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
@@ -474,7 +474,7 @@
                          IsDocumentEnabled="True"
                          Margin="0,6,0,6"
                          Padding="0"
-                         FontFamily="pack://application:,,,/Fonts/#Cascadia Code"
+                         FontFamily="Consolas"
                          FontSize="10"
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Disabled">

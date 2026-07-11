@@ -69,7 +69,10 @@
         <!-- Left Column: Timer, full height -->
         <GroupBox Grid.Column="0" Padding="16" VerticalAlignment="Stretch">
             <GroupBox.Header>
-                <TextBlock Text="Auto Off Timer" FontWeight="SemiBold" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE087;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="Auto Off Timer" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
             </GroupBox.Header>
             <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" Margin="0,0,0,8">
@@ -143,7 +146,13 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <GroupBox Grid.Row="0" Header="Overweight Auto Off" Padding="12">
+            <GroupBox Grid.Row="0" Padding="12">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE530;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock Text="Overweight Auto Off" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                </GroupBox.Header>
                 <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
                     <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,24" HorizontalAlignment="Center" Cursor="Hand" />
                     
@@ -174,7 +183,13 @@
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Grid.Row="2" Header="Trigger Actions" Padding="12">
+            <GroupBox Grid.Row="2" Padding="12">
+                <GroupBox.Header>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE1B4;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                        <TextBlock Text="Trigger Actions" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                </GroupBox.Header>
                 <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
                     <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" />
                     

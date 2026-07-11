@@ -26,11 +26,28 @@
         <!-- Background track -->
         <Ellipse Width="190" Height="190" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="13" IsHitTestVisible="False" />
 
-        <!-- Progress arc -->
+        <!-- Live countdown / editable-target arc: while idle this IS the editable ring;
+             while running it shows the ACTIVE countdown and stops responding to drag visuals directly. -->
         <Path x:Name="ProgressArc" Stroke="{DynamicResource AppPrimaryBrush}" StrokeThickness="13"
               StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" />
 
-        <!-- Draggable knob -->
+        <!-- Pending "next run" preview: a thin dashed arc, only shown while running AND the
+             dragged target differs from the active run's duration. Never touches the live ring. -->
+        <Path x:Name="NextArc" Stroke="{DynamicResource AppSubtleBrush}" StrokeThickness="4" StrokeDashArray="2,2"
+              StrokeStartLineCap="Round" StrokeEndLineCap="Round" IsHitTestVisible="False" Visibility="Collapsed" />
+
+        <!-- Second-hand: orbits once per minute of the active countdown, like an analog clock.
+             Uses AppLinkBrush (the theme's brighter accent) plus a white outline so it stays
+             visible against the ring regardless of which color family/light-dark is active. -->
+        <Ellipse x:Name="SecondHandDot" Width="10" Height="10" Fill="{DynamicResource AppLinkBrush}"
+                 Stroke="White" StrokeThickness="1.2"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed">
+            <Ellipse.RenderTransform>
+                <TranslateTransform x:Name="SecondHandTransform" />
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- Draggable knob: always represents Value (the editable target for the NEXT run). -->
         <Ellipse x:Name="ThumbDot" Width="20" Height="20" Fill="White" Stroke="#33000000" StrokeThickness="1"
                  HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
             <Ellipse.RenderTransform>
@@ -40,7 +57,9 @@
 
         <!-- Content stacked inside the ring: gif (while running), main time, combined countdown -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Image gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif"
+            <Image x:Name="ClockGifImage"
+                   gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif"
+                   gif:ImageBehavior.AnimationLoaded="ClockGifImage_AnimationLoaded"
                    Stretch="None" HorizontalAlignment="Center" Margin="0,0,0,6"
                    RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"
                    Visibility="{Binding IsRunning, ElementName=Root, Converter={StaticResource BoolToHidden}}">
@@ -49,19 +68,29 @@
                 </Image.LayoutTransform>
             </Image>
 
-            <TextBlock x:Name="CenterText" HorizontalAlignment="Center"
-                       FontSize="30" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}"
-                       MouseLeftButtonDown="CenterText_MouseLeftButtonDown"
-                       ToolTip="Click to type an exact time" />
+            <!-- CenterText and CenterEditBox share one cell so toggling between them never
+                 changes this slot's size — that's what keeps the gif/countdown from shifting. -->
+            <Grid HorizontalAlignment="Center">
+                <TextBlock x:Name="CenterText" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="30" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}"
+                           MouseLeftButtonDown="CenterText_MouseLeftButtonDown"
+                           ToolTip="Click to type an exact time" />
+
+                <TextBox x:Name="CenterEditBox" Visibility="Hidden" Width="92"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"
+                         FontSize="20" FontWeight="Bold" TextAlignment="Center" HorizontalContentAlignment="Center"
+                         KeyDown="CenterEditBox_KeyDown" LostFocus="CenterEditBox_LostFocus" />
+            </Grid>
 
             <TextBlock Text="{Binding RemainingText, ElementName=Root}" HorizontalAlignment="Center"
                        FontSize="14" FontWeight="SemiBold" Margin="0,3,0,0"
                        Foreground="{DynamicResource AppPrimaryBrush}"
                        Visibility="{Binding IsRunning, ElementName=Root, Converter={StaticResource BoolToHidden}}" />
-        </StackPanel>
 
-        <TextBox x:Name="CenterEditBox" Visibility="Collapsed" Width="92" HorizontalAlignment="Center" VerticalAlignment="Center"
-                 FontSize="20" FontWeight="Bold" TextAlignment="Center" HorizontalContentAlignment="Center"
-                 KeyDown="CenterEditBox_KeyDown" LostFocus="CenterEditBox_LostFocus" />
+            <TextBlock x:Name="NextLabel" HorizontalAlignment="Center"
+                       FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"
+                       Foreground="{DynamicResource AppSubtleBrush}"
+                       Visibility="Collapsed" />
+        </StackPanel>
     </Grid>
 </UserControl>

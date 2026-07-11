@@ -98,6 +98,7 @@ Every message is a single newline-terminated JSON line:
 - Color palette is defined in `App.xaml` (e.g., `{StaticResource AppPrimaryBrush}`, `{StaticResource AppDangerBrush}`). Do not hardcode colors in XAML.
 - Keep bindings clean. WPF does not use `x:DataType` compiled bindings by default.
 - Key inputs should use `Style="{StaticResource KeyTextBoxStyle}"` combined with the `{StaticResource KeyToStringConverter}` to pretty-print key names (e.g., "NP/" instead of "Divide").
+- **Icons**: We have the Lucide font available for icons (`FontFamily="pack://application:,,,/Fonts/#lucide"`). Use this for UI iconography.
 
 ### Worker
 - All model instances live on `WorkerCore` as fields/properties.

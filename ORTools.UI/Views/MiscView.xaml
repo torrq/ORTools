@@ -8,7 +8,13 @@
              d:DataContext="{d:DesignInstance Type=viewmodels:MiscViewModel}"
              d:DesignHeight="400" d:DesignWidth="400">
     <Grid Margin="12">
-        <GroupBox Header="Transfer Helper">
+        <GroupBox>
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE417;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="Transfer Helper" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
+            </GroupBox.Header>
             <StackPanel Margin="12">
                 <Grid Margin="0,0,0,10">
                     <Grid.ColumnDefinitions>

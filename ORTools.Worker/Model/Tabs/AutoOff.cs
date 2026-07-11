@@ -32,6 +32,7 @@ namespace ORTools.Worker
         #region Private Fields
         private readonly System.Timers.Timer autoOffTimer;
         private int selectedMinutes;
+        private int runningMinutes;
         private int remainingSeconds;
         private bool isTimerRunning;
         private bool isPaused;
@@ -51,6 +52,13 @@ namespace ORTools.Worker
         }
 
         public int RemainingSeconds => remainingSeconds;
+
+        /// <summary>
+        /// The duration of the run currently in progress (snapshotted at StartTimer), in minutes.
+        /// Stays fixed even if SelectedMinutes changes mid-run — use this for countdown/progress math,
+        /// not SelectedMinutes, which represents the next timer's target and can change anytime.
+        /// </summary>
+        public int RunningMinutes => runningMinutes;
 
         public bool IsTimerRunning => isTimerRunning;
 
@@ -106,13 +114,14 @@ namespace ORTools.Worker
                 return false;
 
             remainingSeconds = selectedMinutes * 60;
+            runningMinutes = selectedMinutes;
             autoOffTimer.Start();
             isTimerRunning = true;
             isPaused = false;
 
             DebugLogger.Debug($"Auto-off timer started at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Set duration: {SelectedTimeText} ({selectedMinutes} minutes). Timer running: {isTimerRunning}.");
 
-            TimerStarted?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning));
+            TimerStarted?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false, runningMinutes: runningMinutes));
             return true;
         }
 
@@ -122,8 +131,9 @@ namespace ORTools.Worker
             isTimerRunning = false;
             isPaused = false;
             remainingSeconds = 0;
+            runningMinutes = 0;
 
-            TimerStopped?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning));
+            TimerStopped?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false, runningMinutes: runningMinutes));
         }
 
         /// <summary>Suspends the countdown without losing the remaining time. No-op if not running or already paused.</summary>
@@ -137,7 +147,7 @@ namespace ORTools.Worker
 
             DebugLogger.Debug($"Auto-off timer paused at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Remaining: {remainingSeconds}s.");
 
-            TimerPaused?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: true));
+            TimerPaused?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: true, runningMinutes: runningMinutes));
             return true;
         }
 
@@ -152,7 +162,7 @@ namespace ORTools.Worker
 
             DebugLogger.Debug($"Auto-off timer resumed at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Remaining: {remainingSeconds}s.");
 
-            TimerResumed?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false));
+            TimerResumed?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false, runningMinutes: runningMinutes));
             return true;
         }
 
@@ -220,14 +230,15 @@ namespace ORTools.Worker
             StopTimer(); // Ensure timer is stopped to avoid conflicts
         }
 
+        /// <summary>
+        /// Sets the target duration for the NEXT run. Never touches a currently active
+        /// countdown (remainingSeconds/runningMinutes) — that keeps ticking on its own
+        /// schedule regardless of how many times this is called while running.
+        /// </summary>
         public void SetTime(int minutes)
         {
             selectedMinutes = Math.Max(MIN_MINUTES, Math.Min(minutes, MaxMinutes));
             SaveToProfile();
-            if (isTimerRunning)
-            {
-                StopTimer();
-            }
         }
 
         public void SetTimeTo1Hours() => SetTime(ONE_HOUR);
@@ -243,14 +254,15 @@ namespace ORTools.Worker
         private void AutoOffTimer_Tick(object sender, EventArgs e)
         {
             remainingSeconds--;
-            TimerTick?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning));
+            TimerTick?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false, runningMinutes: runningMinutes));
 
             if (remainingSeconds <= 0)
             {
                 DebugLogger.Debug($"Auto-off timer completed at {DateTime.Now:yyyy-MM-dd HH:mm:ss}. Set duration: {SelectedTimeText} ({selectedMinutes} minutes).");
 
+                int completedRunningMinutes = runningMinutes;
                 StopTimer();
-                TimerCompleted?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning));
+                TimerCompleted?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false, runningMinutes: completedRunningMinutes));
             }
         }
 
@@ -279,13 +291,15 @@ namespace ORTools.Worker
         public int RemainingSeconds { get; }
         public bool IsTimerRunning { get; }
         public bool IsPaused { get; }
+        public int RunningMinutes { get; }
 
-        public AutoOffEventArgs(int selectedMinutes, int remainingSeconds, bool isTimerRunning, bool isPaused = false)
+        public AutoOffEventArgs(int selectedMinutes, int remainingSeconds, bool isTimerRunning, bool isPaused = false, int runningMinutes = 0)
         {
             SelectedMinutes = selectedMinutes;
             RemainingSeconds = remainingSeconds;
             IsTimerRunning = isTimerRunning;
             IsPaused = isPaused;
+            RunningMinutes = runningMinutes;
         }
     }
     #endregion

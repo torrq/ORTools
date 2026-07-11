@@ -211,7 +211,8 @@ public sealed record AutoOffTimerStateUpdate(
     bool IsRunning,
     bool IsPaused,
     int SelectedMinutes,
-    int RemainingSeconds) : IIpcMessage
+    int RemainingSeconds,
+    int RunningMinutes) : IIpcMessage
 {
     public string Type => MessageTypes.AutoOffTimerStateUpdate;
 }
