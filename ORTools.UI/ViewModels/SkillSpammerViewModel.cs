@@ -106,7 +106,6 @@ public partial class SkillSpammerViewModel : ObservableObject
             else
             {
                 // Show MR quests/MVP links
-                ShowHrQuests = false;
                 QuestImageSource = "pack://application:,,,/Assets/Banners/osro_quests_mr.png";
                 QuestUrl = "https://torrq.github.io/osro-quests-mr/";
             }

@@ -69,7 +69,7 @@ The Worker and UI run in the same process but remain strictly isolated. They com
    ```bash
    dotnet build ORTools.sln
    ```
-3. Run the **ORTools.UI** executable. 
+3. Run the **ORTools.UI** executable.
    - The application will immediately prompt you for Administrator privileges (via a UAC prompt), which are required for reading the game's process memory.
    - Once granted, the UI window will appear, the background worker will initialize automatically on a separate thread, and you're ready to go!
 
