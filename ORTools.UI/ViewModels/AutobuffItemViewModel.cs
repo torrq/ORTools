@@ -15,7 +15,7 @@ public partial class AutobuffItemItemViewModel : ObservableObject
     [ObservableProperty]
     private string _iconName = "";
     partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(ImagePath));
-    public string ImagePath => $"pack://application:,,,/Icons/Items/{IconName}.png";
+    public string ImagePath => $"pack://application:,,,/Assets/Icons/Items/{IconName}.png";
 
     [ObservableProperty]
     private string _key = "None";

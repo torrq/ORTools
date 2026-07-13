@@ -40,33 +40,30 @@ There are two server modes: **MR** (Midrate) and **HR** (Highrate).
 ```text
 ORTools.sln
 ├── ORTools.Shared      (.NET 8 class library)
-│   └── Protocol/       IPC message types shared by both processes
+│   └── Protocol/       IPC message types shared between UI and WorkerCore
 │
-├── ORTools.Worker      (.NET 8 console, requireAdministrator)
+├── ORTools.Worker      (.NET 8 class library)
 │   ├── WorkerCore.cs          root object; owns all model instances
-│   ├── IPC/PipeServer.cs      named pipe server (one UI client at a time)
 │   ├── IPC/CommandDispatcher  routes incoming commands to WorkerCore
-│   ├── IPC/StatePublisher     pushes HP/SP (50ms) + character (1s) updates
 │   ├── Utils/                 KeyboardHook, ThreadRunner, Win32Interop, etc.
 │   └── Model/                 all ported model classes (Tabs/, Buffs/, Settings/)
 │
 └── ORTools.UI          (.NET 8 WPF, requireAdministrator)
-    ├── Services/WorkerService    pipe client, reconnection, event dispatch
-    ├── Services/WorkerLauncher   ShellExecute runas to start Worker
+    ├── Services/WorkerService    boots WorkerCore on background thread, routes events
     ├── ViewModels/               MVVM via CommunityToolkit.Mvvm
     └── Views/                    WPF XAML windows and user controls
 ```
 
-### Why two processes?
+### Why a single process?
 
-The legacy app used a single elevated process with an MDI WinForms container, which caused severe lag on older hardware when dragging the window. The new architecture splits the app into two processes, because separating the WPF rendering thread from the heavy Win32 hooks and memory reading improves performance. This means:
-- DWM composites it smoothly.
-- Window dragging is smooth on older hardware.
-- The elevated Worker handles all Win32 `ReadProcessMemory` / `OpenProcess` calls that need admin.
+The legacy app used a single process with an MDI WinForms container on the UI thread, which caused severe lag on older hardware when dragging the window. The new architecture still uses a single process but fully decouples the background WorkerCore from the WPF UI. This means:
+- The UI process requires `requireAdministrator` via `app.manifest` so Win32 `ReadProcessMemory` / `OpenProcess` calls work properly.
+- `WorkerCore` runs on a dedicated background thread to prevent heavy Win32 hooking and memory reads from blocking the UI.
+- WPF runs on the main STA thread. DWM composites it smoothly and window dragging is smooth on older hardware.
 
-### IPC Protocol
+### IPC Protocol (In-Memory)
 
-Every message is a single newline-terminated JSON line:
+Even though they run in the same process, the WorkerCore and UI communicate strictly using an in-memory event bus that passes structured payload envelopes (IPC messages).
 ```json
 {"t":"MessageType","p":{...typed payload...}}
 ```
@@ -76,16 +73,14 @@ Every message is a single newline-terminated JSON line:
 - **Commands** flow UI → Worker.
 - **Updates** flow Worker → UI (pushed on state change, never polled).
 - When a new message type is needed, it must be added to `MessageTypes.cs` and either `Commands.cs` or `Updates.cs`.
-- On connect, the UI sends `RequestFullState`. The Worker responds with `AppState`, `ClientState`, `ProfileList`, and `ProcessList`.
+- On boot, `WorkerService` creates `WorkerCore` and subscribes to its `OnBroadcast` event, then requests full state.
 
-### Pipe Lifecycle
+### Lifecycle
 
-1. UI starts, `WorkerService.StartAsync` begins trying to connect.
-2. After 2 failed attempts, `WorkerLauncher.TryLaunch` starts the Worker with `ShellExecute("runas")` — Windows shows a UAC prompt once.
-3. Worker starts, creates the named pipe, sends `WorkerReady`.
-4. UI connects, sends `RequestFullState`, begins receiving updates.
-5. If the pipe breaks, `WorkerService` reconnects automatically (2s retry).
-6. Worker stays alive across UI restarts; UI re-syncs on reconnect.
+1. UI starts and triggers UAC prompt due to `app.manifest`.
+2. `WorkerService` spins up `WorkerCore` on a background thread (`Task.Run`).
+3. UI connects, sends `RequestFullState`, begins receiving updates via C# events.
+4. On exit, `WorkerService` gracefully disposes `WorkerCore` to stop the background threads.
 
 ---
 

@@ -23,7 +23,6 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
-    <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ORTools.Worker\ORTools.Worker.csproj" />
@@ -31,8 +30,8 @@
   <ItemGroup>
     <Resource Include="Views\ortools-hr.png" />
     <Resource Include="Views\ortools-mr.png" />
-    <Resource Include="Icons\**\*.png" />
-    <Resource Include="Icons\**\*.gif" />
+    <Resource Include="Assets\**\*.png" />
+    <Resource Include="Assets\**\*.gif" />
     <Resource Include="Fonts\**\*.ttf" />
   </ItemGroup>
 </Project>

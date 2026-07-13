@@ -13,7 +13,7 @@
         <GroupBox Foreground="{DynamicResource AppTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AppBorderBrush}" Padding="0,8,0,0">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="pack://application:,,,/Icons/tab_autopot_hp.png" Width="10" Height="12" Stretch="None" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                    <Image Source="pack://application:,,,/Assets/Icons/Autopot/tab_autopot_hp.png" Width="10" Height="12" Stretch="None" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     <TextBlock Text="Autopot HP" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </StackPanel>
             </GroupBox.Header>
@@ -23,7 +23,7 @@
         <GroupBox Grid.Column="2" Foreground="{DynamicResource AppTextBrush}" Background="Transparent" BorderBrush="{DynamicResource AppBorderBrush}" Padding="0,8,0,0">
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="pack://application:,,,/Icons/tab_autopot_sp.png" Width="10" Height="12" Stretch="None" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                    <Image Source="pack://application:,,,/Assets/Icons/Autopot/tab_autopot_sp.png" Width="10" Height="12" Stretch="None" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                     <TextBlock Text="Autopot SP" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </StackPanel>
             </GroupBox.Header>

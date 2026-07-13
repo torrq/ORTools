@@ -50,11 +50,11 @@ public static class ThemeService
     public static ThemeMode[] GetAvailableThemes()
     {
         if (_serverMode == 1) // HR
-            return new[] { ThemeMode.System, 
+            return new[] { ThemeMode.System,
                            ThemeMode.GreenLight, ThemeMode.RedLight, ThemeMode.BlueLight, ThemeMode.MonoLight,
                            ThemeMode.GreenDark, ThemeMode.RedDark, ThemeMode.BlueDark, ThemeMode.MonoDark };
         else // MR
-            return new[] { ThemeMode.System, 
+            return new[] { ThemeMode.System,
                            ThemeMode.RedLight, ThemeMode.GreenLight, ThemeMode.BlueLight, ThemeMode.MonoLight,
                            ThemeMode.RedDark, ThemeMode.GreenDark, ThemeMode.BlueDark, ThemeMode.MonoDark };
     }
@@ -67,7 +67,7 @@ public static class ThemeService
             if (_serverMode == 1) return isLight ? ThemeMode.GreenDark : ThemeMode.GreenLight;
             else return isLight ? ThemeMode.RedDark : ThemeMode.RedLight;
         }
-        
+
         return _currentMode switch
         {
             ThemeMode.GreenLight => ThemeMode.GreenDark,
@@ -85,18 +85,18 @@ public static class ThemeService
     public static ThemeMode GetNextColorTheme()
     {
         bool isLight = IsCurrentThemeLight;
-        
+
         ThemeMode[] lightThemes = { ThemeMode.GreenLight, ThemeMode.RedLight, ThemeMode.BlueLight, ThemeMode.MonoLight };
         ThemeMode[] darkThemes = { ThemeMode.GreenDark, ThemeMode.RedDark, ThemeMode.BlueDark, ThemeMode.MonoDark };
 
         var themes = isLight ? lightThemes : darkThemes;
-        
+
         int index = Array.IndexOf(themes, _currentMode);
-        
-        if (index == -1) 
+
+        if (index == -1)
         {
             string family = _serverMode == 1 ? "Green" : "Red";
-            ThemeMode effectiveMode = isLight 
+            ThemeMode effectiveMode = isLight
                 ? Enum.Parse<ThemeMode>($"{family}Light")
                 : Enum.Parse<ThemeMode>($"{family}Dark");
             index = Array.IndexOf(themes, effectiveMode);
@@ -108,7 +108,7 @@ public static class ThemeService
     public static void ApplyTheme(ThemeMode mode)
     {
         _currentMode = mode;
-        
+
         bool useLight = false;
         string colorFamily = "Green"; // Default to Green (HR)
 
@@ -128,8 +128,8 @@ public static class ThemeService
 
         IsCurrentThemeLight = useLight;
 
-        string themeUri = useLight 
-            ? "pack://application:,,,/ORTools;component/Themes/ThemeLight.xaml" 
+        string themeUri = useLight
+            ? "pack://application:,,,/ORTools;component/Themes/ThemeLight.xaml"
             : "pack://application:,,,/ORTools;component/Themes/ThemeDark.xaml";
 
         var dictionaries = Application.Current.Resources.MergedDictionaries;
@@ -140,8 +140,8 @@ public static class ThemeService
             if (useLight)
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D1B0B0"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFF0F0"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D1B0B0"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFF0F0"),
                     new Point(0, 0), new Point(1, 0));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#df3e3e"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#B03D3D"));
@@ -150,8 +150,8 @@ public static class ThemeService
             else
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#170808"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#522828"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#170808"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#522828"),
                     new Point(0, 0), new Point(1, 0));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#a51e2e"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B2D2D"));
@@ -163,8 +163,8 @@ public static class ThemeService
             if (useLight)
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8FC8F5"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#DFF0FF"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#8FC8F5"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#DFF0FF"),
                     new Point(0, 0), new Point(1, 1));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#006dd1"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#113e99"));
@@ -173,10 +173,10 @@ public static class ThemeService
             else
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#030A1A"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#14568B"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#030A1A"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#14568B"),
                     new Point(0, 0), new Point(1, 1));
-                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#1163BD"));
+                newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#208cff"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0C4687"));
                 newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#72CCFC"));
                 newTheme["AppSubtleBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#BEBEBE"));
@@ -187,8 +187,8 @@ public static class ThemeService
             if (useLight)
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#C7C7C7"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFFFFF"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#C7C7C7"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFFFFF"),
                     new Point(0, 0), new Point(1, 0));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4e4e4e"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#666666"));
@@ -197,8 +197,8 @@ public static class ThemeService
             else
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#09090b"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3f3f46"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#09090b"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3f3f46"),
                     new Point(0, 0), new Point(1, 0));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#828282"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#444444"));
@@ -210,8 +210,8 @@ public static class ThemeService
             if (useLight)
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#B5CDA3"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F2F9ED"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#B5CDA3"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F2F9ED"),
                     new Point(0, 0), new Point(1, 0));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#78b10a"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#5C7C2F"));
@@ -220,8 +220,8 @@ public static class ThemeService
             else
             {
                 newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0D1209"), 
-                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3E572D"), 
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#0D1209"),
+                    (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3E572D"),
                     new Point(0, 0), new Point(1, 0));
                 newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#78b10a"));
                 newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#3D521F"));
@@ -229,7 +229,7 @@ public static class ThemeService
             }
         }
 
-        var existingTheme = dictionaries.FirstOrDefault(d => 
+        var existingTheme = dictionaries.FirstOrDefault(d =>
             d.Source != null && d.Source.OriginalString.Contains("Theme"));
 
         if (existingTheme != null)

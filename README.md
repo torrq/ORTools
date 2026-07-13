@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="ORTools.UI/Views/ortools-hr.png" alt="OSRO Tools Logo" width="150"/>
+  <img src="ORTools.UI/Assets/Banners/ortools_pixelart.png" alt="OSRO Tools Logo" width="300"/>
   <h1>OSRO Tools</h1>
   <p><strong>A high-performance automation assistant for Oldschool RO (OSRO)</strong></p>
 </div>
@@ -24,26 +24,25 @@ It provides extensive support for automated potion consumption, skill spamming, 
 
 ## 🏗️ Architecture
 
-OSRO Tools is built on **.NET 8** and utilizes a strictly decoupled architecture to ensure maximum performance and seamless UI interaction on older hardware:
+OSRO Tools is built on **.NET 8** as a single, unified executable that utilizes a strictly decoupled multi-threaded architecture to ensure maximum performance and seamless UI interaction on older hardware:
 
-1. **ORTools.Worker (Background Core)**
-   - Contains all the background logic, Win32 API calls (`ReadProcessMemory`), and state management.
+1. **WorkerCore (Background Core)**
+   - Contains all the background logic, Win32 API calls (`ReadProcessMemory`, `SendInput`), and state management.
    - Runs entirely on a dedicated background thread to prevent any heavy hooking operations from blocking the UI.
-   - Publishes state changes via a decoupled event bus.
+   - Pushes state changes to the UI continuously (e.g. 50ms HP/SP updates).
 
-2. **ORTools.UI (WPF Frontend)**
-   - Modern MVVM UI using the `CommunityToolkit.Mvvm`.
-   - Hardware-accelerated DWM compositing allows for smooth window dragging.
-   - Runs on the main STA thread.
+2. **WPF Frontend**
+   - Modern hardware-accelerated WPF interface using the `CommunityToolkit.Mvvm`.
+   - Runs on the main STA thread. DWM compositing allows for smooth window dragging without lag.
+   - Strictly data-bound views ensure the UI is purely reactive.
 
-The Worker and UI communicate seamlessly using an in-memory event bus that passes structured payload envelopes (IPC messages). This enforces a clean separation of concerns, ensuring that the UI models are strictly data-bound and real-time state syncing never causes UI lockups.
+The Worker and UI run in the same process but remain strictly isolated. They communicate via structured payloads and events, enforcing a clean separation of concerns and ensuring real-time state syncing never causes UI lockups.
 
 ## 📋 Changelog (Legacy to Modern .NET 8)
 
 ```text
 * Architecture & Framework
   - Upgraded entire codebase from legacy .NET Framework to modern .NET 8
-  - Split architecture into distinct Worker Core and UI layers to eliminate UI lockups
   - Replaced the heavy MDI WinForms container with a hardware-accelerated WPF interface
 * User Interface (UI)
   - Implemented the MVVM pattern via CommunityToolkit.Mvvm for responsive data binding
@@ -71,8 +70,8 @@ The Worker and UI communicate seamlessly using an in-memory event bus that passe
    dotnet build ORTools.sln
    ```
 3. Run the **ORTools.UI** executable. 
-   - The application must be run as an Administrator (a UAC prompt will appear) because it requires elevated privileges to read the game's process memory.
-   - The background worker will initialize automatically on a separate thread, and you're ready to go!
+   - The application will immediately prompt you for Administrator privileges (via a UAC prompt), which are required for reading the game's process memory.
+   - Once granted, the UI window will appear, the background worker will initialize automatically on a separate thread, and you're ready to go!
 
 ## ⚙️ Development
 

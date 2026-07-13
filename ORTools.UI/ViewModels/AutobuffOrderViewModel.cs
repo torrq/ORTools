@@ -23,8 +23,8 @@ public partial class AutobuffOrderItemViewModel : ObservableObject
     partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(IconPath));
 
     public string IconPath => ItemType == "Skill" 
-        ? $"pack://application:,,,/Icons/Skills/{IconName}.png" 
-        : $"pack://application:,,,/Icons/Items/{IconName}.png";
+        ? $"pack://application:,,,/Assets/Icons/Skills/{IconName}.png" 
+        : $"pack://application:,,,/Assets/Icons/Items/{IconName}.png";
 }
 
 public partial class AutobuffOrderViewModel : ObservableObject

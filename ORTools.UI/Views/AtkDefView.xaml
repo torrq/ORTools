@@ -83,32 +83,32 @@
                                     <StackPanel Margin="0">
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                            <Image Source="pack://application:,,,/Icons/ATKDEF/armor_head.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_head.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                             <TextBox Grid.Column="1" Text="{Binding DefHead, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="DefHead_PreviewKeyDown" Height="22"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                            <Image Source="pack://application:,,,/Icons/ATKDEF/armor_body.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_body.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                             <TextBox Grid.Column="1" Text="{Binding DefBody, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="DefBody_PreviewKeyDown" Height="22"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                            <Image Source="pack://application:,,,/Icons/ATKDEF/dagger.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Source="pack://application:,,,/Assets/Icons/ATKDEF/dagger.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                             <TextBox Grid.Column="1" Text="{Binding DefWeapon, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="DefWeapon_PreviewKeyDown" Height="22"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                            <Image Source="pack://application:,,,/Icons/ATKDEF/armor_shield.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_shield.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                             <TextBox Grid.Column="1" Text="{Binding DefShield, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="DefShield_PreviewKeyDown" Height="22"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                            <Image Source="pack://application:,,,/Icons/ATKDEF/armor_robe.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_robe.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                             <TextBox Grid.Column="1" Text="{Binding DefGarment, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="DefGarment_PreviewKeyDown" Height="22"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Right">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="30"/><ColumnDefinition Width="80"/></Grid.ColumnDefinitions>
-                                            <Image Source="pack://application:,,,/Icons/ATKDEF/armor_shoes.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_shoes.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                             <TextBox Grid.Column="1" Text="{Binding DefShoes, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="DefShoes_PreviewKeyDown" Height="22"/>
                                         </Grid>
                                     </StackPanel>
@@ -124,32 +124,32 @@
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding AtkHead, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="AtkHead_PreviewKeyDown" Height="22"/>
-                                            <Image Grid.Column="1" Source="pack://application:,,,/Icons/ATKDEF/armor_head.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Grid.Column="1" Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_head.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding AtkBody, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="AtkBody_PreviewKeyDown" Height="22"/>
-                                            <Image Grid.Column="1" Source="pack://application:,,,/Icons/ATKDEF/armor_body.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Grid.Column="1" Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_body.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding AtkWeapon, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="AtkWeapon_PreviewKeyDown" Height="22"/>
-                                            <Image Grid.Column="1" Source="pack://application:,,,/Icons/ATKDEF/dagger.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Grid.Column="1" Source="pack://application:,,,/Assets/Icons/ATKDEF/dagger.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding AtkShield, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="AtkShield_PreviewKeyDown" Height="22"/>
-                                            <Image Grid.Column="1" Source="pack://application:,,,/Icons/ATKDEF/armor_shield.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Grid.Column="1" Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_shield.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding AtkGarment, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="AtkGarment_PreviewKeyDown" Height="22"/>
-                                            <Image Grid.Column="1" Source="pack://application:,,,/Icons/ATKDEF/armor_robe.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Grid.Column="1" Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_robe.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                         </Grid>
                                         <Grid Margin="0,0,0,2" HorizontalAlignment="Left">
                                             <Grid.ColumnDefinitions><ColumnDefinition Width="80"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding AtkShoes, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}" Style="{StaticResource KeyTextBoxStyle}" PreviewKeyDown="AtkShoes_PreviewKeyDown" Height="22"/>
-                                            <Image Grid.Column="1" Source="pack://application:,,,/Icons/ATKDEF/armor_shoes.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
+                                            <Image Grid.Column="1" Source="pack://application:,,,/Assets/Icons/ATKDEF/armor_shoes.png" Width="24" Height="24" Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor" HorizontalAlignment="Center"/>
                                         </Grid>
                                     </StackPanel>
                                 </StackPanel>

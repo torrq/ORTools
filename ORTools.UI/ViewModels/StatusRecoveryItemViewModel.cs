@@ -11,7 +11,7 @@ public partial class StatusRecoveryItemViewModel : ObservableObject
     [ObservableProperty]
     private string _displayName = string.Empty;
 
-    public string ImagePath => $"pack://application:,,,/Icons/Debuffs/{Name}.png";
+    public string ImagePath => $"pack://application:,,,/Assets/Icons/Debuffs/{Name}.png";
 
     [ObservableProperty]
     private string _key = "None";

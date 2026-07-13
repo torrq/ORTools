@@ -15,7 +15,7 @@ public partial class AutobuffSkillItemViewModel : ObservableObject
     [ObservableProperty]
     private string _iconName = "";
     partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(ImagePath));
-    public string ImagePath => $"pack://application:,,,/Icons/Skills/{IconName}.png";
+    public string ImagePath => $"pack://application:,,,/Assets/Icons/Skills/{IconName}.png";
 
     [ObservableProperty]
     private string _key = "None";

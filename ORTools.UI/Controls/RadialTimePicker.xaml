@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:gif="http://wpfanimatedgif.codeplex.com"
              xmlns:converters="clr-namespace:ORTools.UI.Converters"
              mc:Ignorable="d"
              x:Name="Root"
@@ -57,9 +56,7 @@
 
         <!-- Content stacked inside the ring: gif (while running), main time, combined countdown -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Image x:Name="ClockGifImage"
-                   gif:ImageBehavior.AnimatedSource="pack://application:,,,/Icons/ui/clock_animated.gif"
-                   gif:ImageBehavior.AnimationLoaded="ClockGifImage_AnimationLoaded"
+            <Image x:Name="ClockImage"
                    Stretch="None" HorizontalAlignment="Center" Margin="0,0,0,6"
                    RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"
                    Visibility="{Binding IsRunning, ElementName=Root, Converter={StaticResource BoolToHidden}}">
@@ -83,12 +80,12 @@
             </Grid>
 
             <TextBlock Text="{Binding RemainingText, ElementName=Root}" HorizontalAlignment="Center"
-                       FontSize="14" FontWeight="SemiBold" Margin="0,3,0,0"
+                       FontSize="16" FontWeight="Bold" Margin="0,3,0,0"
                        Foreground="{DynamicResource AppPrimaryBrush}"
                        Visibility="{Binding IsRunning, ElementName=Root, Converter={StaticResource BoolToHidden}}" />
 
             <TextBlock x:Name="NextLabel" HorizontalAlignment="Center"
-                       FontSize="11" FontWeight="SemiBold" Margin="0,2,0,0"
+                       FontSize="12" FontWeight="SemiBold" Margin="0,2,0,0"
                        Foreground="{DynamicResource AppSubtleBrush}"
                        Visibility="Collapsed" />
         </StackPanel>

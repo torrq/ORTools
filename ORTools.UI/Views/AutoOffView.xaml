@@ -179,7 +179,7 @@
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Source="pack://application:,,,/Icons/ui/weight50.png" Stretch="None" Margin="0,0,6,0" 
+                                        <Image Source="pack://application:,,,/Assets/Icons/AutoOff/weight50.png" Stretch="None" Margin="0,0,6,0" 
                                                RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" />
                                         <TextBlock Text="50%" VerticalAlignment="Center" />
                                     </StackPanel>
@@ -190,7 +190,7 @@
                             <RadioButton.ContentTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Source="pack://application:,,,/Icons/ui/weight90.png" Stretch="None" Margin="0,0,6,0" 
+                                        <Image Source="pack://application:,,,/Assets/Icons/AutoOff/weight90.png" Stretch="None" Margin="0,0,6,0" 
                                                RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True" />
                                         <TextBlock Text="90%" VerticalAlignment="Center" />
                                     </StackPanel>

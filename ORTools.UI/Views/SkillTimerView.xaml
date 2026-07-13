@@ -120,7 +120,7 @@
                                   HorizontalAlignment="Center" VerticalAlignment="Center" Cursor="Hand">
                             <CheckBox.Template>
                                 <ControlTemplate TargetType="CheckBox">
-                                    <Image x:Name="Icon" Source="pack://application:,,,/Icons/Key/key_alt.png" 
+                                    <Image x:Name="Icon" Source="pack://application:,,,/Assets/Icons/Key/key_alt.png" 
                                            Stretch="None" RenderOptions.BitmapScalingMode="NearestNeighbor"
                                            Opacity="0.35"/>
                                     <ControlTemplate.Triggers>

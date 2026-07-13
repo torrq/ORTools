@@ -4,8 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using WpfAnimatedGif;
-
+using System.Windows.Media.Imaging;
 namespace ORTools.UI.Controls
 {
     /// <summary>
@@ -36,7 +35,22 @@ namespace ORTools.UI.Controls
         private const double InnerDeadZoneRadius = 82;
 
         private bool _isDragging;
-        private ImageAnimationController? _gifController;
+
+        private static readonly BitmapImage[] _clockFrames = new BitmapImage[8];
+
+        static RadialTimePicker()
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                var bi = new BitmapImage();
+                bi.BeginInit();
+                bi.UriSource = new Uri($"pack://application:,,,/Assets/Icons/UI/Clock/frame_{i}.png");
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.EndInit();
+                bi.Freeze();
+                _clockFrames[i] = bi;
+            }
+        }
 
         public RadialTimePicker()
         {
@@ -155,7 +169,10 @@ namespace ORTools.UI.Controls
             => ((RadialTimePicker)d).UpdateVisual();
 
         private static void OnIsPausedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-            => ((RadialTimePicker)d).ApplyGifPauseState();
+        {
+            // Pause state just prevents running seconds from updating in the backend,
+            // so UpdateVisual isn't called, freezing the clock automatically.
+        }
 
         private static void OnRangeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -179,29 +196,6 @@ namespace ORTools.UI.Controls
         {
             BuildTicks();
             UpdateVisual();
-
-            _gifController = ImageBehavior.GetAnimationController(ClockGifImage);
-            ApplyGifPauseState();
-        }
-
-        private void ClockGifImage_AnimationLoaded(object sender, RoutedEventArgs e)
-        {
-            _gifController = ImageBehavior.GetAnimationController(ClockGifImage);
-            ApplyGifPauseState();
-        }
-
-        /// <summary>
-        /// Pauses/resumes the clock gif's own animation (not its visibility) via WpfAnimatedGif's
-        /// controller. The gif keeps existing in the visual tree either way — Visibility only
-        /// controls whether it's shown (tied to IsRunning); this controls whether it's moving.
-        /// </summary>
-        private void ApplyGifPauseState()
-        {
-            _gifController = ClockGifImage != null ? ImageBehavior.GetAnimationController(ClockGifImage) : null;
-            if (_gifController == null) return;
-
-            if (IsPaused) _gifController.Pause();
-            else _gifController.Play();
         }
 
         #region Drawing
@@ -294,6 +288,8 @@ namespace ORTools.UI.Controls
                 SecondHandTransform.X = secPoint.X - CenterX;
                 SecondHandTransform.Y = secPoint.Y - CenterY;
                 SecondHandDot.Visibility = Visibility.Visible;
+                
+                ClockImage.Source = _clockFrames[secondsIntoMinute % 8];
             }
             else
             {

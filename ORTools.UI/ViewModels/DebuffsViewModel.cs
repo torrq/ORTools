@@ -168,7 +168,7 @@ public partial class DebuffRecoveryItemViewModel : ObservableObject
     [ObservableProperty]
     private string _iconName = "";
     partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(ImagePath));
-    public string ImagePath => $"pack://application:,,,/Icons/Debuffs/{IconName}.png";
+    public string ImagePath => $"pack://application:,,,/Assets/Icons/Debuffs/{IconName}.png";
 
     [ObservableProperty]
     private string _key = "None";

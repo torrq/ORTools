@@ -71,6 +71,6 @@
     <SolidColorBrush x:Key="AppTabInactiveBrush" Color="#D1D5DB" />
     <SolidColorBrush x:Key="AppTabInactiveBorderBrush" Color="#9CA3AF" />
 
-    <BitmapImage x:Key="SpammerShiftIcon" UriSource="pack://application:,,,/Icons/Spammer/shift.png" />
-    <BitmapImage x:Key="SpammerMouseIcon" UriSource="pack://application:,,,/Icons/Spammer/up_and_down_arrow.png" />
+    <BitmapImage x:Key="SpammerShiftIcon" UriSource="pack://application:,,,/Assets/Icons/Spammer/shift.png" />
+    <BitmapImage x:Key="SpammerMouseIcon" UriSource="pack://application:,,,/Assets/Icons/Spammer/up_and_down_arrow.png" />
 </ResourceDictionary>

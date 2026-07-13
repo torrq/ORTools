@@ -57,7 +57,7 @@ public partial class SkillSpammerViewModel : ObservableObject
     private string _toggleModeKey = "None";
 
     [ObservableProperty]
-    private string _questImageSource = "pack://application:,,,/Icons/ui/osro_quests_mr.png";
+    private string _questImageSource = "pack://application:,,,/Assets/Banners/osro_quests_mr.png";
 
     [ObservableProperty]
     private string _questUrl = "https://torrq.github.io/osro-quests-mr/";
@@ -87,11 +87,11 @@ public partial class SkillSpammerViewModel : ObservableObject
         string[] aKeys = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
         string[] zKeys = { "Z", "X", "C", "V", "B", "N", "M" };
 
-        foreach (var k in fKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); FKeys.Add(vm); AllKeys.Add(vm); }
-        foreach (var k in numKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); NumKeys.Add(vm); AllKeys.Add(vm); }
-        foreach (var k in qKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); QKeys.Add(vm); AllKeys.Add(vm); }
-        foreach (var k in aKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); AKeys.Add(vm); AllKeys.Add(vm); }
-        foreach (var k in zKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Icons/Key/key_{k.ToLower()}.png", false); ZKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in fKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); FKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in numKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); NumKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in qKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); QKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in aKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); AKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in zKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); ZKeys.Add(vm); AllKeys.Add(vm); }
     }
 
     private void OnAppState(AppStateUpdate u)
@@ -100,12 +100,14 @@ public partial class SkillSpammerViewModel : ObservableObject
         {
             if (u.ServerMode == 1)
             {
-                QuestImageSource = "pack://application:,,,/Icons/ui/osro_quests_hr.png";
+                QuestImageSource = "pack://application:,,,/Assets/Banners/osro_quests_hr.png";
                 QuestUrl = "https://torrq.github.io/osro-quests-hr/";
             }
             else
             {
-                QuestImageSource = "pack://application:,,,/Icons/ui/osro_quests_mr.png";
+                // Show MR quests/MVP links
+                ShowHrQuests = false;
+                QuestImageSource = "pack://application:,,,/Assets/Banners/osro_quests_mr.png";
                 QuestUrl = "https://torrq.github.io/osro-quests-mr/";
             }
         });

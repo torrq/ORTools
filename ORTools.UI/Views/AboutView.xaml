@@ -28,7 +28,7 @@
                         <Run Text="View on GitHub"/>
                     </Hyperlink>
                 </TextBlock>
-                    <Image Height="30" Source="/Icons/ui/torq.png" Stretch="Fill" Width="48" Margin="0,20,0,0"/>
+                    <Image Height="30" Source="/Assets/Icons/UI/torq.png" Stretch="Fill" Width="48" Margin="0,20,0,0"/>
                 </StackPanel>
             </Border>
         </Grid>
