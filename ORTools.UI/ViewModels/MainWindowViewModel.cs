@@ -36,6 +36,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [ObservableProperty] private bool   _isApplicationOn;
     [ObservableProperty] private string _toggleKey = "None";
     [ObservableProperty] private string _appTitle = "OSRO Tools";
+    private string _baseAppTitle = "OSRO Tools";
     [ObservableProperty] private string _appLogoSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.png";
 #if SERVERMODE_HR
     private readonly string _baseIconPath = "pack://application:,,,/ORTools;component/Views/ortools-hr.ico";
@@ -120,6 +121,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     {
         IsMiniMode = !IsMiniMode;
     }
+
+    [ObservableProperty] private bool _isMiniTimerVisible;
+    [ObservableProperty] private string _miniTimerText = "";
 
     public AutopotHPViewModel AutopotHP { get; }
     public AutopotSPViewModel AutopotSP { get; }
@@ -218,6 +222,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         worker.ProfileListReceived += OnProfileList;
         worker.ErrorReceived       += OnError;
         worker.LogMessageReceived  += OnLogMessage;
+        worker.AutoOffTimerStateReceived += OnAutoOffTimerState;
     }
 
     public ObservableCollection<object> Tabs { get; }
@@ -341,11 +346,45 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         {
             IsApplicationOn = u.IsOn;
             ToggleKey       = u.ToggleKey ?? "None";
-            AppTitle        = u.AppTitle ?? "OSRO Tools";
+            _baseAppTitle   = u.AppTitle ?? "OSRO Tools";
+            UpdateAppTitle();
             AppLogoSource   = u.ServerMode == 1
                 ? "pack://application:,,,/ORTools;component/Views/ortools-hr.png"
                 : "pack://application:,,,/ORTools;component/Views/ortools-mr.png";
             ORTools.UI.Services.ThemeService.SetServerMode(u.ServerMode);
+        });
+
+    private void UpdateAppTitle()
+    {
+        if (IsMiniTimerVisible)
+        {
+            AppTitle = $"{_baseAppTitle} - Auto Off: {MiniTimerText}";
+        }
+        else
+        {
+            AppTitle = _baseAppTitle;
+        }
+    }
+
+    private void OnAutoOffTimerState(AutoOffTimerStateUpdate u) =>
+        Post(() =>
+        {
+            if (u.IsRunning)
+            {
+                IsMiniTimerVisible = true;
+                
+                int rMin = (u.RemainingSeconds + 59) / 60;
+                int rHr = rMin / 60;
+                int rM = rMin % 60;
+                MiniTimerText = rHr > 0 ? $"{rHr}h {rM}m" : $"{rM}m";
+                UpdateAppTitle();
+            }
+            else
+            {
+                IsMiniTimerVisible = false;
+                MiniTimerText = "";
+                UpdateAppTitle();
+            }
         });
 
     private void OnClientState(ClientStateUpdate u) =>
@@ -521,11 +560,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
 
             InfoLvLabel1Text = "Lv";
             InfoLvValue1Text = $"{u.Level}";
-            InfoSeparator1Text = "/";
+            InfoSeparator1Text = " / ";
             InfoLvLabel2Text = "Lv";
             InfoLvValue2Text = $"{u.JobLevel}";
-            InfoSeparator2Text = "/";
-            InfoExpLabelText = "Exp ";
+            InfoSeparator2Text = " / ";
+            InfoExpLabelText = "Exp";
             InfoExpValueText = expPct;
         });
 

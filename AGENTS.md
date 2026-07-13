@@ -193,3 +193,9 @@ Statuses (buffs, debuffs, active skills) are stored in the client's memory as an
 - **Index 0** holds the total count of active statuses.
 - **Indices 1 through N** hold the actual `EffectStatusIDs` of active statuses.
 - Empty or unused slots beyond the active count might contain leftover data or `uint.MaxValue` (`0xFFFFFFFF`), which should be filtered out by checking `StatusUtils.IsValidStatus(statusId)`.
+
+---
+
+## Agent Behavior Rules
+
+1. **Committing Code**: Do not automatically commit code unless explicitly instructed by the user. Even if the user asks you to commit once, that only applies to the current set of changes; you must stop automatically amending or creating new commits on subsequent turns unless the user specifically asks you to commit again.
