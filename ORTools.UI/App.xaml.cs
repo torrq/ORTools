@@ -13,6 +13,7 @@ public partial class App : Application
     {
         base.OnStartup(e);
         ThemeService.Initialize();
+        LanguageService.Initialize();
 
         _workerService = new WorkerService();
         var mainWindow = new MainWindow

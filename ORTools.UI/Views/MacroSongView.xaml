@@ -43,13 +43,13 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- Key -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Key" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource S.Songs.Key}" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
                                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding TriggerKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                          Style="{StaticResource KeyTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
                                          PreviewKeyDown="TriggerKey_PreviewKeyDown" />
 
                                 <!-- Delay -->
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Delay" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource S.Songs.Delay}" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0" HorizontalAlignment="Right" />
                                 <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Delay, Mode=TwoWay, Delay=150}"
                                          helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="100"
                                          Style="{StaticResource NumericTextBoxStyle}" Height="24" Width="65" HorizontalAlignment="Left"
@@ -169,7 +169,7 @@
                             </StackPanel>
 
                             <!-- Reset Button -->
-                            <Button Grid.Column="5" Content="Reset" Command="{Binding ResetRowCommand}"
+                            <Button Grid.Column="5" Content="{DynamicResource S.Songs.Reset}" Command="{Binding ResetRowCommand}"
                                     Style="{StaticResource DangerButtonStyle}"
                                     Width="60" Height="28" VerticalAlignment="Center" />
 

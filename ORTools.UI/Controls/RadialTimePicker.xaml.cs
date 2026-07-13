@@ -261,7 +261,8 @@ namespace ORTools.UI.Controls
             {
                 DrawArc(NextArc, valueAngleDeg, Radius);
                 NextArc.Visibility = Visibility.Visible;
-                NextLabel.Text = $"Next: {FormatMinutes(Value)}";
+                string nextStr = ORTools.UI.Services.LanguageService.Get("S.AutoOff.Next");
+                NextLabel.Text = $"{nextStr}: {FormatMinutes(Value)}";
                 NextLabel.Visibility = Visibility.Visible;
             }
             else

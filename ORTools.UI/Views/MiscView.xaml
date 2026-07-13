@@ -12,7 +12,7 @@
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE417;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
-                    <TextBlock Text="Transfer Helper" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource S.Misc.TransferHelper}" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </StackPanel>
             </GroupBox.Header>
             <StackPanel Margin="12">
@@ -22,13 +22,13 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Text="Transfer Key:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" FontSize="14" />
+                    <TextBlock Text="{DynamicResource S.Misc.TransferKey}" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" FontSize="14" />
                     <TextBox Grid.Column="1" Text="{Binding TransferKey, Converter={StaticResource KeyToStringConverter}}"
                              PreviewKeyDown="TransferKey_PreviewKeyDown"
                              Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Left" FontSize="14" />
                 </Grid>
                 <TextBlock
-                           TextWrapping="Wrap" Foreground="{DynamicResource AppSubtleBrush}" FontStyle="Italic" Margin="15,0,15,0" FontSize="13" ><Run Text="Hover over an item and press this key to instantly transfer it (simulates Alt + Right Click)."/><LineBreak/><Run Text="Works between Inventory, Storage, and Cart."/></TextBlock>
+                           TextWrapping="Wrap" Foreground="{DynamicResource AppSubtleBrush}" FontStyle="Italic" Margin="15,0,15,0" FontSize="13" ><Run Text="{DynamicResource S.Misc.TransferDesc1}"/><LineBreak/><Run Text="{DynamicResource S.Misc.TransferDesc2}"/></TextBlock>
             </StackPanel>
         </GroupBox>
     </Grid>

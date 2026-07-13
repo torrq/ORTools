@@ -64,12 +64,12 @@
             </Button>
 
             <StackPanel Margin="0,16,0,0">
-                <TextBlock Text="Set Delay" Foreground="{DynamicResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,24" HorizontalAlignment="Center"/>
+                <TextBlock Text="{DynamicResource S.Dialog.SetDelay}" Foreground="{DynamicResource AppTextBrush}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,24" HorizontalAlignment="Center"/>
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,24">
                 <!-- Hours -->
                 <StackPanel Margin="0,0,16,0">
-                    <TextBlock Text="HOURS" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="{DynamicResource S.Dialog.Hours}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                     <TextBox Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged}" 
                              Style="{StaticResource NumericTextBoxStyle}"
                              helpers:InputHelper.IsNumericInput="True"
@@ -81,7 +81,7 @@
 
                 <!-- Minutes -->
                 <StackPanel Margin="0,0,16,0">
-                    <TextBlock Text="MINUTES" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="{DynamicResource S.Dialog.Minutes}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                     <TextBox Text="{Binding Minutes, UpdateSourceTrigger=PropertyChanged}" 
                              Style="{StaticResource NumericTextBoxStyle}"
                              helpers:InputHelper.IsNumericInput="True"
@@ -93,7 +93,7 @@
 
                 <!-- Seconds -->
                 <StackPanel Margin="0,0,16,0">
-                    <TextBlock Text="SECONDS" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="{DynamicResource S.Dialog.Seconds}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                     <TextBox Text="{Binding Seconds, UpdateSourceTrigger=PropertyChanged}" 
                              Style="{StaticResource NumericTextBoxStyle}"
                              helpers:InputHelper.IsNumericInput="True"
@@ -105,7 +105,7 @@
 
                 <!-- Milliseconds -->
                 <StackPanel>
-                    <TextBlock Text="MS" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <TextBlock Text="{DynamicResource S.Dialog.Ms}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,8"/>
                     <TextBox Text="{Binding Milliseconds, UpdateSourceTrigger=PropertyChanged}" 
                              Style="{StaticResource NumericTextBoxStyle}"
                              helpers:InputHelper.IsNumericInput="True"
@@ -115,14 +115,14 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Cancel" Command="{Binding CancelCommand}" 
+                <Button Content="{DynamicResource S.Dialog.Cancel}" Command="{Binding CancelCommand}" 
                         IsCancel="True"
                         Style="{StaticResource SecondaryButtonStyle}" 
                         Width="100" Height="32" Margin="0,0,16,0"
                         Foreground="{DynamicResource AppSubtleBrush}"
                         Background="Transparent"/>
                 
-                <Button Content="Save" Command="{Binding SaveCommand}" 
+                <Button Content="{DynamicResource S.Dialog.Save}" Command="{Binding SaveCommand}" 
                         IsDefault="True"
                         Style="{StaticResource PrimaryButtonStyle}" 
                         Width="100" Height="32"/>

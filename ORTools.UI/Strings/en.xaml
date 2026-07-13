@@ -1,0 +1,199 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         ENGLISH STRING RESOURCES
+         Add a matching key to tl.xaml for every entry added here.
+         Keys use the S.<Area>.<Name> convention.
+    ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Tab Headers -->
+    <sys:String x:Key="S.Tab.Debuffs">Debuffs</sys:String>
+    <sys:String x:Key="S.Tab.Misc">Misc</sys:String>
+    <sys:String x:Key="S.Tab.Profiles">Profiles</sys:String>
+    <sys:String x:Key="S.Tab.Settings">Settings</sys:String>
+    <sys:String x:Key="S.Tab.About">About</sys:String>
+
+    <!-- Main Window -->
+    <sys:String x:Key="S.Main.Client">Client</sys:String>
+    <sys:String x:Key="S.Main.Profile">Profile</sys:String>
+    <sys:String x:Key="S.Main.Key">Key:</sys:String>
+    <sys:String x:Key="S.Main.Weight">Weight</sys:String>
+    <sys:String x:Key="S.Main.TurnOn">Turn ON</sys:String>
+    <sys:String x:Key="S.Main.TurnOff">Turn OFF</sys:String>
+
+    <!-- Autopot -->
+    <sys:String x:Key="S.Autopot.HP">Autopot HP</sys:String>
+    <sys:String x:Key="S.Autopot.SP">Autopot SP</sys:String>
+    <sys:String x:Key="S.Autopot.On">ON</sys:String>
+    <sys:String x:Key="S.Autopot.Key">KEY</sys:String>
+    <sys:String x:Key="S.Autopot.HPPercent">HP %</sys:String>
+    <sys:String x:Key="S.Autopot.SPPercent">SP %</sys:String>
+    <sys:String x:Key="S.Autopot.Delay">Delay (ms):</sys:String>
+    <sys:String x:Key="S.Autopot.StopCritical">Stop on Critical Wounds</sys:String>
+
+    <!-- Skill Timer -->
+    <sys:String x:Key="S.SkillTimer.Key">KEY</sys:String>
+    <sys:String x:Key="S.SkillTimer.Delay">DELAY (ms)</sys:String>
+    <sys:String x:Key="S.SkillTimer.OpenTimePicker">Open Time Picker</sys:String>
+    <sys:String x:Key="S.SkillTimer.ClickNone">None</sys:String>
+    <sys:String x:Key="S.SkillSpammer.UnkeysNone">None</sys:String>
+    <sys:String x:Key="S.SkillTimer.ClickCenter">Center</sys:String>
+
+    <!-- Skill Spammer -->
+    <sys:String x:Key="S.SkillSpammer.Legend">Legend</sys:String>
+    <sys:String x:Key="S.SkillSpammer.WithClick">With click</sys:String>
+    <sys:String x:Key="S.SkillSpammer.NoClick">No click</sys:String>
+    <sys:String x:Key="S.SkillSpammer.Disabled">Disabled</sys:String>
+    <sys:String x:Key="S.SkillSpammer.KeyConfig">Key Config</sys:String>
+    <sys:String x:Key="S.SkillSpammer.NoShift">No Shift</sys:String>
+    <sys:String x:Key="S.SkillSpammer.PressKeyToAssign">Press a key to assign</sys:String>
+    <sys:String x:Key="S.SkillSpammer.SpammerDelay">Spammer Delay</sys:String>
+
+    <!-- Debuffs -->
+    <sys:String x:Key="S.Debuffs.Delay">Delay (ms):</sys:String>
+
+    <!-- Misc -->
+    <sys:String x:Key="S.Misc.TransferHelper">Transfer Helper</sys:String>
+    <sys:String x:Key="S.Misc.TransferKey">Transfer Key:</sys:String>
+    <sys:String x:Key="S.Misc.TransferDesc1">Hover over an item and press this key to instantly transfer it (simulates Alt + Right Click).</sys:String>
+    <sys:String x:Key="S.Misc.TransferDesc2">Works between Inventory, Storage, and Cart.</sys:String>
+
+    <!-- Auto Off -->
+    <sys:String x:Key="S.AutoOff.TimerHeader">Auto Off Timer</sys:String>
+    <sys:String x:Key="S.AutoOff.Next">Next</sys:String>
+    <sys:String x:Key="S.AutoOff.StartStopTip">Start / Stop the countdown</sys:String>
+    <sys:String x:Key="S.AutoOff.PauseResumeTip">Pause / resume the countdown</sys:String>
+    <sys:String x:Key="S.AutoOff.TimerAutomation">Timer Automation</sys:String>
+    <sys:String x:Key="S.AutoOff.AutoStartOnEnable">Auto-start timer when turned on</sys:String>
+    <sys:String x:Key="S.AutoOff.AutoStopOnDisable">Auto-stop timer when turned off</sys:String>
+    <sys:String x:Key="S.AutoOff.OverweightHeader">Overweight Auto Off</sys:String>
+    <sys:String x:Key="S.AutoOff.EnableOverweight">Enable Auto Off on Overweight</sys:String>
+    <sys:String x:Key="S.AutoOff.TriggerActions">Trigger Actions</sys:String>
+    <sys:String x:Key="S.AutoOff.TriggerDesc">When Auto Off is triggered, perform these actions in order:</sys:String>
+    <sys:String x:Key="S.AutoOff.SendAltKey">Send Alt + Key:</sys:String>
+    <sys:String x:Key="S.AutoOff.StopGameClient">Stop Game Client</sys:String>
+
+    <!-- Profiles -->
+    <sys:String x:Key="S.Profiles.Create">Create Profile</sys:String>
+    <sys:String x:Key="S.Profiles.Rename">Rename Profile</sys:String>
+    <sys:String x:Key="S.Profiles.Copy">Copy Profile</sys:String>
+    <sys:String x:Key="S.Profiles.Delete">Delete Profile</sys:String>
+
+    <!-- About -->
+    <sys:String x:Key="S.About.Desc">A high-performance automation assistant for Oldschool RO.</sys:String>
+    <sys:String x:Key="S.About.BuiltWith">Built with .NET 8 and WPF.</sys:String>
+    <sys:String x:Key="S.About.GitHub">View on GitHub</sys:String>
+
+    <!-- Autobuff / Search -->
+    <sys:String x:Key="S.Autobuff.SubSearch">Search</sys:String>
+    <sys:String x:Key="S.Autobuff.SubSkills">Skills</sys:String>
+    <sys:String x:Key="S.Autobuff.SubItems">Items</sys:String>
+    <sys:String x:Key="S.Autobuff.SubOrder">Order</sys:String>
+    <sys:String x:Key="S.Autobuff.Search">Search:</sys:String>
+    <sys:String x:Key="S.Autobuff.ActiveSlots">Active Slots</sys:String>
+    <sys:String x:Key="S.Autobuff.SearchResults">Search Results</sys:String>
+    <sys:String x:Key="S.Autobuff.NoActiveBuffs">No active buffs. Type in the search box above to find skills and items.</sys:String>
+    <sys:String x:Key="S.Autobuff.Delay">Delay (ms):</sys:String>
+    <sys:String x:Key="S.Autobuff.OrderDesc">Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom)</sys:String>
+    <sys:String x:Key="S.Autobuff.UnsetHotkey">Unset Hotkey</sys:String>
+
+    <!-- Dialogs -->
+    <sys:String x:Key="S.Dialog.Cancel">Cancel</sys:String>
+    <sys:String x:Key="S.Dialog.Confirm">Confirm</sys:String>
+    <sys:String x:Key="S.Dialog.ConfirmDelete">Confirm Delete</sys:String>
+    <sys:String x:Key="S.Dialog.Delete">Delete</sys:String>
+    
+    <sys:String x:Key="S.Profiles.CreateTitle">Create Profile</sys:String>
+    <sys:String x:Key="S.Profiles.CreatePrompt">Enter new profile name:</sys:String>
+    <sys:String x:Key="S.Profiles.CopyTitle">Copy Profile</sys:String>
+    <sys:String x:Key="S.Profiles.CopyPrompt">Enter name for the copied profile:</sys:String>
+    <sys:String x:Key="S.Profiles.RenameTitle">Rename Profile</sys:String>
+    <sys:String x:Key="S.Profiles.RenamePrompt">Enter new profile name:</sys:String>
+    <sys:String x:Key="S.Profiles.ErrorTitle">Error</sys:String>
+    <sys:String x:Key="S.Profiles.ErrorRenameDefault">Cannot rename the Default profile!</sys:String>
+    <sys:String x:Key="S.Profiles.ErrorDeleteDefault">Cannot delete the Default profile!</sys:String>
+    <sys:String x:Key="S.Profiles.ConfirmDeleteMessage">Are you sure you want to delete the profile '{0}'?</sys:String>
+
+    <!-- Settings — Sidebar Tabs -->
+    <sys:String x:Key="S.Settings.PerProfileTab">Per-Profile Settings</sys:String>
+    <sys:String x:Key="S.Settings.BehaviorTab">Behavior</sys:String>
+
+    <!-- Settings — Per-Profile -->
+    <sys:String x:Key="S.Settings.ProfileBehavior">Profile Behavior</sys:String>
+    <sys:String x:Key="S.Settings.PauseInTown">Pause when in town</sys:String>
+    <sys:String x:Key="S.Settings.SoundsOn">Sounds on</sys:String>
+
+    <!-- Status Logger -->
+    <sys:String x:Key="S.StatusLogger.Time">Time</sys:String>
+    <sys:String x:Key="S.StatusLogger.Description">Log your character's stats to a CSV file.</sys:String>
+    <sys:String x:Key="S.StatusLogger.Enable">Enable Status Logger</sys:String>
+    <sys:String x:Key="S.StatusLogger.LogToFile">Log to File:</sys:String>
+    <sys:String x:Key="S.StatusLogger.OpenCSV">Open CSV</sys:String>
+    <sys:String x:Key="S.StatusLogger.LogFrequency">Log Frequency:</sys:String>
+    <sys:String x:Key="S.StatusLogger.Columns">Columns to Include</sys:String>
+    <sys:String x:Key="S.StatusLogger.Name">Name</sys:String>
+    <sys:String x:Key="S.StatusLogger.Level">Level</sys:String>
+    <sys:String x:Key="S.StatusLogger.JobLevel">Job Level</sys:String>
+    <sys:String x:Key="S.StatusLogger.Exp">Exp</sys:String>
+    <sys:String x:Key="S.StatusLogger.HP">HP</sys:String>
+    <sys:String x:Key="S.StatusLogger.MaxHP">Max HP</sys:String>
+    <sys:String x:Key="S.StatusLogger.SP">SP</sys:String>
+    <sys:String x:Key="S.StatusLogger.MaxSP">Max SP</sys:String>
+    <sys:String x:Key="S.StatusLogger.Weight">Weight</sys:String>
+    <sys:String x:Key="S.StatusLogger.MaxWeight">Max Wgt</sys:String>
+    <sys:String x:Key="S.StatusLogger.Map">Map</sys:String>
+    <sys:String x:Key="S.StatusLogger.Statuses">Statuses</sys:String>
+
+    <!-- Settings — Interface -->
+    <sys:String x:Key="S.Settings.Interface">Interface</sys:String>
+    <sys:String x:Key="S.Settings.StatusLogger">Status Logger</sys:String>
+    <sys:String x:Key="S.Settings.InterfaceLayout">Interface Layout</sys:String>
+    <sys:String x:Key="S.Settings.LanguageDesc">Switch application language</sys:String>
+    <sys:String x:Key="S.Settings.Language">Language</sys:String>
+    <sys:String x:Key="S.Settings.HideDeadClientInfo">Hide dead client info from logs</sys:String>
+    <sys:String x:Key="S.Songs.Key">Key</sys:String>
+    <sys:String x:Key="S.Songs.Delay">Delay (ms)</sys:String>
+    <sys:String x:Key="S.Songs.Reset">Reset</sys:String>
+    <sys:String x:Key="S.MacroSwitch.TriggerKey">Trigger Key</sys:String>
+    <sys:String x:Key="S.MacroSwitch.Reset">Reset</sys:String>
+    <sys:String x:Key="S.AtkDef.Settings">Settings</sys:String>
+    <sys:String x:Key="S.AtkDef.SpamKey">Spam Key</sys:String>
+    <sys:String x:Key="S.AtkDef.Click">Click?</sys:String>
+    <sys:String x:Key="S.AtkDef.SpamDelay">Spam Delay</sys:String>
+    <sys:String x:Key="S.AtkDef.SwitchDelay">Switch Delay</sys:String>
+    <sys:String x:Key="S.AtkDef.Switch">Switch</sys:String>
+    <sys:String x:Key="S.Settings.AppTheme">App Theme</sys:String>
+    <sys:String x:Key="S.Settings.SongRows">Song Rows</sys:String>
+    <sys:String x:Key="S.Settings.MacroSwitchRows">Macro Switch Rows</sys:String>
+    <sys:String x:Key="S.Settings.AtkDefRows">ATK x DEF Rows</sys:String>
+    <sys:String x:Key="S.Settings.DefaultToggleKey">Default Toggle Key</sys:String>
+    <sys:String x:Key="S.Settings.SystemTray">System Tray</sys:String>
+    <sys:String x:Key="S.Settings.DisableSystray">Disable Systray Icon</sys:String>
+    <sys:String x:Key="S.Settings.MinimizeToSystray">Minimize to systray</sys:String>
+    <sys:String x:Key="S.Settings.CloseToSystray">Close to systray</sys:String>
+    <sys:String x:Key="S.Settings.Advanced">Advanced</sys:String>
+    <sys:String x:Key="S.Settings.ShowExpPerHour">Show Exp/hour at top</sys:String>
+    <sys:String x:Key="S.Settings.KeepDeadClientInfo">Keep dead client info</sys:String>
+
+    <!-- Settings — Behavior -->
+    <sys:String x:Key="S.Settings.GeneralBehavior">General Behavior</sys:String>
+    <sys:String x:Key="S.Settings.PauseWhenChatting">Pause when chatting</sys:String>
+    <sys:String x:Key="S.Settings.PauseWhenDead">Pause when dead</sys:String>
+
+    <!-- Settings — Developer -->
+    <sys:String x:Key="S.Settings.DeveloperTools">Developer Tools</sys:String>
+    <sys:String x:Key="S.Settings.ClientLog">Client Log</sys:String>
+    <sys:String x:Key="S.Settings.DebugViewHeight">Debug View Height:</sys:String>
+    <sys:String x:Key="S.Settings.AllowResizingWindow">Allow resizing window</sys:String>
+
+    <sys:String x:Key="S.SkillTimer.ClickCursor">Cursor</sys:String>
+
+    <sys:String x:Key="S.Dialog.SetDelay">Set Delay</sys:String>
+    <sys:String x:Key="S.Dialog.Hours">HOURS</sys:String>
+    <sys:String x:Key="S.Dialog.Minutes">MINUTES</sys:String>
+    <sys:String x:Key="S.Dialog.Seconds">SECONDS</sys:String>
+    <sys:String x:Key="S.Dialog.Ms">MS</sys:String>
+    <sys:String x:Key="S.Dialog.Save">Save</sys:String>
+</ResourceDictionary>

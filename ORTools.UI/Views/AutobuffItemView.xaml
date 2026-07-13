@@ -65,7 +65,7 @@
 
         <!-- Settings -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
-            <TextBlock Text="Delay (ms):" FontSize="12" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBlock Text="{DynamicResource S.Autobuff.Delay}" FontSize="12" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <TextBox Text="{Binding Delay, UpdateSourceTrigger=PropertyChanged, Delay=500}" 
                      helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericDefault="50"
                      Style="{StaticResource NumericTextBoxStyle}" />

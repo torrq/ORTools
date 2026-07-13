@@ -36,7 +36,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [ObservableProperty] private bool   _isApplicationOn;
     [ObservableProperty] private string _toggleKey = "None";
     [ObservableProperty] private string _appTitle = "OSRO Tools";
-    private string _baseAppTitle = "OSRO Tools";
+    [ObservableProperty] private string _baseAppTitle = "OSRO Tools";
     [ObservableProperty] private string _appLogoSource = "pack://application:,,,/ORTools;component/Views/ortools-hr.png";
 #if SERVERMODE_HR
     private readonly string _baseIconPath = "pack://application:,,,/ORTools;component/Views/ortools-hr.ico";
@@ -111,6 +111,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [ObservableProperty] private string _wtPercentLeftBracketText = "";
     [ObservableProperty] private string _wtPercentValueText = "";
     [ObservableProperty] private string _wtPercentRightBracketText = "";
+    [ObservableProperty] private string _wtLabelText = "";
 
     // ── Child ViewModels ──────────────────────────────────────────────────────
     [ObservableProperty]
@@ -145,7 +146,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
 
     // ── Derived display properties ────────────────────────────────────────────
 
-    public string ToggleButtonText => IsApplicationOn ? "Turn OFF" : "Turn ON";
+    public string ToggleButtonText => LanguageService.Get(
+        IsApplicationOn ? "S.Main.TurnOff" : "S.Main.TurnOn");
 
     public bool HasSelectedProcess => SelectedProcess != null;
 
@@ -223,6 +225,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         worker.ErrorReceived       += OnError;
         worker.LogMessageReceived  += OnLogMessage;
         worker.AutoOffTimerStateReceived += OnAutoOffTimerState;
+
+        // Initialize localized labels
+        WtLabelText = LanguageService.Get("S.Main.Weight") + " ";
+        LanguageService.LanguageChanged += OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged()
+    {
+        WtLabelText = LanguageService.Get("S.Main.Weight") + " ";
+        OnPropertyChanged(nameof(ToggleButtonText));
     }
 
     public ObservableCollection<object> Tabs { get; }
@@ -346,7 +358,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         {
             IsApplicationOn = u.IsOn;
             ToggleKey       = u.ToggleKey ?? "None";
-            _baseAppTitle   = u.AppTitle ?? "OSRO Tools";
+            BaseAppTitle   = u.AppTitle ?? "OSRO Tools";
             UpdateAppTitle();
             AppLogoSource   = u.ServerMode == 1
                 ? "pack://application:,,,/ORTools;component/Views/ortools-hr.png"
@@ -358,11 +370,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     {
         if (IsMiniTimerVisible)
         {
-            AppTitle = $"{_baseAppTitle} - Auto Off: {MiniTimerText}";
+            AppTitle = $"{BaseAppTitle} - Auto Off: {MiniTimerText}";
         }
         else
         {
-            AppTitle = _baseAppTitle;
+            AppTitle = BaseAppTitle;
         }
     }
 

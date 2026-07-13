@@ -135,6 +135,14 @@ The application uses `ProfileSingleton` to hold the currently loaded configurati
 When porting models, watch out for legacy C# getters that intercept `0` values. Many delay configurations previously used `get => _delay <= 0 ? AppConfig.DefaultDelay : _delay;`. If a user intentionally sets a delay to `0` via the UI, this getter will silently override it back to the default when the Worker broadcasts the config back to the UI, causing confusing UI "rubberbanding" back to defaults.
 **Fix**: Always use strict `< 0` checks (`get => _delay < 0 ? AppConfig.DefaultDelay : _delay;`) so that `0` is allowed as a valid user input.
 
+**11. Localization and ResourceDictionaries (XamlParseException / Duplicate Keys)**
+When editing XAML resource dictionaries for localization (e.g. `Strings\en.xaml` and `Strings\tl.xaml`), agents MUST be extremely careful not to introduce duplicate `x:Key` elements. A duplicate key will cause an immediate fatal `XamlParseException` ("Item has already been added") when the app launches and attempts to merge the dictionaries.
+**Fix**: Always perform a strict `Select-String` check or `grep_search` to verify your new keys do not already exist before adding them, and verify again after performing bulk find/replace operations.
+
+**12. XAML Parsing and Literal String Content in Panels**
+When making structural XAML edits using tools or shell scripts (e.g. PowerShell `-replace`), be careful of accidentally inserting literal string text inside WPF panels like `<StackPanel>` or `<Grid>`. For example, using single quotes around ``` `r`n ``` in PowerShell will insert the literal string "`r`n", which causes `Cannot add instance of type 'String' to a collection of type 'UIElementCollection'` during XAML parsing.
+**Fix**: Use the multi-replace tool properly, or ensure double-quotes are used for interpolated escape characters in PowerShell. Never leave raw string content floating between UI elements in XAML.
+
 ---
 
 ## The Feature Tabs

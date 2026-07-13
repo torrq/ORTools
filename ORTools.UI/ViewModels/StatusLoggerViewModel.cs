@@ -152,9 +152,19 @@ public partial class StatusLoggerViewModel : ObservableObject
 
             var headers = new List<string> 
             { 
-                "Time", "Character Name", "Level", "Job Level", "Exp", 
-                "HP", "Max HP", "SP", "Max SP", "Weight", "Max Weight", 
-                "Map", "Statuses" 
+                LanguageService.Get("S.StatusLogger.Time") ?? "Time", 
+                LanguageService.Get("S.StatusLogger.Name") ?? "Character Name", 
+                LanguageService.Get("S.StatusLogger.Level") ?? "Level", 
+                LanguageService.Get("S.StatusLogger.JobLevel") ?? "Job Level", 
+                LanguageService.Get("S.StatusLogger.Exp") ?? "Exp", 
+                LanguageService.Get("S.StatusLogger.HP") ?? "HP", 
+                LanguageService.Get("S.StatusLogger.MaxHP") ?? "Max HP", 
+                LanguageService.Get("S.StatusLogger.SP") ?? "SP", 
+                LanguageService.Get("S.StatusLogger.MaxSP") ?? "Max SP", 
+                LanguageService.Get("S.StatusLogger.Weight") ?? "Weight", 
+                LanguageService.Get("S.StatusLogger.MaxWeight") ?? "Max Weight", 
+                LanguageService.Get("S.StatusLogger.Map") ?? "Map", 
+                LanguageService.Get("S.StatusLogger.Statuses") ?? "Statuses" 
             };
 
             if (writeHeader)
@@ -201,7 +211,23 @@ public partial class StatusLoggerViewModel : ObservableObject
             var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
             if (!System.IO.File.Exists(path))
             {
-                System.IO.File.WriteAllText(path, "Time,Character Name,Level,Job Level,Exp,HP,Max HP,SP,Max SP,Weight,Max Weight,Map,Statuses\r\n");
+                var headers = new List<string> 
+                { 
+                    LanguageService.Get("S.StatusLogger.Time") ?? "Time", 
+                    LanguageService.Get("S.StatusLogger.Name") ?? "Character Name", 
+                    LanguageService.Get("S.StatusLogger.Level") ?? "Level", 
+                    LanguageService.Get("S.StatusLogger.JobLevel") ?? "Job Level", 
+                    LanguageService.Get("S.StatusLogger.Exp") ?? "Exp", 
+                    LanguageService.Get("S.StatusLogger.HP") ?? "HP", 
+                    LanguageService.Get("S.StatusLogger.MaxHP") ?? "Max HP", 
+                    LanguageService.Get("S.StatusLogger.SP") ?? "SP", 
+                    LanguageService.Get("S.StatusLogger.MaxSP") ?? "Max SP", 
+                    LanguageService.Get("S.StatusLogger.Weight") ?? "Weight", 
+                    LanguageService.Get("S.StatusLogger.MaxWeight") ?? "Max Weight", 
+                    LanguageService.Get("S.StatusLogger.Map") ?? "Map", 
+                    LanguageService.Get("S.StatusLogger.Statuses") ?? "Statuses" 
+                };
+                System.IO.File.WriteAllText(path, string.Join(",", headers) + "\r\n");
             }
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {

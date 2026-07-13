@@ -51,7 +51,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Search:" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,8,0"/>
+                <TextBlock Grid.Column="0" Text="{DynamicResource S.Autobuff.Search}" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="4,0,8,0"/>
                 <TextBox x:Name="SearchTextBox" Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
                          Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AppTextBrush}" 
                          VerticalAlignment="Center" Padding="0,2"/>
@@ -64,7 +64,7 @@
                 <!-- Active Slots Section -->
                 <StackPanel Visibility="{Binding HasActiveSlots, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource AppBorderBrush}" Margin="0,0,0,10" Padding="0,0,0,4">
-                        <TextBlock Text="Active Slots" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}" />
+                        <TextBlock Text="{DynamicResource S.Autobuff.ActiveSlots}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}" />
                     </Border>
                     <ItemsControl ItemsSource="{Binding ActiveSlots}" ItemTemplate="{StaticResource SlotItemTemplate}">
                         <ItemsControl.ItemsPanel>
@@ -78,7 +78,7 @@
                 <!-- Search Results Section -->
                 <StackPanel Visibility="{Binding HasSearchResults, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,15,0,0">
                     <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource AppBorderBrush}" Margin="0,0,0,10" Padding="0,0,0,4">
-                        <TextBlock Text="Search Results" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}" />
+                        <TextBlock Text="{DynamicResource S.Autobuff.SearchResults}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}" />
                     </Border>
                     <ItemsControl ItemsSource="{Binding SearchResults}" ItemTemplate="{StaticResource SlotItemTemplate}">
                         <ItemsControl.ItemsPanel>
@@ -90,7 +90,7 @@
                 </StackPanel>
                 
                 <!-- Empty State Message -->
-                <TextBlock Text="No active buffs. Type in the search box above to find skills and items."
+                <TextBlock Text="{DynamicResource S.Autobuff.NoActiveBuffs}"
                            Foreground="{DynamicResource AppMutedBrush}"
                            HorizontalAlignment="Center"
                            Margin="0,40,0,0"

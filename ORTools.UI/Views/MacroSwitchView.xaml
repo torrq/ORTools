@@ -21,12 +21,12 @@
 
                             <!-- Left Side: Trigger -->
                             <StackPanel Grid.Column="0" Width="70" Margin="0,0,10,0" VerticalAlignment="Center">
-                                <TextBlock Text="Trigger Key" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4" />
+                                <TextBlock Text="{DynamicResource S.MacroSwitch.TriggerKey}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="10" HorizontalAlignment="Center" Margin="0,0,0,4" />
                                 <TextBox Text="{Binding TriggerKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                          Style="{StaticResource KeyTextBoxStyle}" 
                                          PreviewKeyDown="TriggerKey_PreviewKeyDown"
                                          HorizontalAlignment="Stretch" Margin="0,0,0,10" Height="22"/>
-                                <Button Content="Reset" Command="{Binding ResetRowCommand}" Style="{StaticResource DangerButtonStyle}" Padding="6,2"/>
+                                <Button Content="{DynamicResource S.MacroSwitch.Reset}" Command="{Binding ResetRowCommand}" Style="{StaticResource DangerButtonStyle}" Padding="6,2"/>
                             </StackPanel>
 
                             <!-- Right Side: Centered Labels & Steps -->

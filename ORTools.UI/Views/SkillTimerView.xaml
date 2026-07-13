@@ -111,9 +111,9 @@
                                   Width="60" Height="24"
                                   Foreground="Black"
                                   BorderBrush="{DynamicResource AppInputBorderBrush}">
-                            <ComboBoxItem Content="None"/>
-                            <ComboBoxItem Content="Cursor"/>
-                            <ComboBoxItem Content="Center"/>
+                            <ComboBoxItem Content="{DynamicResource S.SkillTimer.ClickNone}"/>
+                            <ComboBoxItem Content="{DynamicResource S.SkillTimer.ClickCursor}"/>
+                            <ComboBoxItem Content="{DynamicResource S.SkillTimer.ClickCenter}"/>
                         </ComboBox>
 
                         <CheckBox Grid.Column="4" IsChecked="{Binding AltKey}"

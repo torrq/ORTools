@@ -66,16 +66,16 @@
 
         <!-- Buttons Panel -->
         <StackPanel Grid.Column="1" Width="140">
-            <Button Content="Create Profile" Command="{Binding SaveProfileCommand}" Height="30" Margin="0,0,0,10"
+            <Button Content="{DynamicResource S.Profiles.Create}" Command="{Binding SaveProfileCommand}" Height="30" Margin="0,0,0,10"
                     Style="{StaticResource SecondaryButtonStyle}" />
             
-            <Button Content="Rename Profile" Command="{Binding RenameProfileCommand}" Height="30" Margin="0,0,0,10"
+            <Button Content="{DynamicResource S.Profiles.Rename}" Command="{Binding RenameProfileCommand}" Height="30" Margin="0,0,0,10"
                     Style="{StaticResource SecondaryButtonStyle}" />
 
-            <Button Content="Copy Profile" Command="{Binding CopyProfileCommand}" Height="30" Margin="0,0,0,10"
+            <Button Content="{DynamicResource S.Profiles.Copy}" Command="{Binding CopyProfileCommand}" Height="30" Margin="0,0,0,10"
                     Style="{StaticResource SecondaryButtonStyle}" />
             
-            <Button Content="Delete Profile" Command="{Binding RemoveProfileCommand}" Height="30" Margin="0,0,0,10"
+            <Button Content="{DynamicResource S.Profiles.Delete}" Command="{Binding RemoveProfileCommand}" Height="30" Margin="0,0,0,10"
                     Style="{StaticResource DangerButtonStyle}" />
         </StackPanel>
     </Grid>

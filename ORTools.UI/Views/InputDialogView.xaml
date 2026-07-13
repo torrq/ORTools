@@ -30,14 +30,14 @@
                      HorizontalContentAlignment="Left" Padding="4,0" />
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Cancel" Command="{Binding CancelCommand}" 
+                <Button Content="{DynamicResource S.Dialog.Cancel}" Command="{Binding CancelCommand}" 
                         IsCancel="True"
                         Style="{StaticResource SecondaryButtonStyle}" 
                         Width="100" Height="32" Margin="0,0,16,0"
                         Foreground="{DynamicResource AppSubtleBrush}"
                         Background="Transparent"/>
                 
-                <Button Content="Confirm" Command="{Binding SaveCommand}" 
+                <Button Content="{DynamicResource S.Dialog.Confirm}" Command="{Binding SaveCommand}" 
                         IsDefault="True"
                         Style="{StaticResource PrimaryButtonStyle}" 
                         Width="100" Height="32"/>

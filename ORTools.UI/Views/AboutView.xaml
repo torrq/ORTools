@@ -15,17 +15,17 @@
             <Border Background="{DynamicResource AppSurfaceAltBrush}" Opacity="0.9" CornerRadius="4"/>
             <Border BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="20">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="{Binding AppTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                <TextBlock Text="{Binding BaseAppTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Center" Margin="0,0,0,24"/>
                 
-                <TextBlock Text="A high-performance automation assistant for Oldschool RO." 
+                <TextBlock Text="{DynamicResource S.About.Desc}" 
                            TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,10" MaxWidth="350"/>
                            
-                <TextBlock Text="Built with .NET 8 and WPF." 
+                <TextBlock Text="{DynamicResource S.About.BuiltWith}" 
                            TextWrapping="Wrap" TextAlignment="Center" Foreground="{DynamicResource AppSubtleBrush}" MaxWidth="350"/>
                            
                 <TextBlock TextAlignment="Center" Margin="0,20,0,0">
                     <Hyperlink NavigateUri="https://github.com/torrq/ORTools" RequestNavigate="Hyperlink_RequestNavigate" Foreground="{DynamicResource AppLinkBrush}" TextDecorations="None">
-                        <Run Text="View on GitHub"/>
+                        <Run Text="{DynamicResource S.About.GitHub}"/>
                     </Hyperlink>
                 </TextBlock>
                     <Image Height="30" Source="/Assets/Icons/UI/torq.png" Stretch="Fill" Width="48" Margin="0,20,0,0"/>

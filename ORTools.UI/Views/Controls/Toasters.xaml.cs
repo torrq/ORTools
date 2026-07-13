@@ -60,13 +60,13 @@ public partial class Toasters : UserControl
                         string path = entry.Key.ToString() ?? "";
                         if ((path.StartsWith("assets/icons/skills/") || path.StartsWith("assets/icons/items/")) && path.EndsWith(".png"))
                         {
-                            var bi = new BitmapImage(new Uri("pack://application:,,,/" + path));
+                            var bi = new BitmapImage(new Uri("pack://application:,,,/ORTools;component/" + path));
                             bi.Freeze(); // Crucial for performance across threads/controls
                             _cachedImages.Add(bi);
                         }
                         else if (path == "assets/icons/ui/aus.png")
                         {
-                            var bi = new BitmapImage(new Uri("pack://application:,,,/" + path));
+                            var bi = new BitmapImage(new Uri("pack://application:,,,/ORTools;component/" + path));
                             bi.Freeze();
                             _specialImages.Add(bi);
                         }

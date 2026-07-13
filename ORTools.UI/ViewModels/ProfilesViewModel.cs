@@ -61,7 +61,10 @@ public partial class ProfilesViewModel : ObservableObject
     [RelayCommand]
     private async System.Threading.Tasks.Task SaveProfile()
     {
-        var vm = new InputDialogViewModel("Create Profile", "Enter new profile name:", "");
+        var vm = new InputDialogViewModel(
+            LanguageService.Get("S.Profiles.CreateTitle"),
+            LanguageService.Get("S.Profiles.CreatePrompt"), 
+            "");
         await _dialogService.ShowDialogAsync(vm);
         
         var result = await vm.ResultTask;
@@ -78,7 +81,10 @@ public partial class ProfilesViewModel : ObservableObject
     {
         if (SelectedProfile == null) return;
         
-        var vm = new InputDialogViewModel("Copy Profile", "Enter name for the copied profile:", $"{SelectedProfile.Name} (1)");
+        var vm = new InputDialogViewModel(
+            LanguageService.Get("S.Profiles.CopyTitle"), 
+            LanguageService.Get("S.Profiles.CopyPrompt"), 
+            $"{SelectedProfile.Name} (1)");
         await _dialogService.ShowDialogAsync(vm);
         
         var result = await vm.ResultTask;
@@ -96,14 +102,19 @@ public partial class ProfilesViewModel : ObservableObject
         if (SelectedProfile == null) return;
         if (SelectedProfile.Name == "Default")
         {
-            var alert = new AlertDialogViewModel("Error", "Cannot rename the Default profile!");
+            var alert = new AlertDialogViewModel(
+                LanguageService.Get("S.Profiles.ErrorTitle"), 
+                LanguageService.Get("S.Profiles.ErrorRenameDefault"));
             await _dialogService.ShowDialogAsync(alert);
             await alert.ResultTask;
             _dialogService.CloseDialog();
             return;
         }
 
-        var vm = new InputDialogViewModel("Rename Profile", "Enter new profile name:", SelectedProfile.Name);
+        var vm = new InputDialogViewModel(
+            LanguageService.Get("S.Profiles.RenameTitle"), 
+            LanguageService.Get("S.Profiles.RenamePrompt"), 
+            SelectedProfile.Name);
         await _dialogService.ShowDialogAsync(vm);
         
         var result = await vm.ResultTask;
@@ -121,14 +132,17 @@ public partial class ProfilesViewModel : ObservableObject
         if (SelectedProfile == null) return;
         if (SelectedProfile.Name == "Default")
         {
-            var alert = new AlertDialogViewModel("Error", "Cannot delete the Default profile!");
+            var alert = new AlertDialogViewModel(
+                LanguageService.Get("S.Profiles.ErrorTitle"), 
+                LanguageService.Get("S.Profiles.ErrorDeleteDefault"));
             await _dialogService.ShowDialogAsync(alert);
             await alert.ResultTask;
             _dialogService.CloseDialog();
             return;
         }
 
-        var vm = new ConfirmDeleteDialogViewModel($"Are you sure you want to delete the profile '{SelectedProfile.Name}'?");
+        string format = LanguageService.Get("S.Profiles.ConfirmDeleteMessage");
+        var vm = new ConfirmDeleteDialogViewModel(string.Format(format, SelectedProfile.Name));
         await _dialogService.ShowDialogAsync(vm);
         
         var result = await vm.ResultTask;

@@ -71,7 +71,7 @@
             <GroupBox.Header>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE087;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
-                    <TextBlock Text="Auto Off Timer" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource S.AutoOff.TimerHeader}" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </StackPanel>
             </GroupBox.Header>
             <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
@@ -110,7 +110,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Command="{Binding ToggleTimerCommand}" HorizontalAlignment="Stretch" Padding="8,6" FontFamily="pack://application:,,,/Fonts/#lucide" FontSize="18" ToolTip="Start / Stop the countdown">
+                    <Button Grid.Column="0" Command="{Binding ToggleTimerCommand}" HorizontalAlignment="Stretch" Padding="8,6" FontFamily="pack://application:,,,/Fonts/#lucide" FontSize="18" ToolTip="{DynamicResource S.AutoOff.StartStopTip}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
                                 <Setter Property="Content" Value="&#xE13C;"/>
@@ -125,7 +125,7 @@
                     </Button>
 
                     <Button Grid.Column="2" Command="{Binding PauseTimerCommand}" IsEnabled="{Binding IsTimerRunning}"
-                            HorizontalAlignment="Stretch" Padding="8,6" FontSize="18" FontFamily="pack://application:,,,/Fonts/#lucide" ToolTip="Pause / resume the countdown">
+                            HorizontalAlignment="Stretch" Padding="8,6" FontSize="18" FontFamily="pack://application:,,,/Fonts/#lucide" ToolTip="{DynamicResource S.AutoOff.PauseResumeTip}">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
                                 <Setter Property="Content" Value="&#xE12E;"/>
@@ -155,12 +155,12 @@
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE550;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
-                        <TextBlock Text="Timer Automation" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource S.AutoOff.TimerAutomation}" FontWeight="SemiBold" VerticalAlignment="Center" />
                     </StackPanel>
                 </GroupBox.Header>
                 <StackPanel TextElement.FontSize="13" VerticalAlignment="Center" Margin="0,4,0,4">
-                    <CheckBox Content="Auto-start timer when turned on" IsChecked="{Binding DataContext.Settings.StartAutoOffTimerOnEnable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" HorizontalAlignment="Left" Cursor="Hand" />
-                    <CheckBox Content="Auto-stop timer when turned off" IsChecked="{Binding DataContext.Settings.ClearAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Left" Cursor="Hand" />
+                    <CheckBox Content="{DynamicResource S.AutoOff.AutoStartOnEnable}" IsChecked="{Binding DataContext.Settings.StartAutoOffTimerOnEnable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" HorizontalAlignment="Left" Cursor="Hand" />
+                    <CheckBox Content="{DynamicResource S.AutoOff.AutoStopOnDisable}" IsChecked="{Binding DataContext.Settings.ClearAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Left" Cursor="Hand" />
                 </StackPanel>
             </GroupBox>
 
@@ -168,11 +168,11 @@
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE530;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
-                        <TextBlock Text="Overweight Auto Off" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource S.AutoOff.OverweightHeader}" FontWeight="SemiBold" VerticalAlignment="Center" />
                     </StackPanel>
                 </GroupBox.Header>
                 <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
-                    <CheckBox Content="Enable Auto Off on Overweight" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
+                    <CheckBox Content="{DynamicResource S.AutoOff.EnableOverweight}" IsChecked="{Binding AutoOffOverweight}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Center" Cursor="Hand" />
                     
                     <StackPanel Orientation="Horizontal" IsEnabled="{Binding AutoOffOverweight}" HorizontalAlignment="Center" RenderTransformOrigin="0.122,0.507">
                         <RadioButton Content="50%" IsChecked="{Binding AutoOffOverweightMode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=50}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,16,0" VerticalAlignment="Center" VerticalContentAlignment="Center" Cursor="Hand">
@@ -205,11 +205,11 @@
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE1B4;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />
-                        <TextBlock Text="Trigger Actions" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock Text="{DynamicResource S.AutoOff.TriggerActions}" FontWeight="SemiBold" VerticalAlignment="Center" />
                     </StackPanel>
                 </GroupBox.Header>
                 <StackPanel TextElement.FontSize="13" VerticalAlignment="Center">
-                    <TextBlock Text="When Auto Off is triggered, perform these actions in order:" TextWrapping="Wrap" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" />
+                    <TextBlock Text="{DynamicResource S.AutoOff.TriggerDesc}" TextWrapping="Wrap" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" />
                     
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
@@ -218,7 +218,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="1." VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
-                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="{DynamicResource S.AutoOff.SendAltKey}" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                         <TextBox Grid.Column="2" Text="{Binding AutoOffKey1, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="Key1TextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
@@ -231,7 +231,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="2." VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
-                        <TextBlock Grid.Column="1" Text="Send Alt + Key:" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="{DynamicResource S.AutoOff.SendAltKey}" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                         <TextBox Grid.Column="2" Text="{Binding AutoOffKey2, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                  PreviewKeyDown="Key2TextBox_PreviewKeyDown"
                                  Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Center" />
@@ -244,7 +244,7 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="3." VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
-                        <TextBlock Grid.Column="1" Text="Stop Game Client" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
+                        <TextBlock Grid.Column="1" Text="{DynamicResource S.AutoOff.StopGameClient}" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                         <CheckBox Grid.Column="2" IsChecked="{Binding AutoOffKillClient}" VerticalAlignment="Center" Cursor="Hand" />
                     </Grid>
                 </StackPanel>

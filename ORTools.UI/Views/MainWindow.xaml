@@ -185,7 +185,7 @@
                                     Style="{StaticResource ToggleApplicationButtonStyle}"
                                     Height="24" Width="100" FontSize="11" Margin="0,0,0,6"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="Key:" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Text="{DynamicResource S.Main.Key}" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="0,0,4,0"/>
                                 <TextBox x:Name="ToggleKeyTextBox" Text="{Binding ToggleKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                          PreviewKeyDown="ToggleKeyTextBox_PreviewKeyDown"
                                          Width="50" Height="22" MaxLength="10" FontSize="11"
@@ -279,7 +279,7 @@
                             <TextBlock.Effect>
                                 <DropShadowEffect Color="{DynamicResource AppProgressBarTextShadowColor}" BlurRadius="1" ShadowDepth="1" Opacity="0.8"/>
                             </TextBlock.Effect>
-                            <Run Text="Weight " Foreground="{DynamicResource AppProgressBarTextBrush}" />
+                            <Run Text="{Binding WtLabelText}" Foreground="{DynamicResource AppProgressBarTextBrush}" />
                             <Run Text="{Binding WtCurrentText}" Foreground="{DynamicResource AppProgressBarTextBrush}" />
                             <Run Text=" / " Foreground="{DynamicResource AppProgressBarTextBrush}" />
                             <Run Text="{Binding WtMaxText}" Foreground="{DynamicResource AppProgressBarTextBrush}" />
@@ -291,7 +291,7 @@
                 </StackPanel>
                 
                 <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="12,0,0,0">
-                    <TextBlock Text="Client" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{DynamicResource S.Main.Client}" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,0,2"/>
                     <ComboBox x:Name="ClientComboBox" ItemsSource="{Binding ProcessList}"
                               SelectedItem="{Binding SelectedProcess}"
                               DisplayMemberPath="DisplayName"
@@ -302,7 +302,7 @@
                               Foreground="Black" BorderBrush="{DynamicResource AppInputBorderBrush}" Margin="0,0,0,6">
                     </ComboBox>
 
-                    <TextBlock Text="Profile" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{DynamicResource S.Main.Profile}" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,0,2"/>
                     <ComboBox x:Name="ProfileComboBox" ItemsSource="{Binding ProfileList}"
                               SelectedItem="{Binding CurrentProfile}"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -413,18 +413,18 @@
                         <TabItem.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE151;" FontSize="14" Margin="0,0,4,0"/>
-                                <TextBlock Text="Search" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource S.Autobuff.SubSearch}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </TabItem.Header>
                         <views:AutobuffSearchView DataContext="{Binding AutobuffSearch}" />
                     </TabItem>
-                    <TabItem Header="Skills" Style="{StaticResource SubTabItemStyle}">
+                    <TabItem Header="{DynamicResource S.Autobuff.SubSkills}" Style="{StaticResource SubTabItemStyle}">
                         <views:AutobuffSkillView DataContext="{Binding AutobuffSkill}" />
                     </TabItem>
-                    <TabItem Header="Items" Style="{StaticResource SubTabItemStyle}">
+                    <TabItem Header="{DynamicResource S.Autobuff.SubItems}" Style="{StaticResource SubTabItemStyle}">
                         <views:AutobuffItemView DataContext="{Binding AutobuffItem}" />
                     </TabItem>
-                    <TabItem Header="Order" Style="{StaticResource SubTabItemStyle}">
+                    <TabItem Header="{DynamicResource S.Autobuff.SubOrder}" Style="{StaticResource SubTabItemStyle}">
                         <views:AutobuffOrderView DataContext="{Binding AutobuffOrder}" />
                     </TabItem>
                 </TabControl>
@@ -438,22 +438,22 @@
             <TabItem Header="ATK x DEF" Padding="20,6">
                 <views:AtkDefView DataContext="{Binding AtkDef}" />
             </TabItem>
-            <TabItem Header="Debuffs" Width="116">
+            <TabItem Header="{DynamicResource S.Tab.Debuffs}" Width="116">
                 <views:DebuffsView DataContext="{Binding Debuffs}" />
             </TabItem>
-            <TabItem Header="Misc" Width="116">
+            <TabItem Header="{DynamicResource S.Tab.Misc}" Width="116">
                 <views:MiscView DataContext="{Binding Misc}" />
             </TabItem>
             <TabItem Header="Auto Off" Width="116">
                 <views:AutoOffView DataContext="{Binding AutoOff}" />
             </TabItem>
-            <TabItem Header="Profiles" Width="116">
+            <TabItem Header="{DynamicResource S.Tab.Profiles}" Width="116">
                 <views:ProfilesView DataContext="{Binding Profiles}" />
             </TabItem>
-            <TabItem Header="Settings" Width="116">
+            <TabItem Header="{DynamicResource S.Tab.Settings}" Width="116">
                 <views:SettingsView DataContext="{Binding Settings}" />
             </TabItem>
-            <TabItem Header="About" Width="116">
+            <TabItem Header="{DynamicResource S.Tab.About}" Width="116">
                 <views:AboutView />
             </TabItem>
         </TabControl>

@@ -24,11 +24,11 @@
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE284;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Status Logger Configuration" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        <TextBlock Text="{DynamicResource S.StatusLogger.Enable}" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     </StackPanel>
                 </GroupBox.Header>
                 <StackPanel Margin="10">
-                    <TextBlock Text="Log your character's stats to a CSV file in real-time." 
+                    <TextBlock Text="{DynamicResource S.StatusLogger.Description}" 
                                Foreground="{DynamicResource AppSubtleBrush}" 
                                Margin="0,0,0,15" TextWrapping="Wrap"/>
                                
@@ -40,12 +40,12 @@
                         </Grid.ColumnDefinitions>
                         
                         <CheckBox Grid.Column="0" 
-                                  Content="Enable CSV Log" 
+                                  Content="{DynamicResource S.StatusLogger.LogToFile}" 
                                   IsChecked="{Binding LogToFile}" 
                                   VerticalAlignment="Center"/>
                         
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
-                            <TextBlock Text="Interval:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource AppSubtleBrush}"/>
+                            <TextBlock Text="{DynamicResource S.StatusLogger.LogFrequency}" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource AppSubtleBrush}"/>
                             <ComboBox ItemsSource="{Binding LogFrequencies}" 
                                       SelectedValue="{Binding LogFrequency}" 
                                       SelectedValuePath="Seconds"
@@ -57,7 +57,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Button Content="Open Current Log File" 
+                    <Button Content="{DynamicResource S.StatusLogger.OpenCSV}" 
                             Command="{Binding OpenLogFileCommand}" 
                             HorizontalAlignment="Left"
                             Style="{StaticResource SecondaryButtonStyle}"
@@ -69,7 +69,7 @@
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE0CC;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="Columns" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        <TextBlock Text="{DynamicResource S.StatusLogger.Columns}" VerticalAlignment="Center" FontWeight="SemiBold"/>
                     </StackPanel>
                 </GroupBox.Header>
                 <Grid Margin="10">
@@ -91,23 +91,23 @@
                         <ColumnDefinition Width="Auto" MinWidth="150" />
                     </Grid.ColumnDefinitions>
 
-                    <CheckBox Grid.Row="0" Grid.Column="0" Content="Time" IsChecked="True" IsEnabled="False" />
-                    <CheckBox Grid.Row="0" Grid.Column="1" Content="Character Name" IsChecked="{Binding LogName}" />
-                    <CheckBox Grid.Row="0" Grid.Column="2" Content="Level" IsChecked="{Binding LogLevel}" />
+                    <CheckBox Grid.Row="0" Grid.Column="0" Content="{DynamicResource S.StatusLogger.Time}" IsChecked="True" IsEnabled="False" />
+                    <CheckBox Grid.Row="0" Grid.Column="1" Content="{DynamicResource S.StatusLogger.Name}" IsChecked="{Binding LogName}" />
+                    <CheckBox Grid.Row="0" Grid.Column="2" Content="{DynamicResource S.StatusLogger.Level}" IsChecked="{Binding LogLevel}" />
 
-                    <CheckBox Grid.Row="2" Grid.Column="0" Content="Job Level" IsChecked="{Binding LogJobLevel}" />
-                    <CheckBox Grid.Row="2" Grid.Column="1" Content="Exp" IsChecked="{Binding LogExp}" />
-                    <CheckBox Grid.Row="2" Grid.Column="2" Content="Map" IsChecked="{Binding LogMap}" />
+                    <CheckBox Grid.Row="2" Grid.Column="0" Content="{DynamicResource S.StatusLogger.JobLevel}" IsChecked="{Binding LogJobLevel}" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" Content="{DynamicResource S.StatusLogger.Exp}" IsChecked="{Binding LogExp}" />
+                    <CheckBox Grid.Row="2" Grid.Column="2" Content="{DynamicResource S.StatusLogger.Map}" IsChecked="{Binding LogMap}" />
 
-                    <CheckBox Grid.Row="4" Grid.Column="0" Content="HP" IsChecked="{Binding LogHp}" />
-                    <CheckBox Grid.Row="4" Grid.Column="1" Content="Max HP" IsChecked="{Binding LogMaxHp}" />
-                    <CheckBox Grid.Row="4" Grid.Column="2" Content="Statuses" IsChecked="{Binding LogStatuses}" />
+                    <CheckBox Grid.Row="4" Grid.Column="0" Content="{DynamicResource S.StatusLogger.HP}" IsChecked="{Binding LogHp}" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" Content="{DynamicResource S.StatusLogger.MaxHP}" IsChecked="{Binding LogMaxHp}" />
+                    <CheckBox Grid.Row="4" Grid.Column="2" Content="{DynamicResource S.StatusLogger.Statuses}" IsChecked="{Binding LogStatuses}" />
                     
-                    <CheckBox Grid.Row="6" Grid.Column="0" Content="SP" IsChecked="{Binding LogSp}" />
-                    <CheckBox Grid.Row="6" Grid.Column="1" Content="Max SP" IsChecked="{Binding LogMaxSp}" />
+                    <CheckBox Grid.Row="6" Grid.Column="0" Content="{DynamicResource S.StatusLogger.SP}" IsChecked="{Binding LogSp}" />
+                    <CheckBox Grid.Row="6" Grid.Column="1" Content="{DynamicResource S.StatusLogger.MaxSP}" IsChecked="{Binding LogMaxSp}" />
 
-                    <CheckBox Grid.Row="8" Grid.Column="0" Content="Weight" IsChecked="{Binding LogWeight}" />
-                    <CheckBox Grid.Row="8" Grid.Column="1" Content="Max Weight" IsChecked="{Binding LogMaxWeight}" />
+                    <CheckBox Grid.Row="8" Grid.Column="0" Content="{DynamicResource S.StatusLogger.Weight}" IsChecked="{Binding LogWeight}" />
+                    <CheckBox Grid.Row="8" Grid.Column="1" Content="{DynamicResource S.StatusLogger.MaxWeight}" IsChecked="{Binding LogMaxWeight}" />
 
                 </Grid>
             </GroupBox>

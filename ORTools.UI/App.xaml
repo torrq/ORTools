@@ -8,6 +8,7 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/ThemeDark.xaml" />
+        <ResourceDictionary Source="Strings/en.xaml" />
       </ResourceDictionary.MergedDictionaries>
       <controls:BorderGapMaskConverter x:Key="BorderGapMaskConverter" />
       <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -15,6 +16,7 @@
       <local:EqualityMultiConverter x:Key="EqualityMultiConverter" />
       <local:TextLengthToFontSizeConverter x:Key="TextLengthToFontSizeConverter" NormalSize="13" SmallSize="10" Threshold="30" />
       <local:KeyToStringConverter x:Key="KeyToStringConverter" />
+      <local:LanguageToStringConverter x:Key="LanguageToStringConverter" />
 
     <Style x:Key="PrimaryButtonStyle" TargetType="{x:Type Button}">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />

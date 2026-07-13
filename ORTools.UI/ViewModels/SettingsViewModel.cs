@@ -23,8 +23,10 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _allowResizingWindow;
     [ObservableProperty] private bool _showExpPerHour;
     [ObservableProperty] private ThemeMode _theme;
+    [ObservableProperty] private Language _language;
 
     public ThemeMode[] ThemeModes => ThemeService.GetAvailableThemes();
+    public Language[]  Languages  => new[] { Language.English, Language.Filipino };
 
     // Placeholders for Profile Settings
     [ObservableProperty] private bool _stopBuffsCity;
@@ -45,6 +47,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         _worker = worker;
         AutobuffSkill = autobuffSkill;
+        _language = LanguageService.Current;
         _worker.GlobalConfigReceived += OnGlobalConfigReceived;
         _worker.ProfileSettingsReceived += OnProfileSettingsReceived;
         _worker.AppStateReceived += OnAppStateReceived;
@@ -134,6 +137,9 @@ public partial class SettingsViewModel : ObservableObject
         ThemeService.ApplyTheme(value);
         SendGlobalUpdate();
     }
+
+    partial void OnLanguageChanged(Language value)
+        => LanguageService.Apply(value);
     
     partial void OnSongRowsChanged(int value)  
     {
