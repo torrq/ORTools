@@ -69,6 +69,9 @@
     <sys:String x:Key="S.AutoOff.TimerAutomation">Automation ng Timer</sys:String>
     <sys:String x:Key="S.AutoOff.AutoStartOnEnable">Awtomatikong simulan ang timer kapag na-on</sys:String>
     <sys:String x:Key="S.AutoOff.AutoStopOnDisable">Awtomatikong itigil ang timer kapag na-off</sys:String>
+    <sys:String x:Key="S.AutoOff.ToggleBehavior">Kapag na-off:</sys:String>
+    <sys:String x:Key="S.AutoOff.ToggleBehaviorStop">Itigil at i-reset</sys:String>
+    <sys:String x:Key="S.AutoOff.ToggleBehaviorPause">I-pause</sys:String>
     <sys:String x:Key="S.AutoOff.OverweightHeader">Auto Off sa Sobrang Timbang</sys:String>
     <sys:String x:Key="S.AutoOff.EnableOverweight">I-aktibo ang Auto Off kapag sobra ang timbang</sys:String>
     <sys:String x:Key="S.AutoOff.TriggerActions">Mga Aksyon</sys:String>

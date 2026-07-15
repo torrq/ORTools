@@ -10,6 +10,7 @@ public class ConfigProfile : IAction
     public string               ToggleStateKey         { get; set; } = ConfigGlobal.GetConfig().DefaultToggleStateKey;
     public bool                 StartAutoOffTimerOnEnable { get; set; } = false;
     public bool                 ClearAutoOffTimerOnDisable { get; set; } = false;
+    public bool                 PauseAutoOffTimerOnDisable { get; set; } = false;
     public List<EffectStatusIDs> AutoBuffOrder         { get; set; } = new();
     public bool                 StopBuffsCity          { get; set; } = false;
     public bool                 SoundEnabled           { get; set; } = false;

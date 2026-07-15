@@ -159,8 +159,18 @@
                     </StackPanel>
                 </GroupBox.Header>
                 <StackPanel TextElement.FontSize="13" VerticalAlignment="Center" Margin="0,4,0,4">
-                    <CheckBox Content="{DynamicResource S.AutoOff.AutoStartOnEnable}" IsChecked="{Binding DataContext.Settings.StartAutoOffTimerOnEnable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,12" HorizontalAlignment="Left" Cursor="Hand" />
-                    <CheckBox Content="{DynamicResource S.AutoOff.AutoStopOnDisable}" IsChecked="{Binding DataContext.Settings.ClearAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" HorizontalAlignment="Left" Cursor="Hand" />
+                    <CheckBox Content="{DynamicResource S.AutoOff.AutoStartOnEnable}" IsChecked="{Binding DataContext.Settings.StartAutoOffTimerOnEnable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Left" Cursor="Hand" />
+                    <CheckBox Content="{DynamicResource S.AutoOff.AutoStopOnDisable}" IsChecked="{Binding DataContext.Settings.ClearAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}}" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,8" HorizontalAlignment="Left" Cursor="Hand" />
+                    <StackPanel Orientation="Horizontal" Margin="16,0,0,0"
+                                IsEnabled="{Binding DataContext.Settings.ClearAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}}">
+                        <TextBlock Text="{DynamicResource S.AutoOff.ToggleBehavior}" VerticalAlignment="Center" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,4,0" FontSize="12" />
+                        <RadioButton Content="{DynamicResource S.AutoOff.ToggleBehaviorStop}"
+                                     IsChecked="{Binding DataContext.Settings.PauseAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource InverseBoolConverter}}"
+                                     Foreground="{DynamicResource AppTextBrush}" Margin="0,0,8,0" VerticalAlignment="Center" Cursor="Hand" FontSize="12" />
+                        <RadioButton Content="{DynamicResource S.AutoOff.ToggleBehaviorPause}"
+                                     IsChecked="{Binding DataContext.Settings.PauseAutoOffTimerOnDisable, RelativeSource={RelativeSource AncestorType=Window}}"
+                                     Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Cursor="Hand" FontSize="12" />
+                    </StackPanel>
                 </StackPanel>
             </GroupBox>
 
@@ -201,7 +211,7 @@
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Grid.Row="4" Padding="8">
+            <GroupBox Grid.Row="4" Padding="6,4">
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE1B4;" FontSize="16" Margin="0,0,8,0" VerticalAlignment="Center" />

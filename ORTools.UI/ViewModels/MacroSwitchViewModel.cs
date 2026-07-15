@@ -22,6 +22,8 @@ public partial class MacroSwitchStepViewModel : ObservableObject
     [ObservableProperty]
     private bool _click;
 
+    private bool _suppressCommands;
+
     public MacroSwitchStepViewModel(Services.WorkerService worker, int rowId, int stepId, MacroSwitchStepData data)
     {
         _worker = worker;
@@ -34,9 +36,11 @@ public partial class MacroSwitchStepViewModel : ObservableObject
 
     public void UpdateData(MacroSwitchStepData data)
     {
+        _suppressCommands = true;
         Key = data.Key;
         Delay = data.Delay;
         Click = data.ClickMode == 1;
+        _suppressCommands = false;
     }
 
     partial void OnKeyChanged(string value) => SyncWithWorker();
@@ -45,6 +49,7 @@ public partial class MacroSwitchStepViewModel : ObservableObject
 
     private void SyncWithWorker()
     {
+        if (_suppressCommands) return;
         _worker.Send(new UpdateMacroSwitchStepCommand(_rowId, _stepId, Key, Delay, Click ? 1 : 0));
     }
 }
@@ -56,6 +61,8 @@ public partial class MacroSwitchRowViewModel : ObservableObject
 
     [ObservableProperty]
     private string _triggerKey = "None";
+
+    private bool _suppressCommands;
 
     public ObservableCollection<MacroSwitchStepViewModel> Steps { get; } = new();
 
@@ -74,15 +81,18 @@ public partial class MacroSwitchRowViewModel : ObservableObject
 
     public void UpdateData(MacroSwitchChainData data)
     {
+        _suppressCommands = true;
         TriggerKey = data.TriggerKey;
         for (int i = 0; i < data.Steps.Count && i < Steps.Count; i++)
         {
             Steps[i].UpdateData(data.Steps[i]);
         }
+        _suppressCommands = false;
     }
 
     partial void OnTriggerKeyChanged(string value)
     {
+        if (_suppressCommands) return;
         _worker.Send(new UpdateMacroSwitchTriggerCommand(_rowId, TriggerKey));
     }
 

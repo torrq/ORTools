@@ -124,6 +124,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     }
 
     [ObservableProperty] private bool _isMiniTimerVisible;
+    [ObservableProperty] private bool _isMiniTimerPaused;
     [ObservableProperty] private string _miniTimerText = "";
 
     public AutopotHPViewModel AutopotHP { get; }
@@ -384,6 +385,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
             if (u.IsRunning)
             {
                 IsMiniTimerVisible = true;
+                IsMiniTimerPaused  = u.IsPaused;
                 
                 int rMin = (u.RemainingSeconds + 59) / 60;
                 int rHr = rMin / 60;
@@ -394,6 +396,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
             else
             {
                 IsMiniTimerVisible = false;
+                IsMiniTimerPaused  = false;
                 MiniTimerText = "";
                 UpdateAppTitle();
             }

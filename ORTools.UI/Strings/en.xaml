@@ -68,6 +68,9 @@
     <sys:String x:Key="S.AutoOff.TimerAutomation">Timer Automation</sys:String>
     <sys:String x:Key="S.AutoOff.AutoStartOnEnable">Auto-start timer when turned on</sys:String>
     <sys:String x:Key="S.AutoOff.AutoStopOnDisable">Auto-stop timer when turned off</sys:String>
+    <sys:String x:Key="S.AutoOff.ToggleBehavior">When toggled off:</sys:String>
+    <sys:String x:Key="S.AutoOff.ToggleBehaviorStop">Stop &amp; reset</sys:String>
+    <sys:String x:Key="S.AutoOff.ToggleBehaviorPause">Pause</sys:String>
     <sys:String x:Key="S.AutoOff.OverweightHeader">Overweight Auto Off</sys:String>
     <sys:String x:Key="S.AutoOff.EnableOverweight">Enable Auto Off on Overweight</sys:String>
     <sys:String x:Key="S.AutoOff.TriggerActions">Trigger Actions</sys:String>

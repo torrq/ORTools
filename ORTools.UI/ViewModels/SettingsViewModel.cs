@@ -32,6 +32,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _stopBuffsCity;
     [ObservableProperty] private bool _soundEnabled;
     [ObservableProperty] private bool _clearAutoOffTimerOnDisable;
+    [ObservableProperty] private bool _pauseAutoOffTimerOnDisable;
     [ObservableProperty] private bool _startAutoOffTimerOnEnable;
     [ObservableProperty] private bool _keepDeadClientInfo;
 
@@ -104,6 +105,7 @@ public partial class SettingsViewModel : ObservableObject
             SoundEnabled = update.SoundEnabled;
             StartAutoOffTimerOnEnable = update.StartAutoOffTimerOnEnable;
             ClearAutoOffTimerOnDisable = update.ClearAutoOffTimerOnDisable;
+            PauseAutoOffTimerOnDisable = update.PauseAutoOffTimerOnDisable;
             KeepDeadClientInfo = update.KeepDeadClientInfo;
             _suppressUpdates = false;
         });
@@ -165,6 +167,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnSoundEnabledChanged(bool value) => SendProfileUpdate();
     partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendProfileUpdate();
     partial void OnClearAutoOffTimerOnDisableChanged(bool value) => SendProfileUpdate();
+    partial void OnPauseAutoOffTimerOnDisableChanged(bool value) => SendProfileUpdate();
     partial void OnKeepDeadClientInfoChanged(bool value) => SendProfileUpdate();
 
     private void SendGlobalUpdate()
@@ -203,6 +206,7 @@ public partial class SettingsViewModel : ObservableObject
             SoundEnabled: SoundEnabled,
             StartAutoOffTimerOnEnable: StartAutoOffTimerOnEnable,
             ClearAutoOffTimerOnDisable: ClearAutoOffTimerOnDisable,
+            PauseAutoOffTimerOnDisable: PauseAutoOffTimerOnDisable,
             KeepDeadClientInfo: KeepDeadClientInfo
         );
         _worker.Send(cmd);

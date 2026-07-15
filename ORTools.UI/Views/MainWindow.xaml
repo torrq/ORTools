@@ -151,7 +151,19 @@
                                             Visibility="{Binding IsMiniTimerVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                                             ToolTip="Auto Off Timer">
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE087;" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center" Foreground="{DynamicResource AppSubtleBrush}"/>
+                                            <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center" Foreground="{DynamicResource AppSubtleBrush}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="&#xE087;"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsMiniTimerPaused}" Value="True">
+                                                                <Setter Property="Text" Value="&#xE12E;"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
                                             <TextBlock Text="{Binding MiniTimerText}" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}"/>
                                         </StackPanel>
                                     </Border>

@@ -51,8 +51,8 @@ public static class AppConfig
     public static int     AutoPotDefaultDelay         = 50;
     public static int     YggDefaultDelay             = 50;
     public static int     SkillSpammerDefaultDelay    = 50;
-    public static int     AutoBuffSkillsDefaultDelay  = 2000;
-    public static int     AutoBuffItemsDefaultDelay   = 5000;
+    public static int     AutoBuffSkillsDefaultDelay  = 1000;
+    public static int     AutoBuffItemsDefaultDelay   = 1000;
     public static int     ATKDEFSpammerDefaultDelay   = 100;
     public static int     ATKDEFSwitchDefaultDelay    = 100;
     public static int     MacroDefaultDelay           = 100;

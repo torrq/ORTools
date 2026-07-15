@@ -93,9 +93,8 @@ public static class LanguageService
     /// </summary>
     public static string GetDisplayName(Language lang) => lang switch
     {
-        Language.English  => "English",
         Language.Filipino => "Filipino",
-        _                 => lang.ToString()
+        _                 => "English"
     };
 
     private static void Save()

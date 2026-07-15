@@ -207,3 +207,38 @@ Statuses (buffs, debuffs, active skills) are stored in the client's memory as an
 ## Agent Behavior Rules
 
 1. **Committing Code**: Do not automatically commit code unless explicitly instructed by the user. Even if the user asks you to commit once, that only applies to the current set of changes; you must stop automatically amending or creating new commits on subsequent turns unless the user specifically asks you to commit again.
+
+## Adding a New Language
+
+When adding a new language to the application, follow these steps:
+
+1. **Create the Dictionary File**:
+   Copy the `Strings/en.xaml` file (or another existing language dictionary) to a new file named with the language's two-letter code (e.g., `es.xaml`). Ensure you translate all the string values within the `<sys:String>` tags, while strictly maintaining the exact `x:Key` identifiers. Avoid accidentally deleting the closing `</ResourceDictionary>` tag.
+
+2. **Update the Language Enum**:
+   Open `Services/LanguageService.cs` and add the new language to the `Language` enum.
+
+3. **Update the Switch Statement**:
+   In `Services/LanguageService.cs`, update the `lang switch` statement inside the `Apply()` method to return the correct URI for the new ResourceDictionary (e.g., `"pack://application:,,,/ORTools;component/Strings/es.xaml"`).
+
+4. **Update the Display Name**:
+   In `Services/LanguageService.cs`, update the `GetDisplayName()` method to return the native name of the language (e.g., `"Español"`). Never label specific regional dialects (e.g., "Puerto Rican Spanish") in the UI unless explicitly instructed; use the standard native name.
+
+5. **Expose the Language in Settings**:
+   Open `ViewModels/SettingsViewModel.cs` and add the new `Language` enum value to the `Languages` array property so it becomes selectable in the UI.
+
+**CRITICAL REMINDER**: 
+- Never insert literal string text (like newlines `` `r`n ``) directly into XAML collection-based elements when modifying dictionaries programmatically. This causes a `XamlParseException` on startup. 
+- Always ensure that your new dictionary has no duplicate `x:Key` elements before building, as `ResourceDictionary` merging will fail completely if duplicates exist.
+
+---
+
+## Gotcha #13: WPF Layout Restrictions and Translation String Length
+
+The WPF layouts in this app are tight and fixed-width. Many views use explicit column widths, fixed `MinWidth` values, or `StackPanel`s with no overflow handling. When translating strings, the translated text **must not be longer than the English equivalent**, or it will break the layout (clipping, wrapping onto a second line, or causing horizontal scrollbars on fixed-size panels like the Songs tab).
+
+**Rules for translations:**
+- Prefer short, equivalent terms. If a direct translation is too long, use a recognized abbreviation or the English word itself (e.g., keep `Delay`, `Reset` in Spanish/Filipino rather than translating them if the translated word is longer).
+- Never widen columns or change `MinWidth`/`Width` in XAML to accommodate a longer translated string — this cascades into layout breaks in other languages.
+- The English string length in `en.xaml` is the ceiling. Match or beat it.
+- When in doubt, test the translated string visually before committing (or estimate pixel width: assume roughly 7px per character at FontSize 13).

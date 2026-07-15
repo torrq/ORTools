@@ -233,6 +233,7 @@ public sealed record UpdateProfileSettingsCommand(
     bool SoundEnabled,
     bool StartAutoOffTimerOnEnable,
     bool ClearAutoOffTimerOnDisable,
+    bool PauseAutoOffTimerOnDisable,
     bool KeepDeadClientInfo) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateProfileSettings;

@@ -144,9 +144,12 @@ public sealed class WorkerCore
         p.StartAll();
         
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
-        if (prefs.StartAutoOffTimerOnEnable && !_autoOff.IsTimerRunning)
+        if (prefs.StartAutoOffTimerOnEnable && (!_autoOff.IsTimerRunning || _autoOff.IsPaused))
         {
-            _autoOff.StartTimer();
+            if (prefs.PauseAutoOffTimerOnDisable && _autoOff.IsPaused)
+                _autoOff.ResumeTimer();
+            else if (!_autoOff.IsTimerRunning)
+                _autoOff.StartTimer();
         }
         
         _autoOff.StartOverweightMonitor();
@@ -181,7 +184,10 @@ public sealed class WorkerCore
             var prefs = p.UserPreferences;
             if (prefs.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
             {
-                _autoOff.StopTimer();
+                if (prefs.PauseAutoOffTimerOnDisable)
+                    _autoOff.PauseTimer();
+                else
+                    _autoOff.StopTimer();
             }
             
             _autoOff.StopOverweightMonitor();
@@ -786,6 +792,7 @@ public sealed class WorkerCore
         prefs.SoundEnabled = cmd.SoundEnabled;
         prefs.StartAutoOffTimerOnEnable = cmd.StartAutoOffTimerOnEnable;
         prefs.ClearAutoOffTimerOnDisable = cmd.ClearAutoOffTimerOnDisable;
+        prefs.PauseAutoOffTimerOnDisable = cmd.PauseAutoOffTimerOnDisable;
         prefs.KeepDeadClientInfo = cmd.KeepDeadClientInfo;
         ProfileSingleton.SetConfiguration(prefs);
         return Task.CompletedTask;
@@ -1360,6 +1367,7 @@ public sealed class WorkerCore
             prefs.SoundEnabled,
             prefs.StartAutoOffTimerOnEnable,
             prefs.ClearAutoOffTimerOnDisable,
+            prefs.PauseAutoOffTimerOnDisable,
             prefs.KeepDeadClientInfo
         );
     }
