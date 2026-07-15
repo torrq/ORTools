@@ -12,6 +12,8 @@ OSRO Tools is a high-performance automation assistant built for Oldschool RO. It
 
 It provides extensive support for automated potion consumption, skill spamming, buff maintenance, and status recovery.
 
+📚 **[View the full OSRO Tools Wiki here!](https://github.com/torrq/ORTools/wiki)**
+
 ## ✨ Features
 
 - **Autopot HP/SP**: Automatically consumes potions when your HP or SP falls below a configurable percentage.
