@@ -8,7 +8,7 @@ namespace ORTools.UI.Services;
 
 public static class ThemeService
 {
-    private static ThemeMode _currentMode = ThemeMode.System;
+    private static ThemeMode _currentMode = ThemeMode.BlueLight;
     private static int _serverMode = 1; // 1 = HR, 0 = MR
 
     public static bool IsCurrentThemeLight { get; private set; }
