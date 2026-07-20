@@ -97,6 +97,20 @@ public static class ProfileSingleton
     private static volatile Profile _profile = new("Default");
     private static readonly object  _lock    = new();
 
+    private static T TryDeserialize<T>(dynamic rawObject, IAction action, T defaultValue)
+    {
+        try
+        {
+            string src = Profile.GetByAction(rawObject, action).ToString();
+            return JsonConvert.DeserializeObject<T>(src) ?? defaultValue;
+        }
+        catch (Exception ex)
+        {
+            DebugLogger.Error(ex, $"Failed to deserialize {action.GetActionName()}");
+            return defaultValue;
+        }
+    }
+
     public static void Load(string profileName)
     {
         try
@@ -120,10 +134,10 @@ public static class ProfileSingleton
                 {
                     _profile.UnifiedAutobuffOrder = rawObject["UnifiedAutobuffOrder"].ToObject<List<string>>();
                 }
-                _profile.UserPreferences = JsonConvert.DeserializeObject<ConfigProfile>(Profile.GetByAction(rawObject, _profile.UserPreferences));
-                _profile.SkillSpammer    = JsonConvert.DeserializeObject<SkillSpammer>(Profile.GetByAction(rawObject, _profile.SkillSpammer));
-                _profile.AutopotHP       = JsonConvert.DeserializeObject<AutopotHP>(Profile.GetByAction(rawObject, _profile.AutopotHP));
-                _profile.AutopotSP       = JsonConvert.DeserializeObject<AutopotSP>(Profile.GetByAction(rawObject, _profile.AutopotSP));
+                _profile.UserPreferences = TryDeserialize(rawObject, _profile.UserPreferences, _profile.UserPreferences);
+                _profile.SkillSpammer    = TryDeserialize(rawObject, _profile.SkillSpammer, _profile.SkillSpammer);
+                _profile.AutopotHP       = TryDeserialize(rawObject, _profile.AutopotHP, _profile.AutopotHP);
+                _profile.AutopotSP       = TryDeserialize(rawObject, _profile.AutopotSP, _profile.AutopotSP);
 
                 try
                 {
@@ -137,19 +151,26 @@ public static class ProfileSingleton
                     _profile.StatusRecovery = new StatusRecovery();
                 }
 
-                _profile.SkillTimer     = JsonConvert.DeserializeObject<SkillTimer>(Profile.GetByAction(rawObject, _profile.SkillTimer));
-                _profile.AutobuffSkill  = JsonConvert.DeserializeObject<AutoBuffSkill>(Profile.GetByAction(rawObject, _profile.AutobuffSkill));
+                _profile.SkillTimer     = TryDeserialize(rawObject, _profile.SkillTimer, _profile.SkillTimer);
+                _profile.AutobuffSkill  = TryDeserialize(rawObject, _profile.AutobuffSkill, _profile.AutobuffSkill);
                 if (_profile.AutobuffSkill.Delay < 0) _profile.AutobuffSkill.Delay = AppConfig.AutoBuffSkillsDefaultDelay;
 
-                string abiConfig = Profile.GetByAction(rawObject, _profile.AutobuffItem);
-                if (!string.IsNullOrEmpty(abiConfig)) _profile.AutobuffItem.LoadConfiguration(abiConfig);
+                try
+                {
+                    string abiConfig = Profile.GetByAction(rawObject, _profile.AutobuffItem).ToString();
+                    if (!string.IsNullOrEmpty(abiConfig)) _profile.AutobuffItem.LoadConfiguration(abiConfig);
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Error(ex, "Failed to load AutobuffItem");
+                }
                 if (_profile.AutobuffItem.Delay < 0) _profile.AutobuffItem.Delay = AppConfig.AutoBuffItemsDefaultDelay;
 
-                _profile.SongMacro      = JsonConvert.DeserializeObject<MacroSong>(Profile.GetByAction(rawObject, _profile.SongMacro));
-                _profile.ATKDEFMode     = JsonConvert.DeserializeObject<AtkDef>(Profile.GetByAction(rawObject, _profile.ATKDEFMode));
-                _profile.MacroSwitch    = JsonConvert.DeserializeObject<MacroSwitch>(Profile.GetByAction(rawObject, _profile.MacroSwitch));
-                _profile.TransferHelper = JsonConvert.DeserializeObject<TransferHelper>(Profile.GetByAction(rawObject, _profile.TransferHelper));
-                _profile.DebuffsRecovery = JsonConvert.DeserializeObject<DebuffRecovery>(Profile.GetByAction(rawObject, _profile.DebuffsRecovery));
+                _profile.SongMacro      = TryDeserialize(rawObject, _profile.SongMacro, _profile.SongMacro);
+                _profile.ATKDEFMode     = TryDeserialize(rawObject, _profile.ATKDEFMode, _profile.ATKDEFMode);
+                _profile.MacroSwitch    = TryDeserialize(rawObject, _profile.MacroSwitch, _profile.MacroSwitch);
+                _profile.TransferHelper = TryDeserialize(rawObject, _profile.TransferHelper, _profile.TransferHelper);
+                _profile.DebuffsRecovery = TryDeserialize(rawObject, _profile.DebuffsRecovery, _profile.DebuffsRecovery);
 
                 // Run legacy profile migrations
                 ProfileMigrator.Migrate(_profile);
@@ -164,7 +185,6 @@ public static class ProfileSingleton
         catch (Exception ex)
         {
             DebugLogger.Error(ex, $"Failed to load profile '{profileName}'");
-            throw new Exception($"Problem loading profile: {ex.Message}", ex);
         }
     }
 

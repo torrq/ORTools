@@ -67,6 +67,10 @@ public static class ConfigGlobal
         {
             Console.WriteLine($"[ConfigGlobal] Failed to initialize: {ex.Message}");
         }
+        finally
+        {
+            if (_config == null) _config = new Config();
+        }
     }
 
     public static void EnsureConfigFolderExists()

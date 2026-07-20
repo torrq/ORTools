@@ -90,7 +90,13 @@ public sealed class WorkerService : IDisposable
 
     public void Send<T>(T command) where T : IIpcMessage
     {
-        _ = SendAsync(command);
+        _ = SendAsync(command).ContinueWith(t => 
+        {
+            if (t.IsFaulted && t.Exception != null)
+            {
+                Console.WriteLine($"[WorkerService] Command {command.Type} failed: {t.Exception.InnerException?.Message ?? t.Exception.Message}");
+            }
+        });
     }
 
     public void Dispose()
