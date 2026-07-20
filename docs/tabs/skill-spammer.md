@@ -18,7 +18,7 @@ The main area is a grid of checkboxes that match your keyboard layout. Each chec
 
 ## 3. Tips
 * Check **Mouse Flick** to snap your cursor during clicks. This can help bypass certain skill animations.
-* Check **No Shift** to prevent the Shift key from interfering during the spamming process.
+* Check **No Shift** to simulate the Shift key being held down (this is the equivalent to Ragnarok Online's `/ns` command).
 * Use **Toggle Mode** if you prefer to press the key once to start spamming, and press it again to stop.
 
 ![Screenshot of the Skill Spammer tab showing the key grid and delay settings](../images/skill-spammer-grid.png)

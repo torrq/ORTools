@@ -42,4 +42,5 @@ When editing or creating files in the `docs/` folder, AI agents must follow thes
     - **Macro** — never "script" or "automation routine"
     - **Spam** (as in Skill Spammer) — never "repeat" or "loop" when referring to the feature by name
     - **Profile** — never "preset" or "config"
-    - **Tab** — never "panel" or "section" when referring to the side menu items
+    - **Tab Bar** — never "side menu" when referring to the navigation menu
+    - **Tab** — never "panel" or "section" when referring to the Tab Bar items

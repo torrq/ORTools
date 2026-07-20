@@ -4,7 +4,7 @@ public static class AppConfig
 {
     // ── General ───────────────────────────────────────────────────────────────
     public static string  Name           = "OSRO Tools";
-    public static string  Version        => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3)}";
+    public static string  Version        => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(2)}";
     public static decimal ConfigVersion  = 1;
 #if SERVERMODE_HR
     public static int ServerMode = 1;   // 0 = MR, 1 = HR
@@ -16,8 +16,8 @@ public static class AppConfig
     public static bool IsHighRate => ServerMode == 1;
     public static bool SupportsFishing => IsMidRate;
 
-    public static bool   preRelease    = true;
-    public static string preReleaseTag = "BETA-6";
+    public static bool   preRelease    = false;
+    public static string preReleaseTag = "";
 
     // ── File paths ────────────────────────────────────────────────────────────
     public static string ProfileFolder = "Profiles\\";

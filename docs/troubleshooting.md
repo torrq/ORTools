@@ -26,6 +26,6 @@ If you are still having issues and need to report a bug, you can generate a log 
 2. Go to the **Developer** sub-tab on the left.
 3. Check the box for **Debug Mode** (you do not need to enable Debug View).
 4. Run OSRO Tools again and try to make the bug happen.
-5. Provide the generated log file when you report the issue in the community Discord.
+5. Provide the generated log file when you report the issue in the community Discord (https://discord.com/invite/osro).
 
 ![Screenshot of the Settings tab showing Debug Mode enabled](images/troubleshooting-debug-mode.png)

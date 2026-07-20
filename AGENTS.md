@@ -102,6 +102,10 @@ Even though they run in the same process, the WorkerCore and UI communicate stri
 - `WorkerNotifier.RequestTurnOff(reason)` is used by model threads to signal the app should stop.
 - Avoid `Thread.Sleep` on the UI thread. Worker background STA threads must use `System.Timers.Timer` or safe loops.
 
+### Documentation & GitHub Wiki
+- Documentation source lives in the `docs/` folder. Always use standard markdown links with `.md` extensions (e.g., `[Autopot](tabs/autopot.md)`) and maintain the folder structure.
+- **Do not edit the wiki repository manually.** We use the `Update-Wiki.ps1` script at the repository root to automatically copy the docs, flatten the directory structure, and re-format the markdown links for the GitHub Wiki (stripping `.md` and folders) before pushing.
+
 ---
 
 ## Gotchas & Lessons Learned
@@ -242,3 +246,7 @@ The WPF layouts in this app are tight and fixed-width. Many views use explicit c
 - Never widen columns or change `MinWidth`/`Width` in XAML to accommodate a longer translated string — this cascades into layout breaks in other languages.
 - The English string length in `en.xaml` is the ceiling. Match or beat it.
 - When in doubt, test the translated string visually before committing (or estimate pixel width: assume roughly 7px per character at FontSize 13).
+
+**14. WPF MVVM Infinite Binding Loops (The MacroSwitch Bug)**
+When a UI property bound in XAML triggers a command to the worker, and the worker immediately broadcasts that state back, the ViewModel's property setter might be invoked again by the incoming event, firing *another* command to the worker. This creates an infinite loop that instantly locks up the UI thread.
+**Fix**: In ViewModels where an update command sets properties that trigger IPC, temporarily set a boolean flag (e.g., `_suppressCommands = true;`) before applying the incoming state, and check that flag inside the property setters or command invocations to break the echo loop.
