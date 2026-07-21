@@ -88,6 +88,7 @@
     <sys:String x:Key="S.About.Desc">A high-performance automation assistant for Oldschool RO.</sys:String>
     <sys:String x:Key="S.About.BuiltWith">Built with .NET 8 and WPF.</sys:String>
     <sys:String x:Key="S.About.GitHub">View on GitHub</sys:String>
+    <sys:String x:Key="S.About.Wiki">Help and Guides</sys:String>
 
     <!-- Autobuff / Search -->
     <sys:String x:Key="S.Autobuff.SubSearch">Search</sys:String>

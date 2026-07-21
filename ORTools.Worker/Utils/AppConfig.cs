@@ -5,7 +5,14 @@ public static class AppConfig
     // ── General ───────────────────────────────────────────────────────────────
     public static string  Name           = "OSRO Tools";
     public static string  Version        => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(2)}";
-    public static decimal ConfigVersion  = 1;
+    /*
+        ConfigVersion history
+        ---------------------
+        0 = Initial release
+        1 = v1.0.9
+        2 = v2.0.0
+    */
+    public static decimal ConfigVersion  = 2;
 #if SERVERMODE_HR
     public static int ServerMode = 1;   // 0 = MR, 1 = HR
 #else

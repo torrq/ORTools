@@ -101,6 +101,7 @@
     <sys:String x:Key="S.About.Desc">Isang high-performance na automation assistant para sa Oldschool RO.</sys:String>
     <sys:String x:Key="S.About.BuiltWith">Ginawa gamit ang .NET 8 at WPF.</sys:String>
     <sys:String x:Key="S.About.GitHub">Tingnan sa GitHub</sys:String>
+    <sys:String x:Key="S.About.Wiki">Tulong at mga Gabay</sys:String>
 
     <!-- Autobuff -->
     <sys:String x:Key="S.Autobuff.SubSearch">Hanapin</sys:String>
