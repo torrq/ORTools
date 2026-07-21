@@ -128,7 +128,13 @@ public partial class Toasters : UserControl
     {
         if (_cachedImages == null || _cachedImages.Count == 0) return;
 
-        bool isSpecial = _specialImages != null && _specialImages.Count > 0 && _rng.NextDouble() < SpecialFrequency;
+        double currentFreq = SpecialFrequency;
+        if (ORTools.UI.Services.LanguageService.Current == ORTools.UI.Services.Language.Filipino)
+        {
+            currentFreq *= 2.0;
+        }
+
+        bool isSpecial = _specialImages != null && _specialImages.Count > 0 && _rng.NextDouble() < currentFreq;
 
         if (isSpecial)
         {
