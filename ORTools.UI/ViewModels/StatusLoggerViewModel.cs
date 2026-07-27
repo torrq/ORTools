@@ -130,6 +130,26 @@ public partial class StatusLoggerViewModel : ObservableObject
         ));
     }
 
+    private List<string> GetLogHeaders()
+    {
+        return new List<string> 
+        { 
+            LanguageService.Get("S.StatusLogger.Time") ?? "Time", 
+            LanguageService.Get("S.StatusLogger.Name") ?? "Character Name", 
+            LanguageService.Get("S.StatusLogger.Level") ?? "Level", 
+            LanguageService.Get("S.StatusLogger.JobLevel") ?? "Job Level", 
+            LanguageService.Get("S.StatusLogger.Exp") ?? "Exp", 
+            LanguageService.Get("S.StatusLogger.HP") ?? "HP", 
+            LanguageService.Get("S.StatusLogger.MaxHP") ?? "Max HP", 
+            LanguageService.Get("S.StatusLogger.SP") ?? "SP", 
+            LanguageService.Get("S.StatusLogger.MaxSP") ?? "Max SP", 
+            LanguageService.Get("S.StatusLogger.Weight") ?? "Weight", 
+            LanguageService.Get("S.StatusLogger.MaxWeight") ?? "Max Weight", 
+            LanguageService.Get("S.StatusLogger.Map") ?? "Map", 
+            LanguageService.Get("S.StatusLogger.Statuses") ?? "Statuses" 
+        };
+    }
+
     private void OnCharacterStateReceived(CharacterUpdate u)
     {
         if (_isApplicationOn && LogToFile && !string.IsNullOrWhiteSpace(LogFileName))
@@ -137,35 +157,26 @@ public partial class StatusLoggerViewModel : ObservableObject
             if ((DateTime.Now - _lastLogTime).TotalSeconds >= LogFrequency)
             {
                 _lastLogTime = DateTime.Now;
-                _ = System.Threading.Tasks.Task.Run(() => LogExpToDisk(u));
+
+                // Pre-fetch headers and capture atomic state snapshot on the UI thread
+                var headers = GetLogHeaders();
+                uint currentHp = _currentHp;
+                uint maxHp = _maxHp;
+                uint currentSp = _currentSp;
+                uint maxSp = _maxSp;
+
+                _ = System.Threading.Tasks.Task.Run(() => LogExpToDisk(u, headers, currentHp, maxHp, currentSp, maxSp));
             }
         }
     }
 
-    private void LogExpToDisk(CharacterUpdate u)
+    private void LogExpToDisk(CharacterUpdate u, List<string> headers, uint currentHp, uint maxHp, uint currentSp, uint maxSp)
     {
         try
         {
             var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
             bool writeHeader = !System.IO.File.Exists(path) || new System.IO.FileInfo(path).Length == 0;
             using var sw = new System.IO.StreamWriter(path, append: true);
-
-            var headers = new List<string> 
-            { 
-                LanguageService.Get("S.StatusLogger.Time") ?? "Time", 
-                LanguageService.Get("S.StatusLogger.Name") ?? "Character Name", 
-                LanguageService.Get("S.StatusLogger.Level") ?? "Level", 
-                LanguageService.Get("S.StatusLogger.JobLevel") ?? "Job Level", 
-                LanguageService.Get("S.StatusLogger.Exp") ?? "Exp", 
-                LanguageService.Get("S.StatusLogger.HP") ?? "HP", 
-                LanguageService.Get("S.StatusLogger.MaxHP") ?? "Max HP", 
-                LanguageService.Get("S.StatusLogger.SP") ?? "SP", 
-                LanguageService.Get("S.StatusLogger.MaxSP") ?? "Max SP", 
-                LanguageService.Get("S.StatusLogger.Weight") ?? "Weight", 
-                LanguageService.Get("S.StatusLogger.MaxWeight") ?? "Max Weight", 
-                LanguageService.Get("S.StatusLogger.Map") ?? "Map", 
-                LanguageService.Get("S.StatusLogger.Statuses") ?? "Statuses" 
-            };
 
             if (writeHeader)
             {
@@ -177,10 +188,10 @@ public partial class StatusLoggerViewModel : ObservableObject
             row.Add(LogLevel ? u.Level.ToString() : "");
             row.Add(LogJobLevel ? u.JobLevel.ToString() : "");
             row.Add(LogExp ? u.Exp.ToString() : "");
-            row.Add(LogHp ? _currentHp.ToString() : "");
-            row.Add(LogMaxHp ? _maxHp.ToString() : "");
-            row.Add(LogSp ? _currentSp.ToString() : "");
-            row.Add(LogMaxSp ? _maxSp.ToString() : "");
+            row.Add(LogHp ? currentHp.ToString() : "");
+            row.Add(LogMaxHp ? maxHp.ToString() : "");
+            row.Add(LogSp ? currentSp.ToString() : "");
+            row.Add(LogMaxSp ? maxSp.ToString() : "");
             row.Add(LogWeight ? u.WeightCur.ToString() : "");
             row.Add(LogMaxWeight ? u.WeightMax.ToString() : "");
             row.Add(LogMap ? u.Map : "");
@@ -211,22 +222,7 @@ public partial class StatusLoggerViewModel : ObservableObject
             var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
             if (!System.IO.File.Exists(path))
             {
-                var headers = new List<string> 
-                { 
-                    LanguageService.Get("S.StatusLogger.Time") ?? "Time", 
-                    LanguageService.Get("S.StatusLogger.Name") ?? "Character Name", 
-                    LanguageService.Get("S.StatusLogger.Level") ?? "Level", 
-                    LanguageService.Get("S.StatusLogger.JobLevel") ?? "Job Level", 
-                    LanguageService.Get("S.StatusLogger.Exp") ?? "Exp", 
-                    LanguageService.Get("S.StatusLogger.HP") ?? "HP", 
-                    LanguageService.Get("S.StatusLogger.MaxHP") ?? "Max HP", 
-                    LanguageService.Get("S.StatusLogger.SP") ?? "SP", 
-                    LanguageService.Get("S.StatusLogger.MaxSP") ?? "Max SP", 
-                    LanguageService.Get("S.StatusLogger.Weight") ?? "Weight", 
-                    LanguageService.Get("S.StatusLogger.MaxWeight") ?? "Max Weight", 
-                    LanguageService.Get("S.StatusLogger.Map") ?? "Map", 
-                    LanguageService.Get("S.StatusLogger.Statuses") ?? "Statuses" 
-                };
+                var headers = GetLogHeaders();
                 System.IO.File.WriteAllText(path, string.Join(",", headers) + "\r\n");
             }
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
