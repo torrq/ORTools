@@ -9,33 +9,21 @@
     ═══════════════════════════════════════════════════════════════════ -->
 
     <!-- Tab Headers -->
-    <sys:String x:Key="S.Tab.Debuffs">Debuffs</sys:String>
     <sys:String x:Key="S.Tab.Misc">Misc</sys:String>
-    <sys:String x:Key="S.Tab.Profiles">Profiles</sys:String>
-    <sys:String x:Key="S.Tab.Settings">Settings</sys:String>
     <sys:String x:Key="S.Tab.About">About</sys:String>
 
     <!-- Main Window -->
     <sys:String x:Key="S.Main.Client">Client</sys:String>
-    <sys:String x:Key="S.Main.Profile">Profile</sys:String>
     <sys:String x:Key="S.Main.Key">Key:</sys:String>
     <sys:String x:Key="S.Main.Weight">Weight</sys:String>
     <sys:String x:Key="S.Main.TurnOn">Turn ON</sys:String>
     <sys:String x:Key="S.Main.TurnOff">Turn OFF</sys:String>
 
     <!-- Autopot -->
-    <sys:String x:Key="S.Autopot.HP">Autopot HP</sys:String>
-    <sys:String x:Key="S.Autopot.SP">Autopot SP</sys:String>
-    <sys:String x:Key="S.Autopot.On">ON</sys:String>
     <sys:String x:Key="S.Autopot.Key">KEY</sys:String>
-    <sys:String x:Key="S.Autopot.HPPercent">HP %</sys:String>
-    <sys:String x:Key="S.Autopot.SPPercent">SP %</sys:String>
-    <sys:String x:Key="S.Autopot.Delay">Delay (ms):</sys:String>
-    <sys:String x:Key="S.Autopot.StopCritical">Stop on Critical Wounds</sys:String>
+    <sys:String x:Key="S.Autopot.StopPrefix">Stop on </sys:String>
 
     <!-- Skill Timer -->
-    <sys:String x:Key="S.SkillTimer.Key">KEY</sys:String>
-    <sys:String x:Key="S.SkillTimer.Delay">DELAY (ms)</sys:String>
     <sys:String x:Key="S.SkillTimer.OpenTimePicker">Open Time Picker</sys:String>
     <sys:String x:Key="S.SkillTimer.ClickNone">None</sys:String>
     <sys:String x:Key="S.SkillSpammer.UnkeysNone">None</sys:String>
@@ -47,21 +35,17 @@
     <sys:String x:Key="S.SkillSpammer.NoClick">No click</sys:String>
     <sys:String x:Key="S.SkillSpammer.Disabled">Disabled</sys:String>
     <sys:String x:Key="S.SkillSpammer.KeyConfig">Key Config</sys:String>
-    <sys:String x:Key="S.SkillSpammer.NoShift">No Shift</sys:String>
     <sys:String x:Key="S.SkillSpammer.PressKeyToAssign">Press a key to assign</sys:String>
     <sys:String x:Key="S.SkillSpammer.SpammerDelay">Spammer Delay</sys:String>
 
     <!-- Debuffs -->
-    <sys:String x:Key="S.Debuffs.Delay">Delay (ms):</sys:String>
 
     <!-- Misc -->
     <sys:String x:Key="S.Misc.TransferHelper">Transfer Helper</sys:String>
-    <sys:String x:Key="S.Misc.TransferKey">Transfer Key:</sys:String>
     <sys:String x:Key="S.Misc.TransferDesc1">Hover over an item and press this key to instantly transfer it (simulates Alt + Right Click).</sys:String>
     <sys:String x:Key="S.Misc.TransferDesc2">Works between Inventory, Storage, and Cart.</sys:String>
 
     <!-- Auto Off -->
-    <sys:String x:Key="S.AutoOff.TimerHeader">Auto Off Timer</sys:String>
     <sys:String x:Key="S.AutoOff.Next">Next</sys:String>
     <sys:String x:Key="S.AutoOff.StartStopTip">Start / Stop the countdown</sys:String>
     <sys:String x:Key="S.AutoOff.PauseResumeTip">Pause / resume the countdown</sys:String>
@@ -99,7 +83,6 @@
     <sys:String x:Key="S.Autobuff.ActiveSlots">Active Slots</sys:String>
     <sys:String x:Key="S.Autobuff.SearchResults">Search Results</sys:String>
     <sys:String x:Key="S.Autobuff.NoActiveBuffs">No active buffs. Type in the search box above to find skills and items.</sys:String>
-    <sys:String x:Key="S.Autobuff.Delay">Delay (ms):</sys:String>
     <sys:String x:Key="S.Autobuff.OrderDesc">Active Autobuff Skills and Items are executed in the order shown below (top-to-bottom)</sys:String>
     <sys:String x:Key="S.Autobuff.UnsetHotkey">Unset Hotkey</sys:String>
 
@@ -115,7 +98,6 @@
     <sys:String x:Key="S.Profiles.CopyPrompt">Enter name for the copied profile:</sys:String>
     <sys:String x:Key="S.Profiles.RenameTitle">Rename Profile</sys:String>
     <sys:String x:Key="S.Profiles.RenamePrompt">Enter new profile name:</sys:String>
-    <sys:String x:Key="S.Profiles.ErrorTitle">Error</sys:String>
     <sys:String x:Key="S.Profiles.ErrorRenameDefault">Cannot rename the Default profile!</sys:String>
     <sys:String x:Key="S.Profiles.ErrorDeleteDefault">Cannot delete the Default profile!</sys:String>
     <sys:String x:Key="S.Profiles.ConfirmDeleteMessage">Are you sure you want to delete the profile '{0}'?</sys:String>
@@ -138,30 +120,17 @@
     <sys:String x:Key="S.StatusLogger.LogFrequency">Log Frequency:</sys:String>
     <sys:String x:Key="S.StatusLogger.Columns">Columns to Include</sys:String>
     <sys:String x:Key="S.StatusLogger.Name">Name</sys:String>
-    <sys:String x:Key="S.StatusLogger.Level">Level</sys:String>
-    <sys:String x:Key="S.StatusLogger.JobLevel">Job Level</sys:String>
-    <sys:String x:Key="S.StatusLogger.Exp">Exp</sys:String>
-    <sys:String x:Key="S.StatusLogger.HP">HP</sys:String>
-    <sys:String x:Key="S.StatusLogger.MaxHP">Max HP</sys:String>
-    <sys:String x:Key="S.StatusLogger.SP">SP</sys:String>
-    <sys:String x:Key="S.StatusLogger.MaxSP">Max SP</sys:String>
     <sys:String x:Key="S.StatusLogger.Weight">Weight</sys:String>
     <sys:String x:Key="S.StatusLogger.MaxWeight">Max Wgt</sys:String>
     <sys:String x:Key="S.StatusLogger.Map">Map</sys:String>
     <sys:String x:Key="S.StatusLogger.Statuses">Statuses</sys:String>
 
     <!-- Settings — Interface -->
-    <sys:String x:Key="S.Settings.Interface">Interface</sys:String>
-    <sys:String x:Key="S.Settings.StatusLogger">Status Logger</sys:String>
     <sys:String x:Key="S.Settings.InterfaceLayout">Interface Layout</sys:String>
     <sys:String x:Key="S.Settings.LanguageDesc">Switch application language</sys:String>
     <sys:String x:Key="S.Settings.Language">Language</sys:String>
     <sys:String x:Key="S.Settings.HideDeadClientInfo">Hide dead client info from logs</sys:String>
-    <sys:String x:Key="S.Songs.Key">Key</sys:String>
-    <sys:String x:Key="S.Songs.Delay">Delay (ms)</sys:String>
-    <sys:String x:Key="S.Songs.Reset">Reset</sys:String>
     <sys:String x:Key="S.MacroSwitch.TriggerKey">Trigger Key</sys:String>
-    <sys:String x:Key="S.MacroSwitch.Reset">Reset</sys:String>
     <sys:String x:Key="S.AtkDef.Settings">Settings</sys:String>
     <sys:String x:Key="S.AtkDef.SpamKey">Spam Key</sys:String>
     <sys:String x:Key="S.AtkDef.Click">Click?</sys:String>
@@ -173,7 +142,6 @@
     <sys:String x:Key="S.Settings.MacroSwitchRows">Macro Switch Rows</sys:String>
     <sys:String x:Key="S.Settings.AtkDefRows">ATK x DEF Rows</sys:String>
     <sys:String x:Key="S.Settings.DefaultToggleKey">Default Toggle Key</sys:String>
-    <sys:String x:Key="S.Settings.SystemTray">System Tray</sys:String>
     <sys:String x:Key="S.Settings.DisableSystray">Disable Systray Icon</sys:String>
     <sys:String x:Key="S.Settings.MinimizeToSystray">Minimize to systray</sys:String>
     <sys:String x:Key="S.Settings.CloseToSystray">Close to systray</sys:String>
@@ -192,12 +160,28 @@
     <sys:String x:Key="S.Settings.DebugViewHeight">Debug View Height:</sys:String>
     <sys:String x:Key="S.Settings.AllowResizingWindow">Allow resizing window</sys:String>
 
-    <sys:String x:Key="S.SkillTimer.ClickCursor">Cursor</sys:String>
 
-    <sys:String x:Key="S.Dialog.SetDelay">Set Delay</sys:String>
     <sys:String x:Key="S.Dialog.Hours">HOURS</sys:String>
     <sys:String x:Key="S.Dialog.Minutes">MINUTES</sys:String>
     <sys:String x:Key="S.Dialog.Seconds">SECONDS</sys:String>
-    <sys:String x:Key="S.Dialog.Ms">MS</sys:String>
-    <sys:String x:Key="S.Dialog.Save">Save</sys:String>
+
+    <!-- Settings — Updates -->
+    <sys:String x:Key="S.Settings.UpdatesTab">Updates</sys:String>
+    <sys:String x:Key="S.Settings.UpdatesHeader">Application Updates</sys:String>
+    <sys:String x:Key="S.Settings.UpdateCurrentVersion">Current version:</sys:String>
+    <sys:String x:Key="S.Settings.CheckForUpdatesOnStartup">Check for updates on startup</sys:String>
+    <sys:String x:Key="S.Settings.UpdateCheckButton">Check for Updates</sys:String>
+    <sys:String x:Key="S.Settings.UpdateChecking">Checking...</sys:String>
+    <sys:String x:Key="S.Settings.UpdateUpToDate">You're up to date!</sys:String>
+    <sys:String x:Key="S.Settings.UpdateAvailable">v{0} available</sys:String>
+    <sys:String x:Key="S.Settings.UpdateDownload">View all releases on GitHub →</sys:String>
+
+    <!-- Dialogs — Updates -->
+    <sys:String x:Key="S.Dialog.UpdateAvailableTitle">Update Available!</sys:String>
+    <sys:String x:Key="S.Dialog.UpdateAvailableMessage">A new version (v{0}) of OSRO Tools is available on GitHub.</sys:String>
+    <sys:String x:Key="S.Dialog.DownloadUpdate">Download Update</sys:String>
+    <sys:String x:Key="S.Dialog.DisableAutoCheck">Don't check on startup</sys:String>
+    <sys:String x:Key="S.Dialog.AutoCheckDisabledTitle">Auto-Checking Disabled</sys:String>
+    <sys:String x:Key="S.Dialog.AutoCheckDisabledDesc1">Startup update checks have been disabled. You can re-enable this anytime under </sys:String>
+    <sys:String x:Key="S.Dialog.Close">Close</sys:String>
 </ResourceDictionary>

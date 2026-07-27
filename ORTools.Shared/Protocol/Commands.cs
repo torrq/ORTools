@@ -213,6 +213,7 @@ public sealed record UpdateGlobalConfigCommand(
     bool AlwaysOnTop,
     bool AllowResizingWindow,
     bool ShowExpPerHour,
+    bool CheckForUpdatesOnStartup,
     ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.UpdateGlobalConfig;

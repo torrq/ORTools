@@ -58,15 +58,29 @@ public static class LanguageService
     {
         _current = lang;
 
+        var dicts = Application.Current.Resources.MergedDictionaries;
+
+        // Ensure common.xaml is present
+        var commonDict = dicts.FirstOrDefault(d =>
+            d.Source?.OriginalString.Contains("/Strings/common.xaml") == true);
+
+        if (commonDict == null)
+        {
+            dicts.Add(new ResourceDictionary
+            {
+                Source = new Uri("pack://application:,,,/ORTools;component/Strings/common.xaml")
+            });
+        }
+
         string uri = lang switch
         {
             Language.Filipino => "pack://application:,,,/ORTools;component/Strings/tl.xaml",
             _                 => "pack://application:,,,/ORTools;component/Strings/en.xaml"
         };
 
-        var dicts   = Application.Current.Resources.MergedDictionaries;
         var existing = dicts.FirstOrDefault(d =>
-            d.Source?.OriginalString.Contains("/Strings/") == true);
+            d.Source?.OriginalString.Contains("/Strings/") == true &&
+            !d.Source.OriginalString.Contains("/Strings/common.xaml"));
 
         var newDict = new ResourceDictionary { Source = new Uri(uri) };
 

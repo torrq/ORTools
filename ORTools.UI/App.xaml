@@ -8,12 +8,14 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Themes/ThemeDark.xaml" />
+        <ResourceDictionary Source="Strings/common.xaml" />
         <ResourceDictionary Source="Strings/en.xaml" />
       </ResourceDictionary.MergedDictionaries>
       <controls:BorderGapMaskConverter x:Key="BorderGapMaskConverter" />
       <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
       <local:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
       <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+      <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
       <local:EqualityMultiConverter x:Key="EqualityMultiConverter" />
       <local:TextLengthToFontSizeConverter x:Key="TextLengthToFontSizeConverter" NormalSize="13" SmallSize="10" Threshold="30" />
       <local:KeyToStringConverter x:Key="KeyToStringConverter" />

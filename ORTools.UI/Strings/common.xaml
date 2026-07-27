@@ -1,0 +1,47 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         COMMON STRING RESOURCES (Identical in all languages)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <sys:String x:Key="S.AutoOff.TimerHeader">Auto Off Timer</sys:String>
+    <sys:String x:Key="S.Autobuff.Delay">Delay (ms):</sys:String>
+    <sys:String x:Key="S.Autopot.Delay">Delay (ms):</sys:String>
+    <sys:String x:Key="S.Autopot.HP">Autopot HP</sys:String>
+    <sys:String x:Key="S.Autopot.HPPercent">HP %</sys:String>
+    <sys:String x:Key="S.Autopot.On">ON</sys:String>
+    <sys:String x:Key="S.Autopot.SP">Autopot SP</sys:String>
+    <sys:String x:Key="S.Autopot.SPPercent">SP %</sys:String>
+    <sys:String x:Key="S.Debuffs.Delay">Delay (ms):</sys:String>
+    <sys:String x:Key="S.Dialog.AutoCheckDisabledDesc2">.</sys:String>
+    <sys:String x:Key="S.Dialog.AutoCheckDisabledLink">Settings → Updates</sys:String>
+    <sys:String x:Key="S.Dialog.Ms">MS</sys:String>
+    <sys:String x:Key="S.Dialog.Save">Save</sys:String>
+    <sys:String x:Key="S.Dialog.SetDelay">Set Delay</sys:String>
+    <sys:String x:Key="S.MacroSwitch.Reset">Reset</sys:String>
+    <sys:String x:Key="S.Main.Profile">Profile</sys:String>
+    <sys:String x:Key="S.Misc.TransferKey">Transfer Key:</sys:String>
+    <sys:String x:Key="S.Profiles.ErrorTitle">Error</sys:String>
+    <sys:String x:Key="S.Settings.Interface">Interface</sys:String>
+    <sys:String x:Key="S.Settings.StatusLogger">Status Logger</sys:String>
+    <sys:String x:Key="S.Settings.SystemTray">System Tray</sys:String>
+    <sys:String x:Key="S.Skill.CriticalWounds">Critical Wounds</sys:String>
+    <sys:String x:Key="S.SkillSpammer.NoShift">No Shift</sys:String>
+    <sys:String x:Key="S.SkillTimer.ClickCursor">Cursor</sys:String>
+    <sys:String x:Key="S.SkillTimer.Delay">DELAY (ms)</sys:String>
+    <sys:String x:Key="S.SkillTimer.Key">KEY</sys:String>
+    <sys:String x:Key="S.Songs.Delay">Delay (ms)</sys:String>
+    <sys:String x:Key="S.Songs.Key">Key</sys:String>
+    <sys:String x:Key="S.Songs.Reset">Reset</sys:String>
+    <sys:String x:Key="S.StatusLogger.Exp">Exp</sys:String>
+    <sys:String x:Key="S.StatusLogger.HP">HP</sys:String>
+    <sys:String x:Key="S.StatusLogger.JobLevel">Job Level</sys:String>
+    <sys:String x:Key="S.StatusLogger.Level">Level</sys:String>
+    <sys:String x:Key="S.StatusLogger.MaxHP">Max HP</sys:String>
+    <sys:String x:Key="S.StatusLogger.MaxSP">Max SP</sys:String>
+    <sys:String x:Key="S.StatusLogger.SP">SP</sys:String>
+    <sys:String x:Key="S.Tab.Debuffs">Debuffs</sys:String>
+    <sys:String x:Key="S.Tab.Profiles">Profiles</sys:String>
+    <sys:String x:Key="S.Tab.Settings">Settings</sys:String>
+</ResourceDictionary>

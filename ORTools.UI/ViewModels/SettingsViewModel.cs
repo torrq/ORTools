@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
+using System.Diagnostics;
 
 namespace ORTools.UI.ViewModels;
 
@@ -22,8 +23,19 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _alwaysOnTop;
     [ObservableProperty] private bool _allowResizingWindow;
     [ObservableProperty] private bool _showExpPerHour;
+    [ObservableProperty] private bool _checkForUpdatesOnStartup = true;
     [ObservableProperty] private ThemeMode _theme;
     [ObservableProperty] private Language _language;
+
+    // ── Update checker ────────────────────────────────────────────────────────
+    [ObservableProperty] private int _selectedSettingsTabIndex = 0;
+    [ObservableProperty] private string _updateStatusText = "";
+    [ObservableProperty] private bool _isCheckingForUpdates;
+    [ObservableProperty] private bool _hasUpdate;
+    [ObservableProperty] private string _downloadUrl = "";
+    [ObservableProperty] private string _directZipUrl = "";
+
+    public string CurrentVersionText => ORTools.Worker.AppConfig.Version;
 
     public ThemeMode[] ThemeModes => ThemeService.GetAvailableThemes();
     public Language[]  Languages  => new[] { Language.English, Language.Filipino };
@@ -42,6 +54,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private int _atkDefRows = 2;
     [ObservableProperty] private string _defaultToggleStateKey = "None";
 
+    private UpdateResult? _lastUpdateResult;
+
     public AutobuffSkillViewModel AutobuffSkill { get; }
 
     public SettingsViewModel(WorkerService worker, AutobuffSkillViewModel autobuffSkill)
@@ -52,6 +66,18 @@ public partial class SettingsViewModel : ObservableObject
         _worker.GlobalConfigReceived += OnGlobalConfigReceived;
         _worker.ProfileSettingsReceived += OnProfileSettingsReceived;
         _worker.AppStateReceived += OnAppStateReceived;
+        LanguageService.LanguageChanged += OnLanguageChangedEvent;
+    }
+
+    private void OnLanguageChangedEvent()
+    {
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            if (_lastUpdateResult != null)
+            {
+                ApplyUpdateResult(_lastUpdateResult);
+            }
+        });
     }
 
     private void OnAppStateReceived(AppStateUpdate update)
@@ -89,6 +115,7 @@ public partial class SettingsViewModel : ObservableObject
             AlwaysOnTop = update.AlwaysOnTop;
             AllowResizingWindow = update.AllowResizingWindow;
             ShowExpPerHour = update.ShowExpPerHour;
+            CheckForUpdatesOnStartup = update.CheckForUpdatesOnStartup;
             Theme = update.Theme;
             _suppressUpdates = false;
 
@@ -133,6 +160,7 @@ public partial class SettingsViewModel : ObservableObject
     partial void OnAlwaysOnTopChanged(bool value) => SendGlobalUpdate();
     partial void OnAllowResizingWindowChanged(bool value) => SendGlobalUpdate();
     partial void OnShowExpPerHourChanged(bool value) => SendGlobalUpdate();
+    partial void OnCheckForUpdatesOnStartupChanged(bool value) => SendGlobalUpdate();
     
     partial void OnThemeChanged(ThemeMode value)
     {
@@ -192,6 +220,7 @@ public partial class SettingsViewModel : ObservableObject
             AlwaysOnTop: AlwaysOnTop,
             AllowResizingWindow: AllowResizingWindow,
             ShowExpPerHour: ShowExpPerHour,
+            CheckForUpdatesOnStartup: CheckForUpdatesOnStartup,
             Theme: Theme
         );
         _worker.Send(cmd);
@@ -210,5 +239,61 @@ public partial class SettingsViewModel : ObservableObject
             KeepDeadClientInfo: KeepDeadClientInfo
         );
         _worker.Send(cmd);
+    }
+
+    // ── Update checker ────────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private async Task CheckForUpdatesAsync()
+    {
+        IsCheckingForUpdates = true;
+        UpdateStatusText = LanguageService.Get("S.Settings.UpdateChecking");
+
+        var result = await UpdateCheckerService.CheckAsync(forceRefresh: true);
+        ApplyUpdateResult(result);
+
+        IsCheckingForUpdates = false;
+    }
+
+    [RelayCommand]
+    private void OpenDownloadUrl()
+    {
+        if (!string.IsNullOrEmpty(DownloadUrl))
+            Process.Start(new ProcessStartInfo(DownloadUrl) { UseShellExecute = true });
+    }
+
+    [RelayCommand]
+    private void OpenDirectZipUrl()
+    {
+        if (!string.IsNullOrEmpty(DirectZipUrl))
+            Process.Start(new ProcessStartInfo(DirectZipUrl) { UseShellExecute = true });
+    }
+
+    /// <summary>
+    /// Apply an update result to the UI. Called from both the manual button and the silent startup check.
+    /// </summary>
+    public void ApplyUpdateResult(UpdateResult result)
+    {
+        _lastUpdateResult = result;
+        if (result.ErrorMessage != null)
+        {
+            UpdateStatusText = result.ErrorMessage;
+            HasUpdate = false;
+        }
+        else if (result.IsUpdateAvailable)
+        {
+            HasUpdate = true;
+            DownloadUrl = result.ReleaseUrl ?? "";
+            string modeTag = ThemeService.ServerMode == 0 ? "MR" : "HR";
+            string tag = result.LatestVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) ? result.LatestVersion : $"v{result.LatestVersion}";
+            DirectZipUrl = $"https://github.com/torrq/ORTools/releases/download/{tag}/OSROTools_{tag}-{modeTag}.zip";
+            UpdateStatusText = string.Format(
+                LanguageService.Get("S.Settings.UpdateAvailable"), result.LatestVersion);
+        }
+        else
+        {
+            HasUpdate = false;
+            UpdateStatusText = LanguageService.Get("S.Settings.UpdateUpToDate");
+        }
     }
 }

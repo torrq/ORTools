@@ -67,7 +67,16 @@
                         Foreground="{DynamicResource AppTextBrush}"
                         VerticalAlignment="Center" Margin="8,0,0,0">
                   <CheckBox.Content>
-                      <TextBlock Text="{DynamicResource S.Autopot.StopCritical}" TextWrapping="Wrap" MaxWidth="120" FontSize="11" />
+                      <TextBlock TextWrapping="Wrap" MaxWidth="140" FontSize="11">
+                          <Run Text="{DynamicResource S.Autopot.StopPrefix}" />
+                          <Hyperlink NavigateUri="https://irowiki.org/classic/NPC_CRITICALWOUND" 
+                                     ToolTip="https://irowiki.org/classic/NPC_CRITICALWOUND"
+                                     RequestNavigate="Hyperlink_RequestNavigate" 
+                                     Foreground="{DynamicResource AppLinkBrush}" 
+                                     TextDecorations="None">
+                              <Run Text="{DynamicResource S.Skill.CriticalWounds}" FontStyle="Italic" />
+                          </Hyperlink>
+                      </TextBlock>
                   </CheckBox.Content>
               </CheckBox>
         </StackPanel>

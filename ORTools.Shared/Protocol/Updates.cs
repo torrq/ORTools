@@ -168,6 +168,7 @@ public sealed record GlobalConfigUpdate(
     bool AlwaysOnTop,
     bool AllowResizingWindow,
     bool ShowExpPerHour,
+    bool CheckForUpdatesOnStartup,
     ThemeMode Theme) : IIpcMessage
 {
     public string Type => MessageTypes.GlobalConfigUpdate;

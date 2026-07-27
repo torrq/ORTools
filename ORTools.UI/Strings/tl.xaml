@@ -10,33 +10,21 @@
     ═══════════════════════════════════════════════════════════════════ -->
 
     <!-- Tab Headers -->
-    <sys:String x:Key="S.Tab.Debuffs">Mga Debuff</sys:String>
     <sys:String x:Key="S.Tab.Misc">Iba Pa</sys:String>
-    <sys:String x:Key="S.Tab.Profiles">Mga Profile</sys:String>
-    <sys:String x:Key="S.Tab.Settings">Mga Setting</sys:String>
     <sys:String x:Key="S.Tab.About">Tungkol</sys:String>
 
     <!-- Main Window -->
     <sys:String x:Key="S.Main.Client">Kliyente</sys:String>
-    <sys:String x:Key="S.Main.Profile">Profile</sys:String>
     <sys:String x:Key="S.Main.Key">Susi:</sys:String>
     <sys:String x:Key="S.Main.Weight">Timbang</sys:String>
     <sys:String x:Key="S.Main.TurnOn">I-on</sys:String>
     <sys:String x:Key="S.Main.TurnOff">I-off</sys:String>
 
     <!-- Autopot -->
-    <sys:String x:Key="S.Autopot.HP">Autopot HP</sys:String>
-    <sys:String x:Key="S.Autopot.SP">Autopot SP</sys:String>
-    <sys:String x:Key="S.Autopot.On">ON</sys:String>
     <sys:String x:Key="S.Autopot.Key">SUSI</sys:String>
-    <sys:String x:Key="S.Autopot.HPPercent">HP %</sys:String>
-    <sys:String x:Key="S.Autopot.SPPercent">SP %</sys:String>
-    <sys:String x:Key="S.Autopot.Delay">Delay (ms):</sys:String>
-    <sys:String x:Key="S.Autopot.StopCritical">Tumigil sa Critical Wounds</sys:String>
+    <sys:String x:Key="S.Autopot.StopPrefix">Tumigil sa </sys:String>
 
     <!-- Skill Timer -->
-    <sys:String x:Key="S.SkillTimer.Key">KEY</sys:String>
-    <sys:String x:Key="S.SkillTimer.Delay">DELAY (ms)</sys:String>
     <sys:String x:Key="S.SkillTimer.OpenTimePicker">Buksan ang Time Picker</sys:String>
     <sys:String x:Key="S.SkillTimer.ClickNone">Wala</sys:String>
     <sys:String x:Key="S.SkillSpammer.UnkeysNone">Wala</sys:String>
@@ -48,21 +36,17 @@
     <sys:String x:Key="S.SkillSpammer.NoClick">Walang click</sys:String>
     <sys:String x:Key="S.SkillSpammer.Disabled">Hindi aktibo</sys:String>
     <sys:String x:Key="S.SkillSpammer.KeyConfig">Setting ng Key</sys:String>
-    <sys:String x:Key="S.SkillSpammer.NoShift">Walang Shift</sys:String>
     <sys:String x:Key="S.SkillSpammer.PressKeyToAssign">Pindutin ang isang key para italaga</sys:String>
     <sys:String x:Key="S.SkillSpammer.SpammerDelay">Pagkaantala ng Spammer</sys:String>
 
     <!-- Debuffs -->
-    <sys:String x:Key="S.Debuffs.Delay">Delay (ms):</sys:String>
 
     <!-- Misc -->
     <sys:String x:Key="S.Misc.TransferHelper">Tulong sa Paglipat</sys:String>
-    <sys:String x:Key="S.Misc.TransferKey">Transfer Key:</sys:String>
     <sys:String x:Key="S.Misc.TransferDesc1">I-hover ang isang item at pindutin ang key na ito para agad itong ilipat (gumagaya ng Alt + Right Click).</sys:String>
     <sys:String x:Key="S.Misc.TransferDesc2">Gumagana sa pagitan ng Inventory, Storage, at Cart.</sys:String>
 
     <!-- Auto Off -->
-    <sys:String x:Key="S.AutoOff.TimerHeader">Auto Off Timer</sys:String>
     <sys:String x:Key="S.AutoOff.Next">Susunod</sys:String>
     <sys:String x:Key="S.AutoOff.StartStopTip">Simulan / Itigil ang countdown</sys:String>
     <sys:String x:Key="S.AutoOff.PauseResumeTip">I-pause / Ituloy ang countdown</sys:String>
@@ -83,11 +67,7 @@
     <sys:String x:Key="S.Profiles.Create">Lumikha ng Profile</sys:String>
     <sys:String x:Key="S.Profiles.Rename">Palitan ang Pangalan</sys:String>
     <sys:String x:Key="S.Settings.LanguageDesc">Palitan ang wika ng app</sys:String>
-    <sys:String x:Key="S.Songs.Key">Key</sys:String>
-    <sys:String x:Key="S.Songs.Delay">Delay (ms)</sys:String>
-    <sys:String x:Key="S.Songs.Reset">Reset</sys:String>
     <sys:String x:Key="S.MacroSwitch.TriggerKey">Susi (Trigger)</sys:String>
-    <sys:String x:Key="S.MacroSwitch.Reset">Reset</sys:String>
     <sys:String x:Key="S.AtkDef.Settings">Mga Setting</sys:String>
     <sys:String x:Key="S.AtkDef.SpamKey">Susi (Spam)</sys:String>
     <sys:String x:Key="S.AtkDef.Click">I-click?</sys:String>
@@ -112,7 +92,6 @@
     <sys:String x:Key="S.Autobuff.ActiveSlots">Mga Aktibong Slot</sys:String>
     <sys:String x:Key="S.Autobuff.SearchResults">Mga Resulta</sys:String>
     <sys:String x:Key="S.Autobuff.NoActiveBuffs">Walang aktibong buffs. Mag-type sa box sa itaas para maghanap ng skills at items.</sys:String>
-    <sys:String x:Key="S.Autobuff.Delay">Delay (ms):</sys:String>
     <sys:String x:Key="S.Autobuff.OrderDesc">Ang mga Aktibong Autobuff Skills at Items ay pinapagana ayon sa pagkakasunod-sunod sa ibaba (itaas pababa)</sys:String>
     <sys:String x:Key="S.Autobuff.UnsetHotkey">Alisin ang Hotkey</sys:String>
 
@@ -128,7 +107,6 @@
     <sys:String x:Key="S.Profiles.CopyPrompt">Ipasok ang pangalan para sa kinopyang profile:</sys:String>
     <sys:String x:Key="S.Profiles.RenameTitle">Palitan ang Pangalan</sys:String>
     <sys:String x:Key="S.Profiles.RenamePrompt">Ipasok ang bagong pangalan ng profile:</sys:String>
-    <sys:String x:Key="S.Profiles.ErrorTitle">Error</sys:String>
     <sys:String x:Key="S.Profiles.ErrorRenameDefault">Hindi maaaring palitan ang pangalan ng Default profile!</sys:String>
     <sys:String x:Key="S.Profiles.ErrorDeleteDefault">Hindi maaaring burahin ang Default profile!</sys:String>
     <sys:String x:Key="S.Profiles.ConfirmDeleteMessage">Sigurado ka bang gusto mong burahin ang profile na '{0}'?</sys:String>
@@ -151,22 +129,13 @@
     <sys:String x:Key="S.StatusLogger.LogFrequency">Dalas ng Pag-log:</sys:String>
     <sys:String x:Key="S.StatusLogger.Columns">Isamang mga Column</sys:String>
     <sys:String x:Key="S.StatusLogger.Name">Pangalan</sys:String>
-    <sys:String x:Key="S.StatusLogger.Level">Level</sys:String>
-    <sys:String x:Key="S.StatusLogger.JobLevel">Job Level</sys:String>
-    <sys:String x:Key="S.StatusLogger.Exp">Exp</sys:String>
-    <sys:String x:Key="S.StatusLogger.HP">HP</sys:String>
-    <sys:String x:Key="S.StatusLogger.MaxHP">Max HP</sys:String>
-    <sys:String x:Key="S.StatusLogger.SP">SP</sys:String>
-    <sys:String x:Key="S.StatusLogger.MaxSP">Max SP</sys:String>
     <sys:String x:Key="S.StatusLogger.Weight">Bigat</sys:String>
     <sys:String x:Key="S.StatusLogger.MaxWeight">Max Bigat</sys:String>
     <sys:String x:Key="S.StatusLogger.Map">Mapa</sys:String>
     <sys:String x:Key="S.StatusLogger.Statuses">Mga Status</sys:String>
 
     <!-- Settings — Interface -->
-    <sys:String x:Key="S.Settings.Interface">Interface</sys:String>
     <sys:String x:Key="S.Settings.Advanced">Mga Advanced na Setting</sys:String>
-    <sys:String x:Key="S.Settings.StatusLogger">Status Logger</sys:String>
     <sys:String x:Key="S.Settings.InterfaceLayout">Layout ng Interface</sys:String>
     <sys:String x:Key="S.Settings.Language">Wika</sys:String>
     <sys:String x:Key="S.Settings.HideDeadClientInfo">Itago ang info ng patay na client sa mga log</sys:String>
@@ -175,7 +144,6 @@
     <sys:String x:Key="S.Settings.MacroSwitchRows">Mga Hanay ng Macro Switch</sys:String>
     <sys:String x:Key="S.Settings.AtkDefRows">Mga Hanay ng ATK x DEF</sys:String>
     <sys:String x:Key="S.Settings.DefaultToggleKey">Default na Toggle Key</sys:String>
-    <sys:String x:Key="S.Settings.SystemTray">System Tray</sys:String>
     <sys:String x:Key="S.Settings.DisableSystray">Huwag ipakita ang Systray Icon</sys:String>
     <sys:String x:Key="S.Settings.MinimizeToSystray">I-minimize sa systray</sys:String>
     <sys:String x:Key="S.Settings.CloseToSystray">Isara sa systray</sys:String>
@@ -193,12 +161,28 @@
     <sys:String x:Key="S.Settings.DebugViewHeight">Taas ng Debug View:</sys:String>
     <sys:String x:Key="S.Settings.AllowResizingWindow">Payagan ang pagbabago ng laki ng window</sys:String>
 
-    <sys:String x:Key="S.SkillTimer.ClickCursor">Cursor</sys:String>
 
-    <sys:String x:Key="S.Dialog.SetDelay">Set Delay</sys:String>
     <sys:String x:Key="S.Dialog.Hours">ORAS</sys:String>
     <sys:String x:Key="S.Dialog.Minutes">MINUTO</sys:String>
     <sys:String x:Key="S.Dialog.Seconds">SEGUNDO</sys:String>
-    <sys:String x:Key="S.Dialog.Ms">MS</sys:String>
-    <sys:String x:Key="S.Dialog.Save">Save</sys:String>
+
+    <!-- Settings — Updates -->
+    <sys:String x:Key="S.Settings.UpdatesTab">Mga Update</sys:String>
+    <sys:String x:Key="S.Settings.UpdatesHeader">Mga Update ng App</sys:String>
+    <sys:String x:Key="S.Settings.UpdateCurrentVersion">Kasalukuyang bersyon:</sys:String>
+    <sys:String x:Key="S.Settings.CheckForUpdatesOnStartup">Suriin ang mga update sa pagsisimula</sys:String>
+    <sys:String x:Key="S.Settings.UpdateCheckButton">Suriin ang Update</sys:String>
+    <sys:String x:Key="S.Settings.UpdateChecking">Sinusuri...</sys:String>
+    <sys:String x:Key="S.Settings.UpdateUpToDate">Na-update ka na!</sys:String>
+    <sys:String x:Key="S.Settings.UpdateAvailable">May v{0}</sys:String>
+    <sys:String x:Key="S.Settings.UpdateDownload">Tingnan ang lahat ng release sa GitHub →</sys:String>
+
+    <!-- Dialogs — Updates -->
+    <sys:String x:Key="S.Dialog.UpdateAvailableTitle">May Bagong Update!</sys:String>
+    <sys:String x:Key="S.Dialog.UpdateAvailableMessage">May bagong bersyon (v{0}) ng OSRO Tools sa GitHub.</sys:String>
+    <sys:String x:Key="S.Dialog.DownloadUpdate">I-download ang Update</sys:String>
+    <sys:String x:Key="S.Dialog.DisableAutoCheck">Huwag suriin sa pagsisimula</sys:String>
+    <sys:String x:Key="S.Dialog.AutoCheckDisabledTitle">Naka-off ang Awtomatikong Pagsusuri</sys:String>
+    <sys:String x:Key="S.Dialog.AutoCheckDisabledDesc1">Naka-off na ang pagsusuri ng update sa pagsisimula. Maaari mo itong muling i-on sa </sys:String>
+    <sys:String x:Key="S.Dialog.Close">Isara</sys:String>
 </ResourceDictionary>

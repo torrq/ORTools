@@ -26,6 +26,12 @@
         <DataTemplate DataType="{x:Type vm:AlertDialogViewModel}">
             <views:AlertDialogView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UpdateAvailableDialogViewModel}">
+            <views:UpdateAvailableDialogView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AutoCheckDisabledDialogViewModel}">
+            <views:AutoCheckDisabledDialogView />
+        </DataTemplate>
         <helpers:SpPercentToBrushConverter x:Key="SpPercentToBrushConverter" />
         <helpers:HpPercentToBrushConverter x:Key="HpPercentToBrushConverter" />
     </Window.Resources>
@@ -375,7 +381,7 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <TabControl Margin="0,0,0,2" Grid.Row="1" Grid.ColumnSpan="2">
+        <TabControl SelectedIndex="{Binding SelectedMainTabIndex, Mode=TwoWay}" Margin="0,0,0,2" Grid.Row="1" Grid.ColumnSpan="2">
             <TabControl.Style>
                 <Style TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
                     <Setter Property="Visibility" Value="Visible" />
@@ -510,7 +516,7 @@
             
             <Border Background="#66000000">
                 <Border.InputBindings>
-                    <MouseBinding MouseAction="LeftClick" Command="{Binding CurrentDialogContent.CancelCommand}" />
+                    <MouseBinding MouseAction="LeftClick" Command="{Binding DismissDialogCommand}" />
                 </Border.InputBindings>
             </Border>
 

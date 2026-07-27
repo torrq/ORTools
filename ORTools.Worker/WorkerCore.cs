@@ -750,6 +750,7 @@ public sealed class WorkerCore
         config.AlwaysOnTop = cmd.AlwaysOnTop;
         config.AllowResizingWindow = cmd.AllowResizingWindow;
         config.ShowExpPerHour = cmd.ShowExpPerHour;
+        config.CheckForUpdatesOnStartup = cmd.CheckForUpdatesOnStartup;
         config.Theme = cmd.Theme;
         ConfigGlobal.SaveConfig();
 
@@ -1344,6 +1345,7 @@ public sealed class WorkerCore
             config.AlwaysOnTop,
             config.AllowResizingWindow,
             config.ShowExpPerHour,
+            config.CheckForUpdatesOnStartup,
             config.Theme
         );
     }

@@ -113,6 +113,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [ObservableProperty] private string _wtPercentRightBracketText = "";
     [ObservableProperty] private string _wtLabelText = "";
 
+    [ObservableProperty] private int _selectedMainTabIndex = 0;
+
+    public void NavigateToSettingsUpdates()
+    {
+        Settings.SelectedSettingsTabIndex = 5;
+        SelectedMainTabIndex = 11;
+    }
+
     // ── Child ViewModels ──────────────────────────────────────────────────────
     [ObservableProperty]
     private bool _isMiniMode;
@@ -179,6 +187,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         CurrentDialogContent = null;
     }
 
+    [RelayCommand]
+    public void DismissDialog()
+    {
+        if (CurrentDialogContent is ViewModelBase vm)
+        {
+            var prop = vm.GetType().GetProperty("CancelCommand");
+            if (prop?.GetValue(vm) is System.Windows.Input.ICommand cancelCmd && cancelCmd.CanExecute(null))
+            {
+                cancelCmd.Execute(null);
+                return;
+            }
+        }
+        CloseDialog();
+    }
+
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public MainWindowViewModel(WorkerService worker)
@@ -230,6 +253,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         // Initialize localized labels
         WtLabelText = LanguageService.Get("S.Main.Weight") + " ";
         LanguageService.LanguageChanged += OnLanguageChanged;
+
+        // Background update check on startup
+        _ = Task.Run(async () =>
+        {
+            var result = await Services.UpdateCheckerService.CheckAsync();
+            if (result.IsUpdateAvailable)
+            {
+                Post(() =>
+                {
+                    Settings.ApplyUpdateResult(result);
+                    if (Settings.CheckForUpdatesOnStartup)
+                    {
+                        var dialog = new UpdateAvailableDialogViewModel(result.LatestVersion, result.ReleaseUrl ?? "", this, this);
+                        _ = ShowDialogAsync(dialog);
+                    }
+                });
+            }
+        });
     }
 
     private void OnLanguageChanged()
