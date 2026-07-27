@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ORTools.UI.ViewModels;
 
-public sealed partial class AlertDialogViewModel : ViewModelBase
+public sealed partial class AlertDialogViewModel : ViewModelBase, ICancelableDialog
 {
     private readonly TaskCompletionSource<bool> _tcs = new();
     private readonly IDialogService? _dialogService;

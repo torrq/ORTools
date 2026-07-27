@@ -190,14 +190,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
     [RelayCommand]
     public void DismissDialog()
     {
-        if (CurrentDialogContent is ViewModelBase vm)
+        if (CurrentDialogContent is ICancelableDialog cancelable && cancelable.CancelCommand?.CanExecute(null) == true)
         {
-            var prop = vm.GetType().GetProperty("CancelCommand");
-            if (prop?.GetValue(vm) is System.Windows.Input.ICommand cancelCmd && cancelCmd.CanExecute(null))
-            {
-                cancelCmd.Execute(null);
-                return;
-            }
+            cancelable.CancelCommand.Execute(null);
+            return;
         }
         CloseDialog();
     }

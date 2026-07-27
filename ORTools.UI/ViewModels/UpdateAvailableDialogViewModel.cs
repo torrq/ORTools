@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ORTools.UI.ViewModels;
 
-public sealed partial class UpdateAvailableDialogViewModel : ViewModelBase
+public sealed partial class UpdateAvailableDialogViewModel : ViewModelBase, ICancelableDialog
 {
     private readonly IDialogService _dialogService;
     private readonly MainWindowViewModel _mainWindow;
@@ -43,7 +43,7 @@ public sealed partial class UpdateAvailableDialogViewModel : ViewModelBase
         {
             Process.Start(new ProcessStartInfo(DirectZipUrl) { UseShellExecute = true });
         }
-        _dialogService.CloseDialog();
+        Close();
     }
 
     [RelayCommand]
@@ -53,14 +53,14 @@ public sealed partial class UpdateAvailableDialogViewModel : ViewModelBase
         {
             Process.Start(new ProcessStartInfo(ReleaseUrl) { UseShellExecute = true });
         }
-        _dialogService.CloseDialog();
+        Close();
     }
 
     [RelayCommand]
     private void DisableAutoChecking()
     {
         _mainWindow.Settings.CheckForUpdatesOnStartup = false;
-        _dialogService.CloseDialog();
+        Close();
 
         var alert = new AutoCheckDisabledDialogViewModel(_dialogService, _mainWindow);
         _ = _dialogService.ShowDialogAsync(alert);
@@ -69,6 +69,7 @@ public sealed partial class UpdateAvailableDialogViewModel : ViewModelBase
     [RelayCommand]
     private void Close()
     {
+        LanguageService.LanguageChanged -= OnLanguageChanged;
         _dialogService.CloseDialog();
     }
 

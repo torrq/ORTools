@@ -4,7 +4,7 @@ using ORTools.UI.Services;
 
 namespace ORTools.UI.ViewModels;
 
-public sealed partial class AutoCheckDisabledDialogViewModel : ViewModelBase
+public sealed partial class AutoCheckDisabledDialogViewModel : ViewModelBase, ICancelableDialog
 {
     private readonly IDialogService _dialogService;
     private readonly MainWindowViewModel _mainWindow;

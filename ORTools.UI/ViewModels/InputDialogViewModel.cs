@@ -2,9 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
 
+using ORTools.UI.Services;
+
 namespace ORTools.UI.ViewModels;
 
-public sealed partial class InputDialogViewModel : ViewModelBase
+public sealed partial class InputDialogViewModel : ViewModelBase, ICancelableDialog
 {
     private readonly TaskCompletionSource<string?> _tcs = new();
 
