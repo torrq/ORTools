@@ -97,6 +97,40 @@ public static class ProfileSingleton
     private static volatile Profile _profile = new("Default");
     private static readonly object  _lock    = new();
 
+    /// <summary>
+    /// Sanitizes a user-supplied profile name by removing invalid filename characters
+    /// and path traversal sequences.
+    /// </summary>
+    public static string SanitizeProfileName(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "Default";
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        string sanitized = new string(name.Where(c => !invalidChars.Contains(c)).ToArray());
+
+        sanitized = sanitized.Replace("..", "").Replace("/", "").Replace("\\", "").Trim('.', ' ');
+
+        return string.IsNullOrWhiteSpace(sanitized) ? "Default" : sanitized;
+    }
+
+    /// <summary>
+    /// Resolves the absolute JSON file path for a profile and validates that it remains strictly
+    /// contained within <see cref="AppConfig.ProfileFolder"/> (Path Traversal Protection).
+    /// </summary>
+    public static string GetProfileFilePath(string profileName)
+    {
+        string safeName = SanitizeProfileName(profileName);
+        string baseFolder = Path.GetFullPath(AppConfig.ProfileFolder);
+        string fullPath = Path.GetFullPath(Path.Combine(baseFolder, safeName + ".json"));
+
+        if (!fullPath.StartsWith(baseFolder, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException($"Security error: Invalid profile path attempted for name: '{profileName}'");
+        }
+
+        return fullPath;
+    }
+
     private static T TryDeserialize<T>(dynamic rawObject, IAction action, T defaultValue)
     {
         try
@@ -115,21 +149,22 @@ public static class ProfileSingleton
     {
         try
         {
-            string filePath = AppConfig.ProfileFolder + profileName + ".json";
-            if (!File.Exists(filePath)) { Create(profileName); return; }
+            string safeName = SanitizeProfileName(profileName);
+            string filePath = GetProfileFilePath(safeName);
+            if (!File.Exists(filePath)) { Create(safeName); return; }
 
             // CRITICAL (Gotcha #8): Ensure we don't bleed state from the previously loaded profile.
             // DO NOT remove or swap the order of this instantiation.
             // If missing sections in JSON fall back to defaults, they must pull from a clean slate
             // instead of inheriting the ghost data of the last loaded profile.
-            _profile = new Profile(profileName);
+            _profile = new Profile(safeName);
 
             string  json      = File.ReadAllText(filePath);
             dynamic rawObject = JsonConvert.DeserializeObject(json)!;
 
             if (rawObject != null)
             {
-                _profile.Name            = profileName;
+                _profile.Name            = safeName;
                 if (rawObject["UnifiedAutobuffOrder"] != null)
                 {
                     _profile.UnifiedAutobuffOrder = rawObject["UnifiedAutobuffOrder"].ToObject<List<string>>();
@@ -190,19 +225,21 @@ public static class ProfileSingleton
 
     public static void ClearProfile(string profileName)
     {
-        if (profileName != _profile.Name)
-            _profile = new Profile(profileName);
+        string safeName = SanitizeProfileName(profileName);
+        if (safeName != _profile.Name)
+            _profile = new Profile(safeName);
     }
 
     public static void Create(string profileName)
     {
-        string jsonFile = AppConfig.ProfileFolder + profileName + ".json";
+        string safeName = SanitizeProfileName(profileName);
+        string jsonFile = GetProfileFilePath(safeName);
         if (File.Exists(jsonFile)) return;
         try
         {
             if (!Directory.Exists(AppConfig.ProfileFolder))
                 Directory.CreateDirectory(AppConfig.ProfileFolder);
-            ClearProfile(profileName);
+            ClearProfile(safeName);
             
             var config = ConfigGlobal.GetConfig();
             _profile.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
@@ -212,30 +249,49 @@ public static class ProfileSingleton
             File.WriteAllText(jsonFile,
                 JsonConvert.SerializeObject(_profile, Formatting.Indented));
         }
-        catch (Exception ex) { DebugLogger.Error(ex, $"Failed to create profile '{profileName}'"); }
+        catch (Exception ex) { DebugLogger.Error(ex, $"Failed to create profile '{safeName}'"); }
     }
 
     public static void Delete(string profileName)
     {
-        try { if (profileName != "Default") File.Delete(AppConfig.ProfileFolder + profileName + ".json"); }
+        try 
+        { 
+            string safeName = SanitizeProfileName(profileName);
+            if (safeName != "Default") File.Delete(GetProfileFilePath(safeName)); 
+        }
         catch (Exception ex) { DebugLogger.Error(ex, $"Failed to delete '{profileName}'"); }
     }
 
     public static void Rename(string oldName, string newName)
     {
-        string oldPath = AppConfig.ProfileFolder + oldName + ".json";
-        string newPath = AppConfig.ProfileFolder + newName + ".json";
-        if (oldName == "Default") throw new Exception("Cannot rename the Default profile.");
+        string safeOld = SanitizeProfileName(oldName);
+        string safeNew = SanitizeProfileName(newName);
+        string oldPath = GetProfileFilePath(safeOld);
+        string newPath = GetProfileFilePath(safeNew);
+
+        if (safeOld == "Default") throw new Exception("Cannot rename the Default profile.");
         if (!File.Exists(oldPath))  throw new Exception("Profile file does not exist.");
         if (File.Exists(newPath))   throw new Exception("A profile with that name already exists.");
         File.Move(oldPath, newPath);
-        if (_profile.Name == oldName) _profile.Name = newName;
+        if (_profile.Name == safeOld) _profile.Name = safeNew;
+    }
+
+    public static void Copy(string sourceProfile, string newProfileName)
+    {
+        string safeSource = SanitizeProfileName(sourceProfile);
+        string safeTarget = SanitizeProfileName(newProfileName);
+        string sourcePath = GetProfileFilePath(safeSource);
+        string targetPath = GetProfileFilePath(safeTarget);
+
+        if (!File.Exists(sourcePath)) throw new Exception("Source profile does not exist.");
+        if (File.Exists(targetPath))  throw new Exception("A profile with that name already exists.");
+        File.Copy(sourcePath, targetPath);
     }
 
     public static void SetConfiguration(IAction action)
     {
         if (_profile == null) return;
-        string filePath = AppConfig.ProfileFolder + _profile.Name + ".json";
+        string filePath = GetProfileFilePath(_profile.Name);
         lock (_lock)
         {
             try
@@ -255,7 +311,7 @@ public static class ProfileSingleton
     public static void SaveUnifiedAutobuffOrder()
     {
         if (_profile == null) return;
-        string filePath = AppConfig.ProfileFolder + _profile.Name + ".json";
+        string filePath = GetProfileFilePath(_profile.Name);
         lock (_lock)
         {
             try
@@ -276,16 +332,5 @@ public static class ProfileSingleton
     {
         if (_profile == null) { Create("Default"); Load("Default"); }
         return _profile!;
-    }
-
-    public static void Copy(string src, string dst)
-    {
-        if (string.IsNullOrWhiteSpace(dst)) throw new ArgumentException("Invalid destination name.");
-        string srcPath = AppConfig.ProfileFolder + src + ".json";
-        string dstPath = AppConfig.ProfileFolder + dst + ".json";
-        if (!File.Exists(srcPath)) throw new FileNotFoundException($"Source profile '{src}' not found.");
-        if (File.Exists(dstPath))  throw new ArgumentException($"Profile '{dst}' already exists.");
-        if (!Directory.Exists(AppConfig.ProfileFolder)) Directory.CreateDirectory(AppConfig.ProfileFolder);
-        File.Copy(srcPath, dstPath);
     }
 }
