@@ -96,7 +96,7 @@ public sealed class WorkerService : IDisposable
         {
             if (t.IsFaulted && t.Exception != null)
             {
-                Console.WriteLine($"[WorkerService] Command {command.Type} failed: {t.Exception.InnerException?.Message ?? t.Exception.Message}");
+                Console.WriteLine($"[WorkerService] Command {command.GetType().Name} failed: {t.Exception.InnerException?.Message ?? t.Exception.Message}");
             }
         });
     }
@@ -113,42 +113,68 @@ public sealed class WorkerService : IDisposable
 
     private void Dispatch(IIpcMessage env)
     {
-        switch (env.Type)
+        switch (env)
         {
-            case MessageTypes.WorkerReady:
+            case WorkerReadyUpdate update:
                 Console.WriteLine($"[WorkerService] Worker ready.");
                 break;
-            case MessageTypes.AppState:       AppStateReceived?.Invoke((AppStateUpdate)env); break;
-            case MessageTypes.ClientState:    ClientStateReceived?.Invoke((ClientStateUpdate)env); break;
-            case MessageTypes.HpSp:           HpSpReceived?.Invoke((HpSpUpdate)env); break;
-            case MessageTypes.Character:      CharacterReceived?.Invoke((CharacterUpdate)env); break;
-            case MessageTypes.ProcessList:    ProcessListReceived?.Invoke((ProcessListUpdate)env); break;
-            case MessageTypes.ProfileList:    ProfileListReceived?.Invoke((ProfileListUpdate)env); break;
-            case MessageTypes.LogMessage:     LogMessageReceived?.Invoke((LogMessageUpdate)env); break;
-            case MessageTypes.Error:          ErrorReceived?.Invoke((ErrorUpdate)env); break;
+            case AppStateUpdate update:
+                AppStateReceived?.Invoke(update); break;
+            case ClientStateUpdate update:
+                ClientStateReceived?.Invoke(update); break;
+            case HpSpUpdate update:
+                HpSpReceived?.Invoke(update); break;
+            case CharacterUpdate update:
+                CharacterReceived?.Invoke(update); break;
+            case ProcessListUpdate update:
+                ProcessListReceived?.Invoke(update); break;
+            case ProfileListUpdate update:
+                ProfileListReceived?.Invoke(update); break;
+            case LogMessageUpdate update:
+                LogMessageReceived?.Invoke(update); break;
+            case ErrorUpdate update:
+                ErrorReceived?.Invoke(update); break;
 
-            case MessageTypes.AutopotHPConfig: AutopotHPConfigReceived?.Invoke((AutopotHPConfigUpdate)env); break;
-            case MessageTypes.AutopotSPConfig: AutopotSPConfigReceived?.Invoke((AutopotSPConfigUpdate)env); break;
-            case MessageTypes.StatusRecoveryConfig: StatusRecoveryConfigReceived?.Invoke((StatusRecoveryConfigUpdate)env); break;
-            case MessageTypes.SkillTimerConfig: SkillTimerConfigReceived?.Invoke((SkillTimerConfigUpdate)env); break;
-            case MessageTypes.DebuffRecoveryConfig: DebuffRecoveryConfigReceived?.Invoke((DebuffRecoveryConfigUpdate)env); break;
-            case MessageTypes.AutobuffSkillConfig: AutobuffSkillConfigReceived?.Invoke((AutobuffSkillConfigUpdate)env); break;
-            case MessageTypes.AutobuffOrderConfig: AutobuffOrderConfigReceived?.Invoke((AutobuffOrderConfigUpdate)env); break;
-            case MessageTypes.AutobuffItemConfig: AutobuffItemConfigReceived?.Invoke((AutobuffItemConfigUpdate)env); break;
+            case AutopotHPConfigUpdate update:
+                AutopotHPConfigReceived?.Invoke(update); break;
+            case AutopotSPConfigUpdate update:
+                AutopotSPConfigReceived?.Invoke(update); break;
+            case StatusRecoveryConfigUpdate update:
+                StatusRecoveryConfigReceived?.Invoke(update); break;
+            case SkillTimerConfigUpdate update:
+                SkillTimerConfigReceived?.Invoke(update); break;
+            case DebuffRecoveryConfigUpdate update:
+                DebuffRecoveryConfigReceived?.Invoke(update); break;
+            case AutobuffSkillConfigUpdate update:
+                AutobuffSkillConfigReceived?.Invoke(update); break;
+            case AutobuffOrderConfigUpdate update:
+                AutobuffOrderConfigReceived?.Invoke(update); break;
+            case AutobuffItemConfigUpdate update:
+                AutobuffItemConfigReceived?.Invoke(update); break;
             
-            case MessageTypes.SkillSpammerConfigUpdate: SkillSpammerConfigReceived?.Invoke((SkillSpammerConfigUpdate)env); break;
-            case MessageTypes.GlobalConfigUpdate: GlobalConfigReceived?.Invoke((GlobalConfigUpdate)env); break;
-            case MessageTypes.StatusLoggerConfigUpdate: StatusLoggerConfigReceived?.Invoke((StatusLoggerConfigUpdate)env); break;
-            case MessageTypes.ProfileSettingsUpdate: ProfileSettingsReceived?.Invoke((ProfileSettingsUpdate)env); break;
-            case MessageTypes.AutoOffConfigUpdate: AutoOffConfigReceived?.Invoke((AutoOffConfigUpdate)env); break;
-            case MessageTypes.AutoOffTimerStateUpdate: AutoOffTimerStateReceived?.Invoke((AutoOffTimerStateUpdate)env); break;
-            case MessageTypes.TransferHelperConfigUpdate: TransferHelperConfigReceived?.Invoke((TransferHelperConfigUpdate)env); break;
-            case MessageTypes.MacroSwitchConfigUpdate: MacroSwitchConfigReceived?.Invoke((MacroSwitchConfigUpdate)env); break;
-            case MessageTypes.MacroSongConfigUpdate: MacroSongConfigReceived?.Invoke((MacroSongConfigUpdate)env); break;
-            case MessageTypes.AtkDefConfigUpdate: AtkDefConfigReceived?.Invoke((AtkDefConfigUpdate)env); break;
+            case SkillSpammerConfigUpdate update:
+                SkillSpammerConfigReceived?.Invoke(update); break;
+            case GlobalConfigUpdate update:
+                GlobalConfigReceived?.Invoke(update); break;
+            case StatusLoggerConfigUpdate update:
+                StatusLoggerConfigReceived?.Invoke(update); break;
+            case ProfileSettingsUpdate update:
+                ProfileSettingsReceived?.Invoke(update); break;
+            case AutoOffConfigUpdate update:
+                AutoOffConfigReceived?.Invoke(update); break;
+            case AutoOffTimerStateUpdate update:
+                AutoOffTimerStateReceived?.Invoke(update); break;
+            case TransferHelperConfigUpdate update:
+                TransferHelperConfigReceived?.Invoke(update); break;
+            case MacroSwitchConfigUpdate update:
+                MacroSwitchConfigReceived?.Invoke(update); break;
+            case MacroSongConfigUpdate update:
+                MacroSongConfigReceived?.Invoke(update); break;
+            case AtkDefConfigUpdate update:
+                AtkDefConfigReceived?.Invoke(update); break;
 
             default:
-                Console.WriteLine($"[WorkerService] Unknown update: {env.Type}");
+                Console.WriteLine($"[WorkerService] Unknown update: {env.GetType().Name}");
                 break;
         }
     }

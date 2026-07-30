@@ -250,3 +250,15 @@ The WPF layouts in this app are tight and fixed-width. Many views use explicit c
 **14. WPF MVVM Infinite Binding Loops (The MacroSwitch Bug)**
 When a UI property bound in XAML triggers a command to the worker, and the worker immediately broadcasts that state back, the ViewModel's property setter might be invoked again by the incoming event, firing *another* command to the worker. This creates an infinite loop that instantly locks up the UI thread.
 **Fix**: In ViewModels where an update command sets properties that trigger IPC, temporarily set a boolean flag (e.g., `_suppressCommands = true;`) before applying the incoming state, and check that flag inside the property setters or command invocations to break the echo loop.
+
+**15. In-Memory IPC & Type Pattern Matching**
+The original codebase serialized IPC messages using JSON (via `IpcEnvelope.cs`) and discriminated types using a magic `string Type` property (e.g., `MessageTypes.cs`). Now that the app runs entirely in-memory, the `env` object passed through the event bus is the actual strongly-typed C# record. 
+**Fix**: Never use string-based type discrimination or manual casting (`env as TurnOnCommand`) for routing. Use C# strongly-typed pattern matching (`case TurnOnCommand cmd:`) in `CommandDispatcher.cs` and `WorkerService.cs`. The `MessageTypes` and `IpcEnvelope` classes were deleted as dead code.
+
+**16. Worker Thread Race Conditions**
+Because `WorkerCore` spins on background threads, interacting with cross-thread collections (like `ClientListSingleton`) or disposing `CancellationTokenSource`s (like in `StatePublisher`) without locks can cause fatal race conditions.
+**Fix**: Always synchronize access to shared collections using `lock (_listLock)`, and ensure thread-safe disposal of tasks/cancellation tokens when stopping worker components.
+
+**17. Atomic Profile Loading**
+If `Profile.Load()` attempts to update a running `ProfileSingleton` instance in place, the background automation threads might read partially-deserialized state (causing random crashes, e.g., missing autobuff slot references).
+**Fix**: Profile loading must create a completely new, detached instance (`var loaded = new Profile()`), fully deserialize the JSON into it, and then perform a single atomic reference swap (`ProfileSingleton.Set(loaded)`).
