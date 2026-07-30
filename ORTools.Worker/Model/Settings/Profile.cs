@@ -154,68 +154,71 @@ public static class ProfileSingleton
             if (!File.Exists(filePath)) { Create(safeName); return; }
 
             // CRITICAL (Gotcha #8): Ensure we don't bleed state from the previously loaded profile.
-            // DO NOT remove or swap the order of this instantiation.
-            // If missing sections in JSON fall back to defaults, they must pull from a clean slate
+            // Build into a local variable first so worker threads never see a half-loaded profile.
+            // If missing sections in JSON fall back to defaults, they pull from this clean slate
             // instead of inheriting the ghost data of the last loaded profile.
-            _profile = new Profile(safeName);
+            var loaded = new Profile(safeName);
 
             string  json      = File.ReadAllText(filePath);
             dynamic rawObject = JsonConvert.DeserializeObject(json)!;
 
             if (rawObject != null)
             {
-                _profile.Name            = safeName;
+                loaded.Name            = safeName;
                 if (rawObject["UnifiedAutobuffOrder"] != null)
                 {
-                    _profile.UnifiedAutobuffOrder = rawObject["UnifiedAutobuffOrder"].ToObject<List<string>>();
+                    loaded.UnifiedAutobuffOrder = rawObject["UnifiedAutobuffOrder"].ToObject<List<string>>();
                 }
-                _profile.UserPreferences = TryDeserialize(rawObject, _profile.UserPreferences, _profile.UserPreferences);
-                _profile.SkillSpammer    = TryDeserialize(rawObject, _profile.SkillSpammer, _profile.SkillSpammer);
-                _profile.AutopotHP       = TryDeserialize(rawObject, _profile.AutopotHP, _profile.AutopotHP);
-                _profile.AutopotSP       = TryDeserialize(rawObject, _profile.AutopotSP, _profile.AutopotSP);
+                loaded.UserPreferences = TryDeserialize(rawObject, loaded.UserPreferences, loaded.UserPreferences);
+                loaded.SkillSpammer    = TryDeserialize(rawObject, loaded.SkillSpammer, loaded.SkillSpammer);
+                loaded.AutopotHP       = TryDeserialize(rawObject, loaded.AutopotHP, loaded.AutopotHP);
+                loaded.AutopotSP       = TryDeserialize(rawObject, loaded.AutopotSP, loaded.AutopotSP);
 
                 try
                 {
-                    string src = Profile.GetByAction(rawObject, _profile.StatusRecovery).ToString();
-                    _profile.StatusRecovery = new StatusRecovery();
-                    _profile.StatusRecovery.LoadConfiguration(src);
+                    string src = Profile.GetByAction(rawObject, loaded.StatusRecovery).ToString();
+                    loaded.StatusRecovery = new StatusRecovery();
+                    loaded.StatusRecovery.LoadConfiguration(src);
                 }
                 catch (Exception ex)
                 {
                     DebugLogger.Error(ex, "Failed to load StatusRecovery");
-                    _profile.StatusRecovery = new StatusRecovery();
+                    loaded.StatusRecovery = new StatusRecovery();
                 }
 
-                _profile.SkillTimer     = TryDeserialize(rawObject, _profile.SkillTimer, _profile.SkillTimer);
-                _profile.AutobuffSkill  = TryDeserialize(rawObject, _profile.AutobuffSkill, _profile.AutobuffSkill);
-                if (_profile.AutobuffSkill.Delay < 0) _profile.AutobuffSkill.Delay = AppConfig.AutoBuffSkillsDefaultDelay;
+                loaded.SkillTimer     = TryDeserialize(rawObject, loaded.SkillTimer, loaded.SkillTimer);
+                loaded.AutobuffSkill  = TryDeserialize(rawObject, loaded.AutobuffSkill, loaded.AutobuffSkill);
+                if (loaded.AutobuffSkill.Delay < 0) loaded.AutobuffSkill.Delay = AppConfig.AutoBuffSkillsDefaultDelay;
 
                 try
                 {
-                    string abiConfig = Profile.GetByAction(rawObject, _profile.AutobuffItem).ToString();
-                    if (!string.IsNullOrEmpty(abiConfig)) _profile.AutobuffItem.LoadConfiguration(abiConfig);
+                    string abiConfig = Profile.GetByAction(rawObject, loaded.AutobuffItem).ToString();
+                    if (!string.IsNullOrEmpty(abiConfig)) loaded.AutobuffItem.LoadConfiguration(abiConfig);
                 }
                 catch (Exception ex)
                 {
                     DebugLogger.Error(ex, "Failed to load AutobuffItem");
                 }
-                if (_profile.AutobuffItem.Delay < 0) _profile.AutobuffItem.Delay = AppConfig.AutoBuffItemsDefaultDelay;
+                if (loaded.AutobuffItem.Delay < 0) loaded.AutobuffItem.Delay = AppConfig.AutoBuffItemsDefaultDelay;
 
-                _profile.SongMacro      = TryDeserialize(rawObject, _profile.SongMacro, _profile.SongMacro);
-                _profile.ATKDEFMode     = TryDeserialize(rawObject, _profile.ATKDEFMode, _profile.ATKDEFMode);
-                _profile.MacroSwitch    = TryDeserialize(rawObject, _profile.MacroSwitch, _profile.MacroSwitch);
-                _profile.TransferHelper = TryDeserialize(rawObject, _profile.TransferHelper, _profile.TransferHelper);
-                _profile.DebuffsRecovery = TryDeserialize(rawObject, _profile.DebuffsRecovery, _profile.DebuffsRecovery);
+                loaded.SongMacro      = TryDeserialize(rawObject, loaded.SongMacro, loaded.SongMacro);
+                loaded.ATKDEFMode     = TryDeserialize(rawObject, loaded.ATKDEFMode, loaded.ATKDEFMode);
+                loaded.MacroSwitch    = TryDeserialize(rawObject, loaded.MacroSwitch, loaded.MacroSwitch);
+                loaded.TransferHelper = TryDeserialize(rawObject, loaded.TransferHelper, loaded.TransferHelper);
+                loaded.DebuffsRecovery = TryDeserialize(rawObject, loaded.DebuffsRecovery, loaded.DebuffsRecovery);
 
                 // Run legacy profile migrations
-                ProfileMigrator.Migrate(_profile);
+                ProfileMigrator.Migrate(loaded);
 
                 // Ensure row counts match global config
                 var config = ConfigGlobal.GetConfig();
-                _profile.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
-                _profile.SongMacro.EnsureCorrectRowCount(config.SongRows);
-                _profile.MacroSwitch.EnsureCorrectRowCount(config.MacroSwitchRows);
+                loaded.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
+                loaded.SongMacro.EnsureCorrectRowCount(config.SongRows);
+                loaded.MacroSwitch.EnsureCorrectRowCount(config.MacroSwitchRows);
             }
+
+            // Atomic swap — worker threads always see either the old or the fully-loaded profile
+            _profile = loaded;
         }
         catch (Exception ex)
         {

@@ -12,7 +12,8 @@ namespace ORTools.Worker.IPC;
 /// </summary>
 public sealed class StatePublisher : IDisposable
 {
-    private readonly Func<Task> _broadcast;   // WorkerCore.BroadcastAsync wrapper
+    private readonly Func<IIpcMessage, Task> _broadcastMsg;
+    private readonly object _lock = new();
     private CancellationTokenSource? _cts;
     
     private HpSpUpdate? _lastHpSp;
@@ -23,27 +24,34 @@ public sealed class StatePublisher : IDisposable
     /// </param>
     public StatePublisher(Func<IIpcMessage, Task> broadcast)
     {
-        _broadcast = () => Task.CompletedTask;  // will be replaced per-start call
         _broadcastMsg = broadcast;
     }
 
-    private readonly Func<IIpcMessage, Task> _broadcastMsg;
-
     public void Start()
     {
-        Stop();
-        _cts = new CancellationTokenSource();
-        var ct = _cts.Token;
+        lock (_lock)
+        {
+            var oldCts = _cts;
+            oldCts?.Cancel();
 
-        Task.Run(() => HpSpLoop(ct),      ct);
-        Task.Run(() => CharacterLoop(ct), ct);
+            _cts = new CancellationTokenSource();
+            var ct = _cts.Token;
+
+            Task.Run(() => HpSpLoop(ct),      ct);
+            Task.Run(() => CharacterLoop(ct), ct);
+
+            oldCts?.Dispose();
+        }
     }
 
     public void Stop()
     {
-        _cts?.Cancel();
-        _cts?.Dispose();
-        _cts = null;
+        lock (_lock)
+        {
+            _cts?.Cancel();
+            _cts?.Dispose();
+            _cts = null;
+        }
     }
 
     public void ClearCache()

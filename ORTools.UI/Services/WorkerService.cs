@@ -53,6 +53,7 @@ public sealed class WorkerService : IDisposable
     // ── Private ───────────────────────────────────────────────────────────────
     private readonly WorkerCore _core;
     private readonly CancellationTokenSource _lifetimeCts = new();
+    private CancellationTokenSource? _linkedCts;
     private Task? _workerTask;
 
     public WorkerService()
@@ -70,7 +71,8 @@ public sealed class WorkerService : IDisposable
     {
         SetStatus(Status.Connecting);
 
-        var ct = CancellationTokenSource.CreateLinkedTokenSource(externalCt, _lifetimeCts.Token).Token;
+        _linkedCts = CancellationTokenSource.CreateLinkedTokenSource(externalCt, _lifetimeCts.Token);
+        var ct = _linkedCts.Token;
         
         _workerTask = Task.Run(() => _core.RunAsync(ct), ct);
 
@@ -102,6 +104,7 @@ public sealed class WorkerService : IDisposable
     public void Dispose()
     {
         _lifetimeCts.Cancel();
+        _linkedCts?.Dispose();
         _core.OnBroadcast -= Dispatch;
         _core.HandleTurnOff().Wait();
     }

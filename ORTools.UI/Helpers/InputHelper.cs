@@ -9,12 +9,13 @@ public static class InputHelper
 {
     public static void HandleKeyInput(TextBox textBox, KeyEventArgs e, Action<string> onKeySet, object? sourceVM = null)
     {
-        if (e.Key == Key.Tab) return;
+        Key realKey = e.Key == Key.System ? e.SystemKey : e.Key;
+        if (realKey == Key.Tab) return;
         e.Handled = true;
 
-        string newKey = e.Key switch
+        string newKey = realKey switch
         {
-            Key.Back or Key.Delete or Key.Escape => "None",
+            Key.Back or Key.Escape => "None",
             Key.PageUp => "Prior",
             Key.PageDown => "Next",
             Key.Enter or Key.Return => "Return",

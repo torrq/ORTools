@@ -17,7 +17,7 @@ public class Config
     public int    MacroSwitchRows              { get; set; } = 4;
     public int    AtkDefRows                   { get; set; } = 2;
     public string DefaultToggleStateKey        { get; set; } = "None";
-    public bool   PauseWhenChatting            { get; set; } = false;
+    public bool   PauseWhenChatting            { get; set; } = true;
     public bool   PauseWhenDead                { get; set; } = false;
     public bool   ExitWithRo                   { get; set; } = false;
     public bool   AlwaysOnTop                  { get; set; } = false;

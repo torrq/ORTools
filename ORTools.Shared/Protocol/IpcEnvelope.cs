@@ -53,7 +53,6 @@ public sealed class IpcEnvelope
         catch (Exception ex) 
         { 
             Console.WriteLine($"[IpcEnvelope] Failed to deserialize {typeof(T).Name}: {ex.Message}");
-            System.IO.File.AppendAllText("debug_json.txt", $"[{DateTime.Now:HH:mm:ss}] Failed to deserialize {typeof(T).Name}: {ex.Message}\nRaw JSON: {Payload.Value.GetRawText()}\n");
             return null; 
         }
     }

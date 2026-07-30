@@ -11,7 +11,7 @@ public sealed class WorkerCore
     private readonly StatePublisher _statePublisher;
     private readonly Thread _hookThread;
 
-    private bool _isOn;
+    private volatile bool _isOn;
     private string _currentProfileName = "Default";
     private readonly AutoOff _autoOff;
 

@@ -48,25 +48,25 @@ namespace ORTools.Worker
 
     public sealed class ClientListSingleton
     {
-        private static List<Client> Clients = new List<Client>();
+        private static readonly List<Client> Clients = new List<Client>();
+        private static readonly object _listLock = new();
         private static DateTime _lastCleanup = DateTime.MinValue;
         private static readonly TimeSpan _cleanupInterval = TimeSpan.FromSeconds(30);
 
         public static void AddClient(Client c)
         {
-            Clients.Add(c);
+            lock (_listLock) { Clients.Add(c); }
         }
 
         public static void RemoveClient(Client c)
         {
-            Clients.Remove(c);
+            lock (_listLock) { Clients.Remove(c); }
         }
 
         public static List<Client> GetAll()
         {
-            // Note: Automatic cleanup disabled to prevent removing clients with temporary memory read issues
-            // Use ForceCleanup() manually if needed
-            return Clients;
+            // Return a snapshot to prevent enumeration issues
+            lock (_listLock) { return Clients.ToList(); }
         }
 
         private static CancellationTokenSource? _cleanupCts;
@@ -108,35 +108,43 @@ namespace ORTools.Worker
         {
             var deadClients = new List<Client>();
 
-            foreach (var client in Clients)
+            lock (_listLock)
             {
-                try
+                foreach (var client in Clients)
                 {
-                    // Only remove if process is truly null or has actually exited
-                    if (client.Process == null)
+                    try
                     {
-                        deadClients.Add(client);
-                        continue;
-                    }
+                        // Only remove if process is truly null or has actually exited
+                        if (client.Process == null)
+                        {
+                            deadClients.Add(client);
+                            continue;
+                        }
 
-                    // Double check - only remove if process has actually exited
-                    if (client.Process.HasExited)
+                        // Double check - only remove if process has actually exited
+                        if (client.Process.HasExited)
+                        {
+                            deadClients.Add(client);
+                        }
+                    }
+                    catch (Exception ex)
                     {
+                        // If we can't check the process state, assume it's dead
+                        DebugLogger.Debug($"Exception checking process state for {client.ProcessName}: {ex.Message}");
                         deadClients.Add(client);
                     }
                 }
-                catch (Exception ex)
+
+                foreach (var deadClient in deadClients)
                 {
-                    // If we can't check the process state, assume it's dead
-                    DebugLogger.Debug($"Exception checking process state for {client.ProcessName}: {ex.Message}");
-                    deadClients.Add(client);
+                    DebugLogger.Debug($"Removing dead client: {deadClient.ProcessName}");
+                    Clients.Remove(deadClient);
                 }
             }
 
+            // Fire events and dispose outside the lock to avoid deadlocks
             foreach (var deadClient in deadClients)
             {
-                DebugLogger.Debug($"Removing dead client: {deadClient.ProcessName}");
-                Clients.Remove(deadClient);
                 OnClientRemoved?.Invoke(deadClient);
                 deadClient.Dispose();
             }
@@ -144,34 +152,40 @@ namespace ORTools.Worker
 
         public static bool ExistsByProcessName(string processName)
         {
-            return Clients.Exists(client => client.ProcessName == processName);
+            lock (_listLock) { return Clients.Exists(client => client.ProcessName == processName); }
         }
 
         // Check if any client is logged in
         public static bool IsLoggedIn()
         {
-            return Clients.Any(client => client.IsLoggedIn);
+            lock (_listLock) { return Clients.Any(client => client.IsLoggedIn); }
         }
 
         // Check if a specific client is logged in by process name
         public static bool IsLoggedIn(string processName)
         {
-            Client client = Clients.FirstOrDefault(c => c.ProcessName == processName);
-            return client?.IsLoggedIn ?? false;
+            lock (_listLock)
+            {
+                Client? client = Clients.FirstOrDefault(c => c.ProcessName == processName);
+                return client?.IsLoggedIn ?? false;
+            }
         }
 
         // Get all logged in clients
         public static List<Client> GetLoggedInClients()
         {
-            return Clients.Where(client => client.IsLoggedIn).ToList();
+            lock (_listLock) { return Clients.Where(client => client.IsLoggedIn).ToList(); }
         }
 
         // Force refresh login status cache for all clients
         public static void RefreshAllLoginStatus()
         {
-            foreach (Client client in Clients)
+            lock (_listLock)
             {
-                client.RefreshLoginStatus();
+                foreach (Client client in Clients)
+                {
+                    client.RefreshLoginStatus();
+                }
             }
         }
     }
