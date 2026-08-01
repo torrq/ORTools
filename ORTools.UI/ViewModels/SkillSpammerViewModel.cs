@@ -82,13 +82,13 @@ public partial class SkillSpammerViewModel : ObservableObject
     private void InitializeKeyGrid()
     {
         string[] fKeys = { "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9" };
-        string[] numKeys = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+        string[] numKeys = { "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9" };
         string[] qKeys = { "Q", "W", "E", "R", "T", "Y", "U", "I", "O" };
         string[] aKeys = { "A", "S", "D", "F", "G", "H", "J", "K", "L" };
         string[] zKeys = { "Z", "X", "C", "V", "B", "N", "M" };
 
         foreach (var k in fKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); FKeys.Add(vm); AllKeys.Add(vm); }
-        foreach (var k in numKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); NumKeys.Add(vm); AllKeys.Add(vm); }
+        foreach (var k in numKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.Substring(1)}.png", false); NumKeys.Add(vm); AllKeys.Add(vm); }
         foreach (var k in qKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); QKeys.Add(vm); AllKeys.Add(vm); }
         foreach (var k in aKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); AKeys.Add(vm); AllKeys.Add(vm); }
         foreach (var k in zKeys) { var vm = new SpammerKeyViewModel(_worker, k, $"/Assets/Icons/Key/key_{k.ToLower()}.png", false); ZKeys.Add(vm); AllKeys.Add(vm); }
