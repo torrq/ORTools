@@ -15,8 +15,8 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal" Cursor="Hand">
-                            <Border x:Name="Bd" Width="16" Height="16" BorderBrush="#313338" BorderThickness="1" Background="White" CornerRadius="0" VerticalAlignment="Center">
-                                <TextBlock x:Name="CheckMark" Text="✓" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" FontWeight="Bold" FontSize="12" Margin="0,-2,0,0"/>
+                            <Border x:Name="Bd" Width="16" Height="16" BorderBrush="{DynamicResource AppCheckBoxBorderBrush}" BorderThickness="1" Background="{DynamicResource AppCheckBoxBackgroundBrush}" CornerRadius="0" VerticalAlignment="Center">
+                                <TextBlock x:Name="CheckMark" Text="✓" Foreground="{DynamicResource AppCheckMarkBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden" FontWeight="Bold" FontSize="12" Margin="0,-2,0,0"/>
                             </Border>
                             <ContentPresenter VerticalAlignment="Center"/>
                         </StackPanel>

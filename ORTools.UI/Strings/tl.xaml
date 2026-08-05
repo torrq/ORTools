@@ -56,7 +56,7 @@
     <sys:String x:Key="S.AutoOff.ToggleBehavior">Kapag na-off:</sys:String>
     <sys:String x:Key="S.AutoOff.ToggleBehaviorStop">Itigil at i-reset</sys:String>
     <sys:String x:Key="S.AutoOff.ToggleBehaviorPause">I-pause</sys:String>
-    <sys:String x:Key="S.AutoOff.OverweightHeader">Auto Off sa Sobrang Timbang</sys:String>
+    <sys:String x:Key="S.AutoOff.OverweightHeader">Auto Off sa Timbang</sys:String>
     <sys:String x:Key="S.AutoOff.EnableOverweight">I-aktibo ang Auto Off kapag sobra ang timbang</sys:String>
     <sys:String x:Key="S.AutoOff.TriggerActions">Mga Aksyon</sys:String>
     <sys:String x:Key="S.AutoOff.TriggerDesc">Kapag na-trigger ang Auto Off, isagawa ang mga aksyong ito:</sys:String>
@@ -71,8 +71,8 @@
     <sys:String x:Key="S.AtkDef.Settings">Mga Setting</sys:String>
     <sys:String x:Key="S.AtkDef.SpamKey">Susi (Spam)</sys:String>
     <sys:String x:Key="S.AtkDef.Click">I-click?</sys:String>
-    <sys:String x:Key="S.AtkDef.SpamDelay">Pagkaantala (Spam)</sys:String>
-    <sys:String x:Key="S.AtkDef.SwitchDelay">Pagkaantala (Switch)</sys:String>
+    <sys:String x:Key="S.AtkDef.SpamDelay">Spam Delay</sys:String>
+    <sys:String x:Key="S.AtkDef.SwitchDelay">Switch Delay</sys:String>
     <sys:String x:Key="S.AtkDef.Switch">I-switch</sys:String>
     <sys:String x:Key="S.Profiles.Copy">Kopyahin ang Profile</sys:String>
     <sys:String x:Key="S.Profiles.Delete">Burahin ang Profile</sys:String>
@@ -138,7 +138,7 @@
     <sys:String x:Key="S.Settings.Advanced">Mga Advanced na Setting</sys:String>
     <sys:String x:Key="S.Settings.InterfaceLayout">Layout ng Interface</sys:String>
     <sys:String x:Key="S.Settings.Language">Wika</sys:String>
-    <sys:String x:Key="S.Settings.HideDeadClientInfo">Itago ang info ng patay na client sa mga log</sys:String>
+    <sys:String x:Key="S.Settings.HideDeadClientInfo">Itago ang patay na client</sys:String>
     <sys:String x:Key="S.Settings.AppTheme">Tema ng App</sys:String>
     <sys:String x:Key="S.Settings.SongRows">Mga Hanay ng Song</sys:String>
     <sys:String x:Key="S.Settings.MacroSwitchRows">Mga Hanay ng Macro Switch</sys:String>
@@ -170,7 +170,7 @@
     <sys:String x:Key="S.Settings.UpdatesTab">Mga Update</sys:String>
     <sys:String x:Key="S.Settings.UpdatesHeader">Mga Update ng App</sys:String>
     <sys:String x:Key="S.Settings.UpdateCurrentVersion">Kasalukuyang bersyon:</sys:String>
-    <sys:String x:Key="S.Settings.CheckForUpdatesOnStartup">Suriin ang mga update sa pagsisimula</sys:String>
+    <sys:String x:Key="S.Settings.CheckForUpdatesOnStartup">Suriin pagka-start</sys:String>
     <sys:String x:Key="S.Settings.UpdateCheckButton">Suriin ang Update</sys:String>
     <sys:String x:Key="S.Settings.UpdateChecking">Sinusuri...</sys:String>
     <sys:String x:Key="S.Settings.UpdateUpToDate">Na-update ka na!</sys:String>

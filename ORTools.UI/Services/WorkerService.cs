@@ -107,6 +107,7 @@ public sealed class WorkerService : IDisposable
         _linkedCts?.Dispose();
         _core.OnBroadcast -= Dispatch;
         _core.HandleTurnOff().Wait();
+        _core.Dispose();
     }
 
     // ── Dispatch ──────────────────────────────────────────────────────────────

@@ -35,7 +35,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _downloadUrl = "";
     [ObservableProperty] private string _directZipUrl = "";
 
-    public string CurrentVersionText => ORTools.Worker.AppConfig.Version;
+    public string CurrentVersionText => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString(2)}";
 
     public ThemeMode[] ThemeModes => ThemeService.GetAvailableThemes();
     public Language[]  Languages  => new[] { Language.English, Language.Filipino };

@@ -51,7 +51,7 @@
                                       SelectedValuePath="Seconds"
                                       DisplayMemberPath="Label"
                                       Background="{DynamicResource AppInputBrush}"
-                                      Foreground="Black"
+                                      Foreground="{DynamicResource AppComboBoxTextBrush}"
                                       BorderBrush="{DynamicResource AppInputBorderBrush}"
                                       Width="100"/>
                         </StackPanel>

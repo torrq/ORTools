@@ -1,11 +1,8 @@
-
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using Cursor = System.Windows.Forms.Cursor;
 
 namespace ORTools.Worker
@@ -106,20 +103,6 @@ namespace ORTools.Worker
         public string ActionName { get; set; }
         private ThreadRunner thread;
         public List<MacroSwitchChainConfig> ChainConfigs { get; set; } = new List<MacroSwitchChainConfig>();
-        private BlockingCollection<MacroSwitchChainConfig> _macroQueue = new BlockingCollection<MacroSwitchChainConfig>();
-
-        private void OnGlobalKeyDown(Keys key)
-        {
-             int maxRows = ConfigGlobal.GetConfig().MacroSwitchRows;
-             for (int i = 0; i < maxRows && i < this.ChainConfigs.Count; i++)
-             {
-                 var chainConfig = this.ChainConfigs[i];
-                 if (chainConfig.TriggerKey != Keys.None && chainConfig.TriggerKey == key)
-                 {
-                     _macroQueue.Add(chainConfig);
-                 }
-             }
-        }
 
         public MacroSwitch(string macroname, int macroLanes)
         {
@@ -159,31 +142,42 @@ namespace ORTools.Worker
 
         private int MacroThread(Client roClient)
         {
-            if (_macroQueue.TryTake(out MacroSwitchChainConfig chainConfig, 100))
+            if (roClient.IsTextInputActive() || roClient.IsDead()) return 0;
+            if (!roClient.IsProcessRunning()) return 0;
+            IntPtr hWnd = roClient.MainWindowHandle;
+
+            int maxRows = ConfigGlobal.GetConfig().MacroSwitchRows;
+            for (int i = 0; i < maxRows && i < this.ChainConfigs.Count; i++)
             {
-                if (roClient.IsTextInputActive() || roClient.IsDead()) return 0;
-                if (!roClient.IsProcessRunning()) return 0;
-                IntPtr hWnd = roClient.MainWindowHandle;
-
-                foreach (var macroKey in chainConfig.macroEntries)
+                var chainConfig = this.ChainConfigs[i];
+                if (chainConfig.TriggerKey != Keys.None && ClientInput.IsKeyPressed(chainConfig.TriggerKey))
                 {
-                    if (macroKey.Key != Keys.None)
+                    foreach (var macroKey in chainConfig.macroEntries)
                     {
-                        // Send the key
-                        ClientInput.SendKey(hWnd, macroKey.Key, blockOnAlt: false);
-
-                        // Handle click behavior
-                        switch (macroKey.ClickMode)
+                        if (macroKey.Key != Keys.None)
                         {
-                            case 1:
-                                ClientInput.ClickAtCurrentPosition(hWnd);
+                            // Stop executing the macro sequence if they release the trigger key mid-cycle
+                            if (!ClientInput.IsKeyPressed(chainConfig.TriggerKey))
+                            {
                                 break;
-                            case 2:
-                                ClientInput.ClickAtWindowCenter(hWnd);
-                                break;
-                        }
+                            }
 
-                        Thread.Sleep(macroKey.Delay); // delay after sending key and/or click
+                            // Send the key
+                            ClientInput.SendKey(hWnd, macroKey.Key, blockOnAlt: false);
+
+                            // Handle click behavior
+                            switch (macroKey.ClickMode)
+                            {
+                                case 1:
+                                    ClientInput.ClickAtCurrentPosition(hWnd);
+                                    break;
+                                case 2:
+                                    ClientInput.ClickAtWindowCenter(hWnd);
+                                    break;
+                            }
+
+                            Thread.Sleep(macroKey.Delay); // delay after sending key and/or click
+                        }
                     }
                 }
             }
@@ -196,10 +190,6 @@ namespace ORTools.Worker
             if (roClient != null)
             {
                 Stop(); // ensure thread and hook are cleaned before starting
-                
-                while (_macroQueue.TryTake(out _)) { } // Clear queue
-                KeyboardHook.OnKeyDownEvent -= OnGlobalKeyDown;
-                KeyboardHook.OnKeyDownEvent += OnGlobalKeyDown;
 
                 this.thread = new ThreadRunner((_) => MacroThread(roClient), "MacroSwitch") { IterationDelay = 1 };
                 ThreadRunner.Start(this.thread);
@@ -208,7 +198,6 @@ namespace ORTools.Worker
 
         public void Stop()
         {
-            KeyboardHook.OnKeyDownEvent -= OnGlobalKeyDown;
             if (this.thread != null)
             {
                 ThreadRunner.Stop(this.thread);

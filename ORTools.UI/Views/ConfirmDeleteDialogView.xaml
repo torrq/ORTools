@@ -32,7 +32,7 @@
                         IsDefault="True"
                         Style="{StaticResource PrimaryButtonStyle}" 
                         Background="{DynamicResource AppDangerBrush}"
-                        Foreground="White"
+                        Foreground="{DynamicResource AppTextBrush}"
                         Width="100" Height="32"/>
             </StackPanel>
         </StackPanel>

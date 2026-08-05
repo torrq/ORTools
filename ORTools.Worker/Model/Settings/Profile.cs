@@ -110,6 +110,12 @@ public static class ProfileSingleton
 
         sanitized = sanitized.Replace("..", "").Replace("/", "").Replace("\\", "").Trim('.', ' ');
 
+        var reserved = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        { "CON", "PRN", "AUX", "NUL",
+          "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9",
+          "LPT1","LPT2","LPT3","LPT4","LPT5","LPT6","LPT7","LPT8","LPT9" };
+        if (reserved.Contains(sanitized)) return "Default";
+
         return string.IsNullOrWhiteSpace(sanitized) ? "Default" : sanitized;
     }
 
@@ -147,8 +153,10 @@ public static class ProfileSingleton
 
     public static void Load(string profileName)
     {
-        try
+        lock (_lock)
         {
+            try
+            {
             string safeName = SanitizeProfileName(profileName);
             string filePath = GetProfileFilePath(safeName);
             if (!File.Exists(filePath)) { Create(safeName); return; }
@@ -220,9 +228,10 @@ public static class ProfileSingleton
             // Atomic swap — worker threads always see either the old or the fully-loaded profile
             _profile = loaded;
         }
-        catch (Exception ex)
-        {
-            DebugLogger.Error(ex, $"Failed to load profile '{profileName}'");
+            catch (Exception ex)
+            {
+                DebugLogger.Error(ex, $"Failed to load profile '{profileName}'");
+            }
         }
     }
 
@@ -235,60 +244,72 @@ public static class ProfileSingleton
 
     public static void Create(string profileName)
     {
-        string safeName = SanitizeProfileName(profileName);
-        string jsonFile = GetProfileFilePath(safeName);
-        if (File.Exists(jsonFile)) return;
-        try
+        lock (_lock)
         {
-            if (!Directory.Exists(AppConfig.ProfileFolder))
-                Directory.CreateDirectory(AppConfig.ProfileFolder);
-            ClearProfile(safeName);
-            
-            var config = ConfigGlobal.GetConfig();
-            _profile.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
-            _profile.SongMacro.EnsureCorrectRowCount(config.SongRows);
-            _profile.MacroSwitch.EnsureCorrectRowCount(config.MacroSwitchRows);
+            string safeName = SanitizeProfileName(profileName);
+            string jsonFile = GetProfileFilePath(safeName);
+            if (File.Exists(jsonFile)) return;
+            try
+            {
+                if (!Directory.Exists(AppConfig.ProfileFolder))
+                    Directory.CreateDirectory(AppConfig.ProfileFolder);
+                ClearProfile(safeName);
+                
+                var config = ConfigGlobal.GetConfig();
+                _profile.ATKDEFMode.EnsureCorrectRowCount(config.AtkDefRows);
+                _profile.SongMacro.EnsureCorrectRowCount(config.SongRows);
+                _profile.MacroSwitch.EnsureCorrectRowCount(config.MacroSwitchRows);
 
-            File.WriteAllText(jsonFile,
-                JsonConvert.SerializeObject(_profile, Formatting.Indented));
+                File.WriteAllText(jsonFile,
+                    JsonConvert.SerializeObject(_profile, Formatting.Indented));
+            }
+            catch (Exception ex) { DebugLogger.Error(ex, $"Failed to create profile '{safeName}'"); }
         }
-        catch (Exception ex) { DebugLogger.Error(ex, $"Failed to create profile '{safeName}'"); }
     }
 
     public static void Delete(string profileName)
     {
-        try 
-        { 
-            string safeName = SanitizeProfileName(profileName);
-            if (safeName != "Default") File.Delete(GetProfileFilePath(safeName)); 
+        lock (_lock)
+        {
+            try 
+            { 
+                string safeName = SanitizeProfileName(profileName);
+                if (safeName != "Default") File.Delete(GetProfileFilePath(safeName)); 
+            }
+            catch (Exception ex) { DebugLogger.Error(ex, $"Failed to delete '{profileName}'"); }
         }
-        catch (Exception ex) { DebugLogger.Error(ex, $"Failed to delete '{profileName}'"); }
     }
 
     public static void Rename(string oldName, string newName)
     {
-        string safeOld = SanitizeProfileName(oldName);
-        string safeNew = SanitizeProfileName(newName);
-        string oldPath = GetProfileFilePath(safeOld);
-        string newPath = GetProfileFilePath(safeNew);
+        lock (_lock)
+        {
+            string safeOld = SanitizeProfileName(oldName);
+            string safeNew = SanitizeProfileName(newName);
+            string oldPath = GetProfileFilePath(safeOld);
+            string newPath = GetProfileFilePath(safeNew);
 
-        if (safeOld == "Default") throw new Exception("Cannot rename the Default profile.");
-        if (!File.Exists(oldPath))  throw new Exception("Profile file does not exist.");
-        if (File.Exists(newPath))   throw new Exception("A profile with that name already exists.");
-        File.Move(oldPath, newPath);
-        if (_profile.Name == safeOld) _profile.Name = safeNew;
+            if (safeOld == "Default") throw new Exception("Cannot rename the Default profile.");
+            if (!File.Exists(oldPath))  throw new Exception("Profile file does not exist.");
+            if (File.Exists(newPath))   throw new Exception("A profile with that name already exists.");
+            File.Move(oldPath, newPath);
+            if (_profile.Name == safeOld) _profile.Name = safeNew;
+        }
     }
 
     public static void Copy(string sourceProfile, string newProfileName)
     {
-        string safeSource = SanitizeProfileName(sourceProfile);
-        string safeTarget = SanitizeProfileName(newProfileName);
-        string sourcePath = GetProfileFilePath(safeSource);
-        string targetPath = GetProfileFilePath(safeTarget);
+        lock (_lock)
+        {
+            string safeSource = SanitizeProfileName(sourceProfile);
+            string safeTarget = SanitizeProfileName(newProfileName);
+            string sourcePath = GetProfileFilePath(safeSource);
+            string targetPath = GetProfileFilePath(safeTarget);
 
-        if (!File.Exists(sourcePath)) throw new Exception("Source profile does not exist.");
-        if (File.Exists(targetPath))  throw new Exception("A profile with that name already exists.");
-        File.Copy(sourcePath, targetPath);
+            if (!File.Exists(sourcePath)) throw new Exception("Source profile does not exist.");
+            if (File.Exists(targetPath))  throw new Exception("A profile with that name already exists.");
+            File.Copy(sourcePath, targetPath);
+        }
     }
 
     public static void SetConfiguration(IAction action)
@@ -305,7 +326,11 @@ public static class ProfileSingleton
                                     ? JsonConvert.DeserializeObject<JObject>(json)!
                                     : new JObject();
                 jObj[action.GetActionName()] = JToken.Parse(action.GetConfiguration());
-                File.WriteAllText(filePath, JsonConvert.SerializeObject(jObj, Formatting.Indented));
+                
+                string serializedJson = JsonConvert.SerializeObject(jObj, Formatting.Indented);
+                string tmpPath = filePath + ".tmp";
+                File.WriteAllText(tmpPath, serializedJson);
+                File.Move(tmpPath, filePath, overwrite: true);
             }
             catch (Exception ex) { DebugLogger.Error(ex, $"SetConfiguration failed for '{action.GetActionName()}'"); }
         }
@@ -325,7 +350,11 @@ public static class ProfileSingleton
                             ? JsonConvert.DeserializeObject<JObject>(json)!
                             : new JObject();
                 jObj["UnifiedAutobuffOrder"] = Newtonsoft.Json.Linq.JArray.FromObject(_profile.UnifiedAutobuffOrder);
-                File.WriteAllText(filePath, JsonConvert.SerializeObject(jObj, Formatting.Indented));
+                
+                string serializedJson = JsonConvert.SerializeObject(jObj, Formatting.Indented);
+                string tmpPath = filePath + ".tmp";
+                File.WriteAllText(tmpPath, serializedJson);
+                File.Move(tmpPath, filePath, overwrite: true);
             }
             catch (Exception ex) { DebugLogger.Error(ex, "SaveUnifiedAutobuffOrder failed"); }
         }

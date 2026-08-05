@@ -109,7 +109,7 @@
                         <ComboBox Grid.Column="3" SelectedIndex="{Binding ClickMode}"
                                   HorizontalAlignment="Center" VerticalAlignment="Center"
                                   Width="60" Height="24"
-                                  Foreground="Black"
+                                  Foreground="{DynamicResource AppComboBoxTextBrush}"
                                   BorderBrush="{DynamicResource AppInputBorderBrush}">
                             <ComboBoxItem Content="{DynamicResource S.SkillTimer.ClickNone}"/>
                             <ComboBoxItem Content="{DynamicResource S.SkillTimer.ClickCursor}"/>

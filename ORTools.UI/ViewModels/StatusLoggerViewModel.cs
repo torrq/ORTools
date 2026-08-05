@@ -51,13 +51,28 @@ public partial class StatusLoggerViewModel : ObservableObject
     private uint _maxSp;
     private bool _suppressUpdates;
 
+    // Cached translated headers — built on the UI thread so background logging never
+    // touches Application.Current.Resources (Gotcha #6).
+    private volatile List<string> _cachedHeaders;
+
     public StatusLoggerViewModel(WorkerService worker)
     {
         _worker = worker;
+        _cachedHeaders = BuildHeaders();
         _worker.AppStateReceived += OnAppStateReceived;
         _worker.StatusLoggerConfigReceived += OnConfigReceived;
         _worker.CharacterReceived += OnCharacterStateReceived;
         _worker.HpSpReceived += OnHpSpReceived;
+        LanguageService.LanguageChanged += OnLanguageChanged;
+    }
+
+    /// <summary>
+    /// Rebuilds the cached headers when the language is switched.
+    /// LanguageChanged fires on the UI thread, so LanguageService.Get() is safe here.
+    /// </summary>
+    private void OnLanguageChanged()
+    {
+        _cachedHeaders = BuildHeaders();
     }
 
     private void OnAppStateReceived(AppStateUpdate u)
@@ -130,7 +145,10 @@ public partial class StatusLoggerViewModel : ObservableObject
         ));
     }
 
-    private List<string> GetLogHeaders()
+    /// <summary>
+    /// Builds the header list using LanguageService. Must be called on the UI thread.
+    /// </summary>
+    private static List<string> BuildHeaders()
     {
         return new List<string> 
         { 
@@ -158,8 +176,8 @@ public partial class StatusLoggerViewModel : ObservableObject
             {
                 _lastLogTime = DateTime.Now;
 
-                // Pre-fetch headers and capture atomic state snapshot on the UI thread
-                var headers = GetLogHeaders();
+                // Read the pre-cached headers (safe from any thread)
+                var headers = _cachedHeaders;
                 uint currentHp = _currentHp;
                 uint maxHp = _maxHp;
                 uint currentSp = _currentSp;
@@ -222,7 +240,7 @@ public partial class StatusLoggerViewModel : ObservableObject
             var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LogFileName);
             if (!System.IO.File.Exists(path))
             {
-                var headers = GetLogHeaders();
+                var headers = _cachedHeaders;
                 System.IO.File.WriteAllText(path, string.Join(",", headers) + "\r\n");
             }
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo

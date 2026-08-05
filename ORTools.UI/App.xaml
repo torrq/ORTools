@@ -411,6 +411,7 @@
     <Style TargetType="{x:Type ComboBox}">
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+      <Setter Property="Foreground" Value="{DynamicResource AppComboBoxTextBrush}" />
     </Style>
 
     <Style x:Key="NumericTextBoxStyle" TargetType="{x:Type TextBox}">

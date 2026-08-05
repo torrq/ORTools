@@ -317,7 +317,7 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               Width="130" Height="24" FontSize="12"
                               Background="{DynamicResource AppInputBrush}"
-                              Foreground="Black" BorderBrush="{DynamicResource AppInputBorderBrush}" Margin="0,0,0,6">
+                              Foreground="{DynamicResource AppComboBoxTextBrush}" BorderBrush="{DynamicResource AppInputBorderBrush}" Margin="0,0,0,6">
                     </ComboBox>
 
                     <TextBlock Text="{DynamicResource S.Main.Profile}" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,0,0,2"/>
@@ -326,7 +326,7 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               Width="130" Height="24" FontSize="12"
                               Background="{DynamicResource AppInputBrush}"
-                              BorderBrush="{DynamicResource AppInputBorderBrush}" Foreground="Black" Margin="0,0,0,8">
+                              BorderBrush="{DynamicResource AppInputBorderBrush}" Foreground="{DynamicResource AppComboBoxTextBrush}" Margin="0,0,0,8">
                     </ComboBox>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
@@ -478,7 +478,7 @@
 
         <!-- Debug View Panel -->
         <Border Grid.Row="2" Grid.ColumnSpan="2" Height="{Binding Settings.DebugViewHeight}" 
-                Background="#0c0c0c" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,1,0,0">
+                Background="{DynamicResource AppPanelBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,1,0,0">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed"/>

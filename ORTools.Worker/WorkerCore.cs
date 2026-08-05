@@ -1,19 +1,26 @@
+using System.Threading.Channels;
 using ORTools.Shared.Protocol;
 using ORTools.Worker.IPC;
 
 namespace ORTools.Worker;
 
-public sealed class WorkerCore
+public sealed class WorkerCore : IDisposable
 {
     public event Action<IIpcMessage>? OnBroadcast;
 
     private readonly CommandDispatcher _dispatcher;
+    private readonly Channel<IIpcMessage> _commandChannel = Channel.CreateUnbounded<IIpcMessage>();
     private readonly StatePublisher _statePublisher;
     private readonly Thread _hookThread;
 
     private volatile bool _isOn;
     private string _currentProfileName = "Default";
     private readonly AutoOff _autoOff;
+
+    // Stored delegates for static event subscriptions so we can unsubscribe in Dispose()
+    private readonly Action<Client> _onClientRemovedHandler;
+    private readonly Action<string> _onTurnOffRequestedHandler;
+    private readonly Action<string, string> _onLogMessageEmittedHandler;
 
     public WorkerCore()
     {
@@ -45,7 +52,7 @@ public sealed class WorkerCore
         
         HookSkillSpammerEvents();
 
-        ClientListSingleton.OnClientRemoved += (removedClient) =>
+        _onClientRemovedHandler = (removedClient) =>
         {
             if (ClientSingleton.GetClient() == removedClient)
             {
@@ -56,6 +63,7 @@ public sealed class WorkerCore
                 _ = HandleDisconnectClient();
             }
         };
+        ClientListSingleton.OnClientRemoved += _onClientRemovedHandler;
 
         _autoOff = new AutoOff();
         _autoOff.TimerStarted += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
@@ -83,14 +91,16 @@ public sealed class WorkerCore
         _hookThread.Name = "KeyboardHookMessageLoop";
         _hookThread.Start();
 
-        WorkerNotifier.TurnOffRequested += reason =>
+        _onTurnOffRequestedHandler = reason =>
         {
             DebugLogger.Info($"[WorkerCore] Auto turn-off: {reason}");
             _ = HandleTurnOff();
         };
+        WorkerNotifier.TurnOffRequested += _onTurnOffRequestedHandler;
 
-        DebugLogger.LogMessageEmitted += (level, msg) =>
+        _onLogMessageEmittedHandler = (level, msg) =>
             _ = BroadcastAsync(new LogMessageUpdate(level, msg));
+        DebugLogger.LogMessageEmitted += _onLogMessageEmittedHandler;
 
         RefreshToggleHotkey();
 
@@ -106,10 +116,19 @@ public sealed class WorkerCore
         Win32Interop.timeBeginPeriod(1);
         try
         {
-            // Block until cancelled
-            await Task.Delay(Timeout.Infinite, ct);
+            await foreach (var cmd in _commandChannel.Reader.ReadAllAsync(ct))
+            {
+                try
+                {
+                    await _dispatcher.HandleAsync(cmd);
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Error($"[WorkerCore] Command {cmd.GetType().Name} failed: {ex.Message}");
+                }
+            }
         }
-        catch (TaskCanceledException) { }
+        catch (OperationCanceledException) { }
         finally
         {
             Win32Interop.timeEndPeriod(1);
@@ -118,9 +137,18 @@ public sealed class WorkerCore
         }
     }
 
-    public Task HandleCommandAsync(IIpcMessage command)
+    public void Dispose()
     {
-        return _dispatcher.HandleAsync(command);
+        ClientListSingleton.OnClientRemoved -= _onClientRemovedHandler;
+        WorkerNotifier.TurnOffRequested -= _onTurnOffRequestedHandler;
+        DebugLogger.LogMessageEmitted -= _onLogMessageEmittedHandler;
+        _statePublisher.Stop();
+        ClientListSingleton.StopCleanupMonitor();
+    }
+
+    public async Task HandleCommandAsync(IIpcMessage command)
+    {
+        await _commandChannel.Writer.WriteAsync(command);
     }
 
     public Task BroadcastAsync(IIpcMessage msg)
@@ -133,6 +161,7 @@ public sealed class WorkerCore
 
     public async Task HandleTurnOn()
     {
+        if (_isOn) return;
         var client = ClientSingleton.GetClient();
         if (client == null || client.Process == null || client.Process.HasExited)
         {
@@ -264,8 +293,8 @@ public sealed class WorkerCore
     {
         if (_isOn) await HandleTurnOff();
         var client = ClientSingleton.GetClient();
-        if (client != null) ClientListSingleton.RemoveClient(client);
         ClientSingleton.SetClient(null);
+        if (client != null) ClientListSingleton.RemoveClient(client);
         _statePublisher.ClearCache();
         await BroadcastAsync(new ClientStateUpdate(Connected: false, ProcessName: null));
         DebugLogger.Info("[WorkerCore] Client disconnected");

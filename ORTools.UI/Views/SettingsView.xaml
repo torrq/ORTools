@@ -143,7 +143,7 @@
 
                             <TextBlock Grid.Row="0" Text="{DynamicResource S.Settings.Language}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}"
-                                      Background="{DynamicResource AppInputBrush}" Foreground="Black"
+                                      Background="{DynamicResource AppInputBrush}" Foreground="{DynamicResource AppComboBoxTextBrush}"
                                       BorderBrush="{DynamicResource AppInputBorderBrush}" FontSize="14" HorizontalAlignment="Stretch" Margin="0,0,0,6">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
@@ -154,7 +154,7 @@
 
                             <TextBlock Grid.Row="1" Text="{DynamicResource S.Settings.AppTheme}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
                             <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ThemeModes}" SelectedItem="{Binding Theme}"
-                                      Background="{DynamicResource AppInputBrush}" Foreground="Black"
+                                      Background="{DynamicResource AppInputBrush}" Foreground="{DynamicResource AppComboBoxTextBrush}"
                                       BorderBrush="{DynamicResource AppInputBorderBrush}" FontSize="14" HorizontalAlignment="Stretch" Margin="0,0,0,6">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>

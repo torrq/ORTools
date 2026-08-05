@@ -66,6 +66,10 @@
         <GradientStop Color="#962D1E" Offset="1.0" />
     </LinearGradientBrush>
     <SolidColorBrush x:Key="AppPrimaryTextBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppComboBoxTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="AppCheckMarkBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppCheckBoxBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppCheckBoxBorderBrush" Color="#313338" />
     <SolidColorBrush x:Key="AppTabInactiveTextBrush" Color="#A0A0A0" />
     <SolidColorBrush x:Key="AppTabInactiveBrush" Color="Transparent" />
     <SolidColorBrush x:Key="AppTabInactiveBorderBrush" Color="#333333" />

@@ -75,9 +75,10 @@ namespace ORTools.Worker
         {
             if (_cleanupCts != null) return;
             _cleanupCts = new CancellationTokenSource();
+            var token = _cleanupCts.Token;
             Task.Run(async () =>
             {
-                while (!_cleanupCts.Token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     try
                     {
@@ -87,9 +88,10 @@ namespace ORTools.Worker
                     {
                         DebugLogger.Debug($"[CleanupMonitor] error: {ex.Message}");
                     }
-                    await Task.Delay(5000, _cleanupCts.Token);
+                    try { await Task.Delay(5000, token); }
+                    catch (OperationCanceledException) { break; }
                 }
-            }, _cleanupCts.Token);
+            }, token);
         }
 
         public static void StopCleanupMonitor()

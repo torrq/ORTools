@@ -17,7 +17,39 @@ namespace ORTools.Worker
             if (profile == null) return;
             
             MigrateSkillSpammerKeys(profile);
+            MigrateSkillSpammerNumberKeys(profile);
             MigrateMacroSwitchSteps(profile);
+        }
+
+        /// <summary>
+        /// Migration: Skill Spammer legacy number keys
+        /// 
+        /// Reason:
+        /// In legacy profiles, keys 1-9 were saved directly as integers 1-9. In the Keys enum,
+        /// 1 is LButton, 2 is RButton, etc. This caused left-clicks to trigger the spammer.
+        /// We need to remap 1-9 to D1-D9 (which are 49-57 in the Keys enum).
+        /// </summary>
+        private static void MigrateSkillSpammerNumberKeys(Profile profile)
+        {
+            if (profile.SkillSpammer?.SpammerEntries == null) return;
+
+            var numberKeysToMigrate = profile.SkillSpammer.SpammerEntries.Values
+                .Where(c => (int)c.Key >= 1 && (int)c.Key <= 9)
+                .ToList();
+
+            foreach (var config in numberKeysToMigrate)
+            {
+                // Remove the old entry
+                profile.SkillSpammer.SpammerEntries.TryRemove(config.Key.ToString(), out var _);
+                profile.SkillSpammer.SpammerEntries.TryRemove(((int)config.Key).ToString(), out var _); // sometimes it's saved as "1"
+                
+                // Remap to D1-D9
+                int oldVal = (int)config.Key;
+                config.Key = (System.Windows.Forms.Keys)(oldVal + 48); // 1 + 48 = 49 (Keys.D1)
+                
+                // Re-insert with the new enum string
+                profile.SkillSpammer.SpammerEntries[config.Key.ToString()] = config;
+            }
         }
 
         /// <summary>

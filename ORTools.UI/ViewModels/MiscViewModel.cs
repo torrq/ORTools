@@ -7,6 +7,7 @@ namespace ORTools.UI.ViewModels;
 public partial class MiscViewModel : ViewModelBase
 {
     private readonly WorkerService _worker;
+    private bool _suppressCommands;
 
     [ObservableProperty]
     private string _transferKey = "None";
@@ -21,12 +22,15 @@ public partial class MiscViewModel : ViewModelBase
     {
         System.Windows.Application.Current.Dispatcher.BeginInvoke(() =>
         {
+            _suppressCommands = true;
             TransferKey = update.TransferKey;
+            _suppressCommands = false;
         });
     }
 
     partial void OnTransferKeyChanged(string value)
     {
+        if (_suppressCommands) return;
         _worker.Send(new UpdateTransferHelperCommand(value));
     }
 }

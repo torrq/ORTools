@@ -186,7 +186,7 @@ namespace ORTools.Worker
 
             if (config.ClickActive && !config.IsIndeterminate)
             {
-                Point cursorPos = System.Windows.Forms.Cursor.Position;
+                Point cursorPos = ClientInput.GetCursorPos();
 
                 if (mouseFlick)
                 {
@@ -195,11 +195,11 @@ namespace ORTools.Worker
                         cursorPos.Y - Constants.MOUSE_DIAGONAL_MOVIMENTATION_PIXELS_AHK
                     );
 
-                    System.Windows.Forms.Cursor.Position = flickPos;
+                    ClientInput.SetCursorPos(flickPos.X, flickPos.Y);
                     ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)flickPos.X, (uint)flickPos.Y);
                     Thread.Sleep(1);
                     ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)flickPos.X, (uint)flickPos.Y);
-                    System.Windows.Forms.Cursor.Position = cursorPos;
+                    ClientInput.SetCursorPos(cursorPos.X, cursorPos.Y);
                 }
                 else
                 {
