@@ -158,6 +158,8 @@
     <sys:String x:Key="S.Settings.DeveloperTools">Developer Tools</sys:String>
     <sys:String x:Key="S.Settings.ClientLog">Client Log</sys:String>
     <sys:String x:Key="S.Settings.DebugViewHeight">Debug View Height:</sys:String>
+    <sys:String x:Key="S.Settings.DebugViewFontSize">Debug View Font Size:</sys:String>
+    <sys:String x:Key="S.Settings.ResetToDefault">Reset to Default</sys:String>
     <sys:String x:Key="S.Settings.AllowResizingWindow">Allow resizing window</sys:String>
 
 

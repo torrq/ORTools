@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
+using ORTools.Worker;
 using System.Diagnostics;
 
 namespace ORTools.UI.ViewModels;
@@ -12,7 +13,8 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty] private bool _debugMode;
     [ObservableProperty] private bool _debugView;
-    [ObservableProperty] private double _debugViewHeight = 200;
+    [ObservableProperty] private double _debugViewHeight = AppConfig.DefaultDebugViewHeight;
+    [ObservableProperty] private double _debugViewFontSize = AppConfig.DefaultDebugViewFontSize;
     [ObservableProperty] private bool _debugClientLog;
     [ObservableProperty] private bool _disableSystray;
     [ObservableProperty] private bool _minimizeToSystray = true;
@@ -105,6 +107,7 @@ public partial class SettingsViewModel : ObservableObject
             DebugMode = update.DebugMode;
             DebugView = update.DebugView;
             DebugViewHeight = update.DebugViewHeight;
+            DebugViewFontSize = update.DebugViewFontSize;
             DebugClientLog = update.DebugClientLog;
             DisableSystray = update.DisableSystray;
             MinimizeToSystray = update.MinimizeToSystray;
@@ -150,6 +153,7 @@ public partial class SettingsViewModel : ObservableObject
     }
     partial void OnDebugViewChanged(bool value) => SendGlobalUpdate();
     partial void OnDebugViewHeightChanged(double value) => SendGlobalUpdate();
+    partial void OnDebugViewFontSizeChanged(double value) => SendGlobalUpdate();
     partial void OnDebugClientLogChanged(bool value) => SendGlobalUpdate();
     partial void OnDisableSystrayChanged(bool value) => SendGlobalUpdate();
     partial void OnMinimizeToSystrayChanged(bool value) => SendGlobalUpdate();
@@ -209,7 +213,8 @@ public partial class SettingsViewModel : ObservableObject
             DefaultToggleStateKey: DefaultToggleStateKey,
             DebugMode: DebugMode,
             DebugView: DebugView,
-            DebugViewHeight: Math.Clamp(DebugViewHeight, 10, 1200),
+            DebugViewHeight: Math.Clamp(DebugViewHeight, AppConfig.MinDebugViewHeight, AppConfig.MaxDebugViewHeight),
+            DebugViewFontSize: Math.Clamp(DebugViewFontSize, AppConfig.MinDebugViewFontSize, AppConfig.MaxDebugViewFontSize),
             DebugClientLog: DebugClientLog,
             DisableSystray: DisableSystray,
             MinimizeToSystray: MinimizeToSystray,
@@ -239,6 +244,18 @@ public partial class SettingsViewModel : ObservableObject
             KeepDeadClientInfo: KeepDeadClientInfo
         );
         _worker.Send(cmd);
+    }
+
+    [RelayCommand]
+    private void ResetDebugViewHeight()
+    {
+        DebugViewHeight = AppConfig.DefaultDebugViewHeight;
+    }
+
+    [RelayCommand]
+    private void ResetDebugViewFontSize()
+    {
+        DebugViewFontSize = AppConfig.DefaultDebugViewFontSize;
     }
 
     // ── Update checker ────────────────────────────────────────────────────────

@@ -478,7 +478,7 @@
 
         <!-- Debug View Panel -->
         <Border Grid.Row="2" Grid.ColumnSpan="2" Height="{Binding Settings.DebugViewHeight}" 
-                Background="{DynamicResource AppPanelBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,1,0,0">
+                Background="{DynamicResource AppDebugBackgroundBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,1,0,0">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -493,13 +493,14 @@
             <RichTextBox views:LogViewHelper.LogMessages="{Binding LogMessages}"
                          views:LogViewHelper.AutoScroll="True"
                          Background="Transparent" 
+                         Foreground="{DynamicResource AppDebugTextDefaultBrush}"
                          BorderThickness="0"
                          IsReadOnly="True" 
                          IsDocumentEnabled="True"
                          Margin="0,6,0,6"
                          Padding="0"
                          FontFamily="Consolas"
-                         FontSize="10"
+                         FontSize="{Binding Settings.DebugViewFontSize}"
                          VerticalScrollBarVisibility="Auto"
                          HorizontalScrollBarVisibility="Disabled">
                 <RichTextBox.Resources>

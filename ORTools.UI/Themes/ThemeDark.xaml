@@ -74,6 +74,19 @@
     <SolidColorBrush x:Key="AppTabInactiveBrush" Color="Transparent" />
     <SolidColorBrush x:Key="AppTabInactiveBorderBrush" Color="#333333" />
 
+    <SolidColorBrush x:Key="AppDebugBackgroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="AppDebugTextDefaultBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="AppDebugTextInfoBrush" Color="#87CEEB" />
+    <SolidColorBrush x:Key="AppDebugTextWarningBrush" Color="#FFA500" />
+    <SolidColorBrush x:Key="AppDebugTextErrorBrush" Color="#FF4444" />
+    <SolidColorBrush x:Key="AppDebugTextDebugBrush" Color="#9370DB" />
+    <SolidColorBrush x:Key="AppDebugTextStatusBrush" Color="#228B22" />
+    <SolidColorBrush x:Key="AppDebugTextBracketBrush" Color="#5A5A5A" />
+    <SolidColorBrush x:Key="AppDebugTextSeparatorBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="AppDebugTextStatusIdBrush" Color="#32CD32" />
+    <SolidColorBrush x:Key="AppDebugTextStatusKnownBrush" Color="#98FB98" />
+    <SolidColorBrush x:Key="AppDebugTextStatusUnknownBrush" Color="#FFFF00" />
+
     <BitmapImage x:Key="SpammerShiftIcon" UriSource="pack://application:,,,/Assets/Icons/Spammer/shift_white.png" />
     <BitmapImage x:Key="SpammerMouseIcon" UriSource="pack://application:,,,/Assets/Icons/Spammer/up_and_down_arrow_white.png" />
 </ResourceDictionary>

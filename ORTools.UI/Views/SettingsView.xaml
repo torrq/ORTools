@@ -322,9 +322,17 @@
                                 <CheckBox Content="Debug View" IsChecked="{Binding DebugView}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}" Margin="0,0,20,0"/>
                                 <CheckBox Content="{DynamicResource S.Settings.ClientLog}" IsChecked="{Binding DebugClientLog}" Foreground="{DynamicResource AppTextBrush}" IsEnabled="{Binding DebugMode}"/>
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12" IsEnabled="{Binding DebugMode}">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12" 
+                                        Visibility="{Binding DebugView, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <TextBlock Text="{DynamicResource S.Settings.DebugViewHeight}" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,10,0"/>
-                                <TextBox Text="{Binding DebugViewHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" Style="{StaticResource NumericTextBoxStyle}" helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericMax="1200" helpers:InputHelper.NumericMin="10" />
+                                <TextBox Text="{Binding DebugViewHeight, UpdateSourceTrigger=PropertyChanged}" Width="50" Style="{StaticResource NumericTextBoxStyle}" helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericMax="1200" helpers:InputHelper.NumericMin="10" helpers:InputHelper.NumericDefault="200" helpers:InputHelper.NumericStep="10" Margin="0,0,10,0" />
+                                <Button Content="{DynamicResource S.Settings.ResetToDefault}" Command="{Binding ResetDebugViewHeightCommand}" Style="{StaticResource SecondaryButtonStyle}" Padding="8,2" MinHeight="24" VerticalAlignment="Center" ToolTip="{DynamicResource S.Settings.ResetToDefault}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12" 
+                                        Visibility="{Binding DebugView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="{DynamicResource S.Settings.DebugViewFontSize}" VerticalAlignment="Center" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,10,0"/>
+                                <TextBox Text="{Binding DebugViewFontSize, UpdateSourceTrigger=PropertyChanged}" Width="50" Style="{StaticResource NumericTextBoxStyle}" helpers:InputHelper.IsNumericInput="True" helpers:InputHelper.NumericMax="32" helpers:InputHelper.NumericMin="6" helpers:InputHelper.NumericDefault="10" helpers:InputHelper.NumericStep="1" Margin="0,0,10,0" />
+                                <Button Content="{DynamicResource S.Settings.ResetToDefault}" Command="{Binding ResetDebugViewFontSizeCommand}" Style="{StaticResource SecondaryButtonStyle}" Padding="8,2" MinHeight="24" VerticalAlignment="Center" ToolTip="{DynamicResource S.Settings.ResetToDefault}"/>
                             </StackPanel>
                             <CheckBox Content="{DynamicResource S.Settings.AllowResizingWindow}" IsChecked="{Binding AllowResizingWindow}" Foreground="{DynamicResource AppTextBrush}"/>
                         </StackPanel>

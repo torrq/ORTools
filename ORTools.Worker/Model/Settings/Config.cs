@@ -6,7 +6,8 @@ public class Config
 {
     public bool   DebugMode                    { get; set; } = false;
     public bool   DebugView                    { get; set; } = false;
-    public double DebugViewHeight              { get; set; } = 200;
+    public double DebugViewHeight              { get; set; } = AppConfig.DefaultDebugViewHeight;
+    public double DebugViewFontSize            { get; set; } = AppConfig.DefaultDebugViewFontSize;
     public bool   DebugClientLog               { get; set; } = false;
     public bool   DisableSystray               { get; set; } = false;
     public bool   MinimizeToSystray            { get; set; } = false;

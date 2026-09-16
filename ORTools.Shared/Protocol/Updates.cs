@@ -122,6 +122,7 @@ public sealed record GlobalConfigUpdate(
     bool DebugMode,
     bool DebugView,
     double DebugViewHeight,
+    double DebugViewFontSize,
     bool DebugClientLog,
     bool DisableSystray,
     bool MinimizeToSystray,

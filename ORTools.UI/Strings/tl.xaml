@@ -159,6 +159,8 @@
     <sys:String x:Key="S.Settings.DeveloperTools">Mga Tool ng Developer</sys:String>
     <sys:String x:Key="S.Settings.ClientLog">Log ng Client</sys:String>
     <sys:String x:Key="S.Settings.DebugViewHeight">Taas ng Debug View:</sys:String>
+    <sys:String x:Key="S.Settings.DebugViewFontSize">Font ng Debug View:</sys:String>
+    <sys:String x:Key="S.Settings.ResetToDefault">I-reset</sys:String>
     <sys:String x:Key="S.Settings.AllowResizingWindow">Payagan ang pagbabago ng laki ng window</sys:String>
 
 

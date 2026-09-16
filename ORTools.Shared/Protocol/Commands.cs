@@ -141,6 +141,7 @@ public sealed record UpdateGlobalConfigCommand(
     bool DebugMode,
     bool DebugView,
     double DebugViewHeight,
+    double DebugViewFontSize,
     bool DebugClientLog,
     bool DisableSystray,
     bool MinimizeToSystray,

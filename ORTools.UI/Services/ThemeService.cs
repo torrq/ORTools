@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
 using ORTools.Shared.Protocol;
+using ORTools.UI.Helpers;
 
 namespace ORTools.UI.Services;
 
@@ -240,6 +241,15 @@ public static class ThemeService
         else
         {
             dictionaries.Add(newTheme);
+        }
+
+        if (Application.Current?.Dispatcher != null && !Application.Current.Dispatcher.CheckAccess())
+        {
+            Application.Current.Dispatcher.Invoke(() => AppColors.ApplyTheme(useLight));
+        }
+        else
+        {
+            AppColors.ApplyTheme(useLight);
         }
     }
 

@@ -769,6 +769,7 @@ public sealed class WorkerCore : IDisposable
         config.DebugMode = cmd.DebugMode;
         config.DebugView = cmd.DebugView;
         config.DebugViewHeight = Math.Clamp(cmd.DebugViewHeight, AppConfig.MinDebugViewHeight, AppConfig.MaxDebugViewHeight);
+        config.DebugViewFontSize = Math.Clamp(cmd.DebugViewFontSize, AppConfig.MinDebugViewFontSize, AppConfig.MaxDebugViewFontSize);
         config.DebugClientLog = cmd.DebugClientLog;
         config.DisableSystray = cmd.DisableSystray;
         config.MinimizeToSystray = cmd.MinimizeToSystray;
@@ -1364,6 +1365,7 @@ public sealed class WorkerCore : IDisposable
             config.DebugMode,
             config.DebugView,
             config.DebugViewHeight,
+            config.DebugViewFontSize,
             config.DebugClientLog,
             config.DisableSystray,
             config.MinimizeToSystray,

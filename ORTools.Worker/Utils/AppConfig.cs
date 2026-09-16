@@ -31,8 +31,12 @@ public static class AppConfig
     public static string ConfigFolder  = "Config\\";
     public static string ConfigFile    = ConfigFolder + "config.json";
 
+    public const double DefaultDebugViewHeight = 200;
     public const double MinDebugViewHeight = 10;
     public const double MaxDebugViewHeight = 1200;
+    public const double DefaultDebugViewFontSize = 11;
+    public const double MinDebugViewFontSize = 6;
+    public const double MaxDebugViewFontSize = 32;
     public static string ServersFile   = ConfigFolder + "servers.json";
     public static string CitiesFile    = ConfigFolder + "cities.json";
     public static string DebugLogFile  = "debug.log";
