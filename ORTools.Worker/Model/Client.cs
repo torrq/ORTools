@@ -237,6 +237,28 @@ namespace ORTools.Worker
 
     public class Client : IDisposable
     {
+        internal static readonly Encoding GameEncoding;
+
+        static Client()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            try
+            {
+                GameEncoding = Encoding.GetEncoding(1252);
+            }
+            catch
+            {
+                try
+                {
+                    GameEncoding = Encoding.GetEncoding(0);
+                }
+                catch
+                {
+                    GameEncoding = Encoding.Latin1;
+                }
+            }
+        }
+
         public Process Process { get; }
 
         public string ProcessName { get; private set; }
@@ -613,7 +635,7 @@ namespace ORTools.Worker
             }
             int len = Array.IndexOf(bytes, (byte)0);
             if (len < 0) len = bytes.Length;
-            string val = Encoding.Default.GetString(bytes, 0, len);
+            string val = GameEncoding.GetString(bytes, 0, len);
             if (AppConfig.DebugMode && AppConfig.DebugClientLog) System.IO.File.AppendAllText("debug_client.txt", $"[{DateTime.Now:HH:mm:ss}] ReadMemoryAsString SUCCESS: address=0x{address:X}, val='{val}'\n");
             return val;
         }

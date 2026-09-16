@@ -1,3 +1,4 @@
+using System.Text;
 using System.Windows;
 using ORTools.UI.Services;
 using ORTools.UI.ViewModels;
@@ -12,6 +13,9 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        try { Console.OutputEncoding = Encoding.UTF8; } catch { }
+
         ThemeService.Initialize();
         LanguageService.Initialize();
 

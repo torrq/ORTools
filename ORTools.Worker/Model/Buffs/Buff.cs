@@ -320,12 +320,12 @@ public static class BuffDefinitions
             B("Earth Elemental Converter", "SA_SEISMICWEAPON", "ele_earth_converter"),
             B("Box of Storms / Water Converter", "SA_FROSTWEAPON", "boxofstorms"),
             B("Cursed Water", "PROPERTYDARK", "cursed_water"),
-/* HR has no statuses for these (yet)
-            B("Fireproof Potion", "RESIST_PROPERTY_FIRE", "fireproof"),
-            B("Coldproof Potion", "RESIST_PROPERTY_WATER", "coldproof"),
-            B("Thunderproof Potion", "RESIST_PROPERTY_WIND", "thunderproof"),
-            B("Earthproof Potion", "RESIST_PROPERTY_GROUND", "earthproof")
-*/
+            /* HR: no statuses for these
+                B("Fireproof Potion", "RESIST_PROPERTY_FIRE", "fireproof"),
+                B("Coldproof Potion", "RESIST_PROPERTY_WATER", "coldproof"),
+                B("Thunderproof Potion", "RESIST_PROPERTY_WIND", "thunderproof"),
+                B("Earthproof Potion", "RESIST_PROPERTY_GROUND", "earthproof")
+            */
         };
 
         BoxBuffs[0] = new List<Buff>
@@ -396,10 +396,9 @@ public static class BuffDefinitions
         EtcBuffs[0] = new List<Buff>
         {
             B("VIP Ticket", "VIP_BONUS", "vip_ticket"),
-         /*
-          * This one won't work because the item is a box type with a dialog which can't be assigned to a hotkey.
-          * B("SVIP Ticket", "SVIP_BONUS", "vip_ticket"),
-          */
+            /* MR: won't work because the item is a box type with a dialog which can't be assigned to a hotkey
+                B("SVIP Ticket", "SVIP_BONUS", "vip_ticket"),
+            */
             B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
             B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
             B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
@@ -407,12 +406,14 @@ public static class BuffDefinitions
 
         EtcBuffs[1] = new List<Buff>
         {
-            /* not a useable item on HR
-            B("VIP Ticket", "VIP_BONUS", "vip_ticket"),
+            /* HR: not a useable item
+                B("VIP Ticket", "VIP_BONUS", "vip_ticket"),
             */
             B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
             B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
-            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
+            /* HR: no status
+                B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
+            */
         };
 
         FishBuffs.AddRange(new[]
@@ -444,16 +445,12 @@ public static class BuffDefinitions
             B("Curse", "CURSE", "curse"),
             B("Decrease AGI", "AL_DECAGI", "decrease_agi"),
             B("Freezing", "FREEZING", "freezing"),
-//            B("Frozen", "FROZEN", "frozen"),
             B("Poison", "POISON", "poison_status"),
             B("Silence", "SILENCE", "silence"),
             B("Sit", "SIT", "sit"),
             B("Deep Sleep", "DEEP_SLEEP", "deep_sleep"),
             B("Sleep", "SLEEP", "sleep"),
             B("Slow Cast", "NPC_SLOWCAST", "slow_cast"),
-//            B("Stone Curse (initial stage)", "STONECURSE_ING", "stonecurse1"),
-//            B("Stone Curse (petrified)", "STONECURSE", "stonecurse2"),
-//            B("Stun", "STUN", "stun")
         });
      }
 }
