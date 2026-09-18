@@ -32,7 +32,6 @@ public partial class MacroSongView : UserControl
         ORTools.UI.Helpers.InputHelper.HandleKeyInput(tb, e, key => {
             if (ctx != null) {
                 ctx.AdaptationKey = key;
-                ctx.InstrumentKey = key; // Also set InstrumentKey since they are unified in the UI
             }
         }, ctx);
     }

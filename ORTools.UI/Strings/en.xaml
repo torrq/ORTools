@@ -138,6 +138,11 @@
     <sys:String x:Key="S.AtkDef.SwitchDelay">Switch Delay</sys:String>
     <sys:String x:Key="S.AtkDef.Switch">Switch</sys:String>
     <sys:String x:Key="S.Settings.AppTheme">App Theme</sys:String>
+    <sys:String x:Key="S.Settings.ThemeCustom">Custom</sys:String>
+    <sys:String x:Key="S.Settings.CustomMode">Custom Mode</sys:String>
+    <sys:String x:Key="S.Settings.CustomColor">Custom Color</sys:String>
+    <sys:String x:Key="S.Settings.Dark">Dark</sys:String>
+    <sys:String x:Key="S.Settings.Light">Light</sys:String>
     <sys:String x:Key="S.Settings.SongRows">Song Rows</sys:String>
     <sys:String x:Key="S.Settings.MacroSwitchRows">Macro Switch Rows</sys:String>
     <sys:String x:Key="S.Settings.AtkDefRows">ATK x DEF Rows</sys:String>

@@ -105,6 +105,16 @@ namespace ORTools.Worker
             if (!ProfileSingleton.GetCurrent().UserPreferences.StopBuffsCity || !Server.GetCityList().Contains(currentMap))
             {
                 IntPtr hWnd = roClient.MainWindowHandle;
+
+                // Ensure the game window is focused when ClickMode is active so that both the hotkey
+                // and the click are cleanly received by the active game window.
+                if (macro.ClickMode != 0 && !ClientInput.IsForeground(hWnd))
+                {
+                    ClientInput.SetForeground(hWnd);
+                    Thread.Sleep(30);
+                }
+
+
                 if (macro.Key != Keys.None)
                 {
                     if (macro.AltKey)
@@ -116,6 +126,9 @@ namespace ORTools.Worker
                         // Remove the KeyInterop conversion since macro.Key is already Keys enum
                         ClientInput.SendKey(hWnd, macro.Key, blockOnAlt: false);
                     }
+
+                    // Allow the game client to process the key and enter targeting mode
+                    Thread.Sleep(30);
                 }
                 // Handle clicking based on the ClickMode
                 switch (macro.ClickMode)
@@ -123,10 +136,7 @@ namespace ORTools.Worker
                     case 1: // Click at current cursor position
                         TryClickAtCurrentPosition(hWnd);
                         break;
-                    case 2: // Click at the center of the game window
-                        TryClickAtCenter(hWnd);
-                        break;
-                        // case 0: No click, do nothing.
+                    // case 0: No click, do nothing.
                 }
             }
             Thread.Sleep(macro.Delay);
@@ -170,11 +180,6 @@ namespace ORTools.Worker
         private void TryClickAtCurrentPosition(IntPtr hWnd)
         {
             ClientInput.ClickAtCurrentPosition(hWnd);
-        }
-
-        private void TryClickAtCenter(IntPtr hWnd)
-        {
-            ClientInput.ClickAtWindowCenter(hWnd);
         }
 
     }

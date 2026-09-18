@@ -166,6 +166,7 @@ public static class ProfileSingleton
             // If missing sections in JSON fall back to defaults, they pull from this clean slate
             // instead of inheriting the ghost data of the last loaded profile.
             var loaded = new Profile(safeName);
+            bool migrated = false;
 
             string  json      = File.ReadAllText(filePath);
             dynamic rawObject = JsonConvert.DeserializeObject(json)!;
@@ -216,7 +217,7 @@ public static class ProfileSingleton
                 loaded.DebuffsRecovery = TryDeserialize(rawObject, loaded.DebuffsRecovery, loaded.DebuffsRecovery);
 
                 // Run legacy profile migrations
-                ProfileMigrator.Migrate(loaded);
+                migrated = ProfileMigrator.Migrate(loaded);
 
                 // Ensure row counts match global config
                 var config = ConfigGlobal.GetConfig();
@@ -227,6 +228,21 @@ public static class ProfileSingleton
 
             // Atomic swap — worker threads always see either the old or the fully-loaded profile
             _profile = loaded;
+
+            if (migrated)
+            {
+                try
+                {
+                    SetConfiguration(_profile.ATKDEFMode);
+                    SetConfiguration(_profile.UserPreferences);
+                    SetConfiguration(_profile.SkillSpammer);
+                    SetConfiguration(_profile.MacroSwitch);
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Error(ex, $"Failed to persist migrated profile '{safeName}'");
+                }
+            }
         }
             catch (Exception ex)
             {

@@ -401,7 +401,7 @@ public static class BuffDefinitions
             */
             B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
             B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
-            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
+            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM_MR", "unlock_bbg")
         };
 
         EtcBuffs[1] = new List<Buff>
@@ -411,9 +411,7 @@ public static class BuffDefinitions
             */
             B("Field Manual 100% / 300%", "FIELD_MANUAL", "fieldmanual"),
             B("Bubble Gum / HE Bubble Gum", "CASH_RECEIVEITEM", "he_bubble_gum"),
-            /* HR: no status
-                B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM", "unlock_bbg")
-            */
+            B("Unlock Bubble Gum", "UNLOCK_BUBBLEGUM_HR", "unlock_bbg")
         };
 
         FishBuffs.AddRange(new[]

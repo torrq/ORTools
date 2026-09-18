@@ -17,7 +17,12 @@ namespace ORTools.Worker
         public Keys TriggerKey { get; set; } = Keys.None;
         public Keys AdaptationKey { get; set; } = Keys.None;
         public Keys InstrumentKey { get; set; } = Keys.None;
-        public int Delay { get; set; } = AppConfig.MacroDefaultDelay;
+        private int _delay = AppConfig.MacroDefaultDelay;
+        public int Delay
+        {
+            get => _delay < 0 ? AppConfig.MacroDefaultDelay : _delay;
+            set => _delay = value;
+        }
 
         /// <summary>
         /// Array of 8 song keys in sequence
@@ -102,6 +107,8 @@ namespace ORTools.Worker
         public string ActionName { get; set; } = ACTION_NAME;
         private ThreadRunner thread;
         public List<SongRow> SongRows { get; set; } = new List<SongRow>();
+        private readonly Dictionary<int, bool> _wasTriggerPressed = new();
+        private volatile bool _running = false;
 
         public MacroSong()
         {
@@ -186,51 +193,106 @@ namespace ORTools.Worker
 
         private int SongMacroThread(Client roClient)
         {
-            if (!roClient.IsProcessRunning() || roClient.IsTextInputActive() || roClient.IsDead()) return 0;
+            if (!_running) return 0;
+            if (!roClient.IsProcessRunning() || roClient.IsDead()) return 0;
+
             IntPtr hWnd = roClient.MainWindowHandle;
+            if (hWnd == IntPtr.Zero || !ClientInput.IsForeground(hWnd))
+            {
+                _wasTriggerPressed.Clear();
+                return 0;
+            }
+
+            if (roClient.IsTextInputActive())
+            {
+                _wasTriggerPressed.Clear();
+                return 0;
+            }
 
             int maxRows = ConfigGlobal.GetConfig().SongRows;
             for (int i = 0; i < maxRows && i < this.SongRows.Count; i++)
             {
                 var songRow = this.SongRows[i];
-                if (songRow.TriggerKey != Keys.None && ClientInput.IsKeyPressed(songRow.TriggerKey))
+                if (songRow.TriggerKey == Keys.None) continue;
+
+                bool isPressed = ClientInput.IsKeyPressed(songRow.TriggerKey);
+                _wasTriggerPressed.TryGetValue(songRow.Id, out bool wasPressed);
+
+                if (isPressed && !wasPressed)
                 {
-                    List<Keys> activeSongKeys = songRow.GetActiveSongKeys();
-
-                    // Only proceed if there are active song keys
-                    if (activeSongKeys.Count > 0)
-                    {
-                        // Equip instrument if specified
-                        if (songRow.InstrumentKey != Keys.None)
-                        {
-                            ClientInput.SendKey(hWnd, songRow.InstrumentKey, blockOnAlt: false);
-                            Thread.Sleep(30);
-                        }
-
-                        // Cast songs with adaptation between each step
-                        for (int step = 0; step < activeSongKeys.Count; step++)
-                        {
-                            // Stop executing the sequence if they release the trigger key
-                            if (!ClientInput.IsKeyPressed(songRow.TriggerKey))
-                            {
-                                break;
-                            }
-
-                            // Cast the song key
-                            ClientInput.SendKey(hWnd, activeSongKeys[step], blockOnAlt: false);
-                            Thread.Sleep(songRow.Delay);
-
-                            // Send adaptation key after each song step (including the last one)
-                            if (songRow.AdaptationKey != Keys.None)
-                            {
-                                ClientInput.SendKey(hWnd, songRow.AdaptationKey, blockOnAlt: false);
-                                Thread.Sleep(songRow.Delay);
-                            }
-                        }
-                    }
+                    _wasTriggerPressed[songRow.Id] = true;
+                    ExecuteSongSequence(roClient, hWnd, songRow);
+                    // Refresh state after sequence execution so holding the trigger key does not re-trigger
+                    _wasTriggerPressed[songRow.Id] = ClientInput.IsKeyPressed(songRow.TriggerKey);
+                    break;
+                }
+                else if (!isPressed && wasPressed)
+                {
+                    _wasTriggerPressed[songRow.Id] = false;
                 }
             }
             return 0;
+        }
+
+        private void ExecuteSongSequence(Client roClient, IntPtr hWnd, SongRow songRow)
+        {
+            List<Keys> activeSongKeys = songRow.GetActiveSongKeys();
+            if (activeSongKeys.Count == 0) return;
+
+            // Equip instrument if specified and distinct from adaptation
+            if (songRow.InstrumentKey != Keys.None && songRow.InstrumentKey != songRow.AdaptationKey)
+            {
+                ClientInput.SendKey(hWnd, songRow.InstrumentKey, blockOnAlt: false);
+                if (!SleepWithCancel(roClient, 30)) return;
+            }
+
+            for (int step = 0; step < activeSongKeys.Count; step++)
+            {
+                if (!_running || !roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive())
+                    return;
+
+                // 1. Cast the song key
+                ClientInput.SendKey(hWnd, activeSongKeys[step], blockOnAlt: false);
+
+                // Delay between song key and adaptation/cancel key
+                if (songRow.Delay > 0)
+                {
+                    if (!SleepWithCancel(roClient, songRow.Delay)) return;
+                }
+
+                // 2. Cancel song via adaptation / weapon switch
+                if (songRow.AdaptationKey != Keys.None)
+                {
+                    ClientInput.SendKey(hWnd, songRow.AdaptationKey, blockOnAlt: false);
+
+                    // Delay between adaptation key and the next song in the chain
+                    if (step < activeSongKeys.Count - 1 && songRow.Delay > 0)
+                    {
+                        if (!SleepWithCancel(roClient, songRow.Delay)) return;
+                    }
+                }
+                else if (step < activeSongKeys.Count - 1 && songRow.Delay > 0)
+                {
+                    // If no adaptation key is set, still delay between consecutive songs
+                    if (!SleepWithCancel(roClient, songRow.Delay)) return;
+                }
+            }
+        }
+
+        private bool SleepWithCancel(Client roClient, int milliseconds)
+        {
+            int elapsed = 0;
+            while (elapsed < milliseconds)
+            {
+                if (!_running) return false;
+                if (!roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive())
+                    return false;
+
+                int slice = Math.Min(25, milliseconds - elapsed);
+                Thread.Sleep(slice);
+                elapsed += slice;
+            }
+            return true;
         }
 
         public void Start()
@@ -238,8 +300,10 @@ namespace ORTools.Worker
             Client roClient = ClientSingleton.GetClient();
             if (roClient != null)
             {
-                Stop(); // ensure thread and hook are cleaned before starting
+                Stop(); // ensure thread and state are cleaned before starting
 
+                _running = true;
+                _wasTriggerPressed.Clear();
                 this.thread = new ThreadRunner((_) => SongMacroThread(roClient), "SongMacro") { IterationDelay = 1 };
                 ThreadRunner.Start(this.thread);
             }
@@ -247,12 +311,14 @@ namespace ORTools.Worker
 
         public void Stop()
         {
+            _running = false;
             if (this.thread != null)
             {
                 ThreadRunner.Stop(this.thread);
                 this.thread.Terminate();
                 this.thread = null;
             }
+            _wasTriggerPressed.Clear();
         }
     }
 }

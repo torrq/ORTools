@@ -22,6 +22,7 @@ public class ThemeModeToStringConverter : IValueConverter
                 ThemeMode.BlueDark => "Blue Dark",
                 ThemeMode.MonoLight => "Mono Light",
                 ThemeMode.MonoDark => "Mono Dark",
+                ThemeMode.Custom => "Custom",
                 _ => mode.ToString()
             };
         }

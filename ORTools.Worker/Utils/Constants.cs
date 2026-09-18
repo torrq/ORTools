@@ -10,6 +10,7 @@ public static class Constants
     public const int WM_KEYUP_MSG_ID   = 0x0101;
     public const int WM_SYSKEYDOWN     = 0x0104;
     public const int WM_SYSKEYUP       = 0x0105;
+    public const int WM_MOUSEMOVE      = 0x0200;
     public const int WM_LBUTTONDOWN    = 0x0201;
     public const int WM_LBUTTONUP      = 0x0202;
 
@@ -22,9 +23,22 @@ public static class Constants
     public const int KEYEVENTF_EXTENDEDKEY = 0x0001;
     public const int KEYEVENTF_KEYUP       = 0x0002;
 
-    // ── mouse_event flags ─────────────────────────────────────────────────────
-    public const uint MOUSEEVENTF_LEFTDOWN  = 0x0002;
-    public const uint MOUSEEVENTF_LEFTUP    = 0x0004;
+    // ── mouse_event / SendInput MOUSEINPUT flags ──────────────────────────────
+    public const uint MOUSEEVENTF_MOVE           = 0x0001;
+    public const uint MOUSEEVENTF_LEFTDOWN       = 0x0002;
+    public const uint MOUSEEVENTF_LEFTUP         = 0x0004;
+    public const uint MOUSEEVENTF_MOVE_NOCOALESCE = 0x2000; // stop Windows from merging this move with adjacent ones
+    public const uint MOUSEEVENTF_VIRTUALDESK    = 0x4000; // normalize against the full virtual screen, not just the primary monitor
+    public const uint MOUSEEVENTF_ABSOLUTE       = 0x8000;
+
+    // ── SendInput ──────────────────────────────────────────────────────────────
+    public const uint INPUT_MOUSE = 0;
+
+    // ── GetSystemMetrics indices ──────────────────────────────────────────────
+    public const int SM_XVIRTUALSCREEN  = 76;
+    public const int SM_YVIRTUALSCREEN  = 77;
+    public const int SM_CXVIRTUALSCREEN = 78;
+    public const int SM_CYVIRTUALSCREEN = 79;
 
     // ── Mouse movement pixels for skill spammer flick ─────────────────────────
     public const int MOUSE_DIAGONAL_MOVIMENTATION_PIXELS_AHK = 2;

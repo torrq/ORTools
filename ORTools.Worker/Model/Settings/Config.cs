@@ -26,6 +26,8 @@ public class Config
     public bool   ShowExpPerHour               { get; set; } = false;
     public bool   CheckForUpdatesOnStartup     { get; set; } = true;
     public Shared.Protocol.ThemeMode Theme     { get; set; } = Shared.Protocol.ThemeMode.BlueLight;
+    public bool   CustomThemeIsLight           { get; set; } = AppConfig.DefaultCustomThemeIsLight;
+    public string CustomThemeColor             { get; set; } = AppConfig.DefaultCustomThemeColor;
     
     public StatusLoggerConfig StatusLogger { get; set; } = new();
 }

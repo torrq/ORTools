@@ -134,7 +134,9 @@ public sealed record GlobalConfigUpdate(
     bool AllowResizingWindow,
     bool ShowExpPerHour,
     bool CheckForUpdatesOnStartup,
-    ThemeMode Theme) : IIpcMessage
+    ThemeMode Theme,
+    bool CustomThemeIsLight,
+    string CustomThemeColor) : IIpcMessage
 ;
 
 public sealed record StatusLoggerConfigUpdate(

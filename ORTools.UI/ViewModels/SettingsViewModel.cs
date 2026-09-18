@@ -27,7 +27,26 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _showExpPerHour;
     [ObservableProperty] private bool _checkForUpdatesOnStartup = true;
     [ObservableProperty] private ThemeMode _theme;
+    [ObservableProperty] private bool _customThemeIsLight = AppConfig.DefaultCustomThemeIsLight;
+    [ObservableProperty] private string _customThemeColor = AppConfig.DefaultCustomThemeColor;
+    [ObservableProperty] private double _customThemeHue = 260;
     [ObservableProperty] private Language _language;
+
+    private bool _suppressColorHueSync;
+    private bool _suppressHueUpdate;
+
+    public bool IsCustomTheme => Theme == ThemeMode.Custom;
+    public bool CustomThemeIsDark
+    {
+        get => !CustomThemeIsLight;
+        set
+        {
+            if (value && CustomThemeIsLight)
+                CustomThemeIsLight = false;
+            else if (!value && !CustomThemeIsLight)
+                CustomThemeIsLight = true;
+        }
+    }
 
     // ── Update checker ────────────────────────────────────────────────────────
     [ObservableProperty] private int _selectedSettingsTabIndex = 0;
@@ -120,9 +139,13 @@ public partial class SettingsViewModel : ObservableObject
             ShowExpPerHour = update.ShowExpPerHour;
             CheckForUpdatesOnStartup = update.CheckForUpdatesOnStartup;
             Theme = update.Theme;
+            CustomThemeIsLight = update.CustomThemeIsLight;
+            CustomThemeColor = update.CustomThemeColor;
+            OnPropertyChanged(nameof(IsCustomTheme));
+            OnPropertyChanged(nameof(CustomThemeIsDark));
             _suppressUpdates = false;
 
-            ThemeService.ApplyTheme(Theme);
+            ThemeService.ApplyTheme(Theme, CustomThemeIsLight, CustomThemeColor);
         });
     }
 
@@ -168,8 +191,58 @@ public partial class SettingsViewModel : ObservableObject
     
     partial void OnThemeChanged(ThemeMode value)
     {
-        ThemeService.ApplyTheme(value);
+        OnPropertyChanged(nameof(IsCustomTheme));
+        ThemeService.ApplyTheme(value, CustomThemeIsLight, CustomThemeColor);
         SendGlobalUpdate();
+    }
+
+    partial void OnCustomThemeIsLightChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CustomThemeIsDark));
+        if (Theme == ThemeMode.Custom)
+        {
+            ThemeService.ApplyTheme(ThemeMode.Custom, value, CustomThemeColor);
+        }
+        SendGlobalUpdate();
+    }
+
+    partial void OnCustomThemeColorChanged(string value)
+    {
+        if (!_suppressColorHueSync)
+        {
+            try
+            {
+                var curColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(value);
+                ThemeService.ColorToHsl(curColor, out double h, out _, out _);
+                _suppressHueUpdate = true;
+                CustomThemeHue = Math.Round(h);
+                _suppressHueUpdate = false;
+            }
+            catch { }
+        }
+
+        if (Theme == ThemeMode.Custom)
+        {
+            ThemeService.ApplyTheme(ThemeMode.Custom, CustomThemeIsLight, value);
+        }
+        SendGlobalUpdate();
+    }
+
+    partial void OnCustomThemeHueChanged(double value)
+    {
+        if (_suppressHueUpdate) return;
+        try
+        {
+            var curColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(CustomThemeColor);
+            ThemeService.ColorToHsl(curColor, out _, out double s, out double l);
+            if (s < 0.2) s = 0.85;
+            if (l < 0.3 || l > 0.7) l = 0.55;
+            var newColor = ThemeService.HslToColor(value, s, l);
+            _suppressColorHueSync = true;
+            CustomThemeColor = $"#{newColor.R:X2}{newColor.G:X2}{newColor.B:X2}";
+            _suppressColorHueSync = false;
+        }
+        catch { }
     }
 
     partial void OnLanguageChanged(Language value)
@@ -226,7 +299,9 @@ public partial class SettingsViewModel : ObservableObject
             AllowResizingWindow: AllowResizingWindow,
             ShowExpPerHour: ShowExpPerHour,
             CheckForUpdatesOnStartup: CheckForUpdatesOnStartup,
-            Theme: Theme
+            Theme: Theme,
+            CustomThemeIsLight: CustomThemeIsLight,
+            CustomThemeColor: CustomThemeColor
         );
         _worker.Send(cmd);
     }
@@ -256,6 +331,12 @@ public partial class SettingsViewModel : ObservableObject
     private void ResetDebugViewFontSize()
     {
         DebugViewFontSize = AppConfig.DefaultDebugViewFontSize;
+    }
+
+    [RelayCommand]
+    private void SelectPresetColor(string hex)
+    {
+        CustomThemeColor = hex;
     }
 
     // ── Update checker ────────────────────────────────────────────────────────

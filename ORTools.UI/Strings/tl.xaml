@@ -140,6 +140,11 @@
     <sys:String x:Key="S.Settings.Language">Wika</sys:String>
     <sys:String x:Key="S.Settings.HideDeadClientInfo">Itago ang patay na client</sys:String>
     <sys:String x:Key="S.Settings.AppTheme">Tema ng App</sys:String>
+    <sys:String x:Key="S.Settings.ThemeCustom">Pinasadya</sys:String>
+    <sys:String x:Key="S.Settings.CustomMode">Moda</sys:String>
+    <sys:String x:Key="S.Settings.CustomColor">Kulay</sys:String>
+    <sys:String x:Key="S.Settings.Dark">Madilim</sys:String>
+    <sys:String x:Key="S.Settings.Light">Maliwanag</sys:String>
     <sys:String x:Key="S.Settings.SongRows">Mga Hanay ng Song</sys:String>
     <sys:String x:Key="S.Settings.MacroSwitchRows">Mga Hanay ng Macro Switch</sys:String>
     <sys:String x:Key="S.Settings.AtkDefRows">Mga Hanay ng ATK x DEF</sys:String>

@@ -10,5 +10,6 @@ public enum ThemeMode
     BlueLight = 5,
     BlueDark = 6,
     MonoLight = 7,
-    MonoDark = 8
+    MonoDark = 8,
+    Custom = 9
 }

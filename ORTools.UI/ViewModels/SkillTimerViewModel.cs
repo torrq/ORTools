@@ -28,7 +28,7 @@ public sealed partial class SkillTimerSlotViewModel : ViewModelBase
         Id = id;
         _key = key;
         _delay = delay;
-        _clickMode = clickMode;
+        _clickMode = clickMode > 1 ? 1 : clickMode;
         _altKey = altKey;
         _enabled = enabled;
         _onChanged = onChanged;
@@ -39,7 +39,7 @@ public sealed partial class SkillTimerSlotViewModel : ViewModelBase
     {
         Key = key;
         Delay = delay;
-        ClickMode = clickMode;
+        ClickMode = clickMode > 1 ? 1 : clickMode;
         AltKey = altKey;
         Enabled = enabled;
     }

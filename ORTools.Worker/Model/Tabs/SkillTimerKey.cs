@@ -22,13 +22,19 @@ namespace ORTools.Worker
             set => _delay = value;
         }
 
+        private int _clickMode = 0;
+
         /// <summary>
         /// Represents the click behavior for the skill timer.
         /// 0: No Click
         /// 1: Click at current mouse position
-        /// 2: Click at the center of the game window
+        /// Legacy 2 (Center) falls back to 1 (Cursor)
         /// </summary>
-        public int ClickMode { get; set; } = 0;
+        public int ClickMode
+        {
+            get => _clickMode > 1 ? 1 : _clickMode;
+            set => _clickMode = value > 1 ? 1 : value;
+        }
 
         /// <summary>
         /// Constructor used by Newtonsoft.Json for deserialization.

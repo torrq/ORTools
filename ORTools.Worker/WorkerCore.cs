@@ -782,6 +782,8 @@ public sealed class WorkerCore : IDisposable
         config.ShowExpPerHour = cmd.ShowExpPerHour;
         config.CheckForUpdatesOnStartup = cmd.CheckForUpdatesOnStartup;
         config.Theme = cmd.Theme;
+        config.CustomThemeIsLight = cmd.CustomThemeIsLight;
+        config.CustomThemeColor = cmd.CustomThemeColor;
         ConfigGlobal.SaveConfig();
 
         var p = ProfileSingleton.GetCurrent();
@@ -1065,6 +1067,7 @@ public sealed class WorkerCore : IDisposable
         {
             unbindChanged = UnbindKeyGlobally(key);
             row.AdaptationKey = key;
+            if (row.InstrumentKey == key) row.InstrumentKey = Keys.None;
         }
         
         ProfileSingleton.SetConfiguration(p.SongMacro);
@@ -1377,7 +1380,9 @@ public sealed class WorkerCore : IDisposable
             config.AllowResizingWindow,
             config.ShowExpPerHour,
             config.CheckForUpdatesOnStartup,
-            config.Theme
+            config.Theme,
+            config.CustomThemeIsLight,
+            config.CustomThemeColor
         );
     }
 

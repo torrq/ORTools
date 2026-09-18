@@ -293,9 +293,47 @@ namespace ORTools.Worker
         {
             get
             {
-                if (_cachedMainWindowHandle == IntPtr.Zero && Process != null)
+                if ((_cachedMainWindowHandle == IntPtr.Zero || !Win32Interop.IsWindow(_cachedMainWindowHandle)) && Process != null)
                 {
-                    try { _cachedMainWindowHandle = Process.MainWindowHandle; } catch { }
+                    try
+                    {
+                        Process.Refresh();
+                        _cachedMainWindowHandle = Process.MainWindowHandle;
+                    }
+                    catch { }
+
+                    if (_cachedMainWindowHandle == IntPtr.Zero || !Win32Interop.IsWindow(_cachedMainWindowHandle))
+                    {
+                        try
+                        {
+                            int targetPid = Process.Id;
+                            IntPtr foundHwnd = IntPtr.Zero;
+                            Win32Interop.EnumWindows((h, lParam) =>
+                            {
+                                Win32Interop.GetWindowThreadProcessId(h, out uint pid);
+                                if (pid == targetPid && Win32Interop.IsWindow(h))
+                                {
+                                    if (Win32Interop.GetClientRect(h, out var rect))
+                                    {
+                                        int w = rect.Right - rect.Left;
+                                        int hSize = rect.Bottom - rect.Top;
+                                        if (w > 200 && hSize > 200)
+                                        {
+                                            foundHwnd = h;
+                                            return false; // Stop enumeration
+                                        }
+                                    }
+                                }
+                                return true;
+                            }, IntPtr.Zero);
+
+                            if (foundHwnd != IntPtr.Zero)
+                            {
+                                _cachedMainWindowHandle = foundHwnd;
+                            }
+                        }
+                        catch { }
+                    }
                 }
                 return _cachedMainWindowHandle;
             }

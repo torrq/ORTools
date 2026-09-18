@@ -10,6 +10,24 @@ internal static class Win32Interop
     [StructLayout(LayoutKind.Sequential)]
     public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct INPUT
+    {
+        public uint type;
+        public MOUSEINPUT mi;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MOUSEINPUT
+    {
+        public int dx;
+        public int dy;
+        public uint mouseData;
+        public uint dwFlags;
+        public uint time;
+        public IntPtr dwExtraInfo;
+    }
+
     // Window management
     [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll", SetLastError = true)] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
@@ -18,9 +36,13 @@ internal static class Win32Interop
     [DllImport("user32.dll", SetLastError = true)] public static extern bool GetClientRect(IntPtr hWnd, out RECT rect);
     [DllImport("user32.dll", SetLastError = true)] public static extern IntPtr SetForegroundWindow(IntPtr hWnd);
     [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
+    [DllImport("user32.dll")] public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
     // Mouse
     [DllImport("user32.dll")] public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtra);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
     [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT pt);
     [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
     [DllImport("user32.dll")] public static extern bool ScreenToClient(IntPtr hWnd, ref System.Drawing.Point pt);
@@ -31,6 +53,25 @@ internal static class Win32Interop
     [DllImport("user32.dll")] private static extern short GetAsyncKeyState(Keys vKey);
     public static bool IsKeyPressed(Keys key) => (GetAsyncKeyState(key) & 0x8000) != 0;
     [DllImport("user32.dll")] public static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
+    public static bool SendRelativeMouseMove(int dx, int dy)
+    {
+        var input = new INPUT
+        {
+            type = 0, // INPUT_MOUSE
+            mi = new MOUSEINPUT
+            {
+                dx = dx,
+                dy = dy,
+                mouseData = 0,
+                dwFlags = 0x0001, // MOUSEEVENTF_MOVE
+                time = 0,
+                dwExtraInfo = IntPtr.Zero
+            }
+        };
+
+        return SendInput(1, new[] { input }, Marshal.SizeOf(typeof(INPUT))) == 1;
+    }
 
     // Messaging
     [DllImport("user32.dll", SetLastError = true)] public static extern bool PostMessage(IntPtr hWnd, int Msg, Keys wParam, int lParam);

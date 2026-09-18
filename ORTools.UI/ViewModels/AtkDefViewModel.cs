@@ -112,6 +112,7 @@ public sealed partial class AtkDefRowViewModel : ViewModelBase
     {
         _isUpdatingFromServer = true;
 
+        Id = row.Id;
         SpammerKey = row.TriggerKey;
         SpammerDelay = row.SpammerDelay;
         SwitchDelay = row.SwitchDelay;

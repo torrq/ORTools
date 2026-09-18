@@ -32,7 +32,7 @@ public static class InputHelper
             Key.OemPipe => "OemPipe",
             Key.OemBackslash => "OemBackslash",
             Key.OemClear => "OemClear",
-            _ => e.Key.ToString()
+            _ => realKey.ToString()
         };
 
 

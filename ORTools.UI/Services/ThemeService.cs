@@ -4,6 +4,7 @@ using System.Windows;
 using Microsoft.Win32;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Helpers;
+using ORTools.Worker;
 
 namespace ORTools.UI.Services;
 
@@ -11,8 +12,12 @@ public static class ThemeService
 {
     private static ThemeMode _currentMode = ThemeMode.BlueLight;
     private static int _serverMode = 1; // 1 = HR, 0 = MR
+    private static bool _customIsLight = AppConfig.DefaultCustomThemeIsLight;
+    private static string _customColor = AppConfig.DefaultCustomThemeColor;
 
     public static bool IsCurrentThemeLight { get; private set; }
+    public static bool CustomIsLight => _customIsLight;
+    public static string CustomColor => _customColor;
 
     /// <summary>1 = HR, 0 = MR.</summary>
     public static int ServerMode => _serverMode;
@@ -41,6 +46,14 @@ public static class ThemeService
                 {
                     _currentMode = (ThemeMode)themeVal;
                 }
+                if (doc.RootElement.TryGetProperty("CustomThemeIsLight", out var isLightProp))
+                {
+                    _customIsLight = isLightProp.GetBoolean();
+                }
+                if (doc.RootElement.TryGetProperty("CustomThemeColor", out var colorProp) && colorProp.GetString() is string cStr)
+                {
+                    _customColor = cStr;
+                }
             }
         }
         catch { }
@@ -53,15 +66,23 @@ public static class ThemeService
         if (_serverMode == 1) // HR
             return new[] { ThemeMode.System,
                            ThemeMode.GreenLight, ThemeMode.RedLight, ThemeMode.BlueLight, ThemeMode.MonoLight,
-                           ThemeMode.GreenDark, ThemeMode.RedDark, ThemeMode.BlueDark, ThemeMode.MonoDark };
+                           ThemeMode.GreenDark, ThemeMode.RedDark, ThemeMode.BlueDark, ThemeMode.MonoDark,
+                           ThemeMode.Custom };
         else // MR
             return new[] { ThemeMode.System,
                            ThemeMode.RedLight, ThemeMode.GreenLight, ThemeMode.BlueLight, ThemeMode.MonoLight,
-                           ThemeMode.RedDark, ThemeMode.GreenDark, ThemeMode.BlueDark, ThemeMode.MonoDark };
+                           ThemeMode.RedDark, ThemeMode.GreenDark, ThemeMode.BlueDark, ThemeMode.MonoDark,
+                           ThemeMode.Custom };
     }
 
     public static ThemeMode GetInvertedTheme()
     {
+        if (_currentMode == ThemeMode.Custom)
+        {
+            _customIsLight = !_customIsLight;
+            return ThemeMode.Custom;
+        }
+
         if (_currentMode == ThemeMode.System)
         {
             bool isLight = IsWindowsLightMode();
@@ -87,8 +108,13 @@ public static class ThemeService
     {
         bool isLight = IsCurrentThemeLight;
 
-        ThemeMode[] lightThemes = { ThemeMode.GreenLight, ThemeMode.RedLight, ThemeMode.BlueLight, ThemeMode.MonoLight };
-        ThemeMode[] darkThemes = { ThemeMode.GreenDark, ThemeMode.RedDark, ThemeMode.BlueDark, ThemeMode.MonoDark };
+        ThemeMode[] lightThemes = _serverMode == 1
+            ? new[] { ThemeMode.GreenLight, ThemeMode.RedLight, ThemeMode.BlueLight, ThemeMode.MonoLight, ThemeMode.Custom }
+            : new[] { ThemeMode.RedLight, ThemeMode.GreenLight, ThemeMode.BlueLight, ThemeMode.MonoLight, ThemeMode.Custom };
+
+        ThemeMode[] darkThemes = _serverMode == 1
+            ? new[] { ThemeMode.GreenDark, ThemeMode.RedDark, ThemeMode.BlueDark, ThemeMode.MonoDark, ThemeMode.Custom }
+            : new[] { ThemeMode.RedDark, ThemeMode.GreenDark, ThemeMode.BlueDark, ThemeMode.MonoDark, ThemeMode.Custom };
 
         var themes = isLight ? lightThemes : darkThemes;
 
@@ -103,17 +129,30 @@ public static class ThemeService
             index = Array.IndexOf(themes, effectiveMode);
         }
 
-        return themes[(index + 1) % themes.Length];
+        ThemeMode next = themes[(index + 1) % themes.Length];
+        if (next == ThemeMode.Custom)
+        {
+            _customIsLight = isLight;
+        }
+        return next;
     }
 
-    public static void ApplyTheme(ThemeMode mode)
+    public static void ApplyTheme(ThemeMode mode, bool? customIsLight = null, string? customColor = null)
     {
+        if (customIsLight.HasValue) _customIsLight = customIsLight.Value;
+        if (!string.IsNullOrWhiteSpace(customColor)) _customColor = customColor;
+
         _currentMode = mode;
 
         bool useLight = false;
         string colorFamily = "Green"; // Default to Green (HR)
 
-        if (mode == ThemeMode.System)
+        if (mode == ThemeMode.Custom)
+        {
+            useLight = _customIsLight;
+            colorFamily = "Custom";
+        }
+        else if (mode == ThemeMode.System)
         {
             useLight = IsWindowsLightMode();
             colorFamily = _serverMode == 1 ? "Green" : "Red";
@@ -136,7 +175,20 @@ public static class ThemeService
         var dictionaries = Application.Current.Resources.MergedDictionaries;
         var newTheme = new ResourceDictionary { Source = new Uri(themeUri) };
 
-        if (colorFamily == "Red")
+        if (colorFamily == "Custom")
+        {
+            System.Windows.Media.Color parsedColor;
+            try
+            {
+                parsedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(_customColor);
+            }
+            catch
+            {
+                parsedColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(AppConfig.DefaultCustomThemeColor);
+            }
+            GenerateCustomTheme(newTheme, useLight, parsedColor);
+        }
+        else if (colorFamily == "Red")
         {
             if (useLight)
             {
@@ -277,5 +329,119 @@ public static class ThemeService
             // Default to dark if we can't read the registry
         }
         return false;
+    }
+
+    public static void ColorToHsl(System.Windows.Media.Color color, out double h, out double s, out double l)
+    {
+        double r = color.R / 255.0;
+        double g = color.G / 255.0;
+        double b = color.B / 255.0;
+
+        double max = Math.Max(r, Math.Max(g, b));
+        double min = Math.Min(r, Math.Min(g, b));
+        double delta = max - min;
+
+        l = (max + min) / 2.0;
+
+        if (delta < 0.00001)
+        {
+            h = 0;
+            s = 0;
+        }
+        else
+        {
+            s = l <= 0.5 ? (delta / (max + min)) : (delta / (2.0 - max - min));
+
+            if (Math.Abs(r - max) < 0.00001)
+                h = ((g - b) / delta) % 6.0;
+            else if (Math.Abs(g - max) < 0.00001)
+                h = 2.0 + (b - r) / delta;
+            else
+                h = 4.0 + (r - g) / delta;
+
+            h *= 60.0;
+            if (h < 0) h += 360.0;
+        }
+    }
+
+    public static System.Windows.Media.Color HslToColor(double h, double s, double l)
+    {
+        h = ((h % 360.0) + 360.0) % 360.0;
+        s = Math.Clamp(s, 0.0, 1.0);
+        l = Math.Clamp(l, 0.0, 1.0);
+
+        double c = (1.0 - Math.Abs(2.0 * l - 1.0)) * s;
+        double x = c * (1.0 - Math.Abs((h / 60.0) % 2.0 - 1.0));
+        double m = l - c / 2.0;
+
+        double r = 0, g = 0, b = 0;
+        if (h < 60)       { r = c; g = x; b = 0; }
+        else if (h < 120) { r = x; g = c; b = 0; }
+        else if (h < 180) { r = 0; g = c; b = x; }
+        else if (h < 240) { r = 0; g = x; b = c; }
+        else if (h < 300) { r = x; g = 0; b = c; }
+        else              { r = c; g = 0; b = x; }
+
+        byte red   = (byte)Math.Round(Math.Clamp(r + m, 0.0, 1.0) * 255);
+        byte green = (byte)Math.Round(Math.Clamp(g + m, 0.0, 1.0) * 255);
+        byte blue  = (byte)Math.Round(Math.Clamp(b + m, 0.0, 1.0) * 255);
+
+        return System.Windows.Media.Color.FromRgb(red, green, blue);
+    }
+
+    private static void GenerateCustomTheme(ResourceDictionary newTheme, bool useLight, System.Windows.Media.Color baseColor)
+    {
+        ColorToHsl(baseColor, out double h, out double s, out double l);
+
+        if (useLight)
+        {
+            // Light mode:
+            // 1. AppPrimaryBrush: Needs sufficient contrast on white/light gray.
+            double primaryL = Math.Clamp(l, 0.30, 0.48);
+            var primaryColor = HslToColor(h, s, primaryL);
+            var primaryHoverColor = HslToColor(h, s, Math.Max(0.20, primaryL * 0.80));
+            var primaryPressedColor = HslToColor(h, s, Math.Max(0.14, primaryL * 0.65));
+            var linkColor = primaryColor;
+
+            // Header gradient: pastel tint (Stop 0) -> ultra-light soft tint (Stop 1)
+            double headerSat = Math.Min(0.35, s * 0.45);
+            var headerStop0 = HslToColor(h, headerSat, 0.76);
+            var headerStop1 = HslToColor(h, Math.Min(0.25, s * 0.30), 0.96);
+
+            newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
+                headerStop0, headerStop1, new Point(0, 0), new Point(1, 0));
+            newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush(primaryColor);
+            newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush(primaryHoverColor);
+            newTheme["AppPrimaryPressedBrush"] = new System.Windows.Media.SolidColorBrush(primaryPressedColor);
+            newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush(linkColor);
+        }
+        else
+        {
+            // Dark mode:
+            // 1. AppPrimaryBrush: Needs to stand out on dark panels (#1E1E1E / #252525).
+            double primaryL = Math.Clamp(l, 0.50, 0.68);
+            var primaryColor = HslToColor(h, s, primaryL);
+            var primaryHoverColor = HslToColor(h, Math.Max(s * 0.85, 0.15), Math.Max(0.16, primaryL * 0.60));
+            var primaryPressedColor = HslToColor(h, Math.Max(s * 0.80, 0.10), Math.Max(0.10, primaryL * 0.40));
+
+            // Link color: bright, readable on dark
+            double linkL = Math.Clamp(primaryL + 0.12, 0.65, 0.80);
+            var linkColor = HslToColor(h, Math.Min(1.0, s * 0.90), linkL);
+
+            // Header gradient: deep black tint (Stop 0) -> rich dark accent (Stop 1)
+            double headerSat0 = Math.Min(0.40, s * 0.50);
+            double headerSat1 = Math.Min(0.55, s * 0.75);
+            var headerStop0 = HslToColor(h, headerSat0, 0.06);
+            var headerStop1 = HslToColor(h, headerSat1, 0.24);
+
+            newTheme["AppHeaderBrush"] = new System.Windows.Media.LinearGradientBrush(
+                headerStop0, headerStop1, new Point(0, 0), new Point(1, 0));
+            newTheme["AppPrimaryBrush"] = new System.Windows.Media.SolidColorBrush(primaryColor);
+            newTheme["AppPrimaryHoverBrush"] = new System.Windows.Media.SolidColorBrush(primaryHoverColor);
+            newTheme["AppPrimaryPressedBrush"] = new System.Windows.Media.SolidColorBrush(primaryPressedColor);
+            newTheme["AppLinkBrush"] = new System.Windows.Media.SolidColorBrush(linkColor);
+            newTheme["AppSubtleBrush"] = new System.Windows.Media.SolidColorBrush(
+                (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#BEBEBE"));
+        }
     }
 }

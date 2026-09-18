@@ -16,6 +16,8 @@ namespace ORTools.Worker
         public bool ClickActive { get; set; }
         public bool IsIndeterminate { get; set; }
 
+        public KeyConfig() { }
+
         public KeyConfig(Keys key, bool clickActive, bool isIndeterminate = false)
         {
             Key = key;
@@ -47,12 +49,12 @@ namespace ORTools.Worker
             try
             {
                 Client currentClient = ClientSingleton.GetClient();
-                if (!currentClient.IsProcessRunning())
+                if (currentClient == null || !currentClient.IsProcessRunning())
                 {
                     return false;
                 }
 
-                return ClientInput.IsForeground(currentClient.Process.MainWindowHandle);
+                return currentClient.MainWindowHandle != IntPtr.Zero && ClientInput.IsForeground(currentClient.MainWindowHandle);
             }
             catch (Exception ex)
             {
@@ -63,6 +65,7 @@ namespace ORTools.Worker
 
         private const string ACTION_NAME = "SkillSpammer";
         private ThreadRunner thread;
+        private volatile bool _running = false;
         public ConcurrentDictionary<string, KeyConfig> SpammerEntries { get; set; } = new ConcurrentDictionary<string, KeyConfig>();
 
         private int _delay = AppConfig.SkillSpammerDefaultDelay;
@@ -86,12 +89,11 @@ namespace ORTools.Worker
             Client roClient = ClientSingleton.GetClient();
             if (roClient != null)
             {
-                if (this.thread != null)
-                {
-                    ThreadRunner.Stop(this.thread);
-                    this.thread.Terminate();
-                    this.thread = null;
-                }
+                Stop();
+
+                _running = true;
+                ResetToggleState();
+                keyPressedLastFrame.Clear();
 
                 this.thread = new ThreadRunner(_ => SkillSpammerThread(roClient), "SkillSpammerThread") { IterationDelay = 1 };
                 ThreadRunner.Start(this.thread);
@@ -100,22 +102,26 @@ namespace ORTools.Worker
 
         private int SkillSpammerThread(Client roClient)
         {
-            if (!SkillSpammer.IsGameWindowActive())
+            if (!_running)
                 return 0;
 
-            if (roClient.IsTextInputActive() || roClient.IsDead())
+            if (roClient == null || !roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive())
                 return 0;
 
-            // Cache expensive lookups once per iteration
             IntPtr windowHandle = roClient.MainWindowHandle;
+            if (windowHandle == IntPtr.Zero || !ClientInput.IsForeground(windowHandle))
+                return 0;
+
+            // Cache settings once per iteration
             bool noShift = this.NoShift;
             bool mouseFlick = this.MouseFlick;
 
             // Handle toggle mode key press
             if (this.ToggleModeKey != Keys.None)
             {
-                bool isToggleKeyPressed = ClientInput.IsKeyPressed(this.ToggleModeKey);
-                bool wasToggleKeyPressed = keyPressedLastFrame.ContainsKey(this.ToggleModeKey) && keyPressedLastFrame[this.ToggleModeKey];
+                bool isAltPressed = ClientInput.IsKeyPressed(Keys.LMenu) || ClientInput.IsKeyPressed(Keys.RMenu);
+                bool isToggleKeyPressed = !isAltPressed && ClientInput.IsKeyPressed(this.ToggleModeKey);
+                bool wasToggleKeyPressed = keyPressedLastFrame.TryGetValue(this.ToggleModeKey, out bool wasPressed) && wasPressed;
 
                 if (isToggleKeyPressed && !wasToggleKeyPressed)
                 {
@@ -134,20 +140,24 @@ namespace ORTools.Worker
 
             foreach (var kvp in SpammerEntries)
             {
+                if (!_running || roClient.IsDead() || roClient.IsTextInputActive() || !ClientInput.IsForeground(windowHandle))
+                    break;
+
                 var config = kvp.Value;
-                if (config.ClickActive || config.IsIndeterminate)
+                if (config != null && (config.ClickActive || config.IsIndeterminate))
                 {
-                    SkillSpammerSpeedBoost(config, windowHandle, noShift, mouseFlick);
+                    SkillSpammerSpeedBoost(roClient, config, windowHandle, noShift, mouseFlick);
                 }
             }
 
             return 0;
         }
 
-        private void SkillSpammerSpeedBoost(KeyConfig config, IntPtr windowHandle, bool noShift, bool mouseFlick)
+        private void SkillSpammerSpeedBoost(Client roClient, KeyConfig config, IntPtr windowHandle, bool noShift, bool mouseFlick)
         {
             bool isKeyPressed = ClientInput.IsKeyPressed(config.Key);
-            bool wasKeyPressed = keyPressedLastFrame.ContainsKey(config.Key) && keyPressedLastFrame[config.Key];
+            bool wasKeyPressed = keyPressedLastFrame.TryGetValue(config.Key, out bool pressed) && pressed;
+            keyPressedLastFrame[config.Key] = isKeyPressed;
 
             if (this.ToggleMode)
             {
@@ -159,62 +169,87 @@ namespace ORTools.Worker
                     toggledKeys[config.Key] = !toggledKeys[config.Key];
                 }
 
-                keyPressedLastFrame[config.Key] = isKeyPressed;
-
-                if (toggledKeys.ContainsKey(config.Key) && toggledKeys[config.Key])
+                if (toggledKeys.TryGetValue(config.Key, out bool isToggled) && isToggled)
                 {
-                    ExecuteSkillSpam(config, windowHandle, noShift, mouseFlick);
+                    ExecuteSkillSpam(roClient, config, windowHandle, noShift, mouseFlick);
                 }
             }
             else
             {
                 if (isKeyPressed)
                 {
-                    ExecuteSkillSpam(config, windowHandle, noShift, mouseFlick);
+                    ExecuteSkillSpam(roClient, config, windowHandle, noShift, mouseFlick);
                 }
             }
         }
 
-        private void ExecuteSkillSpam(KeyConfig config, IntPtr windowHandle, bool noShift, bool mouseFlick)
+        private void ExecuteSkillSpam(Client roClient, KeyConfig config, IntPtr windowHandle, bool noShift, bool mouseFlick)
         {
-            if (noShift)
+            bool shiftHeld = false;
+            try
             {
-                ClientInput.HoldShift();
-            }
-
-            ClientInput.SendKey(windowHandle, config.Key, blockOnAlt: false);
-
-            if (config.ClickActive && !config.IsIndeterminate)
-            {
-                Point cursorPos = ClientInput.GetCursorPos();
-
-                if (mouseFlick)
+                if (noShift)
                 {
-                    Point flickPos = new Point(
-                        cursorPos.X - Constants.MOUSE_DIAGONAL_MOVIMENTATION_PIXELS_AHK,
-                        cursorPos.Y - Constants.MOUSE_DIAGONAL_MOVIMENTATION_PIXELS_AHK
-                    );
-
-                    ClientInput.SetCursorPos(flickPos.X, flickPos.Y);
-                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)flickPos.X, (uint)flickPos.Y);
-                    Thread.Sleep(1);
-                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)flickPos.X, (uint)flickPos.Y);
-                    ClientInput.SetCursorPos(cursorPos.X, cursorPos.Y);
+                    ClientInput.HoldShift();
+                    shiftHeld = true;
                 }
-                else
+
+                ClientInput.SendKey(windowHandle, config.Key, blockOnAlt: false);
+
+                if (config.ClickActive && !config.IsIndeterminate)
                 {
-                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)cursorPos.X, (uint)cursorPos.Y);
-                    Thread.Sleep(1);
-                    ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)cursorPos.X, (uint)cursorPos.Y);
+                    Point cursorPos = ClientInput.GetCursorPos();
+
+                    if (mouseFlick)
+                    {
+                        Point flickPos = new Point(
+                            cursorPos.X - Constants.MOUSE_DIAGONAL_MOVIMENTATION_PIXELS_AHK,
+                            cursorPos.Y - Constants.MOUSE_DIAGONAL_MOVIMENTATION_PIXELS_AHK
+                        );
+
+                        ClientInput.SetCursorPos(flickPos.X, flickPos.Y);
+                        ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)flickPos.X, (uint)flickPos.Y);
+                        Thread.Sleep(1);
+                        ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)flickPos.X, (uint)flickPos.Y);
+                        ClientInput.SetCursorPos(cursorPos.X, cursorPos.Y);
+                    }
+                    else
+                    {
+                        ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTDOWN, (uint)cursorPos.X, (uint)cursorPos.Y);
+                        Thread.Sleep(1);
+                        ClientInput.SendRawMouseEvent(Constants.MOUSEEVENTF_LEFTUP, (uint)cursorPos.X, (uint)cursorPos.Y);
+                    }
+                }
+            }
+            finally
+            {
+                if (shiftHeld)
+                {
+                    ClientInput.ReleaseShift();
                 }
             }
 
-            if (noShift)
-            {
-                ClientInput.ReleaseShift();
-            }
+            SleepWithCancel(roClient, this.SpammerDelay);
+        }
 
-            Thread.Sleep(this.SpammerDelay);
+        private bool SleepWithCancel(Client roClient, int milliseconds)
+        {
+            if (milliseconds <= 0) return true;
+
+            int elapsed = 0;
+            while (elapsed < milliseconds)
+            {
+                if (!_running) return false;
+                if (!roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive())
+                    return false;
+                if (!ClientInput.IsForeground(roClient.MainWindowHandle))
+                    return false;
+
+                int slice = Math.Min(10, milliseconds - elapsed);
+                Thread.Sleep(slice);
+                elapsed += slice;
+            }
+            return true;
         }
 
         public void AddSkillSpammerEntry(string entryName, KeyConfig value)
@@ -229,6 +264,16 @@ namespace ORTools.Worker
 
         public void Stop()
         {
+            _running = false;
+            ResetToggleState();
+            keyPressedLastFrame.Clear();
+
+            if (this.NoShift)
+            {
+                try { ClientInput.ReleaseShift(); }
+                catch { }
+            }
+
             if (this.thread != null)
             {
                 ThreadRunner.Stop(this.thread);

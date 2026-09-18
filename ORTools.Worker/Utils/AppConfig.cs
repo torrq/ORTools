@@ -11,8 +11,9 @@ public static class AppConfig
         0 = Initial release
         1 = v1.0.9
         2 = v2.0.0
+        3 = v2.1.0 (ATK x DEF slot mapping & modernization)
     */
-    public static decimal ConfigVersion  = 2;
+    public static decimal ConfigVersion  = 3;
 #if SERVERMODE_HR
     public static int ServerMode = 1;   // 0 = MR, 1 = HR
 #else
@@ -24,7 +25,7 @@ public static class AppConfig
     public static bool SupportsFishing => IsMidRate;
 
     public static bool   preRelease    = true;
-    public static string preReleaseTag = "BETA-3";
+    public static string preReleaseTag = "BETA-5";
 
     // ── File paths ────────────────────────────────────────────────────────────
     public static string ProfileFolder = "Profiles\\";
@@ -34,9 +35,11 @@ public static class AppConfig
     public const double DefaultDebugViewHeight = 200;
     public const double MinDebugViewHeight = 10;
     public const double MaxDebugViewHeight = 1200;
-    public const double DefaultDebugViewFontSize = 11;
+    public const double DefaultDebugViewFontSize = 10;
     public const double MinDebugViewFontSize = 6;
     public const double MaxDebugViewFontSize = 32;
+    public const bool DefaultCustomThemeIsLight = false;
+    public const string DefaultCustomThemeColor = "#8B5CF6";
     public static string ServersFile   = ConfigFolder + "servers.json";
     public static string CitiesFile    = ConfigFolder + "cities.json";
     public static string DebugLogFile  = "debug.log";

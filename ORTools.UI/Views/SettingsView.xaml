@@ -139,6 +139,11 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Text="{DynamicResource S.Settings.Language}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
@@ -163,8 +168,130 @@
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
 
-                            <TextBlock Grid.Row="2" Text="{DynamicResource S.Settings.SongRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                            <!-- Custom Theme Options -->
+                            <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Margin="0,2,0,8"
+                                        Visibility="{Binding IsCustomTheme, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <!-- Mode Radio -->
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{DynamicResource S.Settings.CustomMode}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <RadioButton Content="{DynamicResource S.Settings.Dark}" IsChecked="{Binding CustomThemeIsDark, Mode=TwoWay}" GroupName="CustomModeRadio" Foreground="{DynamicResource AppTextBrush}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                        <RadioButton Content="{DynamicResource S.Settings.Light}" IsChecked="{Binding CustomThemeIsLight, Mode=TwoWay}" GroupName="CustomModeRadio" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Custom Color (Label, Swatch, Hex) -->
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{DynamicResource S.Settings.CustomColor}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <Border Width="18" Height="18" CornerRadius="3" Background="{Binding CustomThemeColor}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                        <TextBox Text="{Binding CustomThemeColor, UpdateSourceTrigger=PropertyChanged, Delay=300}" Width="65" Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="13" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Rainbow Hue Slider -->
+                                <Border Height="12" CornerRadius="4" Margin="0,2,0,2">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                            <GradientStop Color="#FF0000" Offset="0.00" />
+                                            <GradientStop Color="#FFFF00" Offset="0.17" />
+                                            <GradientStop Color="#00FF00" Offset="0.33" />
+                                            <GradientStop Color="#00FFFF" Offset="0.50" />
+                                            <GradientStop Color="#0000FF" Offset="0.67" />
+                                            <GradientStop Color="#FF00FF" Offset="0.83" />
+                                            <GradientStop Color="#FF0000" Offset="1.00" />
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Slider Minimum="0" Maximum="360" Value="{Binding CustomThemeHue, Mode=TwoWay}"
+                                            Background="Transparent" BorderThickness="0"
+                                            VerticalAlignment="Center" Margin="-6,0,-6,0"/>
+                                </Border>
+
+                                <!-- Curated Preset Swatches -->
+                                <WrapPanel HorizontalAlignment="Center" Margin="0,6,0,0">
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#8B5CF6" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Violet (#8B5CF6)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#8B5CF6" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#EC4899" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Pink (#EC4899)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#EC4899" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#F43F5E" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Rose (#F43F5E)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#F43F5E" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#F97316" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Orange (#F97316)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#F97316" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#EAB308" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Amber (#EAB308)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#EAB308" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#10B981" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Emerald (#10B981)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#10B981" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#06B6D4" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Cyan (#06B6D4)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#06B6D4" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#3B82F6" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Blue (#3B82F6)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#3B82F6" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#6366F1" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Indigo (#6366F1)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#6366F1" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <Button Command="{Binding SelectPresetColorCommand}" CommandParameter="#64748B" Width="18" Height="18" Margin="3,2" Cursor="Hand" ToolTip="Slate (#64748B)">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="#64748B" CornerRadius="3" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"/>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </WrapPanel>
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="3" Text="{DynamicResource S.Settings.SongRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SongRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
                                      helpers:InputHelper.NumericMax="100"
                                      helpers:InputHelper.NumericMin="1"
@@ -172,8 +299,8 @@
                                      TextChanged="RowsTextBox_TextChanged"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="14" Margin="0,0,0,6"/>
 
-                            <TextBlock Grid.Row="3" Text="{DynamicResource S.Settings.MacroSwitchRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
-                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                            <TextBlock Grid.Row="4" Text="{DynamicResource S.Settings.MacroSwitchRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
+                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding MacroSwitchRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
                                      helpers:InputHelper.NumericMax="100"
                                      helpers:InputHelper.NumericMin="1"
@@ -181,8 +308,8 @@
                                      TextChanged="RowsTextBox_TextChanged"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="14" Margin="0,0,0,6"/>
 
-                            <TextBlock Grid.Row="4" Text="{DynamicResource S.Settings.AtkDefRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
-                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
+                            <TextBlock Grid.Row="5" Text="{DynamicResource S.Settings.AtkDefRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
+                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding AtkDefRows, UpdateSourceTrigger=PropertyChanged, Delay=500}"
                                      helpers:InputHelper.IsNumericInput="True"
                                      helpers:InputHelper.NumericMax="100"
                                      helpers:InputHelper.NumericMin="1"
@@ -190,8 +317,8 @@
                                      TextChanged="RowsTextBox_TextChanged"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="14" Margin="0,0,0,6"/>
 
-                            <TextBlock Grid.Row="5" Text="{DynamicResource S.Settings.DefaultToggleKey}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
+                            <TextBlock Grid.Row="6" Text="{DynamicResource S.Settings.DefaultToggleKey}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
+                            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                      PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
                                      Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Right" FontSize="14"/>
 

@@ -682,6 +682,9 @@ namespace ORTools.Worker
         RED_HERB_ACTIVATOR = 1170,
         BLUE_HERB_ACTIVATOR = 1171,
 
+        [Description("Unlock Bubblegum HR")]
+        UNLOCK_BUBBLEGUM_HR = 1174,
+
         [Description("Research Report")]
         RESEARCHREPORT = 1248,
 
@@ -819,8 +822,8 @@ namespace ORTools.Worker
         [Description("LUK Tonic")]
         LUK_TONIC = 1455,
 
-        [Description("Unlock Bubble Gum")]
-        UNLOCK_BUBBLEGUM = 1456,
+        [Description("Unlock Bubble Gum MR")]
+        UNLOCK_BUBBLEGUM_MR = 1456,
 
         [Description("SVIP Bonus")]
         SVIP_BONUS = 1457,
