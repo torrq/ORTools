@@ -24,38 +24,62 @@ public partial class DebuffsViewModel : ObservableObject
         _worker.StatusRecoveryConfigReceived += OnStatusConfigReceived;
         _worker.DebuffRecoveryConfigReceived += OnDebuffConfigReceived;
 
-        // Initialize all known debuffs so they appear even if they don't have keys configured
+        // Initialize lists so they appear immediately with correct icons and order
+        InitializeStatusList();
         InitializeDebuffList();
+    }
+
+    private void InitializeStatusList()
+    {
+        var items = new[]
+        {
+            ("GreenPotion", "Green Potion"),
+            ("Panacea", "Panacea"),
+            ("RoyalJelly", "Royal Jelly")
+        };
+
+        foreach (var (name, displayName) in items)
+        {
+            var vm = new StatusRecoveryItemViewModel
+            {
+                Name = name,
+                DisplayName = displayName,
+                Key = "None"
+            };
+            vm.OnKeyUpdated += (sender, key) =>
+            {
+                if (!_isUpdatingFromServer && sender is StatusRecoveryItemViewModel itemVm)
+                    _worker.Send(new UpdateStatusRecoveryItemCommand(itemVm.Name, key));
+            };
+            StatusRecoveryItems.Add(vm);
+        }
     }
 
     private void InitializeDebuffList()
     {
         var knownDebuffs = new[]
         {
-            ("Burning", "BURNING"),
-            ("Chaos / Confusion", "CONFUSION"),
-            ("Critical Wound", "NPC_CRITICALWOUND"),
-            ("Curse", "CURSE"),
-            ("Decrease AGI", "AL_DECAGI"),
-            ("Freezing", "FREEZING"),
-//            ("Frozen", "FROZEN"),
-            ("Poison", "POISON"),
-            ("Silence", "SILENCE"),
-            ("Sit", "SIT"),
-            ("Deep Sleep", "DEEP_SLEEP"),
-            ("Sleep", "SLEEP"),
-            ("Slow Cast", "NPC_SLOWCAST"),
-//            ("Stone Curse (initial stage)", "STONECURSE_ING"),
-//            ("Stone Curse (petrified)", "STONECURSE"),
-//            ("Stun", "STUN")
+            ("Burning", "BURNING", "burning"),
+            ("Chaos / Confusion", "CONFUSION", "chaos"),
+            ("Critical Wound", "NPC_CRITICALWOUND", "critical_wound"),
+            ("Curse", "CURSE", "curse"),
+            ("Decrease AGI", "AL_DECAGI", "decrease_agi"),
+            ("Freezing", "FREEZING", "freezing"),
+            ("Poison", "POISON", "poison_status"),
+            ("Silence", "SILENCE", "silence"),
+            ("Sit", "SIT", "sit"),
+            ("Deep Sleep", "DEEP_SLEEP", "deep_sleep"),
+            ("Sleep", "SLEEP", "sleep"),
+            ("Slow Cast", "NPC_SLOWCAST", "slow_cast"),
         };
 
-        foreach (var (displayName, id) in knownDebuffs)
+        foreach (var (displayName, id, icon) in knownDebuffs)
         {
             var vm = new DebuffRecoveryItemViewModel
             {
                 Name = id,
                 DisplayName = displayName,
+                IconName = icon,
                 Key = "None"
             };
             vm.OnKeyUpdated += (sender, key) =>
@@ -78,36 +102,11 @@ public partial class DebuffsViewModel : ObservableObject
             foreach (var item in config.Items)
             {
                 var vm = StatusRecoveryItems.FirstOrDefault(x => x.Name == item.Name);
-                if (vm == null)
-                {
-                    vm = new StatusRecoveryItemViewModel
-                    {
-                        Name = item.Name,
-                        DisplayName = GetStatusDisplayName(item.Name),
-                        Key = item.Key
-                    };
-                    vm.OnKeyUpdated += (sender, key) =>
-                    {
-                        if (!_isUpdatingFromServer && sender is StatusRecoveryItemViewModel itemVm)
-                            _worker.Send(new UpdateStatusRecoveryItemCommand(itemVm.Name, key));
-                    };
-                    StatusRecoveryItems.Add(vm);
-                }
-                else
+                if (vm != null)
                 {
                     vm.Key = item.Key;
                 }
             }
-
-            // Sort items to match requested order: Green Potion, Panacea, Royal Jelly
-            var greenPotion = StatusRecoveryItems.FirstOrDefault(x => x.Name == "GreenPotion");
-            var panacea = StatusRecoveryItems.FirstOrDefault(x => x.Name == "Panacea");
-            var royalJelly = StatusRecoveryItems.FirstOrDefault(x => x.Name == "RoyalJelly");
-
-            StatusRecoveryItems.Clear();
-            if (greenPotion != null) StatusRecoveryItems.Add(greenPotion);
-            if (panacea != null) StatusRecoveryItems.Add(panacea);
-            if (royalJelly != null) StatusRecoveryItems.Add(royalJelly);
 
             _isUpdatingFromServer = false;
         });
@@ -149,13 +148,6 @@ public partial class DebuffsViewModel : ObservableObject
             _worker.Send(new UpdateStatusRecoverySettingsCommand(value));
             _worker.Send(new UpdateDebuffRecoverySettingsCommand(value));
         }
-    }
-
-    private string GetStatusDisplayName(string name)
-    {
-        if (name == "RoyalJelly") return "Royal Jelly";
-        if (name == "GreenPotion") return "Green Potion";
-        return name;
     }
 }
 

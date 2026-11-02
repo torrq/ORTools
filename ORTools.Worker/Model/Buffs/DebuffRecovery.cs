@@ -15,6 +15,7 @@ namespace ORTools.Worker
         public static string ACTION_NAME_DEBUFF_RECOVERY = "DebuffsRecovery";
 
         private ThreadRunner thread;
+        private volatile bool _running;
         public ConcurrentDictionary<EffectStatusIDs, Keys> buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>();
         public int Delay { get; set; } = 50;
 
@@ -43,9 +44,10 @@ namespace ORTools.Worker
 
         public ThreadRunner DebuffRecoveryThread(Client c)
         {
-            Client roClient = ClientSingleton.GetClient();
             return new ThreadRunner(_ =>
             {
+                if (!_running) return -1;
+
                 try
                 {
                     // Check if client is still valid before proceeding
@@ -56,6 +58,21 @@ namespace ORTools.Worker
                         return -1; // Signal thread to stop
                     }
 
+                    // Respect Pause in Town setting
+                    var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+                    if (prefs != null && prefs.StopBuffsCity && Server.GetCityList().Contains(c.ReadCurrentMapCached()))
+                    {
+                        SleepResponsive(Math.Max(100, this.Delay));
+                        return 0;
+                    }
+
+                    // Do not execute if player is typing in chat or dead
+                    if (c.IsTextInputActive() || c.IsDead())
+                    {
+                        SleepResponsive(Math.Max(50, this.Delay));
+                        return 0;
+                    }
+
                     // Check if we've had too many consecutive errors
                     if (consecutiveErrors >= maxConsecutiveErrors)
                     {
@@ -63,13 +80,13 @@ namespace ORTools.Worker
                         if (timeSinceLastSuccess.TotalSeconds > 30) // Wait 30 seconds before retrying
                         {
                             DebugLogger.Debug($"DebuffRecovery: Too many consecutive errors ({consecutiveErrors}), waiting before retry...");
-                            Thread.Sleep(5000); // Wait 5 seconds
+                            SleepResponsive(5000);
                             consecutiveErrors = 0; // Reset error count
                             c.RefreshLoginStatus(); // Force refresh process status
                         }
                         else
                         {
-                            Thread.Sleep(this.Delay);
+                            SleepResponsive(this.Delay);
                             return 0;
                         }
                     }
@@ -85,11 +102,13 @@ namespace ORTools.Worker
                     }
                     else
                     {
-                        for (int i = 1; i <= Constants.MAX_BUFF_LIST_INDEX_SIZE - 1; i++)
+                        var pressedKeysThisCycle = new HashSet<Keys>();
+
+                        for (int i = 1; i < Constants.MAX_BUFF_LIST_INDEX_SIZE; i++)
                         {
                             uint currentStatus = statusBuffer[i];
 
-                            if (currentStatus == uint.MaxValue)
+                            if (!StatusUtils.IsValidStatus(currentStatus) || currentStatus == 0)
                             {
                                 continue;
                             }
@@ -98,10 +117,9 @@ namespace ORTools.Worker
                             EffectStatusIDs status = (EffectStatusIDs)currentStatus;
 
                             // Check if we have a mapping for this status
-                            if (buffMapping.ContainsKey(status))
+                            if (buffMapping.TryGetValue(status, out Keys key) && WorkerNotifier.IsValidKey(key))
                             {
-                                Keys key = buffMapping[status];
-                                if (Enum.IsDefined(typeof(EffectStatusIDs), currentStatus))
+                                if (pressedKeysThisCycle.Add(key))
                                 {
                                     this.UseStatusRecovery(key);
                                     DebugLogger.Debug($"DebuffRecovery: Used key {key} for status {status}");
@@ -134,7 +152,7 @@ namespace ORTools.Worker
                     DebugLogger.Debug($"DebuffRecovery: Thread exception: {ex.Message}");
                 }
 
-                Thread.Sleep(this.Delay);
+                SleepResponsive(this.Delay);
                 return 0;
             }, "DebuffRecovery");
         }
@@ -213,6 +231,7 @@ namespace ORTools.Worker
             Client roClient = ClientSingleton.GetClient();
             if (roClient != null)
             {
+                _running = true;
                 // Reset error tracking
                 consecutiveErrors = 0;
                 lastSuccessfulRead = DateTime.Now;
@@ -271,6 +290,7 @@ namespace ORTools.Worker
 
         public void Stop()
         {
+            _running = false;
             if (this.thread != null)
             {
                 ThreadRunner.Stop(this.thread);
@@ -286,12 +306,24 @@ namespace ORTools.Worker
                 var client = ClientSingleton.GetClient();
                 if (client?.Process != null && !client.Process.HasExited && !client.IsTextInputActive() && !client.IsDead())
                 {
-                    ClientInput.SendKey(client.Process.MainWindowHandle, key);
+                    ClientInput.SendKey(client.MainWindowHandle, key);
+                    StatusBufferCache.Invalidate();
                 }
             }
             catch (Exception ex)
             {
                 DebugLogger.Debug($"DebuffRecovery: Error using status recovery key {key}: {ex.Message}");
+            }
+        }
+
+        private void SleepResponsive(int ms)
+        {
+            int elapsed = 0;
+            while (_running && elapsed < ms)
+            {
+                int step = Math.Min(25, ms - elapsed);
+                Thread.Sleep(step);
+                elapsed += step;
             }
         }
 

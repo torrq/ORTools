@@ -776,13 +776,38 @@ namespace ORTools.Worker
             return snap.Snapshot.CurrentHp == 1;
         }
 
+        private bool _cachedTextInputActive;
+        private long _lastTextInputCheckTick;
+        private readonly byte[] _textInputBuffer = new byte[4];
+        private readonly object _textInputLock = new();
+
         public bool IsTextInputActive()
         {
             if (!ConfigGlobal.GetConfig().PauseWhenChatting) return false;
             int addr = Model.MemoryAddresses.Current.TextInputActiveAddress;
             if (addr == 0) return false;
-            byte[] bytes = PMR.ReadProcessMemory((IntPtr)addr, 4u, throwOnError: false);
-            return bytes != null && bytes.Length >= 1 && bytes[0] != 0;
+            long now = Environment.TickCount64;
+            if (now - Volatile.Read(ref _lastTextInputCheckTick) < 15)
+            {
+                return Volatile.Read(ref _cachedTextInputActive);
+            }
+
+            lock (_textInputLock)
+            {
+                now = Environment.TickCount64;
+                if (now - _lastTextInputCheckTick < 15)
+                {
+                    return _cachedTextInputActive;
+                }
+
+                PMR.ReadProcessMemory((IntPtr)addr, 4u, _textInputBuffer, out int bytesRead);
+                bool active = bytesRead >= 1 && _textInputBuffer[0] != 0;
+
+                Volatile.Write(ref _cachedTextInputActive, active);
+                Volatile.Write(ref _lastTextInputCheckTick, now);
+                return active;
+            }
+
         }
 
         // Fixed coordinates addresses (MR only — HR unknown)

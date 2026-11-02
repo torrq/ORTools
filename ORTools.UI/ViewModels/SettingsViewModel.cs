@@ -74,6 +74,31 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private int _macroSwitchRows = 4;
     [ObservableProperty] private int _atkDefRows = 2;
     [ObservableProperty] private string _defaultToggleStateKey = "None";
+    [ObservableProperty] private HoldMultiKeyMode _holdMultiKeyMode = HoldMultiKeyMode.RoundRobinAll;
+
+    public bool IsRoundRobinMode
+    {
+        get => HoldMultiKeyMode == HoldMultiKeyMode.RoundRobinAll;
+        set
+        {
+            if (value && HoldMultiKeyMode != HoldMultiKeyMode.RoundRobinAll)
+            {
+                HoldMultiKeyMode = HoldMultiKeyMode.RoundRobinAll;
+            }
+        }
+    }
+
+    public bool IsLastPressedMode
+    {
+        get => HoldMultiKeyMode == HoldMultiKeyMode.LastPressedWins;
+        set
+        {
+            if (value && HoldMultiKeyMode != HoldMultiKeyMode.LastPressedWins)
+            {
+                HoldMultiKeyMode = HoldMultiKeyMode.LastPressedWins;
+            }
+        }
+    }
 
     private UpdateResult? _lastUpdateResult;
 
@@ -141,6 +166,9 @@ public partial class SettingsViewModel : ObservableObject
             Theme = update.Theme;
             CustomThemeIsLight = update.CustomThemeIsLight;
             CustomThemeColor = update.CustomThemeColor;
+            HoldMultiKeyMode = update.HoldMultiKeyMode;
+            OnPropertyChanged(nameof(IsRoundRobinMode));
+            OnPropertyChanged(nameof(IsLastPressedMode));
             OnPropertyChanged(nameof(IsCustomTheme));
             OnPropertyChanged(nameof(CustomThemeIsDark));
             _suppressUpdates = false;
@@ -268,6 +296,13 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnDefaultToggleStateKeyChanged(string value) => SendGlobalUpdate();
 
+    partial void OnHoldMultiKeyModeChanged(HoldMultiKeyMode value)
+    {
+        OnPropertyChanged(nameof(IsRoundRobinMode));
+        OnPropertyChanged(nameof(IsLastPressedMode));
+        SendGlobalUpdate();
+    }
+
     partial void OnStopBuffsCityChanged(bool value) => SendProfileUpdate();
     partial void OnSoundEnabledChanged(bool value) => SendProfileUpdate();
     partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendProfileUpdate();
@@ -301,7 +336,8 @@ public partial class SettingsViewModel : ObservableObject
             CheckForUpdatesOnStartup: CheckForUpdatesOnStartup,
             Theme: Theme,
             CustomThemeIsLight: CustomThemeIsLight,
-            CustomThemeColor: CustomThemeColor
+            CustomThemeColor: CustomThemeColor,
+            HoldMultiKeyMode: HoldMultiKeyMode
         );
         _worker.Send(cmd);
     }

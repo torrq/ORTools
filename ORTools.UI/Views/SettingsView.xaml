@@ -129,8 +129,8 @@
                         </GroupBox.Header>
                         <Grid Margin="10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="160" />
-                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="150" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -174,8 +174,8 @@
                                 <!-- Mode Radio -->
                                 <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="160"/>
-                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{DynamicResource S.Settings.CustomMode}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center"/>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -187,8 +187,8 @@
                                 <!-- Custom Color (Label, Swatch, Hex) -->
                                 <Grid Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="160"/>
-                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="{DynamicResource S.Settings.CustomColor}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center"/>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -297,6 +297,7 @@
                                      helpers:InputHelper.NumericMin="1"
                                      PreviewKeyDown="SongRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
+                                     Width="70"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="14" Margin="0,0,0,6"/>
 
                             <TextBlock Grid.Row="4" Text="{DynamicResource S.Settings.MacroSwitchRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
@@ -306,6 +307,7 @@
                                      helpers:InputHelper.NumericMin="1"
                                      PreviewKeyDown="MacroSwitchRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
+                                     Width="70"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="14" Margin="0,0,0,6"/>
 
                             <TextBlock Grid.Row="5" Text="{DynamicResource S.Settings.AtkDefRows}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,0,6" />
@@ -315,11 +317,13 @@
                                      helpers:InputHelper.NumericMin="1"
                                      PreviewKeyDown="AtkDefRows_PreviewKeyDown"
                                      TextChanged="RowsTextBox_TextChanged"
+                                     Width="70"
                                      Style="{StaticResource NumericTextBoxStyle}" HorizontalAlignment="Right" FontSize="14" Margin="0,0,0,6"/>
 
                             <TextBlock Grid.Row="6" Text="{DynamicResource S.Settings.DefaultToggleKey}" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" />
                             <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding DefaultToggleStateKey, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                      PreviewKeyDown="DefaultToggleKey_PreviewKeyDown"
+                                     Width="70"
                                      Style="{StaticResource KeyTextBoxStyle}" HorizontalAlignment="Right" FontSize="14"/>
 
                         </Grid>
@@ -407,6 +411,36 @@
                         <StackPanel Margin="10">
                             <CheckBox Margin="0,0,0,12" Content="{DynamicResource S.Settings.PauseWhenChatting}" IsChecked="{Binding PauseWhenChatting}" Foreground="{DynamicResource AppTextBrush}"/>
                             <CheckBox Margin="0,0,0,0" Content="{DynamicResource S.Settings.PauseWhenDead}" IsChecked="{Binding PauseWhenDead}" Foreground="{DynamicResource AppTextBrush}"/>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE2B4;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource S.Settings.MultiKeyMode}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </GroupBox.Header>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="{DynamicResource S.Settings.MultiKeyDesc}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="12" Margin="0,0,0,10"/>
+
+                            <RadioButton GroupName="MultiKeyModeGroup" IsChecked="{Binding IsRoundRobinMode, Mode=TwoWay}" Margin="0,0,0,8">
+                                <RadioButton.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource S.Settings.MultiKeyRoundRobin}" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}"/>
+                                        <TextBlock Text="{DynamicResource S.Settings.MultiKeyRoundRobinDesc}" FontSize="12" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton.Content>
+                            </RadioButton>
+
+                            <RadioButton GroupName="MultiKeyModeGroup" IsChecked="{Binding IsLastPressedMode, Mode=TwoWay}" Margin="0,0,0,4">
+                                <RadioButton.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource S.Settings.MultiKeyLastPressed}" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}"/>
+                                        <TextBlock Text="{DynamicResource S.Settings.MultiKeyLastPressedDesc}" FontSize="12" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton.Content>
+                            </RadioButton>
                         </StackPanel>
                     </GroupBox>
 

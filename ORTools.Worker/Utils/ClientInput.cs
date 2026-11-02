@@ -6,6 +6,16 @@ namespace ORTools.Worker;
 
 public static class ClientInput
 {
+    /// <summary>
+    /// Configurable hold duration for simulated keystrokes (default 20ms).
+    /// </summary>
+    public static int KeyHoldDurationMs { get; set; } = 20;
+
+    /// <summary>
+    /// Configurable hold duration for simulated left/right mouse clicks (default 25ms).
+    /// </summary>
+    public static int ClickHoldDurationMs { get; set; } = 25;
+
     public static bool SendKey(IntPtr hWnd, Keys key, bool blockOnAlt = true)
     {
         if (hWnd == IntPtr.Zero || key == Keys.None) return false;
@@ -14,7 +24,7 @@ public static class ClientInput
         // Keep the key down briefly so older RO clients reliably process the
         // hotkey and transition into skill-targeting mode.
         Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, Win32Interop.CreateLParam(key, true));
-        Thread.Sleep(20);
+        if (KeyHoldDurationMs > 0) Thread.Sleep(KeyHoldDurationMs);
         Win32Interop.PostMessage(hWnd, Constants.WM_KEYUP_MSG_ID, key, Win32Interop.CreateLParam(key, false));
         return true;
     }
@@ -23,24 +33,49 @@ public static class ClientInput
     {
         var client = ClientSingleton.GetClient();
         if (client?.Process != null && !client.Process.HasExited)
-            return SendKey(client.Process.MainWindowHandle, key, blockOnAlt);
+            return SendKey(client.MainWindowHandle, key, blockOnAlt);
         return false;
     }
 
-    public static void SendLeftClick(IntPtr hWnd)
+    public static void SendLeftClick(IntPtr hWnd, uint timeoutMs = 100)
     {
         if (hWnd == IntPtr.Zero || !IsWindowVisible(hWnd)) return;
-        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONDOWN, (IntPtr)1, IntPtr.Zero);
-        Thread.Sleep(25);
-        Win32Interop.SendMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+        Win32Interop.SendMessageTimeout(hWnd, Constants.WM_LBUTTONDOWN, (IntPtr)1, IntPtr.Zero, Win32Interop.SMTO_ABORTIFHUNG, timeoutMs, out _);
+        if (ClickHoldDurationMs > 0) Thread.Sleep(ClickHoldDurationMs);
+        Win32Interop.SendMessageTimeout(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero, Win32Interop.SMTO_ABORTIFHUNG, timeoutMs, out _);
     }
 
-    public static void SendRightClick(IntPtr hWnd)
+    /// <summary>
+    /// Fast-path keystroke for high-frequency spam loops (Skill Spammer, ATK x DEF).
+    /// Posts WM_KEYDOWN with lParam = 0 and no immediate WM_KEYUP, matching legacy v1.0.10 behavior
+    /// so the RO client never clears the key-down state in the same frame before transitioning
+    /// into skill-targeting mode.
+    /// </summary>
+    public static bool SendKeyFast(IntPtr hWnd, Keys key)
+    {
+        if (hWnd == IntPtr.Zero || key == Keys.None) return false;
+        Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, 0);
+        return true;
+    }
+
+    /// <summary>
+    /// Fast-path left click for high-frequency spam loops. Uses PostMessage (non-blocking) with
+    /// lParam = 0 and a 1ms hold, matching legacy v1.0.10 ATK x DEF behavior.
+    /// </summary>
+    public static void SendLeftClickFast(IntPtr hWnd)
+    {
+        if (hWnd == IntPtr.Zero) return;
+        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
+        Thread.Sleep(1);
+        Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+    }
+
+    public static void SendRightClick(IntPtr hWnd, uint timeoutMs = 100)
     {
         if (hWnd == IntPtr.Zero || !IsWindowVisible(hWnd)) return;
-        Win32Interop.SendMessage(hWnd, Constants.WM_RBUTTONDOWN, (IntPtr)2, IntPtr.Zero);
-        Thread.Sleep(25);
-        Win32Interop.SendMessage(hWnd, Constants.WM_RBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+        Win32Interop.SendMessageTimeout(hWnd, Constants.WM_RBUTTONDOWN, (IntPtr)2, IntPtr.Zero, Win32Interop.SMTO_ABORTIFHUNG, timeoutMs, out _);
+        if (ClickHoldDurationMs > 0) Thread.Sleep(ClickHoldDurationMs);
+        Win32Interop.SendMessageTimeout(hWnd, Constants.WM_RBUTTONUP, IntPtr.Zero, IntPtr.Zero, Win32Interop.SMTO_ABORTIFHUNG, timeoutMs, out _);
     }
 
     public static void HoldAlt()

@@ -94,6 +94,7 @@ Even though they run in the same process, the WorkerCore and UI communicate stri
 - Keep bindings clean. WPF does not use `x:DataType` compiled bindings by default.
 - Key inputs should use `Style="{StaticResource KeyTextBoxStyle}"` combined with the `{StaticResource KeyToStringConverter}` to pretty-print key names (e.g., "NP/" instead of "Divide").
 - **Icons**: We have the Lucide font available for icons (`FontFamily="pack://application:,,,/Fonts/#lucide"`). Use this for UI iconography.
+- **Building & Publishing**: When building the project, build by immediately publishing to save time and produce the single-file executable: `dotnet publish ORTools.UI\ORTools.UI.csproj -c Release /p:PublishSingleFile=true /p:SelfContained=false`.
 
 ### Worker
 - All model instances live on `WorkerCore` as fields/properties.

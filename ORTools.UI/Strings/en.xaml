@@ -158,6 +158,12 @@
     <sys:String x:Key="S.Settings.GeneralBehavior">General Behavior</sys:String>
     <sys:String x:Key="S.Settings.PauseWhenChatting">Pause when chatting</sys:String>
     <sys:String x:Key="S.Settings.PauseWhenDead">Pause when dead</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyMode">Multi-Key Hold Mode</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyDesc">Applies to Skill Spammer &amp; ATK x DEF when holding multiple keys:</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyRoundRobin">Round Robin (All Keys)</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyRoundRobinDesc">Casts all held keys in rotation.</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyLastPressed">Last Pressed (Priority)</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyLastPressedDesc">Casts only the newest held key.</sys:String>
 
     <!-- Settings — Developer -->
     <sys:String x:Key="S.Settings.DeveloperTools">Developer Tools</sys:String>

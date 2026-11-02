@@ -28,6 +28,7 @@ namespace ORTools.Worker
             migrated |= MigrateSkillSpammerNumberKeys(profile);
             migrated |= MigrateMacroSwitchSteps(profile);
             migrated |= MigrateAtkDef(profile);
+            migrated |= MigrateDebuffDelays(profile);
 
             if (profile.UserPreferences != null && profile.UserPreferences.ConfigVersion < AppConfig.ConfigVersion)
             {
@@ -289,6 +290,33 @@ namespace ORTools.Worker
             }
 
             return "None";
+        }
+
+        /// <summary>
+        /// Migration: Debuffs & Status Recovery delay synchronization
+        /// 
+        /// Reason:
+        /// The Debuffs tab in WPF UI exposes a single unified Delay setting that controls
+        /// both StatusRecovery and DebuffRecovery. If an existing profile has divergent delays
+        /// (e.g. StatusRecovery: 100, DebuffsRecovery: 50), synchronize them to ensure the UI
+        /// and background workers operate on the exact same delay interval.
+        /// </summary>
+        private static bool MigrateDebuffDelays(Profile profile)
+        {
+            if (profile.StatusRecovery == null || profile.DebuffsRecovery == null) return false;
+
+            if (profile.StatusRecovery.Delay != profile.DebuffsRecovery.Delay)
+            {
+                int targetDelay = profile.StatusRecovery.Delay != 50 
+                    ? profile.StatusRecovery.Delay 
+                    : profile.DebuffsRecovery.Delay;
+
+                profile.StatusRecovery.Delay = targetDelay;
+                profile.DebuffsRecovery.Delay = targetDelay;
+                return true;
+            }
+
+            return false;
         }
     }
 }

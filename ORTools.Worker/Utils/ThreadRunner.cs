@@ -8,6 +8,12 @@ public class ThreadRunner
 
     public int IterationDelay { get; set; } = 5;
 
+    public ThreadPriority Priority
+    {
+        get => _thread.Priority;
+        set => _thread.Priority = value;
+    }
+
     public ThreadRunner(Func<int, int> toRun, string name = "Unnamed")
     {
         _thread = new Thread(() =>
@@ -55,5 +61,11 @@ public class ThreadRunner
     {
         _running = false;
         _suspendEvent.Set();
+    }
+
+    public bool Join(int millisecondsTimeout)
+    {
+        if (_thread == Thread.CurrentThread) return true;
+        return _thread.Join(millisecondsTimeout);
     }
 }

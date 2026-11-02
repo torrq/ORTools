@@ -53,7 +53,13 @@ public class AtkDef : IAction
     private static readonly string[] SlotOrder = ["Head", "Body", "Weapon", "Shield", "Garment", "Shoes"];
 
     private ThreadRunner? _thread;
+    private CancellationTokenSource? _cts;
     private volatile bool _running = false;
+
+    public HoldMultiKeyMode HoldMultiKeyMode => ConfigGlobal.GetConfig().HoldMultiKeyMode;
+
+    private readonly ConcurrentDictionary<Keys, bool> _keyPressedLastFrame = new();
+    private readonly ConcurrentDictionary<Keys, long> _keyPressTimestamps = new();
     
     [JsonProperty("equipConfigs", ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public List<AtkDefEquipConfig> EquipConfigs { get; set; } = new();
@@ -80,7 +86,15 @@ public class AtkDef : IAction
         {
             Stop();
             _running = true;
-            _thread = new ThreadRunner(_ => AtkDefThread(client), "ATKDEF") { IterationDelay = 1 };
+            _cts = new CancellationTokenSource();
+            CancellationToken ct = _cts.Token;
+            _keyPressedLastFrame.Clear();
+            _keyPressTimestamps.Clear();
+            _thread = new ThreadRunner(_ => AtkDefThread(client, ct), "ATKDEF")
+            {
+                IterationDelay = 1,
+                Priority = ThreadPriority.AboveNormal
+            };
             ThreadRunner.Start(_thread);
         }
     }
@@ -88,12 +102,17 @@ public class AtkDef : IAction
     public void Stop()
     {
         _running = false;
+        _cts?.Cancel();
+        _keyPressedLastFrame.Clear();
+        _keyPressTimestamps.Clear();
         if (_thread != null)
         {
             ThreadRunner.Stop(_thread);
             _thread.Terminate();
+            _thread.Join(500);
             _thread = null;
         }
+        _cts = null;
     }
 
     public void EnsureCorrectRowCount(int count)
@@ -147,126 +166,144 @@ public class AtkDef : IAction
         }
     }
 
-    private void SleepWithCancel(Client roClient, int totalMs)
+    private void UpdateKeyEdges(Keys key, out bool isPressed, out bool justPressed)
     {
-        if (totalMs <= 0) return;
-        int elapsed = 0;
-        while (_running && elapsed < totalMs)
+        isPressed = ClientInput.IsKeyPressed(key);
+        bool wasPressed = _keyPressedLastFrame.TryGetValue(key, out bool pressed) && pressed;
+        _keyPressedLastFrame[key] = isPressed;
+
+        justPressed = isPressed && !wasPressed;
+        if (justPressed)
         {
-            int chunk = Math.Min(25, totalMs - elapsed);
-            Thread.Sleep(chunk);
-            elapsed += chunk;
-            if (!roClient.IsProcessRunning() || roClient.IsDead()) break;
+            _keyPressTimestamps[key] = Stopwatch.GetTimestamp();
+        }
+        else if (!isPressed)
+        {
+            _keyPressTimestamps.TryRemove(key, out _);
         }
     }
 
-    private int AtkDefThread(Client roClient)
+    private bool WaitInterruptibly(int ms, CancellationToken ct, Func<bool> keepGoing)
     {
-        if (!_running) return 0;
+        if (ms <= 0) return keepGoing();
+
+        long startTick = Stopwatch.GetTimestamp();
+        double targetTicks = ms * (Stopwatch.Frequency / 1000.0);
+
+        while (!ct.IsCancellationRequested && _running)
+        {
+            if (!keepGoing()) return false;
+
+            long elapsedTicks = Stopwatch.GetTimestamp() - startTick;
+            double remainingTicks = targetTicks - elapsedTicks;
+            if (remainingTicks <= 0) break;
+
+            double remainingMs = (remainingTicks * 1000.0) / Stopwatch.Frequency;
+            if (remainingMs <= 1.5)
+            {
+                Thread.SpinWait(10);
+                continue;
+            }
+
+            int sleepChunk = (int)Math.Min(10.0, remainingMs - 1.0);
+            if (sleepChunk > 0)
+            {
+                ct.WaitHandle.WaitOne(sleepChunk);
+            }
+        }
+
+        return !ct.IsCancellationRequested && _running && keepGoing();
+    }
+
+    private void EquipAtkItems(Client roClient, IntPtr hWnd, AtkDefEquipConfig config, CancellationToken ct)
+    {
+        foreach (string slot in SlotOrder)
+        {
+            if (!_running || ct.IsCancellationRequested || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive()) break;
+
+            if (config.AtkKeys.TryGetValue(slot, out string? keyStr)
+                && !string.IsNullOrEmpty(keyStr)
+                && Enum.TryParse<Keys>(keyStr, out var key)
+                && WorkerNotifier.IsValidKey(key))
+            {
+                ClientInput.SendKeyFast(hWnd, key);
+                if (!WaitInterruptibly(config.SwitchDelay, ct, () =>
+                    _running && !ct.IsCancellationRequested && ClientInput.IsForeground(hWnd) && !roClient.IsDead() && !roClient.IsTextInputActive() && roClient.IsProcessRunning()))
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    private void EquipDefItems(Client roClient, IntPtr hWnd, AtkDefEquipConfig config, CancellationToken ct)
+    {
+        foreach (string slot in SlotOrder)
+        {
+            if (!_running || ct.IsCancellationRequested || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive()) break;
+
+            if (config.DefKeys.TryGetValue(slot, out string? keyStr)
+                && !string.IsNullOrEmpty(keyStr)
+                && Enum.TryParse<Keys>(keyStr, out var key)
+                && WorkerNotifier.IsValidKey(key))
+            {
+                ClientInput.SendKeyFast(hWnd, key);
+                if (!WaitInterruptibly(config.SwitchDelay, ct, () =>
+                    _running && !ct.IsCancellationRequested && ClientInput.IsForeground(hWnd) && !roClient.IsDead() && !roClient.IsTextInputActive() && roClient.IsProcessRunning()))
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    private int AtkDefThread(Client roClient, CancellationToken ct)
+    {
+        if (!_running || ct.IsCancellationRequested) return 0;
         if (!roClient.IsProcessRunning() || roClient.IsDead()) return 0;
-        if (roClient.IsTextInputActive()) return 0;
 
         IntPtr hWnd = roClient.MainWindowHandle;
-        if (hWnd == IntPtr.Zero) return 0;
+        if (hWnd == IntPtr.Zero || !ClientInput.IsForeground(hWnd)) return 0;
+        if (roClient.IsTextInputActive()) return 0;
 
-        if (!ClientInput.IsForeground(hWnd)) return 0;
+        if (ClientInput.IsKeyPressed(Keys.LMenu) || ClientInput.IsKeyPressed(Keys.RMenu)) return 0;
 
-        List<AtkDefEquipConfig> currentConfigs;
+        List<(AtkDefEquipConfig Config, Keys Key)> configuredRows = new(4);
         lock (EquipConfigs)
         {
             // Only process the configured number of rows (from ConfigGlobal)
             int rowsToProcess = ConfigGlobal.GetConfig().AtkDefRows;
-            currentConfigs = EquipConfigs.Where(c => c.Id <= rowsToProcess).OrderBy(c => c.Id).ToList();
+            for (int i = 0; i < EquipConfigs.Count; i++)
+            {
+                var cfg = EquipConfigs[i];
+                if (cfg.Id <= rowsToProcess
+                    && !string.IsNullOrEmpty(cfg.KeySpammer)
+                    && Enum.TryParse<Keys>(cfg.KeySpammer, out var spammerKey)
+                    && WorkerNotifier.IsValidKey(spammerKey))
+                {
+                    configuredRows.Add((cfg, spammerKey));
+                }
+            }
+        }
+
+        bool anyPressed = false;
+        for (int i = 0; i < configuredRows.Count; i++)
+        {
+            UpdateKeyEdges(configuredRows[i].Key, out bool isPressed, out _);
+            if (isPressed)
+            {
+                anyPressed = true;
+            }
+        }
+
+        if (!anyPressed)
+        {
+            return 0;
         }
 
         try
         {
-            foreach (var equipConfig in currentConfigs)
-            {
-                if (!_running || !roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive() || !ClientInput.IsForeground(hWnd))
-                {
-                    break;
-                }
-
-                if (!WorkerNotifier.IsValidKey(equipConfig.KeySpammer))
-                    continue;
-
-                if (!Enum.TryParse<Keys>(equipConfig.KeySpammer, out var spammerKey) || spammerKey == Keys.None)
-                    continue;
-
-                if (ClientInput.IsKeyPressed(spammerKey)
-                    && !ClientInput.IsKeyPressed(Keys.LMenu) && !ClientInput.IsKeyPressed(Keys.RMenu))
-                {
-                    bool equipAtkItems = false;
-                    bool equipDefItems = false;
-                    bool ammo = false;
-
-                    while (_running && ClientInput.IsKeyPressed(spammerKey))
-                    {
-                        if (!ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive() || !roClient.IsProcessRunning())
-                        {
-                            break;
-                        }
-
-                        if (!equipAtkItems)
-                        {
-                            foreach (string slot in SlotOrder)
-                            {
-                                if (!_running || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive()) break;
-
-                                if (equipConfig.AtkKeys.TryGetValue(slot, out string? keyStr)
-                                    && WorkerNotifier.IsValidKey(keyStr)
-                                    && Enum.TryParse<Keys>(keyStr, out var key))
-                                {
-                                    ClientInput.SendKey(hWnd, key, blockOnAlt: false);
-                                    SleepWithCancel(roClient, equipConfig.SwitchDelay);
-                                }
-                            }
-                            equipAtkItems = true;
-                        }
-
-                        if (!_running || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive())
-                        {
-                            break;
-                        }
-
-                        if (equipConfig.KeySpammerWithClick)
-                        {
-                            ClientInput.SendKey(hWnd, spammerKey, blockOnAlt: false);
-                            ClientInput.SendLeftClick(hWnd);
-                            AutoSwitchAmmo(roClient, ref ammo, hWnd);
-                            SleepWithCancel(roClient, equipConfig.KeySpammerDelay);
-                        }
-                        else
-                        {
-                            ClientInput.SendKey(hWnd, spammerKey, blockOnAlt: false);
-                            SleepWithCancel(roClient, equipConfig.KeySpammerDelay);
-                        }
-                    }
-
-                    if (_running && equipAtkItems && !equipDefItems && ClientInput.IsForeground(hWnd) && !roClient.IsDead() && !roClient.IsTextInputActive())
-                    {
-                        if (equipConfig.KeySpammerWithClick)
-                        {
-                            ClientInput.SendLeftClick(hWnd);
-                        }
-
-                        foreach (string slot in SlotOrder)
-                        {
-                            if (!_running || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive()) break;
-
-                            if (equipConfig.DefKeys.TryGetValue(slot, out string? keyStr)
-                                && WorkerNotifier.IsValidKey(keyStr)
-                                && Enum.TryParse<Keys>(keyStr, out var key))
-                            {
-                                ClientInput.SendKey(hWnd, key, blockOnAlt: false); //Equip DEF Items
-                                SleepWithCancel(roClient, equipConfig.SwitchDelay);
-                            }
-                        }
-                        equipDefItems = true;
-                    }
-                }
-            }
+            RunSpamLoop(roClient, hWnd, configuredRows, ct);
         }
         catch (Exception ex)
         {
@@ -274,6 +311,156 @@ public class AtkDef : IAction
         }
 
         return 0;
+    }
+
+    private void RunSpamLoop(Client roClient, IntPtr hWnd, List<(AtkDefEquipConfig Config, Keys Key)> configuredRows, CancellationToken ct)
+    {
+        AtkDefEquipConfig? activeRow = null;
+        AtkDefEquipConfig? lastEquippedAtkRow = null;
+        bool ammo = false;
+        int roundRobinIndex = 0;
+        var heldRows = new List<(AtkDefEquipConfig Config, Keys Key)>(configuredRows.Count);
+
+        long sessionStart = Stopwatch.GetTimestamp();
+        int totalCasts = 0;
+
+        while (_running && !ct.IsCancellationRequested)
+        {
+            if (!ClientInput.IsForeground(hWnd) || !roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive())
+            {
+                break;
+            }
+
+            if (ClientInput.IsKeyPressed(Keys.LMenu) || ClientInput.IsKeyPressed(Keys.RMenu))
+            {
+                break;
+            }
+
+            heldRows.Clear();
+            for (int i = 0; i < configuredRows.Count; i++)
+            {
+                var row = configuredRows[i];
+                UpdateKeyEdges(row.Key, out bool isPressed, out _);
+                if (isPressed)
+                {
+                    heldRows.Add(row);
+                }
+            }
+
+            if (heldRows.Count == 0)
+            {
+                break;
+            }
+
+            AtkDefEquipConfig targetConfig;
+            Keys targetKey;
+
+            if (this.HoldMultiKeyMode == HoldMultiKeyMode.LastPressedWins)
+            {
+                var latest = heldRows[0];
+                long bestTs = _keyPressTimestamps.TryGetValue(latest.Key, out long ts0) ? ts0 : 0;
+                for (int i = 1; i < heldRows.Count; i++)
+                {
+                    long tsItem = _keyPressTimestamps.TryGetValue(heldRows[i].Key, out long tsi) ? tsi : 0;
+                    if (tsItem > bestTs)
+                    {
+                        bestTs = tsItem;
+                        latest = heldRows[i];
+                    }
+                }
+                targetConfig = latest.Config;
+                targetKey = latest.Key;
+            }
+            else // RoundRobinAll
+            {
+                if (roundRobinIndex >= heldRows.Count)
+                {
+                    roundRobinIndex = 0;
+                }
+                var item = heldRows[roundRobinIndex];
+                targetConfig = item.Config;
+                targetKey = item.Key;
+                roundRobinIndex = (roundRobinIndex + 1) % heldRows.Count;
+            }
+
+            if (targetConfig != activeRow)
+            {
+                EquipAtkItems(roClient, hWnd, targetConfig, ct);
+                activeRow = targetConfig;
+                lastEquippedAtkRow = targetConfig;
+            }
+
+            if (!_running || ct.IsCancellationRequested || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive() || !roClient.IsProcessRunning())
+            {
+                break;
+            }
+
+            if (targetConfig.KeySpammerWithClick)
+            {
+                ClientInput.SendKeyFast(hWnd, targetKey);
+                Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
+                AutoSwitchAmmo(roClient, ref ammo, hWnd);
+                Thread.Sleep(1);
+                Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+            }
+            else
+            {
+                ClientInput.SendKeyFast(hWnd, targetKey);
+            }
+
+            totalCasts++;
+
+            int effectiveDelay = (!targetConfig.KeySpammerWithClick && targetConfig.KeySpammerDelay <= 0) ? 1 : targetConfig.KeySpammerDelay;
+            long currentKeyTimestamp = _keyPressTimestamps.TryGetValue(targetKey, out long ts) ? ts : 0;
+            WaitInterruptibly(effectiveDelay, ct, () =>
+            {
+                if (!_running || ct.IsCancellationRequested || !ClientInput.IsForeground(hWnd) || roClient.IsDead() || roClient.IsTextInputActive() || !roClient.IsProcessRunning())
+                    return false;
+
+                if (ClientInput.IsKeyPressed(Keys.LMenu) || ClientInput.IsKeyPressed(Keys.RMenu))
+                    return false;
+
+                if (!ClientInput.IsKeyPressed(targetKey))
+                    return false;
+
+                if (this.HoldMultiKeyMode == HoldMultiKeyMode.LastPressedWins)
+                {
+                    for (int i = 0; i < configuredRows.Count; i++)
+                    {
+                        var row = configuredRows[i];
+                        if (row.Config.Id != targetConfig.Id && row.Key != targetKey)
+                        {
+                            if (ClientInput.IsKeyPressed(row.Key)
+                                && (!_keyPressTimestamps.TryGetValue(row.Key, out long otherTs) || otherTs > currentKeyTimestamp))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            });
+        }
+
+        if (_running && !ct.IsCancellationRequested && lastEquippedAtkRow != null && ClientInput.IsForeground(hWnd) && !roClient.IsDead() && !roClient.IsTextInputActive() && roClient.IsProcessRunning())
+        {
+            var defRowToEquip = (activeRow != null && activeRow.DefKeys.Count > 0) ? activeRow : lastEquippedAtkRow;
+
+            if (defRowToEquip.KeySpammerWithClick)
+            {
+                ClientInput.SendLeftClickFast(hWnd);
+            }
+
+            EquipDefItems(roClient, hWnd, defRowToEquip, ct);
+        }
+
+        if (totalCasts > 0)
+        {
+            double elapsedMs = (Stopwatch.GetTimestamp() - sessionStart) * 1000.0 / Stopwatch.Frequency;
+            double avgCycleMs = elapsedMs / totalCasts;
+            DebugLogger.Debug($"[ATKDEF] Session ended: {totalCasts} casts in {elapsedMs:F1}ms (avg {avgCycleMs:F2}ms/cast)");
+        }
     }
 
     private void AutoSwitchAmmo(Client roClient, ref bool ammo, IntPtr hWnd)
@@ -288,12 +475,12 @@ public class AtkDef : IAction
                 
                 if (!ammo)
                 {
-                    ClientInput.SendKey(hWnd, ammo1, blockOnAlt: false);
+                    ClientInput.SendKeyFast(hWnd, ammo1);
                     ammo = true;
                 }
                 else
                 {
-                    ClientInput.SendKey(hWnd, ammo2, blockOnAlt: false);
+                    ClientInput.SendKeyFast(hWnd, ammo2);
                     ammo = false;
                 }
             }

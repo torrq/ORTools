@@ -38,6 +38,12 @@ namespace ORTools.Worker
         private bool isPaused;
         private bool isInitializing;
         private CancellationTokenSource? _overweightMonitorCts;
+
+        /// <summary>
+        /// Predicate supplied by WorkerCore indicating whether automation is currently active.
+        /// When false, the timer and overweight monitor do not run or trigger actions.
+        /// </summary>
+        public Func<bool>? IsAppOn { get; set; }
         #endregion
 
         #region Public Properties
@@ -110,6 +116,9 @@ namespace ORTools.Worker
         #region Public Methods
         public bool StartTimer()
         {
+            if (IsAppOn != null && !IsAppOn())
+                return false;
+
             if (selectedMinutes < MIN_MINUTES || selectedMinutes > MaxMinutes)
                 return false;
 
@@ -154,6 +163,9 @@ namespace ORTools.Worker
         /// <summary>Resumes a paused countdown from where it left off. No-op if not running or not paused.</summary>
         public bool ResumeTimer()
         {
+            if (IsAppOn != null && !IsAppOn())
+                return false;
+
             if (!isTimerRunning || !isPaused)
                 return false;
 
@@ -175,15 +187,22 @@ namespace ORTools.Worker
 
         public void StopOverweightMonitor()
         {
-            _overweightMonitorCts?.Cancel();
-            _overweightMonitorCts?.Dispose();
-            _overweightMonitorCts = null;
+            try
+            {
+                var cts = _overweightMonitorCts;
+                _overweightMonitorCts = null;
+                cts?.Cancel();
+                cts?.Dispose();
+            }
+            catch { }
         }
 
         private async Task OverweightMonitorLoop(CancellationToken ct)
         {
             while (!ct.IsCancellationRequested)
             {
+                if (IsAppOn != null && !IsAppOn()) break;
+
                 try
                 {
                     var prefs = ProfileSingleton.GetCurrent().UserPreferences;
@@ -197,6 +216,8 @@ namespace ORTools.Worker
                             {
                                 for (int i = 1; i < Constants.MAX_BUFF_LIST_INDEX_SIZE; i++)
                                 {
+                                    if (ct.IsCancellationRequested || (IsAppOn != null && !IsAppOn())) return;
+
                                     uint val = statusBuffer[i];
                                     if (val == uint.MaxValue) continue;
                                     EffectStatusIDs status = (EffectStatusIDs)val;
@@ -207,6 +228,8 @@ namespace ORTools.Worker
 
                                     if (shouldAutoOff)
                                     {
+                                        if (ct.IsCancellationRequested || (IsAppOn != null && !IsAppOn())) return;
+
                                         DebugLogger.Info($"Overweight {(int)prefs.AutoOffOverweightMode}%, disable now");
                                         WorkerNotifier.RequestTurnOff("AutoOff_Overweight");
                                         WeightLimitMacro.SendOverweightMacro();
@@ -253,6 +276,12 @@ namespace ORTools.Worker
         #region Private Methods
         private void AutoOffTimer_Tick(object sender, EventArgs e)
         {
+            if (IsAppOn != null && !IsAppOn())
+            {
+                PauseTimer();
+                return;
+            }
+
             remainingSeconds--;
             TimerTick?.Invoke(this, new AutoOffEventArgs(selectedMinutes, remainingSeconds, isTimerRunning, isPaused: false, runningMinutes: runningMinutes));
 

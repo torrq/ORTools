@@ -25,6 +25,9 @@ namespace ORTools.Worker
         // Keys per status — List<Keys> allows multiple items sharing the same status ID (e.g. Water Converter + Box of Thunder)
         public ConcurrentDictionary<EffectStatusIDs, List<Keys>> buffMapping = new ConcurrentDictionary<EffectStatusIDs, List<Keys>>();
 
+        // Set false by Stop() so an in-flight iteration stops sending keys immediately
+        private volatile bool _active = false;
+
 
         // Add error tracking
         private int consecutiveErrors = 0;
@@ -47,6 +50,7 @@ namespace ORTools.Worker
                 // Reset error tracking
                 consecutiveErrors = 0;
                 lastSuccessfulRead = DateTime.Now;
+                _active = true;
 
                 this.thread = AutoBuffThread(roClient);
                 ThreadRunner.Start(this.thread);
@@ -180,6 +184,7 @@ namespace ORTools.Worker
                                         }
                                         else
                                         {
+                                            if (!_active) break;
                                             if (currentHp >= Constants.MINIMUM_HP_TO_RECOVER && !c.IsTextInputActive() && !c.IsDead())
                                             {
                                                 // Send first available key (list allows multiple items sharing same status)
@@ -305,6 +310,7 @@ namespace ORTools.Worker
 
         public void Stop()
         {
+            _active = false;
             if (this.thread != null)
             {
                 ThreadRunner.Stop(this.thread);

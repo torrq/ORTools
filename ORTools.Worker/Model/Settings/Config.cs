@@ -28,6 +28,8 @@ public class Config
     public Shared.Protocol.ThemeMode Theme     { get; set; } = Shared.Protocol.ThemeMode.BlueLight;
     public bool   CustomThemeIsLight           { get; set; } = AppConfig.DefaultCustomThemeIsLight;
     public string CustomThemeColor             { get; set; } = AppConfig.DefaultCustomThemeColor;
+    [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+    public Shared.Protocol.HoldMultiKeyMode HoldMultiKeyMode { get; set; } = Shared.Protocol.HoldMultiKeyMode.RoundRobinAll;
     
     public StatusLoggerConfig StatusLogger { get; set; } = new();
 }

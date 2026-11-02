@@ -34,10 +34,16 @@ namespace ORTools.Worker
 
         public static void SendOverweightMacro()
         {
+            var client = ClientSingleton.GetClient();
+            if (client?.Process == null || client.Process.HasExited)
+            {
+                DebugLogger.Debug("OverweightMacro: Client process is null or has exited, aborting macro.");
+                return;
+            }
+
             ConfigProfile prefs = ProfileSingleton.GetCurrent().UserPreferences;
             int timesToSend = 2;
             int intervalMs = 5000;
-            string keyToSend;
             bool ShouldSendKey1 = (!string.IsNullOrEmpty(prefs.AutoOffKey1.ToString()) && prefs.AutoOffKey1.ToString() != AppConfig.TEXT_NONE);
             bool ShouldSendKey2 = (!string.IsNullOrEmpty(prefs.AutoOffKey2.ToString()) && prefs.AutoOffKey2.ToString() != AppConfig.TEXT_NONE);
             bool ShouldKillClient = prefs.AutoOffKillClient;
@@ -46,39 +52,46 @@ namespace ORTools.Worker
 
             if (ShouldSendKey1 || ShouldSendKey2)
             {
-                IntPtr hWnd = ClientSingleton.GetClient().Process.MainWindowHandle;
-
-                if (!ClientInput.IsForeground(hWnd)) { ClientInput.SetForeground(hWnd); }
-
-                Thread.Sleep(1000);
-
-                if (ShouldSendKey1)
+                IntPtr hWnd = client.MainWindowHandle;
+                if (hWnd != IntPtr.Zero)
                 {
-                    for (int i = 0; i < timesToSend; i++)
+                    if (!ClientInput.IsForeground(hWnd)) { ClientInput.SetForeground(hWnd); }
+
+                    Thread.Sleep(1000);
+
+                    if (ShouldSendKey1)
                     {
-                        ClientInput.SendAltKeyCombo(hWnd, prefs.AutoOffKey1);
-                        DebugLogger.Info($"Sent macro {i + 1}/{timesToSend}: Alt + {prefs.AutoOffKey1} (Auto-off, key 1)");
-                        if (i < timesToSend - 1) Thread.Sleep(intervalMs);
+                        for (int i = 0; i < timesToSend; i++)
+                        {
+                            if (client.Process == null || client.Process.HasExited) return;
+                            ClientInput.SendAltKeyCombo(hWnd, prefs.AutoOffKey1);
+                            DebugLogger.Info($"Sent macro {i + 1}/{timesToSend}: Alt + {prefs.AutoOffKey1} (Auto-off, key 1)");
+                            if (i < timesToSend - 1) Thread.Sleep(intervalMs);
+                        }
+                    }
+
+                    if (ShouldSendKey1 && ShouldSendKey2) Thread.Sleep(1000);
+
+                    if (ShouldSendKey2)
+                    {
+                        for (int i = 0; i < timesToSend; i++)
+                        {
+                            if (client.Process == null || client.Process.HasExited) return;
+                            ClientInput.SendAltKeyCombo(hWnd, prefs.AutoOffKey2);
+                            DebugLogger.Info($"Sent macro {i + 1}/{timesToSend}: Alt + {prefs.AutoOffKey2} (Auto-off, key 2)");
+                            if (i < timesToSend - 1) Thread.Sleep(intervalMs);
+                        }
                     }
                 }
+            }
 
-                if (ShouldSendKey1 && ShouldSendKey2) Thread.Sleep(1000);
-
-                if (ShouldSendKey2)
-                {
-                    for (int i = 0; i < timesToSend; i++)
-                    {
-                        ClientInput.SendAltKeyCombo(hWnd, prefs.AutoOffKey2);
-                        DebugLogger.Info($"Sent macro {i + 1}/{timesToSend}: Alt + {prefs.AutoOffKey2} (Auto-off, key 2)");
-                        if (i < timesToSend - 1) Thread.Sleep(intervalMs);
-                    }
-                }
-
-                if (ShouldKillClient)
+            if (ShouldKillClient)
+            {
+                if (client.Process != null && !client.Process.HasExited)
                 {
                     Thread.Sleep(1000);
                     DebugLogger.Info("Killing the client (Auto-off)");
-                    ClientSingleton.GetClient().Kill();
+                    client.Kill();
                 }
             }
         }

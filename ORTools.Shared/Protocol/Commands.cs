@@ -155,7 +155,8 @@ public sealed record UpdateGlobalConfigCommand(
     bool CheckForUpdatesOnStartup,
     ThemeMode Theme,
     bool CustomThemeIsLight,
-    string CustomThemeColor) : IIpcMessage
+    string CustomThemeColor,
+    HoldMultiKeyMode HoldMultiKeyMode = HoldMultiKeyMode.RoundRobinAll) : IIpcMessage
 ;
 
 public sealed record UpdateStatusLoggerConfigCommand(

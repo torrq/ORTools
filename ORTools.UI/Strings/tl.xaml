@@ -159,6 +159,12 @@
     <sys:String x:Key="S.Settings.GeneralBehavior">Pangkalahatang Gawi</sys:String>
     <sys:String x:Key="S.Settings.PauseWhenChatting">I-pause kapag nagcha-chat</sys:String>
     <sys:String x:Key="S.Settings.PauseWhenDead">I-pause kapag namatay</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyMode">Multi-Key Hold Mode</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyDesc">Gamit sa Skill Spammer at ATK x DEF kapag sabay ang pindot:</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyRoundRobin">Round Robin (Lahat)</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyRoundRobinDesc">I-cast nang salit-salit lahat.</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyLastPressed">Huling Pindot (Bago)</sys:String>
+    <sys:String x:Key="S.Settings.MultiKeyLastPressedDesc">I-cast ang pinakabagong key.</sys:String>
 
     <!-- Settings — Developer -->
     <sys:String x:Key="S.Settings.DeveloperTools">Mga Tool ng Developer</sys:String>

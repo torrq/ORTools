@@ -12,6 +12,7 @@ public sealed class WorkerCore : IDisposable
     private readonly Channel<IIpcMessage> _commandChannel = Channel.CreateUnbounded<IIpcMessage>();
     private readonly StatePublisher _statePublisher;
     private readonly Thread _hookThread;
+    private readonly SemaphoreSlim _stateLock = new(1, 1);
 
     private volatile bool _isOn;
     private string _currentProfileName = "Default";
@@ -65,7 +66,10 @@ public sealed class WorkerCore : IDisposable
         };
         ClientListSingleton.OnClientRemoved += _onClientRemovedHandler;
 
+        WorkerNotifier.IsActive = () => _isOn;
+
         _autoOff = new AutoOff();
+        _autoOff.IsAppOn = () => _isOn;
         _autoOff.TimerStarted += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
         _autoOff.TimerStopped += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
         _autoOff.TimerTick += (s, e) => _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
@@ -76,8 +80,12 @@ public sealed class WorkerCore : IDisposable
             _ = BroadcastAsync(new AutoOffTimerStateUpdate(e.IsTimerRunning, e.IsPaused, e.SelectedMinutes, e.RemainingSeconds, e.RunningMinutes));
             if (_isOn)
             {
-                _ = HandleTurnOff();
-                WeightLimitMacro.SendOverweightMacro();
+                _ = Task.Run(async () =>
+                {
+                    if (!_isOn) return;
+                    await HandleTurnOff();
+                    WeightLimitMacro.SendOverweightMacro();
+                });
             }
         };
 
@@ -93,6 +101,7 @@ public sealed class WorkerCore : IDisposable
 
         _onTurnOffRequestedHandler = reason =>
         {
+            if (!_isOn) return;
             DebugLogger.Info($"[WorkerCore] Auto turn-off: {reason}");
             _ = HandleTurnOff();
         };
@@ -113,6 +122,7 @@ public sealed class WorkerCore : IDisposable
     public async Task RunAsync(CancellationToken ct)
     {
         Console.WriteLine($"[WorkerCore] Running in-memory IPC  Mode: {AppConfig.GetRateTag()}");
+        Win32Interop.DisableProcessPowerThrottling();
         Win32Interop.timeBeginPeriod(1);
         try
         {
@@ -139,11 +149,14 @@ public sealed class WorkerCore : IDisposable
 
     public void Dispose()
     {
+        WorkerNotifier.IsActive = null;
         ClientListSingleton.OnClientRemoved -= _onClientRemovedHandler;
         WorkerNotifier.TurnOffRequested -= _onTurnOffRequestedHandler;
         DebugLogger.LogMessageEmitted -= _onLogMessageEmittedHandler;
+        _autoOff.Dispose();
         _statePublisher.Stop();
         ClientListSingleton.StopCleanupMonitor();
+        _stateLock.Dispose();
     }
 
     public async Task HandleCommandAsync(IIpcMessage command)
@@ -161,85 +174,121 @@ public sealed class WorkerCore : IDisposable
 
     public async Task HandleTurnOn()
     {
-        if (_isOn) return;
-        var client = ClientSingleton.GetClient();
-        if (client == null || client.Process == null || client.Process.HasExited)
-        {
-            await BroadcastAsync(new ErrorUpdate("Client is disconnected or has exited.")); return;
-        }
-        _isOn = true;
-        var p = ProfileSingleton.GetCurrent();
-        await Task.Delay(300);
-        p.StartAll();
-        
-        var prefs = ProfileSingleton.GetCurrent().UserPreferences;
-        if (prefs.StartAutoOffTimerOnEnable && (!_autoOff.IsTimerRunning || _autoOff.IsPaused))
-        {
-            if (prefs.PauseAutoOffTimerOnDisable && _autoOff.IsPaused)
-                _autoOff.ResumeTimer();
-            else if (!_autoOff.IsTimerRunning)
-                _autoOff.StartTimer();
-        }
-        
-        _autoOff.StartOverweightMonitor();
-        
+        await _stateLock.WaitAsync();
         try
         {
-            await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
-            DebugLogger.Info("[WorkerCore] Turned ON");
-        }
-        catch (Exception ex)
-        {
-            DebugLogger.Error($"[WorkerCore] HandleTurnOn broadcast failed: {ex.GetType().Name}: {ex.Message}");
-        }
+            if (_isOn) return;
+            var client = ClientSingleton.GetClient();
+            if (client == null || client.Process == null || client.Process.HasExited)
+            {
+                await BroadcastAsync(new ErrorUpdate("Client is disconnected or has exited.")); return;
+            }
+            _isOn = true;
+            var p = ProfileSingleton.GetCurrent();
+            await Task.Delay(300);
 
-        if (p.UserPreferences.SoundEnabled)
+            // Re-verify after delay that we should still turn on and client is still alive
+            if (!_isOn || client.Process == null || client.Process.HasExited)
+            {
+                _isOn = false;
+                p.StopAll();
+                _autoOff.StopOverweightMonitor();
+                await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
+                return;
+            }
+
+            p.StartAll();
+            
+            var prefs = p.UserPreferences;
+            if (prefs.StartAutoOffTimerOnEnable && (!_autoOff.IsTimerRunning || _autoOff.IsPaused))
+            {
+                if (prefs.PauseAutoOffTimerOnDisable && _autoOff.IsPaused)
+                    _autoOff.ResumeTimer();
+                else if (!_autoOff.IsTimerRunning)
+                    _autoOff.StartTimer();
+            }
+            else if (_autoOff.IsPaused)
+            {
+                _autoOff.ResumeTimer();
+            }
+            
+            _autoOff.StartOverweightMonitor();
+            
+            try
+            {
+                await BroadcastAsync(new AppStateUpdate(IsOn: true, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
+                DebugLogger.Info("[WorkerCore] Turned ON");
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Error($"[WorkerCore] HandleTurnOn broadcast failed: {ex.GetType().Name}: {ex.Message}");
+            }
+
+            if (p.UserPreferences.SoundEnabled)
+            {
+                try { new System.Media.SoundPlayer(@"Resources\toggle_on.wav").Play(); }
+                catch (Exception ex) { DebugLogger.Warning($"Failed to play sound: {ex.Message}"); }
+            }
+        }
+        finally
         {
-            try { new System.Media.SoundPlayer(@"Resources\toggle_on.wav").Play(); }
-            catch (Exception ex) { DebugLogger.Warning($"Failed to play sound: {ex.Message}"); }
+            _stateLock.Release();
         }
     }
 
     public async Task HandleTurnOff()
     {
-        if (!_isOn) return;
-        _isOn = false;
-        
-        var p = ProfileSingleton.GetCurrent();
+        await _stateLock.WaitAsync();
         try
         {
-            p.StopAll();
+            if (!_isOn) return;
+            _isOn = false;
             
-            var prefs = p.UserPreferences;
-            if (prefs.ClearAutoOffTimerOnDisable && _autoOff.IsTimerRunning)
+            var p = ProfileSingleton.GetCurrent();
+            try
             {
-                if (prefs.PauseAutoOffTimerOnDisable)
-                    _autoOff.PauseTimer();
-                else
-                    _autoOff.StopTimer();
+                p.StopAll();
+                
+                var prefs = p.UserPreferences;
+                if (_autoOff.IsTimerRunning)
+                {
+                    if (prefs.ClearAutoOffTimerOnDisable && !prefs.PauseAutoOffTimerOnDisable)
+                    {
+                        _autoOff.StopTimer();
+                    }
+                    else
+                    {
+                        // Pause the timer so it never ticks down or triggers while OFF
+                        _autoOff.PauseTimer();
+                    }
+                }
+                
+                _autoOff.StopOverweightMonitor();
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Error($"[WorkerCore] Error during TurnOff cleanup: {ex.Message}");
             }
             
-            _autoOff.StopOverweightMonitor();
-        }
-        catch (Exception ex)
-        {
-            DebugLogger.Error($"[WorkerCore] Error during TurnOff cleanup: {ex.Message}");
-        }
-        
-        try
-        {
-            await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
-            DebugLogger.Info("[WorkerCore] Turned OFF");
-        }
-        catch (Exception ex)
-        {
-            DebugLogger.Error($"[WorkerCore] HandleTurnOff broadcast failed: {ex.GetType().Name}: {ex.Message}");
-        }
+            try
+            {
+                await BroadcastAsync(new AppStateUpdate(IsOn: false, ToggleKey: p.UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
+                DebugLogger.Info("[WorkerCore] Turned OFF");
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Error($"[WorkerCore] HandleTurnOff broadcast failed: {ex.GetType().Name}: {ex.Message}");
+            }
 
-        if (p.UserPreferences.SoundEnabled)
+            if (p.UserPreferences.SoundEnabled)
+            {
+                try { new System.Media.SoundPlayer(@"Resources\toggle_off.wav").Play(); }
+                catch (Exception ex) { DebugLogger.Warning($"Failed to play sound: {ex.Message}"); }
+            }
+        }
+        finally
         {
-            try { new System.Media.SoundPlayer(@"Resources\toggle_off.wav").Play(); }
-            catch (Exception ex) { DebugLogger.Warning($"Failed to play sound: {ex.Message}"); }
+            _stateLock.Release();
         }
     }
 
@@ -487,10 +536,14 @@ public sealed class WorkerCore : IDisposable
 
     public async Task HandleUpdateStatusRecoverySettings(UpdateStatusRecoverySettingsCommand cmd)
     {
-        var sr = ProfileSingleton.GetCurrent().StatusRecovery;
-        sr.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
-        ProfileSingleton.SetConfiguration(sr);
+        var profile = ProfileSingleton.GetCurrent();
+        int delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
+        profile.StatusRecovery.Delay = delay;
+        profile.DebuffsRecovery.Delay = delay;
+        ProfileSingleton.SetConfiguration(profile.StatusRecovery);
+        ProfileSingleton.SetConfiguration(profile.DebuffsRecovery);
         await BroadcastAsync(BuildStatusRecoveryConfig());
+        await BroadcastAsync(BuildDebuffRecoveryConfig());
     }
 
     // ── Skill Timer ───────────────────────────────────────────────────────────
@@ -573,9 +626,13 @@ public sealed class WorkerCore : IDisposable
 
     public async Task HandleUpdateDebuffRecoverySettings(UpdateDebuffRecoverySettingsCommand cmd)
     {
-        var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
-        dr.Delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
-        ProfileSingleton.SetConfiguration(dr);
+        var profile = ProfileSingleton.GetCurrent();
+        int delay = Math.Max((int)AppConfig.DefaultMinimumDelay, cmd.Delay);
+        profile.StatusRecovery.Delay = delay;
+        profile.DebuffsRecovery.Delay = delay;
+        ProfileSingleton.SetConfiguration(profile.StatusRecovery);
+        ProfileSingleton.SetConfiguration(profile.DebuffsRecovery);
+        await BroadcastAsync(BuildStatusRecoveryConfig());
         await BroadcastAsync(BuildDebuffRecoveryConfig());
     }
 
@@ -784,6 +841,7 @@ public sealed class WorkerCore : IDisposable
         config.Theme = cmd.Theme;
         config.CustomThemeIsLight = cmd.CustomThemeIsLight;
         config.CustomThemeColor = cmd.CustomThemeColor;
+        config.HoldMultiKeyMode = cmd.HoldMultiKeyMode;
         ConfigGlobal.SaveConfig();
 
         var p = ProfileSingleton.GetCurrent();
@@ -1382,7 +1440,8 @@ public sealed class WorkerCore : IDisposable
             config.CheckForUpdatesOnStartup,
             config.Theme,
             config.CustomThemeIsLight,
-            config.CustomThemeColor
+            config.CustomThemeColor,
+            config.HoldMultiKeyMode
         );
     }
 

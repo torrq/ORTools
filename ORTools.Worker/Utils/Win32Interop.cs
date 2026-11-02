@@ -75,7 +75,10 @@ internal static class Win32Interop
 
     // Messaging
     [DllImport("user32.dll", SetLastError = true)] public static extern bool PostMessage(IntPtr hWnd, int Msg, Keys wParam, int lParam);
+    [DllImport("user32.dll", SetLastError = true)] public static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
     [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)] public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, uint fuFlags, uint uTimeout, out IntPtr lpdwResult);
+    public const uint SMTO_ABORTIFHUNG = 0x0002;
 
     public static int CreateLParam(Keys key, bool isKeyDown)
     {
@@ -97,7 +100,51 @@ internal static class Win32Interop
     [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)] public static extern bool UnhookWindowsHookEx(IntPtr idHook);
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)] public static extern IntPtr GetModuleHandle(string lpModuleName);
 
-    // Timer resolution
+    // Timer resolution & power throttling
     [DllImport("winmm.dll", EntryPoint = "timeBeginPeriod", SetLastError = true)] public static extern uint timeBeginPeriod(uint uMilliseconds);
     [DllImport("winmm.dll", EntryPoint = "timeEndPeriod",   SetLastError = true)] public static extern uint timeEndPeriod(uint uMilliseconds);
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PROCESS_POWER_THROTTLING_STATE
+    {
+        public uint Version;
+        public uint ControlMask;
+        public uint StateMask;
+    }
+
+    public const int ProcessPowerThrottling = 4;
+    public const uint PROCESS_POWER_THROTTLING_CURRENT_VERSION = 1;
+    public const uint PROCESS_POWER_THROTTLING_EXECUTION_SPEED = 0x1;
+    public const uint PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION = 0x4;
+
+    [DllImport("kernel32.dll")] public static extern IntPtr GetCurrentProcess();
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool SetProcessInformation(
+        IntPtr hProcess,
+        int ProcessInformationClass,
+        ref PROCESS_POWER_THROTTLING_STATE ProcessInformation,
+        uint ProcessInformationSize);
+
+    /// <summary>
+    /// Opts the process out of Windows 10/11 EcoQoS execution speed throttling and background timer
+    /// resolution throttling so that <see cref="timeBeginPeriod"/>(1) is honored even when ORTools
+    /// is minimized or occluded behind the game window.
+    /// </summary>
+    public static void DisableProcessPowerThrottling()
+    {
+        try
+        {
+            var state = new PROCESS_POWER_THROTTLING_STATE
+            {
+                Version = PROCESS_POWER_THROTTLING_CURRENT_VERSION,
+                ControlMask = PROCESS_POWER_THROTTLING_EXECUTION_SPEED | PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION,
+                StateMask = 0
+            };
+            SetProcessInformation(GetCurrentProcess(), ProcessPowerThrottling, ref state, (uint)Marshal.SizeOf<PROCESS_POWER_THROTTLING_STATE>());
+        }
+        catch
+        {
+            // Ignore on older OS versions that do not support ProcessPowerThrottling
+        }
+    }
 }

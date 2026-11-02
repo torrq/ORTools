@@ -18,8 +18,15 @@ public static class WorkerNotifier
     /// </summary>
     public static event Action<string>? TurnOffRequested;
 
+    /// <summary>
+    /// Predicate supplied by WorkerCore indicating whether automation is currently active.
+    /// When false, turn-off requests are ignored to prevent auto-off triggering or duplicate turn-offs when already off.
+    /// </summary>
+    public static Func<bool>? IsActive { get; set; }
+
     public static void RequestTurnOff(string reason)
     {
+        if (IsActive != null && !IsActive()) return;
         DebugLogger.Info($"[WorkerNotifier] TurnOff requested by: {reason}");
         TurnOffRequested?.Invoke(reason);
     }

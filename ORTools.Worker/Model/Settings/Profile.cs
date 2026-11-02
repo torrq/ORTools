@@ -214,7 +214,15 @@ public static class ProfileSingleton
                 loaded.ATKDEFMode     = TryDeserialize(rawObject, loaded.ATKDEFMode, loaded.ATKDEFMode);
                 loaded.MacroSwitch    = TryDeserialize(rawObject, loaded.MacroSwitch, loaded.MacroSwitch);
                 loaded.TransferHelper = TryDeserialize(rawObject, loaded.TransferHelper, loaded.TransferHelper);
-                loaded.DebuffsRecovery = TryDeserialize(rawObject, loaded.DebuffsRecovery, loaded.DebuffsRecovery);
+                try
+                {
+                    string drConfig = Profile.GetByAction(rawObject, loaded.DebuffsRecovery).ToString();
+                    if (!string.IsNullOrEmpty(drConfig)) loaded.DebuffsRecovery.LoadConfiguration(drConfig);
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Error(ex, "Failed to load DebuffsRecovery");
+                }
 
                 // Run legacy profile migrations
                 migrated = ProfileMigrator.Migrate(loaded);
@@ -237,6 +245,8 @@ public static class ProfileSingleton
                     SetConfiguration(_profile.UserPreferences);
                     SetConfiguration(_profile.SkillSpammer);
                     SetConfiguration(_profile.MacroSwitch);
+                    SetConfiguration(_profile.StatusRecovery);
+                    SetConfiguration(_profile.DebuffsRecovery);
                 }
                 catch (Exception ex)
                 {
