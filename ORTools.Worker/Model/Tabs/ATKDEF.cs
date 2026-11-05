@@ -227,7 +227,7 @@ public class AtkDef : IAction
                 && WorkerNotifier.IsValidKey(key))
             {
                 ClientInput.SendKeyFast(hWnd, key);
-                if (!WaitInterruptibly(config.SwitchDelay, ct, () =>
+                if (!WaitInterruptibly(Math.Max(1, config.SwitchDelay), ct, () =>
                     _running && !ct.IsCancellationRequested && ClientInput.IsForeground(hWnd) && !roClient.IsDead() && !roClient.IsTextInputActive() && roClient.IsProcessRunning()))
                 {
                     break;
@@ -248,7 +248,7 @@ public class AtkDef : IAction
                 && WorkerNotifier.IsValidKey(key))
             {
                 ClientInput.SendKeyFast(hWnd, key);
-                if (!WaitInterruptibly(config.SwitchDelay, ct, () =>
+                if (!WaitInterruptibly(Math.Max(1, config.SwitchDelay), ct, () =>
                     _running && !ct.IsCancellationRequested && ClientInput.IsForeground(hWnd) && !roClient.IsDead() && !roClient.IsTextInputActive() && roClient.IsProcessRunning()))
                 {
                     break;
@@ -410,7 +410,7 @@ public class AtkDef : IAction
 
             totalCasts++;
 
-            int effectiveDelay = (!targetConfig.KeySpammerWithClick && targetConfig.KeySpammerDelay <= 0) ? 1 : targetConfig.KeySpammerDelay;
+            int effectiveDelay = Math.Max(1, targetConfig.KeySpammerDelay);
             long currentKeyTimestamp = _keyPressTimestamps.TryGetValue(targetKey, out long ts) ? ts : 0;
             WaitInterruptibly(effectiveDelay, ct, () =>
             {

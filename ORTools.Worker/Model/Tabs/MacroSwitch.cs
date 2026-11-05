@@ -228,10 +228,8 @@ namespace ORTools.Worker
                 }
 
                 // Delay after sending key and/or click
-                if (macroKey.Delay > 0)
-                {
-                    if (!SleepWithCancel(roClient, macroKey.Delay)) return;
-                }
+                int stepDelay = Math.Max(1, macroKey.Delay);
+                if (!SleepWithCancel(roClient, stepDelay)) return;
             }
         }
 

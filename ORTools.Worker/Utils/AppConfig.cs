@@ -25,7 +25,7 @@ public static class AppConfig
     public static bool SupportsFishing => IsMidRate;
 
     public static bool   preRelease    = true;
-    public static string preReleaseTag = "BETA-11";
+    public static string preReleaseTag = "BETA-12";
 
     // ── File paths ────────────────────────────────────────────────────────────
     public static string ProfileFolder = "Profiles\\";

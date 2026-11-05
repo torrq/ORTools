@@ -251,14 +251,13 @@ namespace ORTools.Worker
                 if (!_running || !roClient.IsProcessRunning() || roClient.IsDead() || roClient.IsTextInputActive())
                     return;
 
+                int stepDelay = Math.Max(1, songRow.Delay);
+
                 // 1. Cast the song key
                 ClientInput.SendKey(hWnd, activeSongKeys[step], blockOnAlt: false);
 
                 // Delay between song key and adaptation/cancel key
-                if (songRow.Delay > 0)
-                {
-                    if (!SleepWithCancel(roClient, songRow.Delay)) return;
-                }
+                if (!SleepWithCancel(roClient, stepDelay)) return;
 
                 // 2. Cancel song via adaptation / weapon switch
                 if (songRow.AdaptationKey != Keys.None)
@@ -266,15 +265,15 @@ namespace ORTools.Worker
                     ClientInput.SendKey(hWnd, songRow.AdaptationKey, blockOnAlt: false);
 
                     // Delay between adaptation key and the next song in the chain
-                    if (step < activeSongKeys.Count - 1 && songRow.Delay > 0)
+                    if (step < activeSongKeys.Count - 1)
                     {
-                        if (!SleepWithCancel(roClient, songRow.Delay)) return;
+                        if (!SleepWithCancel(roClient, stepDelay)) return;
                     }
                 }
-                else if (step < activeSongKeys.Count - 1 && songRow.Delay > 0)
+                else if (step < activeSongKeys.Count - 1)
                 {
                     // If no adaptation key is set, still delay between consecutive songs
-                    if (!SleepWithCancel(roClient, songRow.Delay)) return;
+                    if (!SleepWithCancel(roClient, stepDelay)) return;
                 }
             }
         }

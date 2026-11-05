@@ -541,7 +541,7 @@ namespace ORTools.Worker
                         long cycleTicks = cycleEnd - cycleStart;
                         if (cycleTicks > maxCycleTicks) maxCycleTicks = cycleTicks;
 
-                        int effectiveDelay = (!withClick && this.SpammerDelay <= 0) ? 1 : this.SpammerDelay;
+                        int effectiveDelay = Math.Max(1, this.SpammerDelay);
                         long currentKeyTs = _keyPressTimestamps.TryGetValue(cfg.Key, out long tsVal) ? tsVal : 0;
 
                         bool keepGoing = WaitInterruptibly(effectiveDelay, ct, () =>

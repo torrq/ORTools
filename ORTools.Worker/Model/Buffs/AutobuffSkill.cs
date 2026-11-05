@@ -192,7 +192,7 @@ namespace ORTools.Worker
 
                                             this.UseAutobuff(buffToApply.Value);
                                             _lastCastTime[buffToApply.Key] = DateTime.UtcNow;
-                                            Thread.Sleep(Delay);
+                                            Thread.Sleep(Math.Max(1, Delay));
                                         }
                                     }
                                     catch (Exception ex)

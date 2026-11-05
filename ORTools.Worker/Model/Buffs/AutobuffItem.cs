@@ -192,7 +192,7 @@ namespace ORTools.Worker
                                                 if (keys != null && keys.Count > 0)
                                                     this.UseAutobuff(keys[0]);
                                                 StatusBufferCache.Invalidate(); // force fresh status read next cycle
-                                                Thread.Sleep(Delay);
+                                                Thread.Sleep(Math.Max(1, Delay));
                                             }
                                         }
                                     }
