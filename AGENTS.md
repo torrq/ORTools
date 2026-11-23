@@ -63,16 +63,10 @@ The legacy app used a single process with an MDI WinForms container on the UI th
 
 ### IPC Protocol (In-Memory)
 
-Even though they run in the same process, the WorkerCore and UI communicate strictly using an in-memory event bus that passes structured payload envelopes (IPC messages).
-```json
-{"t":"MessageType","p":{...typed payload...}}
-```
-
-- `t` is the type discriminator (see `MessageTypes.cs`).
-- `p` is the typed payload (see `Commands.cs` and `Updates.cs`).
-- **Commands** flow UI → Worker.
-- **Updates** flow Worker → UI (pushed on state change, never polled).
-- When a new message type is needed, it must be added to `MessageTypes.cs` and either `Commands.cs` or `Updates.cs`.
+Even though they run in the same process, `WorkerCore` and the UI communicate strictly using an in-memory `Channel` / event bus that passes strongly-typed `IIpcMessage` C# records.
+- **Commands** (`Commands.cs`) flow UI → Worker and are routed via `case` pattern matching in `CommandDispatcher.cs`.
+- **Updates** (`Updates.cs`) flow Worker → UI (pushed on state change, never polled) and are routed via `case` pattern matching in `WorkerService.cs`.
+- When a new message type is needed, add a record to `Commands.cs` or `Updates.cs` and handle it in `CommandDispatcher.cs` or `WorkerService.cs`.
 - On boot, `WorkerService` creates `WorkerCore` and subscribes to its `OnBroadcast` event, then requests full state.
 
 ### Lifecycle
@@ -163,7 +157,7 @@ The application features the following tabs, implemented as individual WPF views
 7. **AutoOff** — Configures auto-shutdown or auto-exit conditions (timer-based or overweight-based).
 8. **Misc** — Houses standalone helper tools, like the **Transfer Helper** (simulates Alt+RightClick to move items between inventory/storage).
 9. **Settings/Profiles** — Global application settings and profile management.
-10. **ATK x DEF / Songs / MacroSwitch** — Currently pending UI implementation.
+10. **ATK x DEF / Songs / MacroSwitch** — Gear-swap + skill spammer rows, song/adaptation chains, and multi-step macro chains with configurable row counts in Settings.
 
 ---
 
@@ -171,19 +165,16 @@ The application features the following tabs, implemented as individual WPF views
 
 | File | Purpose |
 |------|---------|
-| `ORTools.Shared/Protocol/IpcEnvelope.cs` | Wire format, Wrap/Parse helpers |
-| `ORTools.Shared/Protocol/MessageTypes.cs` | String constants for all message types |
 | `ORTools.Shared/Protocol/Commands.cs` | All UI→Worker command records |
 | `ORTools.Shared/Protocol/Updates.cs` | All Worker→UI update records |
 | `ORTools.Worker/WorkerCore.cs` | Root object; owns models, handles turn on/off |
-| `ORTools.Worker/IPC/PipeServer.cs` | Named pipe server, one client at a time |
-| `ORTools.Worker/IPC/CommandDispatcher.cs` | Routes IPC commands to WorkerCore |
+| `ORTools.Worker/IPC/CommandDispatcher.cs` | Routes typed IPC commands to WorkerCore |
 | `ORTools.Worker/IPC/StatePublisher.cs` | Pushes HP/SP + character updates to UI |
+| `ORTools.Worker/Utils/ClientInput.cs` | Win32 input helpers (`SendKey`/`SendLeftClick` vs `SendKeyFast`/`SendLeftClickFast` for spam loops) |
 | `ORTools.Worker/Utils/WorkerNotifier.cs` | RequestTurnOff, IsValidKey (replaces FormHelper) |
-| `ORTools.Worker/Utils/AppConfig.cs` | All app constants and server addresses |
+| `ORTools.Worker/Utils/AppConfig.cs` | All app constants and version/pre-release flags |
 | `ORTools.Worker/Model/Client.cs` | Client, ClientSingleton, HpSpCache, etc. |
-| `ORTools.UI/Services/WorkerService.cs` | Pipe client, reconnection, event dispatch |
-| `ORTools.UI/Services/WorkerLauncher.cs` | ShellExecute runas to start Worker |
+| `ORTools.UI/Services/WorkerService.cs` | Boots WorkerCore, dispatches typed commands and UI updates |
 | `ORTools.UI/ViewModels/MainWindowViewModel.cs` | All observable state for main window |
 | `ORTools.UI/Views/MainWindow.xaml` | Main window layout (WPF) |
 | `ORTools.UI/App.xaml` | Application resources and color palette |

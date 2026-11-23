@@ -13,7 +13,6 @@ You have 24 separate slots to use. For each slot, you can set the hotkey and the
 5. Select a click mode from the dropdown list.
    * **Click None:** Presses the key only.
    * **Click Cursor:** Presses the key, then clicks wherever your mouse cursor is located.
-   * **Click Center:** Presses the key, then clicks in the exact center of the game window.
 6. Check the box on the far left to enable the timer.
 
 > **Note:** If a buff lasts 60 seconds, clicking the clock icon and setting the time to 59 seconds is the easiest way to ensure it stays active without gaps.

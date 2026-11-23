@@ -11,13 +11,14 @@ At the top of the tab, you can quickly configure automatic consumption of common
 4. Check the enable box next to the key.
 
 ## 2. Debuff Grid
-Below the items is a grid of specific debuffs like Silence, Curse, or Stun. You can assign a specific key for OSRO Tools to press when that debuff happens. This is useful for using specialized cure skills or items on yourself.
+Below the items is a grid of specific debuffs like Silence, Curse, or Poison. You can assign a specific key for OSRO Tools to press when that debuff happens. This is useful for using specialized cure skills or items on yourself.
 
 1. Find the specific debuff in the grid.
 2. Click the box next to it and press your cure hotkey.
 3. Check the enable box.
 
 ## 3. Tips
-* OSRO Tools will only press the cure key once when the debuff starts.
+* **Status Recovery Items** are checked in a fixed order: **Green Potion**, then **Panacea**, then **Royal Jelly**.
+* If multiple active debuffs use the same cure key, OSRO Tools only presses that key once per cycle.
 
 ![Screenshot of the Debuffs tab showing Status Recovery items and the debuff grid](../images/debuffs-status-recovery.png)

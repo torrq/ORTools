@@ -10,7 +10,7 @@ These options are tied to your currently active profile.
 
 ## 2. Interface Settings
 * **Language:** Change the display language.
-* **App Theme:** Switch between Light and Dark mode.
+* **App Theme:** Choose a Light, Dark, **System**, or **Custom** theme. With **Custom**, pick any accent color and choose **Light** or **Dark** mode.
 * **Rows Configuration:** Adjust the number of visible rows in the **Songs**, **Macro Switch**, and **ATK x DEF** tabs.
 * **Default Toggle Key:** Sets the default hotkey that will be automatically assigned to start and stop OSRO Tools whenever you create a brand new profile. (To change the hotkey for your *current* profile, edit the key box directly on the main top panel).
 
@@ -24,6 +24,10 @@ These options are tied to your currently active profile.
 * **Pause When Dead:** Halts all activity if your character dies.
 * **Show Exp Per Hour:** Adds a live experience tracker below your character name on the main panel.
 * **Keep Dead Client Info:** Prevents the UI from clearing character data if the game client disconnects.
+* **Multi-Key Hold Mode:** Controls what happens when you hold more than one key at the same time in [Skill Spammer](skill-spammer.md) or [ATK x DEF](atk-def.md):
+  * **Round Robin (All Keys):** Alternates between all held keys.
+  * **Last Pressed (Priority):** Spams only the newest key you pressed, and falls back to earlier held keys when you let go.
+* **Debug View Controls:** Under developer settings, you can adjust **Debug View Height**, **Debug View Font Size**, or click **Reset to Default**.
 
 ## 5. Tips
 * If you want to check your active buffs for troubleshooting, open the **Status Logger** tab to see raw status data.
