@@ -4,7 +4,7 @@ All notable changes to OSRO Tools are documented in this file.
 
 ---
 
-## v2.2 (BETA-2)
+## v2.2
 
 ### Autobuff & Debuffs
 - **Click Icon to Pause / Resume**: Click any bound buff or debuff icon in **Autobuff** or **Debuffs** to temporarily pause it (dimmed) without clearing its hotkey. Click again to re-enable.
