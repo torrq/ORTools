@@ -17,6 +17,27 @@ namespace ORTools.Worker
         private ThreadRunner thread;
         private volatile bool _running;
         public ConcurrentDictionary<EffectStatusIDs, Keys> buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>();
+        private readonly ConcurrentDictionary<EffectStatusIDs, byte> _disabledDebuffs = new ConcurrentDictionary<EffectStatusIDs, byte>();
+
+        [JsonProperty("DisabledDebuffs")]
+        public List<EffectStatusIDs> DisabledDebuffs
+        {
+            get => new List<EffectStatusIDs>(_disabledDebuffs.Keys);
+            set
+            {
+                _disabledDebuffs.Clear();
+                if (value != null)
+                    foreach (var id in value) _disabledDebuffs[id] = 1;
+            }
+        }
+
+        public bool IsDebuffEnabled(EffectStatusIDs status) => !_disabledDebuffs.ContainsKey(status);
+
+        public void SetDebuffEnabled(EffectStatusIDs status, bool enabled)
+        {
+            if (enabled) _disabledDebuffs.TryRemove(status, out _);
+            else _disabledDebuffs[status] = 1;
+        }
         public int Delay { get; set; } = 50;
 
         private readonly string ActionName;
@@ -116,8 +137,8 @@ namespace ORTools.Worker
                             foundAnyStatus = true;
                             EffectStatusIDs status = (EffectStatusIDs)currentStatus;
 
-                            // Check if we have a mapping for this status
-                            if (buffMapping.TryGetValue(status, out Keys key) && WorkerNotifier.IsValidKey(key))
+                            // Check if we have an enabled mapping for this status
+                            if (IsDebuffEnabled(status) && buffMapping.TryGetValue(status, out Keys key) && WorkerNotifier.IsValidKey(key))
                             {
                                 if (pressedKeysThisCycle.Add(key))
                                 {
@@ -163,6 +184,7 @@ namespace ORTools.Worker
             var configData = new Dictionary<string, object>
             {
                 ["BuffMapping"] = this.buffMapping,
+                ["DisabledDebuffs"] = this.DisabledDebuffs,
                 ["Delay"] = this.Delay
             };
             return JsonConvert.SerializeObject(configData);
@@ -184,6 +206,14 @@ namespace ORTools.Worker
                         {
                             this.buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>(mappingData);
                         }
+                    }
+
+                    // Load disabled debuffs (optional — defaults to all enabled)
+                    _disabledDebuffs.Clear();
+                    if (configData.ContainsKey("DisabledDebuffs") && configData["DisabledDebuffs"] != null)
+                    {
+                        var disabled = JsonConvert.DeserializeObject<List<EffectStatusIDs>>(configData["DisabledDebuffs"].ToString()!);
+                        if (disabled != null) this.DisabledDebuffs = disabled;
                     }
 
                     // Load delay
@@ -255,6 +285,7 @@ namespace ORTools.Worker
 
         public void RemoveKeyFromBuff(EffectStatusIDs status)
         {
+            _disabledDebuffs.TryRemove(status, out _);
             if (buffMapping.ContainsKey(status))
             {
                 buffMapping.TryRemove(status, out _);
@@ -265,6 +296,7 @@ namespace ORTools.Worker
         public void ClearAllMappings()
         {
             buffMapping.Clear();
+            _disabledDebuffs.Clear();
             //DebugLogger.Debug("DebuffRecovery: Cleared all status mappings");
         }
 

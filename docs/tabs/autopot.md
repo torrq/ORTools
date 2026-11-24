@@ -15,7 +15,7 @@ OSRO Tools does not use items from your inventory directly. You must place the p
 When your HP drops below 70%, OSRO Tools will rapidly press **F1** until you heal above 70%.
 
 ## 3. Tips
-* You can configure multiple rows. For example, set a cheap potion to 80%, and a strong potion to 40% for emergencies.
+* You can configure multiple rows. By default, OSRO Tools uses your lowest triggered `%` row first so emergency potions (like Yggdrasil Berries at 35%) take priority over normal potions (like 85%). You can change this under **Autopot Priority** in [Settings](settings.md).
 * The SP section works the exact same way, but it monitors your blue SP bar.
 
 ![Screenshot of the Autopot tab with two rows filled out](../images/autopot-setup.png)

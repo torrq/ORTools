@@ -38,20 +38,34 @@
                                 CommandParameter="{Binding}" VerticalAlignment="Center" />
 
                         <Border Grid.Column="1" Background="{DynamicResource AppSurfaceBrush}" 
-                                BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" 
-                                CornerRadius="4" MinWidth="26" Height="24" Padding="6,0" Margin="0,0,12,0"
+                                BorderThickness="1" CornerRadius="4" MinWidth="26" Height="24" Padding="6,0" Margin="0,0,12,0"
                                 VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource AppToggleOnBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
+                                            <Setter Property="Opacity" Value="0.45" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                             <TextBlock Text="{Binding DisplayKey}" Foreground="{DynamicResource AppTextBrush}" 
                                        FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </Border>
 
-                        <Border Grid.Column="2" Width="24" Height="24" Background="Transparent" CornerRadius="2" Margin="0,0,12,0" VerticalAlignment="Center">
-                            <!-- Fallback for image load failure isn't built into standard WPF Image easily, so we just let it be blank if not found -->
+                        <Button Grid.Column="2"
+                                Style="{StaticResource AutobuffIconButtonStyle}"
+                                Margin="0,0,12,0"
+                                Command="{Binding DataContext.ToggleItemEnabledCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                CommandParameter="{Binding}">
                             <Image Source="{Binding IconPath}" Stretch="None"
                                    RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
-                        </Border>
+                        </Button>
                         
-                        <TextBlock Grid.Column="3" Text="{Binding DisplayName}" VerticalAlignment="Center" FontSize="14" />
+                        <TextBlock Grid.Column="3" Text="{Binding DisplayName}" FontSize="14"
+                                   Style="{StaticResource AutobuffLabelTextStyle}" />
                         
                         <StackPanel Grid.Column="4" Orientation="Horizontal">
                             <Button Content="↑" Margin="0,0,4,0" Width="28" Height="28" Padding="0"

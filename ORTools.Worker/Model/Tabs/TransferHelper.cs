@@ -1,7 +1,5 @@
-
 using Newtonsoft.Json;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -11,76 +9,110 @@ namespace ORTools.Worker
     {
         public static string ACTION_NAME_TRANSFER = "TransferHelper";
         public string ActionName { get; set; } = ACTION_NAME_TRANSFER;
-        private ThreadRunner thread;
+        private ThreadRunner? thread;
+        private volatile bool _running = false;
+        private int _altHeld = 0;
 
         public Keys TransferKey { get; set; } = Keys.None;
 
-        public string GetActionName()
+        public string GetActionName() => ACTION_NAME_TRANSFER;
+
+        public string GetConfiguration() => JsonConvert.SerializeObject(this);
+
+        private void HoldAltOnce()
         {
-            return ACTION_NAME_TRANSFER;
+            if (Interlocked.Exchange(ref _altHeld, 1) == 0)
+            {
+                ClientInput.HoldAlt();
+            }
         }
 
-        public string GetConfiguration()
+        private void ReleaseAltIfHeld()
         {
-            return JsonConvert.SerializeObject(this);
+            if (Interlocked.Exchange(ref _altHeld, 0) == 1)
+            {
+                ClientInput.ReleaseAlt();
+            }
         }
 
         private int TransferHelperThread(Client roClient)
         {
-            if (roClient.IsTextInputActive() || roClient.IsDead()) return 0;
+            if (!_running) return 0;
 
             var transferKey = ProfileSingleton.GetCurrent().TransferHelper.TransferKey;
-            if (transferKey != Keys.None && ClientInput.IsKeyPressed(transferKey))
+            if (transferKey == Keys.None)
             {
-                TransferHelperMacro(roClient, new KeyConfig(transferKey, true), transferKey);
+                Thread.Sleep(50);
                 return 0;
             }
-            Thread.Sleep(100);
+
+            if (!roClient.IsProcessRunning() || roClient.IsTextInputActive() || roClient.IsDead())
+            {
+                Thread.Sleep(50);
+                return 0;
+            }
+
+            IntPtr hWnd = roClient.MainWindowHandle;
+            if (hWnd == IntPtr.Zero || !ClientInput.IsForeground(hWnd))
+            {
+                Thread.Sleep(50);
+                return 0;
+            }
+
+            if (ClientInput.IsKeyPressed(transferKey))
+            {
+                TransferHelperMacro(roClient, hWnd, transferKey);
+                return 0;
+            }
+
+            Thread.Sleep(50);
             return 0;
         }
 
-        private void TransferHelperMacro(Client roClient, KeyConfig config, Keys thisk)
+        private void TransferHelperMacro(Client roClient, IntPtr hWnd, Keys key)
         {
-            Func<int, int> send_click = (evt) =>
+            try
             {
-                Win32Interop.PostMessage(roClient.Process.MainWindowHandle, Constants.WM_RBUTTONDOWN, Keys.None, 0);
-                Thread.Sleep(1);
-                Win32Interop.PostMessage(roClient.Process.MainWindowHandle, Constants.WM_RBUTTONUP, Keys.None, 0);
-                return 0;
-            };
+                HoldAltOnce();
 
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0xA4, Constants.KEYEVENTF_EXTENDEDKEY, 0);
-
-            while (ClientInput.IsKeyPressed(config.Key))
-            {
-                send_click(0);
-                Thread.Sleep(10);
+                while (_running
+                    && ClientInput.IsKeyPressed(key)
+                    && roClient.IsProcessRunning()
+                    && ClientInput.IsForeground(hWnd)
+                    && !roClient.IsTextInputActive()
+                    && !roClient.IsDead())
+                {
+                    ClientInput.SendRightClickFast(hWnd);
+                    Thread.Sleep(10);
+                }
             }
-            Win32Interop.keybd_event(Constants.VK_LMENU, 0xA4, Constants.KEYEVENTF_EXTENDEDKEY | Constants.KEYEVENTF_KEYUP, 0);
+            finally
+            {
+                ReleaseAltIfHeld();
+            }
         }
 
         public void Start()
         {
-            Client roClient = ClientSingleton.GetClient();
+            Client? roClient = ClientSingleton.GetClient();
             if (roClient != null)
             {
-                if (this.thread != null)
-                {
-                    ThreadRunner.Stop(this.thread);
-                    this.thread.Terminate();
-                    this.thread = null;
-                }
-                this.thread = new ThreadRunner((_) => TransferHelperThread(roClient), "TransferHelper");
+                Stop();
+                _running = true;
+                this.thread = new ThreadRunner((_) => TransferHelperThread(roClient), "TransferHelper") { IterationDelay = 1 };
                 ThreadRunner.Start(this.thread);
             }
         }
 
         public void Stop()
         {
+            _running = false;
+            ReleaseAltIfHeld();
             if (this.thread != null)
             {
                 ThreadRunner.Stop(this.thread);
                 this.thread.Terminate();
+                this.thread.Join(500);
                 this.thread = null;
             }
         }

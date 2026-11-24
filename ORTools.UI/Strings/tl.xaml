@@ -75,7 +75,16 @@
     <sys:String x:Key="S.AtkDef.SwitchDelay">Switch Delay</sys:String>
     <sys:String x:Key="S.AtkDef.Switch">I-switch</sys:String>
     <sys:String x:Key="S.Profiles.Copy">Kopyahin ang Profile</sys:String>
+    <sys:String x:Key="S.Profiles.Import">Mag-import</sys:String>
+    <sys:String x:Key="S.Profiles.Export">Mag-export</sys:String>
     <sys:String x:Key="S.Profiles.Delete">Burahin ang Profile</sys:String>
+    <sys:String x:Key="S.Profiles.SwitchHotkey">Switch Key:</sys:String>
+    <sys:String x:Key="S.Profiles.HotkeyHint">Pindutin ang key o Ctrl/Alt/Shift + key (Esc para burahin)</sys:String>
+    <sys:String x:Key="S.Profiles.AutoSwitchChar">Auto-switch sa character</sys:String>
+    <sys:String x:Key="S.Profiles.LinkedChars">Mga Character:</sys:String>
+    <sys:String x:Key="S.Profiles.LinkChar">+ Link Char</sys:String>
+    <sys:String x:Key="S.Profiles.LinkCharTitle">I-link ang Character</sys:String>
+    <sys:String x:Key="S.Profiles.LinkCharPrompt">Ilagay ang pangalan ng character para sa profile na ito:</sys:String>
 
     <!-- About -->
     <sys:String x:Key="S.About.Desc">Isang high-performance na automation assistant para sa Oldschool RO.</sys:String>
@@ -100,6 +109,8 @@
     <sys:String x:Key="S.Dialog.Confirm">Kumpirmahin</sys:String>
     <sys:String x:Key="S.Dialog.ConfirmDelete">Kumpirmahin ang Pagbura</sys:String>
     <sys:String x:Key="S.Dialog.Delete">Burahin</sys:String>
+    <sys:String x:Key="S.Dialog.ConfirmReset">I-reset?</sys:String>
+    <sys:String x:Key="S.Dialog.Reset">Reset</sys:String>
 
     <sys:String x:Key="S.Profiles.CreateTitle">Gumawa ng Profile</sys:String>
     <sys:String x:Key="S.Profiles.CreatePrompt">Ipasok ang pangalan ng bagong profile:</sys:String>
@@ -165,6 +176,18 @@
     <sys:String x:Key="S.Settings.MultiKeyRoundRobinDesc">I-cast nang salit-salit lahat.</sys:String>
     <sys:String x:Key="S.Settings.MultiKeyLastPressed">Huling Pindot (Bago)</sys:String>
     <sys:String x:Key="S.Settings.MultiKeyLastPressedDesc">I-cast ang pinakabagong key.</sys:String>
+    <sys:String x:Key="S.Settings.AutopotPriority">Autopot Priority</sys:String>
+    <sys:String x:Key="S.Settings.AutopotPriorityDesc">Kapag sabay nag-trigger ang HP/SP rows:</sys:String>
+    <sys:String x:Key="S.Settings.AutopotLowestFirst">Pinakamababang % Una (Emergency)</sys:String>
+    <sys:String x:Key="S.Settings.AutopotLowestFirstDesc">Unahin ang mas mababang % (hal. 30% Ygg bago 85% Pot).</sys:String>
+    <sys:String x:Key="S.Settings.AutopotSlotOrder">Slot Order (Classic)</sys:String>
+    <sys:String x:Key="S.Settings.AutopotSlotOrderDesc">Salit-salit mula itaas hanggang ibaba.</sys:String>
+    <sys:String x:Key="S.Settings.TownMaps">Town / Safe Maps</sys:String>
+    <sys:String x:Key="S.Settings.TownMapsDesc">Mga map kung saan naka-pause ang Pause in Town:</sys:String>
+    <sys:String x:Key="S.Settings.AddMap">Dagdag</sys:String>
+    <sys:String x:Key="S.Settings.AddCurrentMap">+ Map</sys:String>
+    <sys:String x:Key="S.Settings.ConfirmResetTownMaps">I-reset ang listahan ng Town / Safe Maps sa default?</sys:String>
+    <sys:String x:Key="S.Autobuff.ToggleIconHint">I-click ang icon para i-pause o ibalik</sys:String>
 
     <!-- Settings — Developer -->
     <sys:String x:Key="S.Settings.DeveloperTools">Mga Tool ng Developer</sys:String>
@@ -194,6 +217,14 @@
     <sys:String x:Key="S.Dialog.UpdateAvailableTitle">May Bagong Update!</sys:String>
     <sys:String x:Key="S.Dialog.UpdateAvailableMessage">May bagong bersyon (v{0}) ng OSRO Tools sa GitHub.</sys:String>
     <sys:String x:Key="S.Dialog.DownloadUpdate">I-download ang Update</sys:String>
+    <sys:String x:Key="S.Dialog.UpdateAndRestart">I-update at I-restart</sys:String>
+    <sys:String x:Key="S.Dialog.OpenInBrowser">Buksan sa browser</sys:String>
+    <sys:String x:Key="S.Keybinds.Title">Mga Keybind</sys:String>
+    <sys:String x:Key="S.Keybinds.Summary">Profile: {0} ({1} keybinds)</sys:String>
+    <sys:String x:Key="S.Keybinds.Empty">Walang nahanap na keybind.</sys:String>
+    <sys:String x:Key="S.Keybinds.Paused">Naka-pause</sys:String>
+    <sys:String x:Key="S.Keybinds.SharedTooltip">Ginagamit sa higit sa isang feature</sys:String>
+    <sys:String x:Key="S.Keybinds.JumpToTab">Pumunta sa tab</sys:String>
     <sys:String x:Key="S.Dialog.DisableAutoCheck">Huwag suriin sa pagsisimula</sys:String>
     <sys:String x:Key="S.Dialog.AutoCheckDisabledTitle">Naka-off ang Awtomatikong Pagsusuri</sys:String>
     <sys:String x:Key="S.Dialog.AutoCheckDisabledDesc1">Naka-off na ang pagsusuri ng update sa pagsisimula. Maaari mo itong muling i-on sa </sys:String>

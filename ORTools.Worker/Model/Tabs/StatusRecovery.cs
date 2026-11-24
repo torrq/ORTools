@@ -19,6 +19,15 @@ namespace ORTools.Worker
 
         // Dictionary to store multiple status lists with their associated keys
         public ConcurrentDictionary<string, StatusRecoveryList> statusLists = new ConcurrentDictionary<string, StatusRecoveryList>();
+        private readonly ConcurrentDictionary<string, byte> _disabledLists = new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
+
+        public bool IsListEnabled(string listName) => !_disabledLists.ContainsKey(listName);
+
+        public void SetListEnabled(string listName, bool enabled)
+        {
+            if (enabled) _disabledLists.TryRemove(listName, out _);
+            else _disabledLists[listName] = 1;
+        }
 
         // Legacy property for backward compatibility with old JSON format
         [JsonIgnore]
@@ -179,7 +188,8 @@ namespace ORTools.Worker
                             // Check status lists in deterministic priority order: GreenPotion -> Panacea -> RoyalJelly
                             foreach (var listName in PriorityListNames)
                             {
-                                if (statusLists.TryGetValue(listName, out var statusList) &&
+                                if (IsListEnabled(listName) &&
+                                    statusLists.TryGetValue(listName, out var statusList) &&
                                     statusList.ContainsStatus(status) &&
                                     WorkerNotifier.IsValidKey(statusList.Key))
                                 {
@@ -231,6 +241,7 @@ namespace ORTools.Worker
             var configData = new Dictionary<string, object>
             {
                 ["Keys"] = statusLists.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Key),
+                ["DisabledLists"] = _disabledLists.Keys.ToList(),
                 ["Delay"] = this.Delay
             };
             return JsonConvert.SerializeObject(configData);
@@ -258,6 +269,15 @@ namespace ORTools.Worker
                                 }
                             }
                         }
+                    }
+
+                    // Load disabled lists (optional — defaults to all enabled)
+                    _disabledLists.Clear();
+                    if (configData.ContainsKey("DisabledLists") && configData["DisabledLists"] != null)
+                    {
+                        var disabled = JsonConvert.DeserializeObject<List<string>>(configData["DisabledLists"].ToString()!);
+                        if (disabled != null)
+                            foreach (var name in disabled) _disabledLists[name] = 1;
                     }
 
                     // Load delay
@@ -346,7 +366,9 @@ namespace ORTools.Worker
         {
             if (statusLists.ContainsKey(listName))
             {
-                statusLists[listName].Key = WorkerNotifier.IsValidKey(key) ? key : Keys.None;
+                bool valid = WorkerNotifier.IsValidKey(key);
+                statusLists[listName].Key = valid ? key : Keys.None;
+                if (!valid) _disabledLists.TryRemove(listName, out _);
             }
         }
 

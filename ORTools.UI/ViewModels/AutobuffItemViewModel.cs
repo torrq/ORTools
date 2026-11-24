@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
 
@@ -18,13 +19,32 @@ public partial class AutobuffItemItemViewModel : ObservableObject
     public string ImagePath => $"pack://application:,,,/Assets/Icons/Items/{IconName}.png";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsActive))]
+    [NotifyPropertyChangedFor(nameof(EffectiveIsEnabled))]
     private string _key = "None";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsActive))]
+    [NotifyPropertyChangedFor(nameof(EffectiveIsEnabled))]
+    private bool _isEnabled = true;
+
+    public bool IsActive => Key != "None" && IsEnabled;
+    public bool EffectiveIsEnabled => Key == "None" || IsEnabled;
+
     public event EventHandler<string>? OnKeyUpdated;
+    public event EventHandler<bool>? OnEnabledToggled;
 
     partial void OnKeyChanged(string value)
     {
         OnKeyUpdated?.Invoke(this, value);
+    }
+
+    [RelayCommand]
+    private void ToggleEnabled()
+    {
+        if (Key == "None") return;
+        IsEnabled = !IsEnabled;
+        OnEnabledToggled?.Invoke(this, IsEnabled);
     }
 }
 
@@ -73,12 +93,18 @@ public partial class AutobuffItemViewModel : ObservableObject
                             Name = itemData.Name,
                             DisplayName = itemData.DisplayName,
                             Key = itemData.Key,
-                            IconName = itemData.IconName
+                            IconName = itemData.IconName,
+                            IsEnabled = itemData.IsEnabled
                         };
                         itemVm.OnKeyUpdated += (sender, key) =>
                         {
                             if (!_isUpdatingFromServer && sender is AutobuffItemItemViewModel vm)
                                 _worker.Send(new UpdateAutobuffItemCommand(vm.Name, key));
+                        };
+                        itemVm.OnEnabledToggled += (sender, enabled) =>
+                        {
+                            if (!_isUpdatingFromServer && sender is AutobuffItemItemViewModel vm)
+                                _worker.Send(new ToggleAutobuffItemEnabledCommand(vm.Name, enabled));
                         };
                         groupVm.Items.Add(itemVm);
                     }
@@ -96,9 +122,10 @@ public partial class AutobuffItemViewModel : ObservableObject
                     foreach (var itemData in groupData.Items)
                     {
                         var itemVm = groupVm.Items.FirstOrDefault(i => i.Name == itemData.Name);
-                        if (itemVm != null && itemVm.Key != itemData.Key)
+                        if (itemVm != null)
                         {
-                            itemVm.Key = itemData.Key;
+                            if (itemVm.Key != itemData.Key) itemVm.Key = itemData.Key;
+                            if (itemVm.IsEnabled != itemData.IsEnabled) itemVm.IsEnabled = itemData.IsEnabled;
                         }
                     }
                 }

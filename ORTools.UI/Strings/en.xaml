@@ -66,7 +66,16 @@
     <sys:String x:Key="S.Profiles.Create">Create Profile</sys:String>
     <sys:String x:Key="S.Profiles.Rename">Rename Profile</sys:String>
     <sys:String x:Key="S.Profiles.Copy">Copy Profile</sys:String>
+    <sys:String x:Key="S.Profiles.Import">Import Profile</sys:String>
+    <sys:String x:Key="S.Profiles.Export">Export Profile</sys:String>
     <sys:String x:Key="S.Profiles.Delete">Delete Profile</sys:String>
+    <sys:String x:Key="S.Profiles.SwitchHotkey">Switch Hotkey:</sys:String>
+    <sys:String x:Key="S.Profiles.HotkeyHint">Press a key or Ctrl/Alt/Shift + key (Esc/Backspace to clear)</sys:String>
+    <sys:String x:Key="S.Profiles.AutoSwitchChar">Auto-switch by character</sys:String>
+    <sys:String x:Key="S.Profiles.LinkedChars">Linked Characters:</sys:String>
+    <sys:String x:Key="S.Profiles.LinkChar">+ Link Char</sys:String>
+    <sys:String x:Key="S.Profiles.LinkCharTitle">Link Character</sys:String>
+    <sys:String x:Key="S.Profiles.LinkCharPrompt">Enter character name to auto-load this profile:</sys:String>
 
     <!-- About -->
     <sys:String x:Key="S.About.Desc">A high-performance automation assistant for Oldschool RO.</sys:String>
@@ -91,6 +100,8 @@
     <sys:String x:Key="S.Dialog.Confirm">Confirm</sys:String>
     <sys:String x:Key="S.Dialog.ConfirmDelete">Confirm Delete</sys:String>
     <sys:String x:Key="S.Dialog.Delete">Delete</sys:String>
+    <sys:String x:Key="S.Dialog.ConfirmReset">Confirm Reset</sys:String>
+    <sys:String x:Key="S.Dialog.Reset">Reset</sys:String>
     
     <sys:String x:Key="S.Profiles.CreateTitle">Create Profile</sys:String>
     <sys:String x:Key="S.Profiles.CreatePrompt">Enter new profile name:</sys:String>
@@ -164,6 +175,18 @@
     <sys:String x:Key="S.Settings.MultiKeyRoundRobinDesc">Casts all held keys in rotation.</sys:String>
     <sys:String x:Key="S.Settings.MultiKeyLastPressed">Last Pressed (Priority)</sys:String>
     <sys:String x:Key="S.Settings.MultiKeyLastPressedDesc">Casts only the newest held key.</sys:String>
+    <sys:String x:Key="S.Settings.AutopotPriority">Autopot Priority</sys:String>
+    <sys:String x:Key="S.Settings.AutopotPriorityDesc">When multiple HP/SP rows trigger at once:</sys:String>
+    <sys:String x:Key="S.Settings.AutopotLowestFirst">Lowest Threshold First (Emergency)</sys:String>
+    <sys:String x:Key="S.Settings.AutopotLowestFirstDesc">Uses lowest triggered % first (e.g. 30% Ygg over 85% Pot).</sys:String>
+    <sys:String x:Key="S.Settings.AutopotSlotOrder">Slot Order (Classic)</sys:String>
+    <sys:String x:Key="S.Settings.AutopotSlotOrderDesc">Rotates top-to-bottom across all triggered rows.</sys:String>
+    <sys:String x:Key="S.Settings.TownMaps">Town / Safe Maps</sys:String>
+    <sys:String x:Key="S.Settings.TownMapsDesc">Maps where Pause in Town stops autopots, autobuffs, and recovery:</sys:String>
+    <sys:String x:Key="S.Settings.AddMap">Add</sys:String>
+    <sys:String x:Key="S.Settings.AddCurrentMap">+ Current</sys:String>
+    <sys:String x:Key="S.Settings.ConfirmResetTownMaps">Reset the Town / Safe Maps list back to the default maps?</sys:String>
+    <sys:String x:Key="S.Autobuff.ToggleIconHint">Click icon to pause or resume</sys:String>
 
     <!-- Settings — Developer -->
     <sys:String x:Key="S.Settings.DeveloperTools">Developer Tools</sys:String>
@@ -193,6 +216,14 @@
     <sys:String x:Key="S.Dialog.UpdateAvailableTitle">Update Available!</sys:String>
     <sys:String x:Key="S.Dialog.UpdateAvailableMessage">A new version (v{0}) of OSRO Tools is available on GitHub.</sys:String>
     <sys:String x:Key="S.Dialog.DownloadUpdate">Download Update</sys:String>
+    <sys:String x:Key="S.Dialog.UpdateAndRestart">Update &amp; Restart</sys:String>
+    <sys:String x:Key="S.Dialog.OpenInBrowser">Open release page in browser</sys:String>
+    <sys:String x:Key="S.Keybinds.Title">Keybind Overview</sys:String>
+    <sys:String x:Key="S.Keybinds.Summary">Profile: {0} ({1} active binds)</sys:String>
+    <sys:String x:Key="S.Keybinds.Empty">No matching keybinds found.</sys:String>
+    <sys:String x:Key="S.Keybinds.Paused">Paused</sys:String>
+    <sys:String x:Key="S.Keybinds.SharedTooltip">Shared across multiple features</sys:String>
+    <sys:String x:Key="S.Keybinds.JumpToTab">Go to tab</sys:String>
     <sys:String x:Key="S.Dialog.DisableAutoCheck">Don't check on startup</sys:String>
     <sys:String x:Key="S.Dialog.AutoCheckDisabledTitle">Auto-Checking Disabled</sys:String>
     <sys:String x:Key="S.Dialog.AutoCheckDisabledDesc1">Startup update checks have been disabled. You can re-enable this anytime under </sys:String>

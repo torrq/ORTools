@@ -24,6 +24,19 @@ namespace ORTools.Worker
 
         // Keys per status — List<Keys> allows multiple items sharing the same status ID (e.g. Water Converter + Box of Thunder)
         public ConcurrentDictionary<EffectStatusIDs, List<Keys>> buffMapping = new ConcurrentDictionary<EffectStatusIDs, List<Keys>>();
+        private readonly ConcurrentDictionary<EffectStatusIDs, byte> _disabledBuffs = new ConcurrentDictionary<EffectStatusIDs, byte>();
+
+        [JsonProperty("DisabledBuffs")]
+        public List<EffectStatusIDs> DisabledBuffs
+        {
+            get => new List<EffectStatusIDs>(_disabledBuffs.Keys);
+            set
+            {
+                _disabledBuffs.Clear();
+                if (value != null)
+                    foreach (var id in value) _disabledBuffs[id] = 1;
+            }
+        }
 
         // Set false by Stop() so an in-flight iteration stops sending keys immediately
         private volatile bool _active = false;
@@ -174,6 +187,11 @@ namespace ORTools.Worker
                                 {
                                     try
                                     {
+                                        if (!IsBuffEnabled(item.Key))
+                                        {
+                                            continue;
+                                        }
+
                                         if (foundQuag && (item.Key == EffectStatusIDs.AC_CONCENTRATION || item.Key == EffectStatusIDs.AL_INCAGI || item.Key == EffectStatusIDs.SN_SIGHT || item.Key == EffectStatusIDs.BS_ADRENALINE || item.Key == EffectStatusIDs.CR_SPEARQUICKEN || item.Key == EffectStatusIDs.KN_ONEHAND || item.Key == EffectStatusIDs.SN_WINDWALK))
                                         {
                                             continue;
@@ -264,8 +282,17 @@ namespace ORTools.Worker
                 AddKeyToBuff(status, newKey);
         }
 
+        public bool IsBuffEnabled(EffectStatusIDs status) => !_disabledBuffs.ContainsKey(status);
+
+        public void SetBuffEnabled(EffectStatusIDs status, bool enabled)
+        {
+            if (enabled) _disabledBuffs.TryRemove(status, out _);
+            else _disabledBuffs[status] = 1;
+        }
+
         public void RemoveKeyFromBuff(EffectStatusIDs status)
         {
+            _disabledBuffs.TryRemove(status, out _);
             if (buffMapping.ContainsKey(status))
             {
                 buffMapping.TryRemove(status, out _);
@@ -276,6 +303,7 @@ namespace ORTools.Worker
         public void ClearKeyMapping()
         {
             buffMapping.Clear();
+            _disabledBuffs.Clear();
             //DebugLogger.Debug("AutoBuffItem: Cleared all key mappings");
         }
 
@@ -326,6 +354,7 @@ namespace ORTools.Worker
             {
                 ["ActionName"] = this.ActionName,
                 ["BuffMapping"] = GetAllMappings(), // serialize as flat dict for profile compatibility
+                ["DisabledBuffs"] = this.DisabledBuffs,
                 ["Delay"] = this._delay
             };
             return JsonConvert.SerializeObject(configData);
@@ -357,6 +386,18 @@ namespace ORTools.Worker
                             {
                                 this.buffMapping.TryAdd(kvp.Key, new List<Keys> { kvp.Value });
                             }
+                        }
+                    }
+
+                    // Load disabled buffs (optional — absent in older profiles, defaults to all enabled)
+                    this._disabledBuffs.Clear();
+                    var disabledToken = jObj.GetValue("DisabledBuffs", StringComparison.OrdinalIgnoreCase);
+                    if (disabledToken != null)
+                    {
+                        var disabledList = disabledToken.ToObject<List<EffectStatusIDs>>();
+                        if (disabledList != null)
+                        {
+                            this.DisabledBuffs = disabledList;
                         }
                     }
 

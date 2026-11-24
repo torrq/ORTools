@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
 
@@ -51,6 +52,11 @@ public partial class DebuffsViewModel : ObservableObject
                 if (!_isUpdatingFromServer && sender is StatusRecoveryItemViewModel itemVm)
                     _worker.Send(new UpdateStatusRecoveryItemCommand(itemVm.Name, key));
             };
+            vm.OnEnabledToggled += (sender, enabled) =>
+            {
+                if (!_isUpdatingFromServer && sender is StatusRecoveryItemViewModel itemVm)
+                    _worker.Send(new ToggleStatusRecoveryEnabledCommand(itemVm.Name, enabled));
+            };
             StatusRecoveryItems.Add(vm);
         }
     }
@@ -87,6 +93,11 @@ public partial class DebuffsViewModel : ObservableObject
                 if (!_isUpdatingFromServer && sender is DebuffRecoveryItemViewModel itemVm)
                     _worker.Send(new UpdateDebuffRecoveryItemCommand(itemVm.Name, key));
             };
+            vm.OnEnabledToggled += (sender, enabled) =>
+            {
+                if (!_isUpdatingFromServer && sender is DebuffRecoveryItemViewModel itemVm)
+                    _worker.Send(new ToggleDebuffRecoveryEnabledCommand(itemVm.Name, enabled));
+            };
             DebuffItems.Add(vm);
         }
     }
@@ -105,6 +116,7 @@ public partial class DebuffsViewModel : ObservableObject
                 if (vm != null)
                 {
                     vm.Key = item.Key;
+                    vm.IsEnabled = item.IsEnabled;
                 }
             }
 
@@ -124,6 +136,7 @@ public partial class DebuffsViewModel : ObservableObject
             foreach (var item in DebuffItems)
             {
                 item.Key = "None";
+                item.IsEnabled = true;
             }
 
             // Apply mapped keys
@@ -134,6 +147,7 @@ public partial class DebuffsViewModel : ObservableObject
                 {
                     vm.Key = item.Key;
                     vm.IconName = item.IconName;
+                    vm.IsEnabled = item.IsEnabled;
                 }
             }
 
@@ -163,13 +177,32 @@ public partial class DebuffRecoveryItemViewModel : ObservableObject
     public string ImagePath => $"pack://application:,,,/Assets/Icons/Debuffs/{IconName}.png";
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsActive))]
+    [NotifyPropertyChangedFor(nameof(EffectiveIsEnabled))]
     private string _key = "None";
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsActive))]
+    [NotifyPropertyChangedFor(nameof(EffectiveIsEnabled))]
+    private bool _isEnabled = true;
+
+    public bool IsActive => Key != "None" && IsEnabled;
+    public bool EffectiveIsEnabled => Key == "None" || IsEnabled;
+
     public event EventHandler<string>? OnKeyUpdated;
+    public event EventHandler<bool>? OnEnabledToggled;
 
     partial void OnKeyChanged(string value)
     {
         OnKeyUpdated?.Invoke(this, value);
+    }
+
+    [RelayCommand]
+    private void ToggleEnabled()
+    {
+        if (Key == "None") return;
+        IsEnabled = !IsEnabled;
+        OnEnabledToggled?.Invoke(this, IsEnabled);
     }
 }
 

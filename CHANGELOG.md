@@ -4,6 +4,29 @@ All notable changes to OSRO Tools are documented in this file.
 
 ---
 
+## v2.2 (BETA-2)
+
+### Autobuff & Debuffs
+- **Click Icon to Pause / Resume**: Click any bound buff or debuff icon in **Autobuff** or **Debuffs** to temporarily pause it (dimmed) without clearing its hotkey. Click again to re-enable.
+- **Active Key Highlighting**: Bound and enabled keys in **Autobuff** and **Debuffs** now show a clean green border and subtle glow so active binds stand out at a glance.
+
+### Profiles & Multi-Character
+- **Auto-Switch by Character**: Link one or more character names to any profile so logging onto that character automatically switches to its setup.
+- **Profile Switch Hotkeys**: Assign a key or `Ctrl`/`Alt`/`Shift` + key combo to any profile to switch setups in-game without alt-tabbing.
+- **Import, Export & Drag-and-Drop**: Share `.json` profiles with **Import Profile** / **Export Profile** buttons or by dragging `.json` files directly onto the **Profiles** tab.
+
+### Autopot, Transfer Helper & Map Controls
+- **Autopot Priority Mode** (*Settings > Behavior*): Defaults to **Lowest Threshold First (Emergency)** so low-% emergency heals (like Ygg Berries) take priority over high-% sustain potions when HP/SP drops low, with **Slot Order (Classic)** available as an option.
+- **Faster Autopot Input**: Removed the 20ms key-hold delay on HP and SP potions for faster emergency healing.
+- **Editable Town / Safe Maps** (*Settings > Behavior*): Add or remove maps for **Pause in Town** right from the UI (including a one-click **+ Current** button and **Reset to Default**).
+- **Transfer Helper Fixes**: Only triggers while the game window is focused and guarantees the `Alt` key is released cleanly if interrupted.
+
+### Updater & Keybind Tools
+- **One-Click Auto-Updater**: **Update & Restart** downloads the matching HR or MR release zip, preserves your `Profiles` and `Config` folders, updates the app, and restarts automatically.
+- **Keybind Overview**: Click the keyboard icon in the top header to search all active hotkeys in your current profile, spot shared keys, and jump straight to any tab.
+
+---
+
 ## v2.1
 
 ### Skill Spammer & ATK x DEF

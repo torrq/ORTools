@@ -19,6 +19,8 @@ public sealed class StatePublisher : IDisposable
     private HpSpUpdate? _lastHpSp;
     private CharacterUpdate? _lastCharacter;
 
+    public event Action<string>? CharacterChanged;
+
     /// <param name="broadcast">
     /// Async delegate that sends one update; already wraps BroadcastAsync generically.
     /// </param>
@@ -111,6 +113,7 @@ public sealed class StatePublisher : IDisposable
                         lastReportedName = name;
                         byte slot = client.ReadCharacterSlot();
                         DebugLogger.Info($"[StatePublisher] Character Loaded: {name} (Slot: {slot + 1})");
+                        CharacterChanged?.Invoke(name);
                     }
 
                     string map  = client.ReadCurrentMap()    ?? "";

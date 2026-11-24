@@ -147,18 +147,26 @@ namespace ORTools.Worker
             if (slotsBySPPercent.Count == 0)
                 return false;
 
-            // Get ALL SP percentages that we're below, sorted by priority (highest first)
-            var sortedSPPercentages = slotsBySPPercent.Keys.OrderByDescending(x => x).ToList();
+            var priorityMode = ConfigGlobal.GetConfig().AutopotPriorityMode;
+            List<int> allAvailableSlots;
 
-            // Collect all available slots from all applicable SP percentages
-            var allAvailableSlots = new List<int>();
-            foreach (var spPercent in sortedSPPercentages)
+            if (priorityMode == ORTools.Shared.Protocol.AutopotPriorityMode.LowestThresholdFirst)
             {
-                allAvailableSlots.AddRange(slotsBySPPercent[spPercent]);
+                // Emergency priority: only consider slots at the lowest triggered SP% threshold
+                int lowestSPPercent = slotsBySPPercent.Keys.Min();
+                allAvailableSlots = new List<int>(slotsBySPPercent[lowestSPPercent]);
+                allAvailableSlots.Sort();
             }
-
-            // Sort the slots by their original slot index to maintain priority order
-            allAvailableSlots.Sort();
+            else
+            {
+                // Classic slot order across all triggered thresholds
+                allAvailableSlots = new List<int>();
+                foreach (var list in slotsBySPPercent.Values)
+                {
+                    allAvailableSlots.AddRange(list);
+                }
+                allAvailableSlots.Sort();
+            }
 
             // Use the next slot in the cycling order across all available slots
             int nextSlotIndex = GetNextSlotIndex(allAvailableSlots);
@@ -194,7 +202,7 @@ namespace ORTools.Worker
         {
             try
             {
-                return ClientInput.SendKey(handle, key);
+                return ClientInput.SendKeyFast(handle, key, blockOnAlt: true);
             }
             catch (Exception ex)
             {

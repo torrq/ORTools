@@ -27,6 +27,10 @@ These options are tied to your currently active profile.
 * **Multi-Key Hold Mode:** Controls what happens when you hold more than one key at the same time in [Skill Spammer](skill-spammer.md) or [ATK x DEF](atk-def.md):
   * **Round Robin (All Keys):** Alternates between all held keys.
   * **Last Pressed (Priority):** Spams only the newest key you pressed, and falls back to earlier held keys when you let go.
+* **Autopot Priority:** Controls which row is used first when multiple [Autopot](autopot.md) rows trigger at the same time:
+  * **Lowest Threshold First (Emergency):** Uses the lowest triggered `%` row first (such as an emergency heal at 30%).
+  * **Slot Order (Classic):** Rotates from top to bottom across all triggered rows.
+* **Town / Safe Maps:** Add or remove map names where **Pause In Town** stops automation. Click **+ Current** to add the map your character is standing on, or **Reset to Default** to restore the standard town list.
 * **Debug View Controls:** Under developer settings, you can adjust **Debug View Height**, **Debug View Font Size**, or click **Reset to Default**.
 
 ## 5. Tips

@@ -1,0 +1,170 @@
+<UserControl x:Class="ORTools.UI.Views.KeybindOverviewDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:ORTools.UI.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance vm:KeybindOverviewDialogViewModel}"
+             Background="Transparent">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource AppSurfaceBrush}"
+            BorderBrush="{DynamicResource AppBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="18"
+            Width="520"
+            MaxHeight="500"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.5" Direction="270" ShadowDepth="5"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,10">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE2B4;" FontSize="18"
+                               Foreground="{DynamicResource AppLinkBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource S.Keybinds.Title}" Foreground="{DynamicResource AppTextBrush}" FontSize="16" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding SummaryText}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="11" />
+                    </StackPanel>
+                </StackPanel>
+                <Button Content="✕" Command="{Binding CloseCommand}" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Width="26" Height="26" Padding="0" Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource AppSubtleBrush}" Cursor="Hand" />
+            </Grid>
+
+            <!-- Search Filter -->
+            <Border Grid.Row="1" Background="{DynamicResource AppInputBrush}" BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="1" CornerRadius="4" Padding="6,4" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE151;" FontSize="13"
+                               Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" Margin="2,0,8,0"/>
+                    <TextBox Grid.Column="1" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                             Background="Transparent" BorderThickness="0" Foreground="{DynamicResource AppTextBrush}"
+                             FontSize="12" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Entries List -->
+            <Border Grid.Row="2" Background="{DynamicResource AppInputBrush}" BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="1" CornerRadius="4" MinHeight="220" MaxHeight="310">
+                <Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Visibility="{Binding HasEntries, Converter={StaticResource BoolToVis}}">
+                        <ItemsControl ItemsSource="{Binding FilteredEntries}" Margin="4">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="8,5" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource AppBorderBrush}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="82" />
+                                                <ColumnDefinition Width="105" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Key Pill -->
+                                            <Border Grid.Column="0" Background="{DynamicResource AppSurfaceBrush}"
+                                                    BorderThickness="1" CornerRadius="4" Padding="6,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="BorderBrush" Value="{DynamicResource AppToggleOnBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                                                <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
+                                                                <Setter Property="Opacity" Value="0.5" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding KeyDisplay}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource AppTextBrush}" />
+                                            </Border>
+
+                                            <!-- Tab -->
+                                            <TextBlock Grid.Column="1" Text="{Binding TabName}" FontSize="11" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource AppSubtleBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,6,0" />
+
+                                            <!-- Feature -->
+                                            <TextBlock Grid.Column="2" Text="{Binding Feature}" FontSize="12"
+                                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Margin="0,0,6,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="{DynamicResource AppTextBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                                                <Setter Property="Opacity" Value="0.5" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <!-- Badges (Paused / Shared) -->
+                                            <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,6,0">
+                                                <Border Background="{DynamicResource AppWarningBrush}" CornerRadius="3" Padding="5,1" Margin="0,0,4,0"
+                                                        Visibility="{Binding IsShared, Converter={StaticResource BoolToVis}}"
+                                                        ToolTip="{DynamicResource S.Keybinds.SharedTooltip}">
+                                                    <TextBlock Text="{Binding SharedLabel}" FontSize="10" FontWeight="Bold" Foreground="#111111" />
+                                                </Border>
+                                                <Border Background="{DynamicResource AppSurfaceBrush}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1"
+                                                        CornerRadius="3" Padding="5,1"
+                                                        Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}}">
+                                                    <TextBlock Text="{DynamicResource S.Keybinds.Paused}" FontSize="10" Foreground="{DynamicResource AppSubtleBrush}" />
+                                                </Border>
+                                            </StackPanel>
+
+                                            <!-- Jump Button -->
+                                            <Button Grid.Column="4" Content="→" FontSize="12" Width="24" Height="22" Padding="0"
+                                                    Style="{StaticResource SecondaryButtonStyle}"
+                                                    ToolTip="{DynamicResource S.Keybinds.JumpToTab}"
+                                                    Visibility="{Binding CanJump, Converter={StaticResource BoolToVis}}"
+                                                    Command="{Binding DataContext.JumpToTabCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <TextBlock Text="{DynamicResource S.Keybinds.Empty}" Foreground="{DynamicResource AppSubtleBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasEntries}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
+
+            <!-- Footer -->
+            <Button Grid.Row="3" Content="{DynamicResource S.Dialog.Close}" Command="{Binding CloseCommand}"
+                    IsCancel="True" Style="{StaticResource SecondaryButtonStyle}"
+                    Width="90" Height="30" HorizontalAlignment="Right" Margin="0,12,0,0" />
+        </Grid>
+    </Border>
+</UserControl>

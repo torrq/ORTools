@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using ORTools.Shared.Protocol;
 using ORTools.UI.Services;
 using ORTools.Worker;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 
 namespace ORTools.UI.ViewModels;
@@ -10,6 +11,7 @@ namespace ORTools.UI.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly WorkerService _worker;
+    private readonly MainWindowViewModel _mainWindow;
 
     [ObservableProperty] private bool _debugMode;
     [ObservableProperty] private bool _debugView;
@@ -75,6 +77,27 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private int _atkDefRows = 2;
     [ObservableProperty] private string _defaultToggleStateKey = "None";
     [ObservableProperty] private HoldMultiKeyMode _holdMultiKeyMode = HoldMultiKeyMode.RoundRobinAll;
+    [ObservableProperty] private AutopotPriorityMode _autopotPriorityMode = AutopotPriorityMode.LowestThresholdFirst;
+
+    public bool IsLowestThresholdPriority
+    {
+        get => AutopotPriorityMode == AutopotPriorityMode.LowestThresholdFirst;
+        set
+        {
+            if (value && AutopotPriorityMode != AutopotPriorityMode.LowestThresholdFirst)
+                AutopotPriorityMode = AutopotPriorityMode.LowestThresholdFirst;
+        }
+    }
+
+    public bool IsSlotOrderPriority
+    {
+        get => AutopotPriorityMode == AutopotPriorityMode.SlotOrder;
+        set
+        {
+            if (value && AutopotPriorityMode != AutopotPriorityMode.SlotOrder)
+                AutopotPriorityMode = AutopotPriorityMode.SlotOrder;
+        }
+    }
 
     public bool IsRoundRobinMode
     {
@@ -104,15 +127,45 @@ public partial class SettingsViewModel : ObservableObject
 
     public AutobuffSkillViewModel AutobuffSkill { get; }
 
-    public SettingsViewModel(WorkerService worker, AutobuffSkillViewModel autobuffSkill)
+    // Town / Safe Maps editor
+    public ObservableCollection<string> CityList { get; } = new();
+    [ObservableProperty] private string _newCityName = "";
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCurrentMap))]
+    private string _currentMapName = "";
+    public bool HasCurrentMap => !string.IsNullOrWhiteSpace(CurrentMapName);
+
+    public SettingsViewModel(WorkerService worker, AutobuffSkillViewModel autobuffSkill, MainWindowViewModel mainWindow)
     {
         _worker = worker;
+        _mainWindow = mainWindow;
         AutobuffSkill = autobuffSkill;
         _language = LanguageService.Current;
         _worker.GlobalConfigReceived += OnGlobalConfigReceived;
+        _worker.CityListReceived += OnCityListReceived;
+        _worker.CharacterReceived += OnCharacterReceived;
         _worker.ProfileSettingsReceived += OnProfileSettingsReceived;
         _worker.AppStateReceived += OnAppStateReceived;
         LanguageService.LanguageChanged += OnLanguageChangedEvent;
+    }
+
+    private void OnCharacterReceived(CharacterUpdate update)
+    {
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            if (!string.IsNullOrWhiteSpace(update.Map))
+                CurrentMapName = update.Map.Trim();
+        });
+    }
+
+    private void OnCityListReceived(CityListUpdate update)
+    {
+        System.Windows.Application.Current?.Dispatcher.BeginInvoke(() =>
+        {
+            CityList.Clear();
+            foreach (var city in update.Cities)
+                CityList.Add(city);
+        });
     }
 
     private void OnLanguageChangedEvent()
@@ -167,8 +220,11 @@ public partial class SettingsViewModel : ObservableObject
             CustomThemeIsLight = update.CustomThemeIsLight;
             CustomThemeColor = update.CustomThemeColor;
             HoldMultiKeyMode = update.HoldMultiKeyMode;
+            AutopotPriorityMode = update.AutopotPriorityMode;
             OnPropertyChanged(nameof(IsRoundRobinMode));
             OnPropertyChanged(nameof(IsLastPressedMode));
+            OnPropertyChanged(nameof(IsLowestThresholdPriority));
+            OnPropertyChanged(nameof(IsSlotOrderPriority));
             OnPropertyChanged(nameof(IsCustomTheme));
             OnPropertyChanged(nameof(CustomThemeIsDark));
             _suppressUpdates = false;
@@ -303,6 +359,13 @@ public partial class SettingsViewModel : ObservableObject
         SendGlobalUpdate();
     }
 
+    partial void OnAutopotPriorityModeChanged(AutopotPriorityMode value)
+    {
+        OnPropertyChanged(nameof(IsLowestThresholdPriority));
+        OnPropertyChanged(nameof(IsSlotOrderPriority));
+        SendGlobalUpdate();
+    }
+
     partial void OnStopBuffsCityChanged(bool value) => SendProfileUpdate();
     partial void OnSoundEnabledChanged(bool value) => SendProfileUpdate();
     partial void OnStartAutoOffTimerOnEnableChanged(bool value) => SendProfileUpdate();
@@ -337,7 +400,8 @@ public partial class SettingsViewModel : ObservableObject
             Theme: Theme,
             CustomThemeIsLight: CustomThemeIsLight,
             CustomThemeColor: CustomThemeColor,
-            HoldMultiKeyMode: HoldMultiKeyMode
+            HoldMultiKeyMode: HoldMultiKeyMode,
+            AutopotPriorityMode: AutopotPriorityMode
         );
         _worker.Send(cmd);
     }
@@ -375,6 +439,60 @@ public partial class SettingsViewModel : ObservableObject
         CustomThemeColor = hex;
     }
 
+    [RelayCommand]
+    private void AddCity()
+    {
+        string cleaned = (NewCityName ?? "").Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(cleaned)) return;
+
+        var list = CityList.ToList();
+        if (!list.Any(c => string.Equals(c, cleaned, StringComparison.OrdinalIgnoreCase)))
+        {
+            list.Add(cleaned);
+            _worker.Send(new UpdateCityListCommand(list));
+        }
+        NewCityName = "";
+    }
+
+    [RelayCommand]
+    private void AddCurrentMap()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentMapName)) return;
+        string cleaned = CurrentMapName.Trim().ToLowerInvariant();
+        var list = CityList.ToList();
+        if (!list.Any(c => string.Equals(c, cleaned, StringComparison.OrdinalIgnoreCase)))
+        {
+            list.Add(cleaned);
+            _worker.Send(new UpdateCityListCommand(list));
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveCity(string city)
+    {
+        if (string.IsNullOrWhiteSpace(city)) return;
+        var list = CityList.Where(c => !string.Equals(c, city, StringComparison.OrdinalIgnoreCase)).ToList();
+        _worker.Send(new UpdateCityListCommand(list));
+    }
+
+    [RelayCommand]
+    private async Task ResetCityList()
+    {
+        var confirm = new ConfirmDeleteDialogViewModel(
+            LanguageService.Get("S.Settings.ConfirmResetTownMaps"),
+            LanguageService.Get("S.Dialog.ConfirmReset"),
+            LanguageService.Get("S.Dialog.Reset"));
+        await _mainWindow.ShowDialogAsync(confirm);
+
+        bool confirmed = await confirm.ResultTask;
+        _mainWindow.CloseDialog();
+
+        if (confirmed)
+        {
+            _worker.Send(new ResetCityListCommand());
+        }
+    }
+
     // ── Update checker ────────────────────────────────────────────────────────
 
     [RelayCommand]
@@ -399,6 +517,18 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void OpenDirectZipUrl()
     {
+        if (_lastUpdateResult != null && _lastUpdateResult.IsUpdateAvailable)
+        {
+            var dialog = new UpdateAvailableDialogViewModel(
+                _lastUpdateResult.LatestVersion,
+                _lastUpdateResult.ReleaseUrl ?? "",
+                _mainWindow,
+                _mainWindow,
+                _lastUpdateResult.DownloadZipUrl);
+            _ = _mainWindow.ShowDialogAsync(dialog);
+            return;
+        }
+
         if (!string.IsNullOrEmpty(DirectZipUrl))
             Process.Start(new ProcessStartInfo(DirectZipUrl) { UseShellExecute = true });
     }
@@ -420,7 +550,9 @@ public partial class SettingsViewModel : ObservableObject
             DownloadUrl = result.ReleaseUrl ?? "";
             string modeTag = ThemeService.ServerMode == 0 ? "MR" : "HR";
             string tag = result.LatestVersion.StartsWith("v", StringComparison.OrdinalIgnoreCase) ? result.LatestVersion : $"v{result.LatestVersion}";
-            DirectZipUrl = $"https://github.com/torrq/ORTools/releases/download/{tag}/OSROTools_{tag}-{modeTag}.zip";
+            DirectZipUrl = !string.IsNullOrWhiteSpace(result.DownloadZipUrl)
+                ? result.DownloadZipUrl
+                : $"https://github.com/torrq/ORTools/releases/download/{tag}/OSROTools_{tag}-{modeTag}.zip";
             UpdateStatusText = string.Format(
                 LanguageService.Get("S.Settings.UpdateAvailable"), result.LatestVersion);
         }

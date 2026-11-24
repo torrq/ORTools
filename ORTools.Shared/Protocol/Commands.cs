@@ -17,7 +17,7 @@ public sealed record DisconnectClientCommand : IIpcMessage
 public record UpdateToggleKeyCommand(string Key) : IIpcMessage
 ;
 
-public sealed record SwitchProfileCommand(string ProfileName) : IIpcMessage
+public sealed record SwitchProfileCommand(string ProfileName, bool PreserveActiveState = false) : IIpcMessage
 ;
 
 public sealed record CreateProfileCommand(string ProfileName) : IIpcMessage
@@ -30,6 +30,24 @@ public sealed record RenameProfileCommand(string OldProfileName, string NewProfi
 ;
 
 public sealed record DeleteProfileCommand(string ProfileName) : IIpcMessage
+;
+
+public sealed record LinkCharacterToProfileCommand(string CharacterName, string ProfileName) : IIpcMessage
+;
+
+public sealed record UnlinkCharacterCommand(string CharacterName) : IIpcMessage
+;
+
+public sealed record SetAutoSwitchProfileByCharCommand(bool Enabled) : IIpcMessage
+;
+
+public sealed record SetProfileHotkeyCommand(string ProfileName, string Hotkey) : IIpcMessage
+;
+
+public sealed record ImportProfilesCommand(List<string> FilePaths) : IIpcMessage
+;
+
+public sealed record ExportProfileCommand(string ProfileName, string DestinationPath) : IIpcMessage
 ;
 
 public sealed record RequestProcessListCommand : IIpcMessage
@@ -89,12 +107,21 @@ public sealed record UpdateSkillTimerSlotCommand(
 public sealed record UpdateDebuffRecoveryItemCommand(string StatusName, string Key) : IIpcMessage
 ;
 
+public sealed record ToggleStatusRecoveryEnabledCommand(string Name, bool IsEnabled) : IIpcMessage
+;
+
+public sealed record ToggleDebuffRecoveryEnabledCommand(string StatusName, bool IsEnabled) : IIpcMessage
+;
+
 public sealed record UpdateDebuffRecoverySettingsCommand(int Delay) : IIpcMessage
 ;
 
 // ── AutobuffSkill ─────────────────────────────────────────────────────────────
 
 public sealed record UpdateAutobuffSkillItemCommand(string StatusName, string Key) : IIpcMessage
+;
+
+public sealed record ToggleAutobuffSkillEnabledCommand(string StatusName, bool IsEnabled) : IIpcMessage
 ;
 
 public sealed record UpdateAutobuffSkillSettingsCommand(int Delay) : IIpcMessage
@@ -106,6 +133,9 @@ public sealed record UpdateAutobuffOrderCommand(List<string> OrderedStatusNames)
 // ── AutobuffItem ──────────────────────────────────────────────────────────────
 
 public sealed record UpdateAutobuffItemCommand(string StatusName, string Key) : IIpcMessage
+;
+
+public sealed record ToggleAutobuffItemEnabledCommand(string StatusName, bool IsEnabled) : IIpcMessage
 ;
 
 public sealed record UpdateAutobuffItemSettingsCommand(int Delay) : IIpcMessage
@@ -156,7 +186,14 @@ public sealed record UpdateGlobalConfigCommand(
     ThemeMode Theme,
     bool CustomThemeIsLight,
     string CustomThemeColor,
-    HoldMultiKeyMode HoldMultiKeyMode = HoldMultiKeyMode.RoundRobinAll) : IIpcMessage
+    HoldMultiKeyMode HoldMultiKeyMode = HoldMultiKeyMode.RoundRobinAll,
+    AutopotPriorityMode AutopotPriorityMode = AutopotPriorityMode.LowestThresholdFirst) : IIpcMessage
+;
+
+public sealed record UpdateCityListCommand(List<string> Cities) : IIpcMessage
+;
+
+public sealed record ResetCityListCommand : IIpcMessage
 ;
 
 public sealed record UpdateStatusLoggerConfigCommand(

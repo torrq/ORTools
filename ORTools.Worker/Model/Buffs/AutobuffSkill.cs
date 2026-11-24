@@ -25,6 +25,19 @@ namespace ORTools.Worker
         }
 
         public ConcurrentDictionary<EffectStatusIDs, Keys> buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>();
+        private readonly ConcurrentDictionary<EffectStatusIDs, byte> _disabledBuffs = new ConcurrentDictionary<EffectStatusIDs, byte>();
+
+        [JsonProperty("DisabledBuffs")]
+        public List<EffectStatusIDs> DisabledBuffs
+        {
+            get => new List<EffectStatusIDs>(_disabledBuffs.Keys);
+            set
+            {
+                _disabledBuffs.Clear();
+                if (value != null)
+                    foreach (var id in value) _disabledBuffs[id] = 1;
+            }
+        }
 
         // Per-buff cast cooldown: prevents re-casting a buff before the server has had time
         // to reflect the new status in memory (avoids toggling-off skills like Force Projection)
@@ -41,9 +54,11 @@ namespace ORTools.Worker
 
         // Map cache
         private string _cachedMap = string.Empty;
+        public AutoBuffSkill() : this(ACTION_NAME_AUTOBUFFSKILL) { }
+
         public AutoBuffSkill(string actionName)
         {
-            this.ActionName = actionName;
+            this.ActionName = string.IsNullOrEmpty(actionName) ? ACTION_NAME_AUTOBUFFSKILL : actionName;
         }
 
         public void Start()
@@ -168,6 +183,11 @@ namespace ORTools.Worker
                                 {
                                     try
                                     {
+                                        if (!IsBuffEnabled(buffToApply.Key))
+                                        {
+                                            continue;
+                                        }
+
                                         if (ShouldSkipBuffDueToQuag(foundQuag, buffToApply.Key))
                                         {
                                             continue; // Use continue instead of break to check other buffs
@@ -272,8 +292,17 @@ namespace ORTools.Worker
             }
         }
 
+        public bool IsBuffEnabled(EffectStatusIDs status) => !_disabledBuffs.ContainsKey(status);
+
+        public void SetBuffEnabled(EffectStatusIDs status, bool enabled)
+        {
+            if (enabled) _disabledBuffs.TryRemove(status, out _);
+            else _disabledBuffs[status] = 1;
+        }
+
         public void RemoveKeyFromBuff(EffectStatusIDs status)
         {
+            _disabledBuffs.TryRemove(status, out _);
             if (buffMapping.ContainsKey(status))
             {
                 buffMapping.TryRemove(status, out _);
@@ -289,6 +318,7 @@ namespace ORTools.Worker
         public void ClearKeyMapping()
         {
             buffMapping.Clear();
+            _disabledBuffs.Clear();
             //DebugLogger.Debug("AutoBuffSkill: Cleared all key mappings");
         }
 
@@ -330,6 +360,7 @@ namespace ORTools.Worker
             {
                 ["ActionName"] = this.ActionName,
                 ["BuffMapping"] = this.buffMapping,
+                ["DisabledBuffs"] = this.DisabledBuffs,
                 ["Delay"] = this._delay
             };
             return JsonConvert.SerializeObject(configData);
@@ -357,6 +388,18 @@ namespace ORTools.Worker
                         if (mappingData != null)
                         {
                             this.buffMapping = new ConcurrentDictionary<EffectStatusIDs, Keys>(mappingData);
+                        }
+                    }
+
+                    // Load disabled buffs (optional — absent in older profiles, defaults to all enabled)
+                    this._disabledBuffs.Clear();
+                    var disabledToken = jObj.GetValue("DisabledBuffs", StringComparison.OrdinalIgnoreCase);
+                    if (disabledToken != null)
+                    {
+                        var disabledList = disabledToken.ToObject<List<EffectStatusIDs>>();
+                        if (disabledList != null)
+                        {
+                            this.DisabledBuffs = disabledList;
                         }
                     }
 
@@ -394,6 +437,7 @@ namespace ORTools.Worker
                         this.buffMapping = oldAutoBuffSkill.buffMapping;
                     }
 
+                    this.DisabledBuffs = oldAutoBuffSkill.DisabledBuffs;
                     this._delay = oldAutoBuffSkill._delay;
                 }
             }
@@ -405,7 +449,7 @@ namespace ORTools.Worker
 
         public string GetActionName()
         {
-            return this.ActionName;
+            return string.IsNullOrEmpty(this.ActionName) ? ACTION_NAME_AUTOBUFFSKILL : this.ActionName;
         }
 
         private void UseAutobuff(Keys key)

@@ -444,6 +444,99 @@
                         </StackPanel>
                     </GroupBox>
 
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE0EE;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource S.Settings.AutopotPriority}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </GroupBox.Header>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="{DynamicResource S.Settings.AutopotPriorityDesc}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="12" Margin="0,0,0,10"/>
+
+                            <RadioButton GroupName="AutopotPriorityGroup" IsChecked="{Binding IsLowestThresholdPriority, Mode=TwoWay}" Margin="0,0,0,8">
+                                <RadioButton.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource S.Settings.AutopotLowestFirst}" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}"/>
+                                        <TextBlock Text="{DynamicResource S.Settings.AutopotLowestFirstDesc}" FontSize="12" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton.Content>
+                            </RadioButton>
+
+                            <RadioButton GroupName="AutopotPriorityGroup" IsChecked="{Binding IsSlotOrderPriority, Mode=TwoWay}" Margin="0,0,0,4">
+                                <RadioButton.Content>
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource S.Settings.AutopotSlotOrder}" FontWeight="SemiBold" Foreground="{DynamicResource AppTextBrush}"/>
+                                        <TextBlock Text="{DynamicResource S.Settings.AutopotSlotOrderDesc}" FontSize="12" Foreground="{DynamicResource AppSubtleBrush}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </RadioButton.Content>
+                            </RadioButton>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <GroupBox Foreground="{DynamicResource AppTextBrush}" Margin="0,0,0,20">
+                        <GroupBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontFamily="pack://application:,,,/Fonts/#lucide" Text="&#xE111;" FontSize="14" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource S.Settings.TownMaps}" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </GroupBox.Header>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="{DynamicResource S.Settings.TownMapsDesc}" Foreground="{DynamicResource AppSubtleBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding NewCityName, UpdateSourceTrigger=PropertyChanged}"
+                                         Background="{DynamicResource AppInputBrush}" Foreground="{DynamicResource AppTextBrush}"
+                                         BorderBrush="{DynamicResource AppInputBorderBrush}" BorderThickness="1"
+                                         Height="26" Padding="6,2" VerticalContentAlignment="Center" Margin="0,0,6,0">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Return" Command="{Binding AddCityCommand}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                                <Button Grid.Column="1" Content="{DynamicResource S.Settings.AddMap}" Command="{Binding AddCityCommand}"
+                                        Style="{StaticResource PrimaryButtonStyle}" Height="26" Padding="10,0" FontSize="12" Margin="0,0,6,0" />
+                                <Button Grid.Column="2" Content="{DynamicResource S.Settings.AddCurrentMap}" Command="{Binding AddCurrentMapCommand}"
+                                        IsEnabled="{Binding HasCurrentMap}"
+                                        Style="{StaticResource SecondaryButtonStyle}" Height="26" Padding="8,0" FontSize="12" Margin="0,0,6,0" />
+                                <Button Grid.Column="3" Content="{DynamicResource S.Settings.ResetToDefault}" Command="{Binding ResetCityListCommand}"
+                                        Style="{StaticResource SecondaryButtonStyle}" Height="26" Padding="8,0" FontSize="12" />
+                            </Grid>
+
+                            <Border Background="{DynamicResource AppInputBrush}" BorderBrush="{DynamicResource AppBorderBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="6" MaxHeight="135">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding CityList}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource AppSurfaceBrush}" BorderBrush="{DynamicResource AppBorderBrush}"
+                                                        BorderThickness="1" CornerRadius="10" Padding="8,2,4,2" Margin="0,2,6,2">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource AppTextBrush}" VerticalAlignment="Center" Margin="0,0,4,0" />
+                                                        <Button Content="✕" FontSize="10" Padding="2,0" Background="Transparent" BorderThickness="0"
+                                                                Foreground="{DynamicResource AppSubtleBrush}" Cursor="Hand"
+                                                                Command="{Binding DataContext.RemoveCityCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </GroupBox>
+
 
                 </StackPanel>
             </ScrollViewer>

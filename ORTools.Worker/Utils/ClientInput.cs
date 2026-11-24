@@ -51,9 +51,10 @@ public static class ClientInput
     /// so the RO client never clears the key-down state in the same frame before transitioning
     /// into skill-targeting mode.
     /// </summary>
-    public static bool SendKeyFast(IntPtr hWnd, Keys key)
+    public static bool SendKeyFast(IntPtr hWnd, Keys key, bool blockOnAlt = false)
     {
         if (hWnd == IntPtr.Zero || key == Keys.None) return false;
+        if (blockOnAlt && (Win32Interop.IsKeyPressed(Keys.LMenu) || Win32Interop.IsKeyPressed(Keys.RMenu))) return false;
         Win32Interop.PostMessage(hWnd, Constants.WM_KEYDOWN_MSG_ID, key, 0);
         return true;
     }
@@ -68,6 +69,29 @@ public static class ClientInput
         Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONDOWN, IntPtr.Zero, IntPtr.Zero);
         Thread.Sleep(1);
         Win32Interop.PostMessage(hWnd, Constants.WM_LBUTTONUP, IntPtr.Zero, IntPtr.Zero);
+    }
+
+    /// <summary>
+    /// Fast-path right click for TransferHelper. Uses PostMessage (non-blocking) with real cursor
+    /// client coordinates and a 1ms hold.
+    /// </summary>
+    public static void SendRightClickFast(IntPtr hWnd)
+    {
+        if (hWnd == IntPtr.Zero) return;
+
+        IntPtr lParam = IntPtr.Zero;
+        if (Win32Interop.GetCursorPos(out Win32Interop.POINT pt))
+        {
+            var clientPt = new Point(pt.X, pt.Y);
+            if (Win32Interop.ScreenToClient(hWnd, ref clientPt))
+            {
+                lParam = (IntPtr)(((clientPt.Y & 0xFFFF) << 16) | (clientPt.X & 0xFFFF));
+            }
+        }
+
+        Win32Interop.PostMessage(hWnd, Constants.WM_RBUTTONDOWN, (IntPtr)2, lParam);
+        Thread.Sleep(1);
+        Win32Interop.PostMessage(hWnd, Constants.WM_RBUTTONUP, IntPtr.Zero, lParam);
     }
 
     public static void SendRightClick(IntPtr hWnd, uint timeoutMs = 100)

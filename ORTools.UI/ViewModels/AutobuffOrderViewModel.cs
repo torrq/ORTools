@@ -12,7 +12,7 @@ public partial class AutobuffOrderItemViewModel : ObservableObject
     public string Name { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public string Key { get; set; } = string.Empty;
-    public string DisplayKey => Key.ToUpper();
+    public string DisplayKey => Helpers.KeyToStringConverter.FormatKey(Key);
 
     [ObservableProperty]
     private string _itemType = string.Empty;
@@ -21,6 +21,14 @@ public partial class AutobuffOrderItemViewModel : ObservableObject
     [ObservableProperty]
     private string _iconName = string.Empty;
     partial void OnIconNameChanged(string value) => OnPropertyChanged(nameof(IconPath));
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsActive))]
+    [NotifyPropertyChangedFor(nameof(EffectiveIsEnabled))]
+    private bool _isEnabled = true;
+
+    public bool IsActive => IsEnabled;
+    public bool EffectiveIsEnabled => IsEnabled;
 
     public string IconPath => ItemType == "Skill" 
         ? $"pack://application:,,,/Assets/Icons/Skills/{IconName}.png" 
@@ -62,7 +70,8 @@ public partial class AutobuffOrderViewModel : ObservableObject
                     DisplayName = itemData.DisplayName,
                     Key = itemData.Key,
                     ItemType = itemData.ItemType,
-                    IconName = itemData.IconName
+                    IconName = itemData.IconName,
+                    IsEnabled = itemData.IsEnabled
                 });
             }
 
@@ -90,6 +99,16 @@ public partial class AutobuffOrderViewModel : ObservableObject
             ActiveItems.Move(index, index + 1);
             SendOrderUpdate();
         }
+    }
+
+    [RelayCommand]
+    private void ToggleItemEnabled(AutobuffOrderItemViewModel item)
+    {
+        bool next = !item.IsEnabled;
+        if (item.ItemType == "Skill")
+            _worker.Send(new ToggleAutobuffSkillEnabledCommand(item.Name, next));
+        else
+            _worker.Send(new ToggleAutobuffItemEnabledCommand(item.Name, next));
     }
 
     [RelayCommand]

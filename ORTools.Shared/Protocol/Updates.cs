@@ -31,7 +31,10 @@ public sealed record ProcessListUpdate(List<ProcessEntry> Processes) : IIpcMessa
 
 public sealed record ProfileListUpdate(
     List<string> Profiles,
-    string CurrentProfile) : IIpcMessage
+    string CurrentProfile,
+    Dictionary<string, List<string>>? LinkedCharacters = null,
+    Dictionary<string, string>? ProfileHotkeys = null,
+    bool AutoSwitchProfileByChar = true) : IIpcMessage
 ;
 
 public sealed record LogMessageUpdate(string Level, string Message) : IIpcMessage
@@ -53,7 +56,7 @@ public sealed record AutopotSPConfigUpdate(
     int Delay) : IIpcMessage
 ;
 
-public sealed record StatusRecoveryItemData(string Name, string Key);
+public sealed record StatusRecoveryItemData(string Name, string Key, bool IsEnabled = true);
 
 public sealed record StatusRecoveryConfigUpdate(
     List<StatusRecoveryItemData> Items,
@@ -72,14 +75,14 @@ public sealed record SkillTimerConfigUpdate(
     List<SkillTimerSlotData> Slots) : IIpcMessage
 ;
 
-public sealed record DebuffRecoveryItemData(string Name, string Key, string IconName);
+public sealed record DebuffRecoveryItemData(string Name, string Key, string IconName, bool IsEnabled = true);
 
 public sealed record DebuffRecoveryConfigUpdate(
     List<DebuffRecoveryItemData> Items,
     int Delay) : IIpcMessage
 ;
 
-public sealed record AutobuffSkillItemData(string Name, string DisplayName, string Key, string IconName);
+public sealed record AutobuffSkillItemData(string Name, string DisplayName, string Key, string IconName, bool IsEnabled = true);
 
 public sealed record AutobuffSkillGroupData(string GroupName, List<AutobuffSkillItemData> Items);
 
@@ -88,13 +91,13 @@ public sealed record AutobuffSkillConfigUpdate(
     int Delay) : IIpcMessage
 ;
 
-public sealed record AutobuffOrderItemData(string Name, string DisplayName, string Key, string ItemType, string IconName);
+public sealed record AutobuffOrderItemData(string Name, string DisplayName, string Key, string ItemType, string IconName, bool IsEnabled = true);
 
 public sealed record AutobuffOrderConfigUpdate(
     List<AutobuffOrderItemData> Items) : IIpcMessage
 ;
 
-public sealed record AutobuffItemItemData(string Name, string DisplayName, string Key, string IconName);
+public sealed record AutobuffItemItemData(string Name, string DisplayName, string Key, string IconName, bool IsEnabled = true);
 
 public sealed record AutobuffItemGroupData(string GroupName, List<AutobuffItemItemData> Items);
 
@@ -137,7 +140,11 @@ public sealed record GlobalConfigUpdate(
     ThemeMode Theme,
     bool CustomThemeIsLight,
     string CustomThemeColor,
-    HoldMultiKeyMode HoldMultiKeyMode = HoldMultiKeyMode.RoundRobinAll) : IIpcMessage
+    HoldMultiKeyMode HoldMultiKeyMode = HoldMultiKeyMode.RoundRobinAll,
+    AutopotPriorityMode AutopotPriorityMode = AutopotPriorityMode.LowestThresholdFirst) : IIpcMessage
+;
+
+public sealed record CityListUpdate(List<string> Cities) : IIpcMessage
 ;
 
 public sealed record StatusLoggerConfigUpdate(

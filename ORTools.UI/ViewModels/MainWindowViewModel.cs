@@ -179,13 +179,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
 
     public async Task ShowDialogAsync(ViewModelBase dialogViewModel)
     {
+        if (CurrentDialogContent != null && !ReferenceEquals(CurrentDialogContent, dialogViewModel))
+        {
+            if (CurrentDialogContent is ICancelableDialog existing && existing.CancelCommand?.CanExecute(null) == true)
+            {
+                existing.CancelCommand.Execute(null);
+            }
+        }
+        if (IsMiniMode) IsMiniMode = false;
         CurrentDialogContent = dialogViewModel;
         IsDialogVisible = true;
-        // Wait until IsDialogVisible becomes false (managed by CloseDialog)
-        // This is a simple implementation, a better way is for the caller to await
-        // the specific TaskCompletionSource of the dialog. The IDialogService doesn't 
-        // necessarily need to block here if the dialogViewModel has its own TCS.
         await Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private void OpenKeybindOverview()
+    {
+        var dialog = new KeybindOverviewDialogViewModel(this, this);
+        _ = ShowDialogAsync(dialog);
     }
 
     public void CloseDialog()
@@ -221,7 +232,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         AutobuffItem = new AutobuffItemViewModel(_worker);
         AutobuffSearch = new AutobuffSearchViewModel(AutobuffSkill, AutobuffItem);
         SkillSpammer = new SkillSpammerViewModel(_worker);
-        Settings = new SettingsViewModel(worker, AutobuffSkill);
+        Settings = new SettingsViewModel(worker, AutobuffSkill, this);
         Profiles = new ProfilesViewModel(worker, this);
         StatusLogger = new StatusLoggerViewModel(worker);
         Misc = new MiscViewModel(worker);
@@ -268,7 +279,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
                     Settings.ApplyUpdateResult(result);
                     if (Settings.CheckForUpdatesOnStartup)
                     {
-                        var dialog = new UpdateAvailableDialogViewModel(result.LatestVersion, result.ReleaseUrl ?? "", this, this);
+                        var dialog = new UpdateAvailableDialogViewModel(result.LatestVersion, result.ReleaseUrl ?? "", this, this, result.DownloadZipUrl);
                         _ = ShowDialogAsync(dialog);
                     }
                 });
@@ -654,8 +665,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDialogService
         });
 
     private void OnError(ErrorUpdate u) =>
-        Post(() => Console.WriteLine($"[Worker Error] {u.Message}"));
-        // Phase 3: show in a status bar or toast notification
+        Post(() =>
+        {
+            if (!IsDialogVisible && !string.IsNullOrWhiteSpace(u.Message))
+            {
+                var alert = new AlertDialogViewModel(
+                    LanguageService.Get("S.Profiles.ErrorTitle"),
+                    u.Message,
+                    this);
+                _ = ShowDialogAsync(alert);
+            }
+        });
 
     private void OnLogMessage(LogMessageUpdate u) =>
         Post(() =>

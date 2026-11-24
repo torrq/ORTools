@@ -25,6 +25,29 @@ public class KeyToStringConverter : IValueConverter
 
     public static string FormatKey(string key)
     {
+        if (string.IsNullOrWhiteSpace(key)) return key;
+
+        if (key.Contains('+'))
+        {
+            var parts = key.Split('+', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (!parts[i].Equals("Ctrl", StringComparison.OrdinalIgnoreCase) &&
+                    !parts[i].Equals("Control", StringComparison.OrdinalIgnoreCase) &&
+                    !parts[i].Equals("Alt", StringComparison.OrdinalIgnoreCase) &&
+                    !parts[i].Equals("Shift", StringComparison.OrdinalIgnoreCase))
+                {
+                    parts[i] = FormatSingleKey(parts[i]);
+                }
+            }
+            return string.Join("+", parts);
+        }
+
+        return FormatSingleKey(key);
+    }
+
+    private static string FormatSingleKey(string key)
+    {
         if (key.StartsWith("NumPad")) return "NP" + key.Substring(6);
         
         return key switch
@@ -35,11 +58,11 @@ public class KeyToStringConverter : IValueConverter
             "OemPeriod" => ".",
             "Oemcomma" => ",",
             "OemOpenBrackets" => "[",
-            "OemCloseBrackets" => "]",
+            "OemCloseBrackets" or "Oem6" => "]",
             "OemQuotes" => "'",
             "OemSemicolon" => ";",
             "OemQuestion" => "/",
-            "OemPipe" => "\\",
+            "OemPipe" or "Oem5" => "\\",
             "OemBackslash" => "\\",
             "OemClear" => "Clr",
             "Return" => "Ent",

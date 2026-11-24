@@ -39,19 +39,18 @@
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
 
-                                            <Border Width="24" Height="24" Background="Transparent" CornerRadius="2" Margin="0,0,6,0" VerticalAlignment="Center">
+                                            <Button Command="{Binding ToggleEnabledCommand}"
+                                                    Style="{StaticResource AutobuffIconButtonStyle}">
                                                 <Image Source="{Binding ImagePath}" Stretch="None"
                                                        RenderOptions.BitmapScalingMode="NearestNeighbor" SnapsToDevicePixels="True"/>
-                                            </Border>
+                                            </Button>
 
                                             <TextBox Grid.Column="1" Text="{Binding Key, Mode=TwoWay, Converter={StaticResource KeyToStringConverter}}"
                                                      PreviewKeyDown="KeyTextBox_PreviewKeyDown"
-                                                     Style="{StaticResource KeyTextBoxStyle}" 
-                                                     Height="24" FontSize="12" Width="50" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                                     Style="{StaticResource AutobuffKeyTextBoxStyle}" />
 
-                                            <TextBlock Grid.Column="2" Text="{Binding DisplayName}" VerticalAlignment="Center"
-                                                       TextWrapping="Wrap" LineHeight="12"
-                                                       Foreground="{DynamicResource AppTextBrush}" 
+                                            <TextBlock Grid.Column="2" Text="{Binding DisplayName}"
+                                                       Style="{StaticResource AutobuffLabelTextStyle}"
                                                        FontSize="{Binding DisplayName, Converter={StaticResource TextLengthToFontSizeConverter}}" />
                                         </Grid>
                                     </DataTemplate>

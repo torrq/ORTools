@@ -445,6 +445,76 @@
         </DataTrigger>
       </Style.Triggers>
     </Style>
+
+    <Style x:Key="AutobuffIconButtonStyle" TargetType="{x:Type Button}">
+      <Setter Property="MinWidth" Value="24" />
+      <Setter Property="MinHeight" Value="24" />
+      <Setter Property="Margin" Value="0,0,6,0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="ToolTip" Value="{DynamicResource S.Autobuff.ToggleIconHint}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type Button}">
+            <Border x:Name="IconHost" Background="Transparent" CornerRadius="3">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="IconHost" Property="Background" Value="{DynamicResource AppInputBrush}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Key}" Value="None">
+          <Setter Property="Cursor" Value="Arrow" />
+          <Setter Property="IsHitTestVisible" Value="False" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding EffectiveIsEnabled}" Value="False">
+          <Setter Property="Opacity" Value="0.28" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="AutobuffKeyTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource KeyTextBoxStyle}">
+      <Setter Property="Width" Value="50" />
+      <Setter Property="Height" Value="24" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Margin" Value="0,0,6,0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsActive}" Value="True">
+          <Setter Property="BorderBrush" Value="{DynamicResource AppToggleOnBrush}" />
+          <Setter Property="BorderThickness" Value="1.5" />
+          <Setter Property="Effect">
+            <Setter.Value>
+              <DropShadowEffect Color="#78B10A" BlurRadius="6" ShadowDepth="0" Opacity="0.45" />
+            </Setter.Value>
+          </Setter>
+        </DataTrigger>
+        <DataTrigger Binding="{Binding EffectiveIsEnabled}" Value="False">
+          <Setter Property="Opacity" Value="0.45" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="AutobuffLabelTextStyle" TargetType="{x:Type TextBlock}">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="LineHeight" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource AppTextBrush}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding EffectiveIsEnabled}" Value="False">
+          <Setter Property="Opacity" Value="0.45" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
     </ResourceDictionary>
   </Application.Resources>
 </Application>

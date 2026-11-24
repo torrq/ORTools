@@ -23,14 +23,17 @@ public static class KeyboardHook
 
     public delegate bool KeyboardHookHandler(Keys key);
 
+    private static readonly object _dictLock = new();
     private static readonly Dictionary<Keys, KeyPressed> _keysDown = new();
     private static readonly Dictionary<Keys, KeyPressed> _keysUp   = new();
+    private static readonly HashSet<Keys> _heldKeys = new();
 
     public static bool Enable()
     {
         if (_enabled) return false;
         try
         {
+            ResetState();
             using var proc = Process.GetCurrentProcess();
             using var mod  = proc.MainModule!;
             _hHook  = Win32Interop.SetWindowsHookEx(Constants.WH_KEYBOARD_LL, _hookProc,
@@ -44,30 +47,56 @@ public static class KeyboardHook
     public static bool Disable()
     {
         if (!_enabled) return false;
-        try { Win32Interop.UnhookWindowsHookEx(_hHook); _enabled = false; return true; }
+        try
+        {
+            Win32Interop.UnhookWindowsHookEx(_hHook);
+            _enabled = false;
+            ResetState();
+            return true;
+        }
         catch { _enabled = true; return false; }
+    }
+
+    private static void ResetState()
+    {
+        Control = Shift = Alt = Win = false;
+        lock (_dictLock)
+        {
+            _heldKeys.Clear();
+        }
     }
 
     public static bool AddKeyDown(Keys key, KeyPressed cb)
     {
-        KeyDown = null;
-        if (_keysDown.ContainsKey(key)) return false;
-        _keysDown.Add(key, cb); return true;
+        lock (_dictLock)
+        {
+            KeyDown = null;
+            if (_keysDown.ContainsKey(key)) return false;
+            _keysDown.Add(key, cb);
+            return true;
+        }
     }
 
     public static bool AddKeyUp(Keys key, KeyPressed cb)
     {
-        if (_keysUp.ContainsKey(key)) return false;
-        _keysUp.Add(key, cb); return true;
+        lock (_dictLock)
+        {
+            if (_keysUp.ContainsKey(key)) return false;
+            _keysUp.Add(key, cb);
+            return true;
+        }
     }
 
     public static void ClearKeyDowns()
     {
-        _keysDown.Clear();
+        lock (_dictLock)
+        {
+            _keysDown.Clear();
+        }
     }
 
-    public static bool RemoveDown(Keys key) => _keysDown.Remove(key);
-    public static bool RemoveUp(Keys key)   => _keysUp.Remove(key);
+    public static bool RemoveDown(Keys key) { lock (_dictLock) { return _keysDown.Remove(key); } }
+    public static bool RemoveUp(Keys key)   { lock (_dictLock) { return _keysUp.Remove(key); } }
     public static bool Add(Keys key, KeyPressed cb) => AddKeyDown(key, cb);
     public static bool Remove(Keys key)              => RemoveDown(key);
 
@@ -85,6 +114,15 @@ public static class KeyboardHook
                     case Keys.LMenu:       case Keys.RMenu:       Alt     = true;  break;
                     case Keys.LWin:        case Keys.RWin:        Win     = true;  break;
                     default:
+                        bool isFirstPress;
+                        lock (_dictLock)
+                        {
+                            isFirstPress = _heldKeys.Add((Keys)vk);
+                        }
+                        if (!isFirstPress)
+                        {
+                            return Win32Interop.CallNextHookEx(_hHook, nCode, wParam, lParam);
+                        }
                         bool pass = OnKeyDown((Keys)vk);
                         return pass ? Win32Interop.CallNextHookEx(_hHook, nCode, wParam, lParam) : new IntPtr(1);
                 }
@@ -99,6 +137,10 @@ public static class KeyboardHook
                     case Keys.LMenu:       case Keys.RMenu:       Alt     = false; break;
                     case Keys.LWin:        case Keys.RWin:        Win     = false; break;
                     default:
+                        lock (_dictLock)
+                        {
+                            _heldKeys.Remove((Keys)vk);
+                        }
                         bool pass = OnKeyUp((Keys)vk);
                         return pass ? Win32Interop.CallNextHookEx(_hHook, nCode, wParam, lParam) : new IntPtr(1);
                 }
@@ -110,14 +152,26 @@ public static class KeyboardHook
     private static bool OnKeyDown(Keys key)
     {
         OnKeyDownEvent?.Invoke(key);
-        if (KeyDown != null) return KeyDown(key);
-        return _keysDown.TryGetValue(key, out var cb) ? cb() : true;
+        var kd = KeyDown;
+        if (kd != null) return kd(key);
+
+        KeyPressed? cb;
+        lock (_dictLock)
+        {
+            _keysDown.TryGetValue(key, out cb);
+        }
+        return cb != null ? cb() : true;
     }
 
     private static bool OnKeyUp(Keys key)
     {
         OnKeyUpEvent?.Invoke(key);
-        return _keysUp.TryGetValue(key, out var cb) ? cb() : true;
+        KeyPressed? cb;
+        lock (_dictLock)
+        {
+            _keysUp.TryGetValue(key, out cb);
+        }
+        return cb != null ? cb() : true;
     }
 
     public static string KeyToString(Keys key) =>

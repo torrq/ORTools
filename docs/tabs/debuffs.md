@@ -8,16 +8,15 @@ At the top of the tab, you can quickly configure automatic consumption of common
 1. Open the **Debuffs** tab in OSRO Tools.
 2. Put Panacea, Royal Jelly, or Green Potion on a hotkey in the game.
 3. Click the box next to the item name and press the same key.
-4. Check the enable box next to the key.
 
 ## 2. Debuff Grid
 Below the items is a grid of specific debuffs like Silence, Curse, or Poison. You can assign a specific key for OSRO Tools to press when that debuff happens. This is useful for using specialized cure skills or items on yourself.
 
 1. Find the specific debuff in the grid.
 2. Click the box next to it and press your cure hotkey.
-3. Check the enable box.
 
 ## 3. Tips
+* Click any item or debuff icon to temporarily pause it without removing its hotkey. Click the dimmed icon again to resume.
 * **Status Recovery Items** are checked in a fixed order: **Green Potion**, then **Panacea**, then **Royal Jelly**.
 * If multiple active debuffs use the same cure key, OSRO Tools only presses that key once per cycle.
 

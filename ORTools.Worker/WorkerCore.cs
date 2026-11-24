@@ -114,6 +114,7 @@ public sealed class WorkerCore : IDisposable
         RefreshToggleHotkey();
 
         _statePublisher = new StatePublisher(msg => BroadcastAsync(msg));
+        _statePublisher.CharacterChanged += OnCharacterChanged;
         _statePublisher.Start(); // Run continuously to keep UI synced even when OFF
 
         _dispatcher = new CommandDispatcher(this);
@@ -154,6 +155,7 @@ public sealed class WorkerCore : IDisposable
         WorkerNotifier.TurnOffRequested -= _onTurnOffRequestedHandler;
         DebugLogger.LogMessageEmitted -= _onLogMessageEmittedHandler;
         _autoOff.Dispose();
+        _statePublisher.CharacterChanged -= OnCharacterChanged;
         _statePublisher.Stop();
         ClientListSingleton.StopCleanupMonitor();
         _stateLock.Dispose();
@@ -166,6 +168,10 @@ public sealed class WorkerCore : IDisposable
 
     public Task BroadcastAsync(IIpcMessage msg)
     {
+        if (msg is ErrorUpdate err)
+        {
+            DebugLogger.Warning($"[WorkerCore] {err.Message}");
+        }
         OnBroadcast?.Invoke(msg);
         return Task.CompletedTask;
     }
@@ -296,6 +302,22 @@ public sealed class WorkerCore : IDisposable
     public async Task HandleUpdateToggleKey(string keyStr)
     {
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
+        if (!string.IsNullOrWhiteSpace(keyStr) && !string.Equals(keyStr, AppConfig.TEXT_NONE, StringComparison.OrdinalIgnoreCase))
+        {
+            var cfg = ConfigGlobal.GetConfig();
+            if (cfg.ProfileHotkeys != null)
+            {
+                var conflict = cfg.ProfileHotkeys.FirstOrDefault(kvp =>
+                    !kvp.Value.Contains('+') && string.Equals(kvp.Value, keyStr, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(conflict.Key))
+                {
+                    await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: prefs.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
+                    await BroadcastAsync(new ErrorUpdate($"Cannot use '{keyStr}' as the Turn ON/OFF key because it is already used as the switch hotkey for profile '{conflict.Key}'."));
+                    return;
+                }
+            }
+        }
+
         bool unbindChanged = false;
         if (Enum.TryParse<Keys>(keyStr, ignoreCase: true, out var key)) unbindChanged = UnbindKeyGlobally(key);
         prefs.ToggleStateKey = keyStr;
@@ -351,23 +373,82 @@ public sealed class WorkerCore : IDisposable
 
     // ── Profile ───────────────────────────────────────────────────────────────
 
-    public async Task HandleSwitchProfile(string profileName)
+    private void OnCharacterChanged(string characterName)
     {
+        try
+        {
+            var cfg = ConfigGlobal.GetConfig();
+            if (!cfg.AutoSwitchProfileByChar || cfg.CharacterProfileMap == null) return;
+
+            var match = cfg.CharacterProfileMap
+                .FirstOrDefault(kvp => string.Equals(kvp.Key, characterName, StringComparison.OrdinalIgnoreCase));
+
+            if (string.IsNullOrEmpty(match.Value) || string.Equals(match.Value, _currentProfileName, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var available = Profile.ListAll();
+            string? target = available.FirstOrDefault(p => string.Equals(p, match.Value, StringComparison.OrdinalIgnoreCase));
+            if (target == null) return;
+
+            DebugLogger.Info($"[WorkerCore] Auto-switching profile for '{characterName}' -> '{target}'");
+            _ = HandleCommandAsync(new SwitchProfileCommand(target, PreserveActiveState: true));
+        }
+        catch (Exception ex)
+        {
+            DebugLogger.Debug($"[WorkerCore] OnCharacterChanged error: {ex.Message}");
+        }
+    }
+
+    private ProfileListUpdate BuildProfileListUpdate()
+    {
+        var cfg = ConfigGlobal.GetConfig();
+        var profiles = Profile.ListAll();
+
+        var linked = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        if (cfg.CharacterProfileMap != null)
+        {
+            foreach (var kvp in cfg.CharacterProfileMap)
+            {
+                if (!linked.TryGetValue(kvp.Value, out var list))
+                {
+                    list = new List<string>();
+                    linked[kvp.Value] = list;
+                }
+                list.Add(kvp.Key);
+            }
+        }
+
+        var hotkeys = cfg.ProfileHotkeys != null
+            ? new Dictionary<string, string>(cfg.ProfileHotkeys, StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        return new ProfileListUpdate(profiles, _currentProfileName, linked, hotkeys, cfg.AutoSwitchProfileByChar);
+    }
+
+    public async Task HandleSwitchProfile(string profileName, bool preserveActiveState = false)
+    {
+        bool wasOn = _isOn;
         if (_isOn) await HandleTurnOff();
         try
         {
             ProfileSingleton.Create(profileName);
             ProfileSingleton.Load(profileName);
+            string safeName = ProfileSingleton.GetCurrent().Name;
             HookSkillSpammerEvents();
             _autoOff.LoadFromProfile();
-            _currentProfileName = profileName;
-            ConfigGlobal.GetConfig().LastUsedProfile = profileName;
+            _currentProfileName = safeName;
+            ConfigGlobal.GetConfig().LastUsedProfile = safeName;
             ConfigGlobal.SaveConfig();
             RefreshToggleHotkey();
-            await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), profileName));
+            await BroadcastAsync(BuildProfileListUpdate());
             await BroadcastAsync(new AppStateUpdate(IsOn: _isOn, ToggleKey: ProfileSingleton.GetCurrent().UserPreferences.ToggleStateKey, AppTitle: GetAppTitle(), ServerMode: AppConfig.ServerMode));
             await PushAllConfigs();
-            DebugLogger.Info($"[WorkerCore] Profile: {profileName}");
+            DebugLogger.Info($"[WorkerCore] Profile: {safeName}");
+
+            if (preserveActiveState && wasOn)
+            {
+                await HandleTurnOn();
+            }
         }
         catch (Exception ex)
         {
@@ -393,7 +474,7 @@ public sealed class WorkerCore : IDisposable
         try
         {
             ProfileSingleton.Copy(sourceProfile, newProfileName);
-            await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+            await BroadcastAsync(BuildProfileListUpdate());
         }
         catch (Exception ex)
         {
@@ -405,14 +486,46 @@ public sealed class WorkerCore : IDisposable
     {
         try
         {
+            string safeOld = ProfileSingleton.SanitizeProfileName(oldProfileName);
+            string safeNew = ProfileSingleton.SanitizeProfileName(newProfileName);
             ProfileSingleton.Rename(oldProfileName, newProfileName);
-            if (_currentProfileName == oldProfileName)
+
+            var cfg = ConfigGlobal.GetConfig();
+            bool cfgChanged = false;
+            if (cfg.CharacterProfileMap != null)
             {
-                await HandleSwitchProfile(newProfileName);
+                var keysToUpdate = cfg.CharacterProfileMap
+                    .Where(kvp => string.Equals(kvp.Value, safeOld, StringComparison.OrdinalIgnoreCase))
+                    .Select(kvp => kvp.Key).ToList();
+                foreach (var ch in keysToUpdate)
+                {
+                    cfg.CharacterProfileMap[ch] = safeNew;
+                    cfgChanged = true;
+                }
+            }
+            if (cfg.ProfileHotkeys != null)
+            {
+                var oldHk = cfg.ProfileHotkeys.FirstOrDefault(kvp => string.Equals(kvp.Key, safeOld, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(oldHk.Key))
+                {
+                    cfg.ProfileHotkeys.Remove(oldHk.Key);
+                    cfg.ProfileHotkeys[safeNew] = oldHk.Value;
+                    cfgChanged = true;
+                }
+            }
+            if (cfgChanged)
+            {
+                ConfigGlobal.SaveConfig();
+                RefreshToggleHotkey();
+            }
+
+            if (string.Equals(_currentProfileName, safeOld, StringComparison.OrdinalIgnoreCase))
+            {
+                await HandleSwitchProfile(safeNew);
             }
             else
             {
-                await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+                await BroadcastAsync(BuildProfileListUpdate());
             }
         }
         catch (Exception ex)
@@ -426,18 +539,164 @@ public sealed class WorkerCore : IDisposable
         try
         {
             ProfileSingleton.Delete(profileName);
-            if (_currentProfileName == profileName)
+
+            var cfg = ConfigGlobal.GetConfig();
+            bool cfgChanged = false;
+            if (cfg.CharacterProfileMap != null)
+            {
+                var keysToRemove = cfg.CharacterProfileMap
+                    .Where(kvp => string.Equals(kvp.Value, profileName, StringComparison.OrdinalIgnoreCase))
+                    .Select(kvp => kvp.Key).ToList();
+                foreach (var ch in keysToRemove)
+                {
+                    cfg.CharacterProfileMap.Remove(ch);
+                    cfgChanged = true;
+                }
+            }
+            if (cfg.ProfileHotkeys != null)
+            {
+                var oldHk = cfg.ProfileHotkeys.FirstOrDefault(kvp => string.Equals(kvp.Key, profileName, StringComparison.OrdinalIgnoreCase));
+                if (!string.IsNullOrEmpty(oldHk.Key))
+                {
+                    cfg.ProfileHotkeys.Remove(oldHk.Key);
+                    cfgChanged = true;
+                }
+            }
+            if (cfgChanged)
+            {
+                ConfigGlobal.SaveConfig();
+                RefreshToggleHotkey();
+            }
+
+            if (string.Equals(_currentProfileName, profileName, StringComparison.OrdinalIgnoreCase))
             {
                 await HandleSwitchProfile("Default");
             }
             else
             {
-                await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+                await BroadcastAsync(BuildProfileListUpdate());
             }
         }
         catch (Exception ex)
         {
             await BroadcastAsync(new ErrorUpdate($"Failed to delete profile '{profileName}': {ex.Message}"));
+        }
+    }
+
+    public async Task HandleLinkCharacterToProfile(string characterName, string profileName)
+    {
+        if (string.IsNullOrWhiteSpace(characterName) || string.IsNullOrWhiteSpace(profileName)) return;
+        var cfg = ConfigGlobal.GetConfig();
+        cfg.CharacterProfileMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        // Remove any case-variant duplicate first
+        var existing = cfg.CharacterProfileMap.Keys.FirstOrDefault(k => string.Equals(k, characterName.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (existing != null) cfg.CharacterProfileMap.Remove(existing);
+
+        cfg.CharacterProfileMap[characterName.Trim()] = profileName;
+        ConfigGlobal.SaveConfig();
+        await BroadcastAsync(BuildProfileListUpdate());
+    }
+
+    public async Task HandleUnlinkCharacter(string characterName)
+    {
+        if (string.IsNullOrWhiteSpace(characterName)) return;
+        var cfg = ConfigGlobal.GetConfig();
+        if (cfg.CharacterProfileMap != null)
+        {
+            var existing = cfg.CharacterProfileMap.Keys.FirstOrDefault(k => string.Equals(k, characterName, StringComparison.OrdinalIgnoreCase));
+            if (existing != null)
+            {
+                cfg.CharacterProfileMap.Remove(existing);
+                ConfigGlobal.SaveConfig();
+            }
+        }
+        await BroadcastAsync(BuildProfileListUpdate());
+    }
+
+    public async Task HandleSetAutoSwitchProfileByChar(bool enabled)
+    {
+        var cfg = ConfigGlobal.GetConfig();
+        cfg.AutoSwitchProfileByChar = enabled;
+        ConfigGlobal.SaveConfig();
+        await BroadcastAsync(BuildProfileListUpdate());
+    }
+
+    public async Task HandleSetProfileHotkey(string profileName, string hotkey)
+    {
+        if (string.IsNullOrWhiteSpace(profileName)) return;
+        var cfg = ConfigGlobal.GetConfig();
+        cfg.ProfileHotkeys ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        var existingKey = cfg.ProfileHotkeys.Keys.FirstOrDefault(k => string.Equals(k, profileName, StringComparison.OrdinalIgnoreCase));
+        if (existingKey != null) cfg.ProfileHotkeys.Remove(existingKey);
+
+        if (!string.IsNullOrWhiteSpace(hotkey) && !string.Equals(hotkey, AppConfig.TEXT_NONE, StringComparison.OrdinalIgnoreCase))
+        {
+            var curToggle = ProfileSingleton.GetCurrent().UserPreferences?.ToggleStateKey;
+            if (!hotkey.Contains('+') && !string.IsNullOrWhiteSpace(curToggle)
+                && string.Equals(hotkey, curToggle, StringComparison.OrdinalIgnoreCase))
+            {
+                await BroadcastAsync(BuildProfileListUpdate());
+                await BroadcastAsync(new ErrorUpdate($"Cannot use '{hotkey}' as a profile switch hotkey because it is already set as the Turn ON/OFF key."));
+                return;
+            }
+
+            // Ensure no other profile holds the exact same hotkey
+            var dupes = cfg.ProfileHotkeys
+                .Where(kvp => string.Equals(kvp.Value, hotkey, StringComparison.OrdinalIgnoreCase))
+                .Select(kvp => kvp.Key).ToList();
+            foreach (var d in dupes) cfg.ProfileHotkeys.Remove(d);
+
+            cfg.ProfileHotkeys[profileName] = hotkey;
+        }
+
+        ConfigGlobal.SaveConfig();
+        RefreshToggleHotkey();
+        await BroadcastAsync(BuildProfileListUpdate());
+    }
+
+    public async Task HandleImportProfiles(List<string> filePaths)
+    {
+        if (filePaths == null || filePaths.Count == 0) return;
+
+        string? lastImported = null;
+        var errors = new List<string>();
+
+        foreach (var path in filePaths)
+        {
+            try
+            {
+                lastImported = ProfileSingleton.Import(path);
+                DebugLogger.Info($"[WorkerCore] Imported profile '{lastImported}' from {path}");
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{System.IO.Path.GetFileName(path)}: {ex.Message}");
+            }
+        }
+
+        if (lastImported != null)
+        {
+            await HandleSwitchProfile(lastImported);
+        }
+
+        if (errors.Count > 0)
+        {
+            await BroadcastAsync(new ErrorUpdate($"Failed to import profile(s): {string.Join("; ", errors)}"));
+        }
+    }
+
+    public async Task HandleExportProfile(string profileName, string destinationPath)
+    {
+        try
+        {
+            ProfileSingleton.Export(profileName, destinationPath);
+            DebugLogger.Info($"[WorkerCore] Exported profile '{profileName}' to {destinationPath}");
+        }
+        catch (Exception ex)
+        {
+            await BroadcastAsync(new ErrorUpdate($"Failed to export profile '{profileName}': {ex.Message}"));
         }
     }
 
@@ -596,11 +855,24 @@ public sealed class WorkerCore : IDisposable
         await BroadcastAsync(new SkillTimerConfigUpdate(slots));
     }
 
+    public async Task HandleToggleStatusRecoveryEnabled(ToggleStatusRecoveryEnabledCommand cmd)
+    {
+        var sr = ProfileSingleton.GetCurrent().StatusRecovery;
+        bool hasKey = sr.GetKeyForList(cmd.Name) != Keys.None;
+        sr.SetListEnabled(cmd.Name, hasKey ? cmd.IsEnabled : true);
+        ProfileSingleton.SetConfiguration(sr);
+        await BroadcastAsync(BuildStatusRecoveryConfig());
+    }
+
     private StatusRecoveryConfigUpdate BuildStatusRecoveryConfig()
     {
         var sr = ProfileSingleton.GetCurrent().StatusRecovery;
         return new StatusRecoveryConfigUpdate(
-            Items: sr.statusLists.Select(kvp => new StatusRecoveryItemData(kvp.Key, kvp.Value.Key.ToString())).ToList(),
+            Items: sr.statusLists.Select(kvp =>
+            {
+                bool hasKey = kvp.Value.Key != Keys.None;
+                return new StatusRecoveryItemData(kvp.Key, hasKey ? kvp.Value.Key.ToString() : "None", !hasKey || sr.IsListEnabled(kvp.Key));
+            }).ToList(),
             Delay: sr.Delay);
     }
 
@@ -636,11 +908,31 @@ public sealed class WorkerCore : IDisposable
         await BroadcastAsync(BuildDebuffRecoveryConfig());
     }
 
+    public async Task HandleToggleDebuffRecoveryEnabled(ToggleDebuffRecoveryEnabledCommand cmd)
+    {
+        var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
+        if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
+        {
+            bool hasKey = dr.HasMappingForStatus(statusId);
+            dr.SetDebuffEnabled(statusId, hasKey ? cmd.IsEnabled : true);
+            ProfileSingleton.SetConfiguration(dr);
+        }
+        await BroadcastAsync(BuildDebuffRecoveryConfig());
+    }
+
     private DebuffRecoveryConfigUpdate BuildDebuffRecoveryConfig()
     {
         var dr = ProfileSingleton.GetCurrent().DebuffsRecovery;
         var update = new DebuffRecoveryConfigUpdate(
-            Items: BuffService.GetDebuffs().Select(b => new DebuffRecoveryItemData(b.EffectStatusID.ToString(), dr.buffMapping.TryGetValue(b.EffectStatusID, out var key) ? key.ToString() : "None", b.IconName)).ToList(),
+            Items: BuffService.GetDebuffs().Select(b =>
+            {
+                bool hasKey = dr.buffMapping.TryGetValue(b.EffectStatusID, out var key) && key != Keys.None;
+                return new DebuffRecoveryItemData(
+                    b.EffectStatusID.ToString(),
+                    hasKey ? key.ToString() : "None",
+                    b.IconName,
+                    !hasKey || dr.IsDebuffEnabled(b.EffectStatusID));
+            }).ToList(),
             Delay: dr.Delay
         );
         return update;
@@ -669,6 +961,20 @@ public sealed class WorkerCore : IDisposable
         }
     }
 
+    public async Task HandleToggleAutobuffSkillEnabled(ToggleAutobuffSkillEnabledCommand cmd)
+    {
+        var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
+        if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
+        {
+            // Unbound buffs remain enabled in appearance and state
+            bool effectiveEnabled = abs.HasMappingForStatus(statusId) ? cmd.IsEnabled : true;
+            abs.SetBuffEnabled(statusId, effectiveEnabled);
+            ProfileSingleton.SetConfiguration(abs);
+        }
+        await BroadcastAsync(BuildAutobuffSkillConfig());
+        await BroadcastAsync(BuildAutobuffOrderConfig());
+    }
+
     public async Task HandleUpdateAutobuffSkillSettings(UpdateAutobuffSkillSettingsCommand cmd)
     {
         var abs = ProfileSingleton.GetCurrent().AutobuffSkill;
@@ -683,7 +989,16 @@ public sealed class WorkerCore : IDisposable
         var map = abs.buffMapping;
         
         List<AutobuffSkillItemData> Build(List<Buff> buffs) => buffs
-            .Select(b => new AutobuffSkillItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var k) ? k.ToString() : "None", b.IconName))
+            .Select(b =>
+            {
+                bool hasKey = map.TryGetValue(b.EffectStatusID, out var k) && k != Keys.None;
+                return new AutobuffSkillItemData(
+                    b.EffectStatusID.ToString(),
+                    b.Name,
+                    hasKey ? k.ToString() : "None",
+                    b.IconName,
+                    !hasKey || abs.IsBuffEnabled(b.EffectStatusID));
+            })
             .ToList();
 
         var groups = new List<AutobuffSkillGroupData>
@@ -724,6 +1039,19 @@ public sealed class WorkerCore : IDisposable
             await BroadcastAsync(BuildAutobuffItemConfig());
             await BroadcastAsync(BuildAutobuffOrderConfig());
         }
+    }
+
+    public async Task HandleToggleAutobuffItemEnabled(ToggleAutobuffItemEnabledCommand cmd)
+    {
+        var abi = ProfileSingleton.GetCurrent().AutobuffItem;
+        if (Enum.TryParse<EffectStatusIDs>(cmd.StatusName, out var statusId))
+        {
+            bool effectiveEnabled = abi.HasMappingForStatus(statusId) ? cmd.IsEnabled : true;
+            abi.SetBuffEnabled(statusId, effectiveEnabled);
+            ProfileSingleton.SetConfiguration(abi);
+        }
+        await BroadcastAsync(BuildAutobuffItemConfig());
+        await BroadcastAsync(BuildAutobuffOrderConfig());
     }
 
     public async Task HandleUpdateAutobuffItemSettings(UpdateAutobuffItemSettingsCommand cmd)
@@ -842,6 +1170,7 @@ public sealed class WorkerCore : IDisposable
         config.CustomThemeIsLight = cmd.CustomThemeIsLight;
         config.CustomThemeColor = cmd.CustomThemeColor;
         config.HoldMultiKeyMode = cmd.HoldMultiKeyMode;
+        config.AutopotPriorityMode = cmd.AutopotPriorityMode;
         ConfigGlobal.SaveConfig();
 
         var p = ProfileSingleton.GetCurrent();
@@ -852,6 +1181,18 @@ public sealed class WorkerCore : IDisposable
         await BroadcastAsync(BuildMacroSongConfig());
         await BroadcastAsync(BuildMacroSwitchConfig());
         await BroadcastAsync(BuildAtkDefConfig());
+    }
+
+    public async Task HandleUpdateCityList(List<string> cities)
+    {
+        Server.SaveCityList(cities);
+        await BroadcastAsync(new CityListUpdate(Server.GetCityListSorted()));
+    }
+
+    public async Task HandleResetCityList()
+    {
+        Server.ResetCityListToDefault();
+        await BroadcastAsync(new CityListUpdate(Server.GetCityListSorted()));
     }
 
     public Task HandleUpdateStatusLoggerConfig(UpdateStatusLoggerConfigCommand cmd)
@@ -1216,7 +1557,16 @@ public sealed class WorkerCore : IDisposable
         var map = abi.buffMapping;
 
         List<AutobuffItemItemData> Build(List<Buff> buffs) => buffs
-            .Select(b => new AutobuffItemItemData(b.EffectStatusID.ToString(), b.Name, map.TryGetValue(b.EffectStatusID, out var kList) && kList.Count > 0 ? kList[0].ToString() : "None", b.IconName))
+            .Select(b =>
+            {
+                bool hasKey = map.TryGetValue(b.EffectStatusID, out var kList) && kList.Count > 0 && kList[0] != Keys.None;
+                return new AutobuffItemItemData(
+                    b.EffectStatusID.ToString(),
+                    b.Name,
+                    hasKey ? kList![0].ToString() : "None",
+                    b.IconName,
+                    !hasKey || abi.IsBuffEnabled(b.EffectStatusID));
+            })
             .ToList();
 
         var groups = new List<AutobuffItemGroupData>
@@ -1291,14 +1641,14 @@ public sealed class WorkerCore : IDisposable
                 if (abs.buffMapping.TryGetValue(statusId, out var sk) && !addedStatuses.Contains(statusId))
                 {
                     var buff = BuffService.GetBuff(statusId);
-                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), sk.ToString(), "Skill", buff?.IconName ?? "None"));
+                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), sk.ToString(), "Skill", buff?.IconName ?? "None", abs.IsBuffEnabled(statusId)));
                     addedStatuses.Add(statusId);
                 }
                 
                 if (abi.buffMapping.TryGetValue(statusId, out var ik) && !addedStatuses.Contains(statusId))
                 {
                     var buff = BuffService.GetBuff(statusId);
-                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), string.Join(", ", ik), "Item", buff?.IconName ?? "None"));
+                    items.Add(new AutobuffOrderItemData(statusId.ToString(), buff?.Name ?? statusId.ToString(), string.Join(", ", ik), "Item", buff?.IconName ?? "None", abi.IsBuffEnabled(statusId)));
                     addedStatuses.Add(statusId);
                 }
             }
@@ -1310,7 +1660,7 @@ public sealed class WorkerCore : IDisposable
             if (!addedStatuses.Contains(kvp.Key))
             {
                 var buff = BuffService.GetBuff(kvp.Key);
-                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), kvp.Value.ToString(), "Skill", buff?.IconName ?? "None"));
+                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), kvp.Value.ToString(), "Skill", buff?.IconName ?? "None", abs.IsBuffEnabled(kvp.Key)));
                 profile.UnifiedAutobuffOrder.Add(kvp.Key.ToString());
                 addedStatuses.Add(kvp.Key);
             }
@@ -1320,7 +1670,7 @@ public sealed class WorkerCore : IDisposable
             if (!addedStatuses.Contains(kvp.Key))
             {
                 var buff = BuffService.GetBuff(kvp.Key);
-                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), string.Join(", ", kvp.Value), "Item", buff?.IconName ?? "None"));
+                items.Add(new AutobuffOrderItemData(kvp.Key.ToString(), buff?.Name ?? kvp.Key.ToString(), string.Join(", ", kvp.Value), "Item", buff?.IconName ?? "None", abi.IsBuffEnabled(kvp.Key)));
                 profile.UnifiedAutobuffOrder.Add(kvp.Key.ToString());
                 addedStatuses.Add(kvp.Key);
             }
@@ -1338,7 +1688,7 @@ public sealed class WorkerCore : IDisposable
         await BroadcastAsync(new ClientStateUpdate(
             Connected: client != null,
             ProcessName: client != null ? _GetConnectedProcessName() : null));
-        await BroadcastAsync(new ProfileListUpdate(Profile.ListAll(), _currentProfileName));
+        await BroadcastAsync(BuildProfileListUpdate());
         await BroadcastAsync(new ProcessListUpdate(ORTools.Worker.Utils.ProcessManager.GetActiveProcesses()));
         await PushAllConfigs();
     }
@@ -1357,6 +1707,7 @@ public sealed class WorkerCore : IDisposable
         await BroadcastAsync(BuildAutoOffConfig());
         await BroadcastAsync(new AutoOffTimerStateUpdate(_autoOff.IsTimerRunning, _autoOff.IsPaused, _autoOff.SelectedMinutes, _autoOff.RemainingSeconds, _autoOff.RunningMinutes));
         await BroadcastAsync(BuildGlobalConfigUpdate());
+        await BroadcastAsync(new CityListUpdate(Server.GetCityListSorted()));
         await BroadcastAsync(BuildStatusLoggerConfigUpdate());
         await BroadcastAsync(BuildProfileSettingsUpdate());
         await BroadcastAsync(BuildTransferHelperConfig());
@@ -1441,7 +1792,8 @@ public sealed class WorkerCore : IDisposable
             config.Theme,
             config.CustomThemeIsLight,
             config.CustomThemeColor,
-            config.HoldMultiKeyMode
+            config.HoldMultiKeyMode,
+            config.AutopotPriorityMode
         );
     }
 
@@ -1492,32 +1844,115 @@ public sealed class WorkerCore : IDisposable
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    private static bool TryParseHotkeyCombo(string raw, out bool ctrl, out bool alt, out bool shift, out Keys key)
+    {
+        ctrl = alt = shift = false;
+        key = Keys.None;
+        if (string.IsNullOrWhiteSpace(raw) || string.Equals(raw, AppConfig.TEXT_NONE, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var parts = raw.Split('+', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var part in parts)
+        {
+            if (part.Equals("Ctrl", StringComparison.OrdinalIgnoreCase) || part.Equals("Control", StringComparison.OrdinalIgnoreCase))
+                ctrl = true;
+            else if (part.Equals("Alt", StringComparison.OrdinalIgnoreCase))
+                alt = true;
+            else if (part.Equals("Shift", StringComparison.OrdinalIgnoreCase))
+                shift = true;
+            else if (Enum.TryParse<Keys>(part, ignoreCase: true, out var parsed) && parsed != Keys.None)
+                key = parsed;
+        }
+        return key != Keys.None;
+    }
+
     private void RefreshToggleHotkey()
     {
+        KeyboardHook.ClearKeyDowns();
+        KeyboardHook.KeyDown = null;
+
+        var handlersByKey = new Dictionary<Keys, List<Func<bool>>>();
+
+        void RegisterHandler(Keys key, Func<bool> handler)
+        {
+            if (!handlersByKey.TryGetValue(key, out var list))
+            {
+                list = new List<Func<bool>>();
+                handlersByKey[key] = list;
+            }
+            list.Add(handler);
+        }
+
+        // 1. Register global ON/OFF toggle key FIRST so the active profile's toggle key
+        //    always takes precedence over another profile's modifier-less switch hotkey.
         var prefs = ProfileSingleton.GetCurrent().UserPreferences;
         if (!string.IsNullOrEmpty(prefs?.ToggleStateKey)
             && prefs.ToggleStateKey != AppConfig.TEXT_NONE
             && Enum.TryParse<Keys>(prefs.ToggleStateKey, out Keys toggleKey)
             && toggleKey != Keys.None)
         {
-            KeyboardHook.ClearKeyDowns();
-            KeyboardHook.KeyDown = null;
-            KeyboardHook.AddKeyDown(toggleKey, () =>
+            RegisterHandler(toggleKey, () =>
             {
-                _ = Task.Run(async () =>
+                if (KeyboardHook.Control || KeyboardHook.Alt || KeyboardHook.Shift)
+                    return false;
+
+                if (!_isOn)
                 {
-                    if (_isOn) await HandleTurnOff();
-                    else await HandleTurnOn();
-                });
+                    var client = ClientSingleton.GetClient();
+                    if (client == null || client.Process == null || client.Process.HasExited)
+                        return false;
+                }
+
+                _ = Task.Run(() => HandleCommandAsync(_isOn ? new TurnOffCommand() : new TurnOnCommand()));
                 return true;
             });
             DebugLogger.Debug($"[WorkerCore] Toggle hotkey registered: {prefs.ToggleStateKey} → {toggleKey}");
         }
         else
         {
-            KeyboardHook.ClearKeyDowns();
-            KeyboardHook.KeyDown = null;
             DebugLogger.Debug($"[WorkerCore] Toggle hotkey cleared (key='{prefs?.ToggleStateKey}')");
+        }
+
+        // 2. Register profile switch hotkeys (modifier-checked)
+        var cfg = ConfigGlobal.GetConfig();
+        if (cfg.ProfileHotkeys != null)
+        {
+            foreach (var kvp in cfg.ProfileHotkeys)
+            {
+                string targetProfile = kvp.Key;
+                if (!TryParseHotkeyCombo(kvp.Value, out bool needCtrl, out bool needAlt, out bool needShift, out Keys hk))
+                    continue;
+
+                RegisterHandler(hk, () =>
+                {
+                    if (KeyboardHook.Control != needCtrl || KeyboardHook.Alt != needAlt || KeyboardHook.Shift != needShift)
+                        return false;
+
+                    // Do not steal plain keys while typing in RO chat
+                    var client = ClientSingleton.GetClient();
+                    if (!needCtrl && !needAlt && client != null && client.IsProcessRunning() && client.IsTextInputActive())
+                        return false;
+
+                    if (string.Equals(_currentProfileName, targetProfile, StringComparison.OrdinalIgnoreCase))
+                        return false;
+
+                    _ = HandleCommandAsync(new SwitchProfileCommand(targetProfile, PreserveActiveState: true));
+                    return true;
+                });
+            }
+        }
+
+        foreach (var kvp in handlersByKey)
+        {
+            var handlers = kvp.Value;
+            KeyboardHook.AddKeyDown(kvp.Key, () =>
+            {
+                foreach (var h in handlers)
+                {
+                    if (h()) break;
+                }
+                return true;
+            });
         }
     }
 

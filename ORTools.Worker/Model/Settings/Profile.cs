@@ -196,7 +196,15 @@ public static class ProfileSingleton
                 }
 
                 loaded.SkillTimer     = TryDeserialize(rawObject, loaded.SkillTimer, loaded.SkillTimer);
-                loaded.AutobuffSkill  = TryDeserialize(rawObject, loaded.AutobuffSkill, loaded.AutobuffSkill);
+                try
+                {
+                    string absConfig = Profile.GetByAction(rawObject, loaded.AutobuffSkill).ToString();
+                    if (!string.IsNullOrEmpty(absConfig)) loaded.AutobuffSkill.LoadConfiguration(absConfig);
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Error(ex, "Failed to load AutobuffSkill");
+                }
                 if (loaded.AutobuffSkill.Delay < 0) loaded.AutobuffSkill.Delay = AppConfig.AutoBuffSkillsDefaultDelay;
 
                 try
@@ -335,6 +343,65 @@ public static class ProfileSingleton
             if (!File.Exists(sourcePath)) throw new Exception("Source profile does not exist.");
             if (File.Exists(targetPath))  throw new Exception("A profile with that name already exists.");
             File.Copy(sourcePath, targetPath);
+        }
+    }
+
+    public static string Import(string sourceFilePath)
+    {
+        if (string.IsNullOrWhiteSpace(sourceFilePath) || !File.Exists(sourceFilePath))
+            throw new Exception("Selected file does not exist.");
+
+        var fi = new FileInfo(sourceFilePath);
+        if (fi.Length > 5 * 1024 * 1024)
+            throw new Exception("Profile file is too large (max 5 MB).");
+
+        string content = File.ReadAllText(sourceFilePath);
+        var parsed = JObject.Parse(content); // Validates JSON object structure
+        if (parsed == null)
+            throw new Exception("File is not a valid JSON profile.");
+
+        lock (_lock)
+        {
+            if (!Directory.Exists(AppConfig.ProfileFolder))
+                Directory.CreateDirectory(AppConfig.ProfileFolder);
+
+            string rawName = Path.GetFileNameWithoutExtension(sourceFilePath);
+            string baseName = SanitizeProfileName(rawName);
+            if (string.Equals(baseName, "Default", StringComparison.OrdinalIgnoreCase))
+                baseName = "Imported";
+
+            string candidate = baseName;
+            int suffix = 1;
+            while (File.Exists(GetProfileFilePath(candidate)))
+            {
+                candidate = SanitizeProfileName($"{baseName} ({suffix++})");
+            }
+
+            string targetPath = GetProfileFilePath(candidate);
+            string tmpPath = targetPath + ".tmp";
+            File.WriteAllText(tmpPath, parsed.ToString(Formatting.Indented));
+            File.Move(tmpPath, targetPath, overwrite: true);
+            return candidate;
+        }
+    }
+
+    public static void Export(string profileName, string destinationPath)
+    {
+        if (string.IsNullOrWhiteSpace(destinationPath))
+            throw new Exception("Invalid destination path.");
+
+        lock (_lock)
+        {
+            string safeName = SanitizeProfileName(profileName);
+            string sourcePath = GetProfileFilePath(safeName);
+            if (!File.Exists(sourcePath))
+                throw new Exception($"Profile '{safeName}' does not exist.");
+
+            string? destDir = Path.GetDirectoryName(destinationPath);
+            if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir))
+                Directory.CreateDirectory(destDir);
+
+            File.Copy(sourcePath, destinationPath, overwrite: true);
         }
     }
 

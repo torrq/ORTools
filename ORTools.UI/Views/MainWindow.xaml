@@ -32,6 +32,9 @@
         <DataTemplate DataType="{x:Type vm:AutoCheckDisabledDialogViewModel}">
             <views:AutoCheckDisabledDialogView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:KeybindOverviewDialogViewModel}">
+            <views:KeybindOverviewDialogView />
+        </DataTemplate>
         <helpers:SpPercentToBrushConverter x:Key="SpPercentToBrushConverter" />
         <helpers:HpPercentToBrushConverter x:Key="HpPercentToBrushConverter" />
     </Window.Resources>
@@ -330,6 +333,17 @@
                     </ComboBox>
                     
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                        <Button Command="{Binding OpenKeybindOverviewCommand}" ToolTip="{DynamicResource S.Keybinds.Title}"
+                                FontFamily="pack://application:,,,/Fonts/#lucide" Content="&#xE2B4;" FontSize="16" Cursor="Hand"
+                                Foreground="{DynamicResource AppTextBrush}"
+                                Background="Transparent" BorderThickness="0"
+                                VerticalAlignment="Center" Margin="0,-1,8,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" Background="Transparent" />
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
                         <Button Command="{Binding ToggleColorCommand}" ToolTip="Cycle Color"
                                 FontFamily="pack://application:,,,/Fonts/#lucide" Content="&#xE1DD;" FontSize="16" Cursor="Hand"
                                 Foreground="{DynamicResource AppTextBrush}"

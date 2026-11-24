@@ -6,6 +6,7 @@ namespace ORTools.Worker;
 
 internal static class Server
 {
+    private static readonly object _cityLock = new();
     private static HashSet<string>? _cityList;
 
     public static void Initialize()
@@ -56,22 +57,62 @@ internal static class Server
 
     public static HashSet<string> GetCityList()
     {
-        if (_cityList == null || _cityList.Count == 0)
+        lock (_cityLock)
         {
-            try
+            if (_cityList == null)
             {
-                string raw = File.Exists(AppConfig.CitiesFile)
-                    ? File.ReadAllText(AppConfig.CitiesFile) : "";
-                if (string.IsNullOrWhiteSpace(raw)) return new HashSet<string>();
-                var list = JsonConvert.DeserializeObject<List<string>>(raw)!;
-                _cityList = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+                try
+                {
+                    string raw = File.Exists(AppConfig.CitiesFile)
+                        ? File.ReadAllText(AppConfig.CitiesFile) : "";
+                    if (string.IsNullOrWhiteSpace(raw))
+                    {
+                        _cityList = new HashSet<string>(AppConfig.DefaultCities, StringComparer.OrdinalIgnoreCase);
+                    }
+                    else
+                    {
+                        var list = JsonConvert.DeserializeObject<List<string>>(raw) ?? new List<string>();
+                        _cityList = new HashSet<string>(list.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()), StringComparer.OrdinalIgnoreCase);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugLogger.Error(ex, "GetCityList failed");
+                    return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                }
             }
-            catch (Exception ex)
-            {
-                DebugLogger.Error(ex, "GetCityList failed");
-                return new HashSet<string>();
-            }
+            return _cityList;
         }
-        return _cityList;
+    }
+
+    public static List<string> GetCityListSorted()
+    {
+        return GetCityList().OrderBy(c => c, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    public static void SaveCityList(IEnumerable<string> cities)
+    {
+        var cleaned = cities
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(s => s.Trim().ToLowerInvariant())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(s => s, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        lock (_cityLock)
+        {
+            string path = AppConfig.CitiesFile;
+            string dir = System.IO.Path.GetDirectoryName(path)!;
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            string tmp = path + ".tmp";
+            File.WriteAllText(tmp, JsonConvert.SerializeObject(cleaned, Formatting.Indented));
+            File.Move(tmp, path, overwrite: true);
+            _cityList = new HashSet<string>(cleaned, StringComparer.OrdinalIgnoreCase);
+        }
+    }
+
+    public static void ResetCityListToDefault()
+    {
+        SaveCityList(AppConfig.DefaultCities);
     }
 }

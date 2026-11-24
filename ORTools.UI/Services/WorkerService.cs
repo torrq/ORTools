@@ -41,6 +41,7 @@ public sealed class WorkerService : IDisposable
     public event Action<AutobuffItemConfigUpdate>? AutobuffItemConfigReceived;
     public event Action<SkillSpammerConfigUpdate>? SkillSpammerConfigReceived;
     public event Action<GlobalConfigUpdate>? GlobalConfigReceived;
+    public event Action<CityListUpdate>? CityListReceived;
     public event Action<StatusLoggerConfigUpdate>? StatusLoggerConfigReceived;
     public event Action<ProfileSettingsUpdate>? ProfileSettingsReceived;
     public event Action<AutoOffConfigUpdate>? AutoOffConfigReceived;
@@ -157,6 +158,8 @@ public sealed class WorkerService : IDisposable
                 SkillSpammerConfigReceived?.Invoke(update); break;
             case GlobalConfigUpdate update:
                 GlobalConfigReceived?.Invoke(update); break;
+            case CityListUpdate update:
+                CityListReceived?.Invoke(update); break;
             case StatusLoggerConfigUpdate update:
                 StatusLoggerConfigReceived?.Invoke(update); break;
             case ProfileSettingsUpdate update:

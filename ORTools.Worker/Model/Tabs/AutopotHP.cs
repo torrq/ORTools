@@ -165,21 +165,26 @@ namespace ORTools.Worker
             if (slotsByHPPercent.Count == 0)
                 return false;
 
-            // Get ALL HP percentages that we're below, sorted by priority (highest first)
-            var sortedHPPercentages = slotsByHPPercent.Keys.OrderByDescending(x => x).ToList();
+            var priorityMode = ConfigGlobal.GetConfig().AutopotPriorityMode;
+            List<int> allAvailableSlots;
 
-            // Collect all available slots from all applicable HP percentages
-            var allAvailableSlots = new List<int>();
-            foreach (var hpPercent in sortedHPPercentages)
+            if (priorityMode == ORTools.Shared.Protocol.AutopotPriorityMode.LowestThresholdFirst)
             {
-                allAvailableSlots.AddRange(slotsByHPPercent[hpPercent]);
+                // Emergency priority: only consider slots at the lowest triggered HP% threshold
+                int lowestHPPercent = slotsByHPPercent.Keys.Min();
+                allAvailableSlots = new List<int>(slotsByHPPercent[lowestHPPercent]);
+                allAvailableSlots.Sort();
             }
-
-            // Sort the slots by their original slot index to maintain priority order
-            allAvailableSlots.Sort();
-
-            // Find the highest HP percentage that we have slots for (for cycling tracking)
-            int primaryHPPercent = sortedHPPercentages[0];
+            else
+            {
+                // Classic slot order across all triggered thresholds
+                allAvailableSlots = new List<int>();
+                foreach (var list in slotsByHPPercent.Values)
+                {
+                    allAvailableSlots.AddRange(list);
+                }
+                allAvailableSlots.Sort();
+            }
 
             // Use the next slot in the cycling order across all available slots
             int nextSlotIndex = GetNextSlotIndex(allAvailableSlots);
@@ -215,7 +220,7 @@ namespace ORTools.Worker
         {
             try
             {
-                return ClientInput.SendKey(handle, key);
+                return ClientInput.SendKeyFast(handle, key, blockOnAlt: true);
             }
             catch (Exception ex)
             {

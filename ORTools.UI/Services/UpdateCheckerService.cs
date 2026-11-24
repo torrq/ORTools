@@ -78,6 +78,22 @@ public static class UpdateCheckerService
             var tagName = root.GetProperty("tag_name").GetString() ?? "";
             var htmlUrl = root.GetProperty("html_url").GetString() ?? "";
 
+            string modeTag = ThemeService.ServerMode == 0 ? "MR" : "HR";
+            string? assetZipUrl = null;
+            if (root.TryGetProperty("assets", out var assetsEl) && assetsEl.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var asset in assetsEl.EnumerateArray())
+                {
+                    string assetName = asset.TryGetProperty("name", out var n) ? (n.GetString() ?? "") : "";
+                    if (assetName.EndsWith($"-{modeTag}.zip", StringComparison.OrdinalIgnoreCase) &&
+                        asset.TryGetProperty("browser_download_url", out var urlEl))
+                    {
+                        assetZipUrl = urlEl.GetString();
+                        break;
+                    }
+                }
+            }
+
             var currentStr = GetCurrentVersion();
             var latestStr = StripVersionPrefix(tagName);
 
@@ -92,14 +108,20 @@ public static class UpdateCheckerService
                     ErrorMessage: "Could not parse version."));
             }
 
-            var isNewer = latestVer > currentVer;
+            var isNewer = latestVer > currentVer ||
+                          (latestVer == currentVer && ORTools.Worker.AppConfig.preRelease);
+
+            string displayCurrent = ORTools.Worker.AppConfig.preRelease
+                ? $"{currentStr} ({ORTools.Worker.AppConfig.preReleaseTag})"
+                : currentStr;
 
             return CacheAndReturn(new UpdateResult(
                 IsUpdateAvailable: isNewer,
-                CurrentVersion: currentStr,
+                CurrentVersion: displayCurrent,
                 LatestVersion: latestStr,
                 ReleaseUrl: htmlUrl,
-                ErrorMessage: null));
+                ErrorMessage: null,
+                DownloadZipUrl: assetZipUrl));
         }
         catch (TaskCanceledException)
         {
@@ -160,4 +182,5 @@ public record UpdateResult(
     string CurrentVersion,
     string LatestVersion,
     string? ReleaseUrl,
-    string? ErrorMessage);
+    string? ErrorMessage,
+    string? DownloadZipUrl = null);

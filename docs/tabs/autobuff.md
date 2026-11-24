@@ -15,6 +15,7 @@ OSRO Tools reads the game memory to look at the buff icons on your screen. It on
 Whenever that buff icon is missing from your character, OSRO Tools will press the key to apply it.
 
 ## 3. Tips
+* Click a buff's icon to temporarily pause it without removing its hotkey. The icon will dim while paused; click it again to resume.
 * Use the **Order** sub-tab to change which buff is cast first. This matters if multiple buffs run out at the exact same time.
 
 ![Screenshot of Autobuff tab with Blessing and Agi Up configured](../images/autobuff-skills.png)

@@ -29,7 +29,7 @@ public sealed class CommandDispatcher
                 await _core.HandleUpdateToggleKey(utk.Key); break;
 
             case SwitchProfileCommand sp:
-                await _core.HandleSwitchProfile(sp.ProfileName); break;
+                await _core.HandleSwitchProfile(sp.ProfileName, sp.PreserveActiveState); break;
 
             case CreateProfileCommand crp:
                 await _core.HandleCreateProfile(crp.ProfileName); break;
@@ -42,6 +42,24 @@ public sealed class CommandDispatcher
 
             case DeleteProfileCommand dep:
                 await _core.HandleDeleteProfile(dep.ProfileName); break;
+
+            case LinkCharacterToProfileCommand lc:
+                await _core.HandleLinkCharacterToProfile(lc.CharacterName, lc.ProfileName); break;
+
+            case UnlinkCharacterCommand uc:
+                await _core.HandleUnlinkCharacter(uc.CharacterName); break;
+
+            case SetAutoSwitchProfileByCharCommand aspc:
+                await _core.HandleSetAutoSwitchProfileByChar(aspc.Enabled); break;
+
+            case SetProfileHotkeyCommand sph:
+                await _core.HandleSetProfileHotkey(sph.ProfileName, sph.Hotkey); break;
+
+            case ImportProfilesCommand ip:
+                await _core.HandleImportProfiles(ip.FilePaths); break;
+
+            case ExportProfileCommand ep:
+                await _core.HandleExportProfile(ep.ProfileName, ep.DestinationPath); break;
 
             case RequestProcessListCommand cmd:
                 await _core.HandleRequestProcessList();
@@ -74,11 +92,20 @@ public sealed class CommandDispatcher
             case UpdateDebuffRecoveryItemCommand dri:
                 await _core.HandleUpdateDebuffRecoveryItem(dri); break;
 
+            case ToggleStatusRecoveryEnabledCommand tsre:
+                await _core.HandleToggleStatusRecoveryEnabled(tsre); break;
+
+            case ToggleDebuffRecoveryEnabledCommand tdre:
+                await _core.HandleToggleDebuffRecoveryEnabled(tdre); break;
+
             case UpdateDebuffRecoverySettingsCommand drs:
                 await _core.HandleUpdateDebuffRecoverySettings(drs); break;
 
             case UpdateAutobuffSkillItemCommand absi:
                 await _core.HandleUpdateAutobuffSkillItem(absi); break;
+
+            case ToggleAutobuffSkillEnabledCommand tabse:
+                await _core.HandleToggleAutobuffSkillEnabled(tabse); break;
 
             case UpdateAutobuffSkillSettingsCommand abss:
                 await _core.HandleUpdateAutobuffSkillSettings(abss); break;
@@ -88,6 +115,9 @@ public sealed class CommandDispatcher
 
             case UpdateAutobuffItemCommand abii:
                 await _core.HandleUpdateAutobuffItemItem(abii); break;
+
+            case ToggleAutobuffItemEnabledCommand tabie:
+                await _core.HandleToggleAutobuffItemEnabled(tabie); break;
 
             case UpdateAutobuffItemSettingsCommand abis:
                 await _core.HandleUpdateAutobuffItemSettings(abis); break;
@@ -112,6 +142,12 @@ public sealed class CommandDispatcher
 
             case UpdateGlobalConfigCommand ugc:
                 await _core.HandleUpdateGlobalConfig(ugc); break;
+
+            case UpdateCityListCommand ucl:
+                await _core.HandleUpdateCityList(ucl.Cities); break;
+
+            case ResetCityListCommand:
+                await _core.HandleResetCityList(); break;
                 
             case UpdateStatusLoggerConfigCommand uslcc:
                 await _core.HandleUpdateStatusLoggerConfig(uslcc); break;

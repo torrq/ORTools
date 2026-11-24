@@ -30,6 +30,28 @@ public class Config
     public string CustomThemeColor             { get; set; } = AppConfig.DefaultCustomThemeColor;
     [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
     public Shared.Protocol.HoldMultiKeyMode HoldMultiKeyMode { get; set; } = Shared.Protocol.HoldMultiKeyMode.RoundRobinAll;
+    [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+    public Shared.Protocol.AutopotPriorityMode AutopotPriorityMode { get; set; } = Shared.Protocol.AutopotPriorityMode.LowestThresholdFirst;
+
+    public bool AutoSwitchProfileByChar { get; set; } = true;
+
+    private Dictionary<string, string> _characterProfileMap = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, string> CharacterProfileMap
+    {
+        get => _characterProfileMap;
+        set => _characterProfileMap = value != null
+            ? new Dictionary<string, string>(value, StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    }
+
+    private Dictionary<string, string> _profileHotkeys = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, string> ProfileHotkeys
+    {
+        get => _profileHotkeys;
+        set => _profileHotkeys = value != null
+            ? new Dictionary<string, string>(value, StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    }
     
     public StatusLoggerConfig StatusLogger { get; set; } = new();
 }
