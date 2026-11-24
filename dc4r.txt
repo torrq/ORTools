@@ -1,0 +1,11 @@
+A quality-of-life tool built specifically for OldschoolRO Highrate to improve hotkeys, performance, and client usability.
+
+<:_:1058729535333470341> Fast skill spammer & HP/SP autopot
+<:_:1058729535333470341> Auto-buffs, timers & status cure
+<:_:1058729535333470341> Easy ATK/DEF switch & song macros
+
+📥 **Download v2.1**  
+<:_:1058729535333470341> [Click here to download OSRO Tools v2.1 (HR)](https://github.com/torrq/ORTools/releases/download/v2.1/OSROTools_v2.1-HR.zip)
+<:_:1058729535333470341> *Old version v1.1.0: [Download](https://github.com/torrq/4RTools-OSRO/releases/download/v1.0.10/OSROTools-v110-HR.zip)*
+
+👤 **Modified by:** `[GM] Torq`
