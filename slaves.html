@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RO Real-Monster Slave Summons (Pre-Renewal &amp; Renewal)</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --surface: #131a26;
+      --surface-2: #1a2333;
+      --border: #263248;
+      --text: #e6edf7;
+      --muted: #93a4be;
+      --accent: #60a5fa;
+      --accent-soft: rgba(96, 165, 250, 0.14);
+      --gold: #fbbf24;
+      --gold-soft: rgba(251, 191, 36, 0.15);
+      --green: #34d399;
+      --green-soft: rgba(52, 211, 153, 0.14);
+      --purple: #c084fc;
+      --purple-soft: rgba(192, 132, 252, 0.14);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+    }
+    header {
+      margin-bottom: 18px;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .controls {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(11, 15, 23, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .segmented {
+      display: inline-flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 3px;
+      flex-wrap: wrap;
+    }
+    .segmented button {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 7px 13px;
+      border-radius: 7px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+    .segmented button.active {
+      background: var(--accent);
+      color: #08101c;
+    }
+    .search-wrap {
+      position: relative;
+      flex: 1 1 260px;
+      min-width: 200px;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 9px 34px 9px 12px;
+      font-size: 0.92rem;
+      outline: none;
+    }
+    .search-wrap input:focus {
+      border-color: var(--accent);
+    }
+    .clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: none;
+      padding: 2px 6px;
+    }
+    .clear-btn.visible { display: block; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+    .chip.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .stats {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .stats strong { color: var(--text); }
+
+    /* Desktop Table */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    thead th {
+      background: var(--surface-2);
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      text-align: left;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    thead th:hover { color: var(--text); }
+    thead th .sort-ind { margin-left: 4px; opacity: 0.7; }
+    tbody tr {
+      border-bottom: 1px solid rgba(38, 50, 72, 0.65);
+      transition: background 0.12s ease;
+    }
+    tbody tr:last-child { border-bottom: 0; }
+    tbody tr:hover { background: rgba(96, 165, 250, 0.05); }
+    td {
+      padding: 11px 14px;
+      vertical-align: middle;
+    }
+
+    .mob-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .mob-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .mob-name { font-weight: 600; color: var(--text); }
+    .mob-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .id-pill {
+      display: inline-block;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.75rem;
+      padding: 1px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .id-pill:hover { border-color: var(--accent); color: var(--text); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    .badge-mvp { background: var(--gold-soft); color: var(--gold); }
+    .badge-both { background: var(--green-soft); color: var(--green); }
+    .badge-pre { background: var(--amber-soft); color: var(--amber); }
+    .badge-re { background: var(--purple-soft); color: var(--purple); }
+    .badge-ring { background: var(--accent-soft); color: var(--accent); }
+    .card-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(251, 191, 36, 0.09);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      color: #fde68a;
+      padding: 3px 9px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .card-pill:hover { border-color: var(--gold); }
+    .card-rate {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+
+    /* Mobile Cards */
+    .cards-list {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .m-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .m-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .m-arrow {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .m-card-foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 6px;
+      border-top: 1px solid rgba(38, 50, 72, 0.65);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: #1f2937;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 50;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .table-wrap { display: none; }
+      .cards-list { display: flex; }
+      .stats { margin-left: 0; width: 100%; }
+      .segmented { width: 100%; }
+      .segmented button { flex: 1; text-align: center; padding: 8px 6px; font-size: 0.82rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>RO Real-Monster Slave Summons</h1>
+      <p class="subtitle">Monsters using <code>NPC_SUMMONSLAVE</code> that spawn real, card-dropping monsters (excluding fake no-drop slaves like <code>1461</code> <code>G_MINOROUS</code>). Sourced from Hercules <code>db/pre-re</code> &amp; <code>db/re</code>.</p>
+    </header>
+
+    <section class="controls">
+      <div class="controls-row">
+        <div class="segmented" role="tablist" aria-label="Server Mode">
+          <button type="button" class="active" data-mode="pre">Pre-Renewal</button>
+          <button type="button" data-mode="re">Renewal</button>
+          <button type="button" data-mode="diff">Compare Diff</button>
+        </div>
+        <div class="search-wrap">
+          <input id="searchInput" type="search" placeholder="Search caster, summoned mob, ID, or card..." autocomplete="off" />
+          <button id="clearSearch" class="clear-btn" type="button" aria-label="Clear search">&times;</button>
+        </div>
+      </div>
+      <div class="chips">
+        <button type="button" class="chip active" data-cat="all">All Types</button>
+        <button type="button" class="chip" data-cat="standard">Field &amp; MVP</button>
+        <button type="button" class="chip" data-cat="ringleader">Ringleaders (C2/C3/C4)</button>
+        <button type="button" class="chip" data-cat="event">Event (E_)</button>
+        <button type="button" class="chip" id="mvpOnlyBtn">MVPs Only</button>
+        <span class="stats" id="statsText"></span>
+      </div>
+    </section>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="casterId">Caster <span class="sort-ind"></span></th>
+            <th data-sort="targetId">Summoned Real Mob <span class="sort-ind"></span></th>
+            <th data-sort="card">Card Drop <span class="sort-ind"></span></th>
+            <th data-sort="summonCount">Qty <span class="sort-ind"></span></th>
+            <th data-sort="availability">Mode <span class="sort-ind"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="cards-list" id="cardsList"></div>
+    <div class="empty" id="emptyState" style="display:none;">No matching monsters found.</div>
+  </div>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <script>
+    const DATA = [{"casterId": 1038, "casterName": "Osiris", "casterSprite": "OSIRIS", "casterLv": 68, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 7, "targetId": 1029, "targetName": "Isis", "targetSprite": "ISIS", "targetLv": 59, "cards": [{"name": "Isis Card", "raw": "Isis_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1039, "casterName": "Baphomet", "casterSprite": "BAPHOMET", "casterLv": 81, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1101, "targetName": "Baphomet Jr.", "targetSprite": "BAPHOMET_", "targetLv": 57, "cards": [{"name": "Baphomet  Card", "raw": "Baphomet__Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1059, "casterName": "Mistress", "casterSprite": "MISTRESS", "casterLv": 78, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1156, "targetName": "Petite", "targetSprite": "PETIT_", "targetLv": 79, "cards": [{"name": "Petit  Card", "raw": "Petit__Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1086, "casterName": "Golden Thief Bug", "casterSprite": "GOLDEN_BUG", "casterLv": 65, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1054, "targetName": "Thief Bug Male", "targetSprite": "THIEF_BUG__", "targetLv": 30, "cards": [{"name": "Thief Bug Male Card", "raw": "Thief_Bug_Male_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1088, "casterName": "Vocal", "casterSprite": "VOCAL", "casterLv": 18, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 8, "targetId": 1052, "targetName": "Rocker", "targetSprite": "ROCKER", "targetLv": 15, "cards": [{"name": "Rocker Card", "raw": "Rocker_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1089, "casterName": "Toad", "casterSprite": "TOAD", "casterLv": 27, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 6, "targetId": 1012, "targetName": "Roda Frog", "targetSprite": "RODA_FROG", "targetLv": 13, "cards": [{"name": "Roda Frog Card", "raw": "Roda_Frog_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1090, "casterName": "Mastering", "casterSprite": "MASTERING", "casterLv": 42, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1002, "targetName": "Poring", "targetSprite": "PORING", "targetLv": 1, "cards": [{"name": "Poring Card", "raw": "Poring_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1090, "casterName": "Mastering", "casterSprite": "MASTERING", "casterLv": 2, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1113, "targetName": "Drops", "targetSprite": "DROPS", "targetLv": 3, "cards": [{"name": "Drops Card", "raw": "Drops_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1091, "casterName": "Dragon Fly", "casterSprite": "DRAGON_FLY", "casterLv": 47, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 8, "targetId": 1011, "targetName": "Chonchon", "targetSprite": "CHONCHON", "targetLv": 5, "cards": [{"name": "Chonchon Card", "raw": "Chonchon_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1092, "casterName": "Vagabond Wolf", "casterSprite": "VAGABOND_WOLF", "casterLv": 93, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1013, "targetName": "Wolf", "targetSprite": "WOLF", "targetLv": 45, "cards": [{"name": "Wolf Card", "raw": "Wolf_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1093, "casterName": "Eclipse", "casterSprite": "ECLIPSE", "casterLv": 31, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 8, "targetId": 1063, "targetName": "Lunatic", "targetSprite": "LUNATIC", "targetLv": 3, "cards": [{"name": "Lunatic Card", "raw": "Lunatic_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1096, "casterName": "Angeling", "casterSprite": "ANGELING", "casterLv": 77, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1031, "targetName": "Poporing", "targetSprite": "POPORING", "targetLv": 30, "cards": [{"name": "Poporing Card", "raw": "Poporing_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1096, "casterName": "Angeling", "casterSprite": "ANGELING", "casterLv": 20, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1062, "targetName": "Santa Poring", "targetSprite": "PORING_", "targetLv": 3, "cards": [{"name": "Poring  Card", "raw": "Poring__Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1112, "casterName": "Drake", "casterSprite": "DRAKE", "casterLv": 91, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1192, "targetName": "Wraith", "targetSprite": "WRAITH", "targetLv": 77, "cards": [{"name": "Wraith Card", "raw": "Wraith_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1115, "casterName": "Eddga", "casterSprite": "EDDGA", "casterLv": 65, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1060, "targetName": "Bigfoot", "targetSprite": "BIGFOOT", "targetLv": 29, "cards": [{"name": "BigFoot Card", "raw": "BigFoot_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1120, "casterName": "Ghostring", "casterSprite": "GHOSTRING", "casterLv": 90, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1186, "targetName": "Giant Whisper", "targetSprite": "WHISPER_BOSS", "targetLv": 66, "cards": [{"name": "Whisper Boss Card", "raw": "Whisper_Boss_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1147, "casterName": "Maya", "casterSprite": "MAYA", "casterLv": 55, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1194, "targetName": "Arclouse", "targetSprite": "ARCLOUSE", "targetLv": 107, "cards": [{"name": "Arclouse Card", "raw": "Arclouse_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1150, "casterName": "Moonlight Flower", "casterSprite": "MOONLIGHT", "casterLv": 79, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1180, "targetName": "Nine Tail", "targetSprite": "NINE_TAIL", "targetLv": 72, "cards": [{"name": "Nine Tail Card", "raw": "Nine_Tail_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1159, "casterName": "Phreeoni", "casterSprite": "PHREEONI", "casterLv": 71, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1127, "targetName": "Hode", "targetSprite": "HODE", "targetLv": 63, "cards": [{"name": "Hode Card", "raw": "Hode_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1190, "casterName": "Orc Lord", "casterSprite": "ORC_LORD", "casterLv": 55, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1189, "targetName": "Orc Archer", "targetSprite": "ORC_ARCHER", "targetLv": 78, "cards": [{"name": "Orc Archer Card", "raw": "Orc_Archer_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1200, "casterName": "Zherlthsh", "casterSprite": "ZHERLTHSH", "casterLv": 105, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1257, "targetName": "Injustice", "targetSprite": "INJUSTICE", "targetLv": 95, "cards": [{"name": "Injustice Card", "raw": "Injustice_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1214, "casterName": "Choco", "casterSprite": "CHOCO", "casterLv": 48, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1057, "targetName": "Yoyo", "targetSprite": "YOYO", "targetLv": 38, "cards": [{"name": "Yoyo Card", "raw": "Yoyo_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1219, "casterName": "Knight of Abyss", "casterSprite": "KNIGHT_OF_ABYSS", "casterLv": 122, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1132, "targetName": "Khalitzburg", "targetSprite": "KHALITZBURG", "targetLv": 118, "cards": [{"name": "Khalitzburg Card", "raw": "Khalitzburg_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1251, "casterName": "Knight of Windstorm", "casterSprite": "KNIGHT_OF_WINDSTORM", "casterLv": 77, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1515, "targetName": "Garm Baby", "targetSprite": "GARM_BABY", "targetLv": 61, "cards": [{"name": "Garm Baby Card", "raw": "Garm_Baby_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1283, "casterName": "Chimera", "casterSprite": "CHIMERA", "casterLv": 70, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1253, "targetName": "Gargoyle", "targetSprite": "GARGOYLE", "targetLv": 100, "cards": [{"name": "Gargoyle Card", "raw": "Gargoyle_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1289, "casterName": "Maya Purple", "casterSprite": "MAYA_PUPLE", "casterLv": 81, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1194, "targetName": "Arclouse", "targetSprite": "ARCLOUSE", "targetLv": 107, "cards": [{"name": "Arclouse Card", "raw": "Arclouse_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1290, "casterName": "Skeleton General", "casterSprite": "SKELETON_GENERAL", "casterLv": 139, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1016, "targetName": "Archer Skeleton", "targetSprite": "ARCHER_SKELETON", "targetLv": 50, "cards": [{"name": "Archer Skeleton Card", "raw": "Archer_Skeleton_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1290, "casterName": "Skeleton General", "casterSprite": "SKELETON_GENERAL", "casterLv": 139, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1028, "targetName": "Soldier Skeleton", "targetSprite": "SOLDIER_SKELETON", "targetLv": 34, "cards": [{"name": "Soldier Skeleton Card", "raw": "Soldier_Skeleton_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1292, "casterName": "Mini Demon", "casterSprite": "MINI_DEMON", "casterLv": 117, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1109, "targetName": "Deviruchi", "targetSprite": "DEVIRUCHI", "targetLv": 93, "cards": [{"name": "Deviruchi Card", "raw": "Deviruchi_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1293, "casterName": "Creamy Fear", "casterSprite": "CREMY_FEAR", "casterLv": 117, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1018, "targetName": "Creamy", "targetSprite": "CREAMY", "targetLv": 23, "cards": [{"name": "Creamy Card", "raw": "Creamy_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1294, "casterName": "Killer Mantis", "casterSprite": "KILLER_MANTIS", "casterLv": 141, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1139, "targetName": "Mantis", "targetSprite": "MANTIS", "targetLv": 65, "cards": [{"name": "Mantis Card", "raw": "Mantis_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1295, "casterName": "Owl Baron", "casterSprite": "OWL_BARON", "casterLv": 120, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1320, "targetName": "Owl Duke", "targetSprite": "OWL_DUKE", "targetLv": 92, "cards": [{"name": "Owl Duke Card", "raw": "Owl_Duke_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1296, "casterName": "Kobold Leader", "casterSprite": "KOBOLD_LEADER", "casterLv": 112, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1133, "targetName": "Kobold", "targetSprite": "KOBOLD_1", "targetLv": 107, "cards": [{"name": "Kobold Card", "raw": "Kobold_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1296, "casterName": "Kobold Leader", "casterSprite": "KOBOLD_LEADER", "casterLv": 112, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1134, "targetName": "Kobold", "targetSprite": "KOBOLD_2", "targetLv": 102, "cards": [{"name": "Kobold Card", "raw": "Kobold_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1296, "casterName": "Kobold Leader", "casterSprite": "KOBOLD_LEADER", "casterLv": 112, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1135, "targetName": "Kobold", "targetSprite": "KOBOLD_3", "targetLv": 101, "cards": [{"name": "Kobold Card", "raw": "Kobold_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1296, "casterName": "Kobold Leader", "casterSprite": "KOBOLD_LEADER", "casterLv": 112, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1282, "targetName": "Kobold Archer", "targetSprite": "KOBOLD_ARCHER", "targetLv": 108, "cards": [{"name": "Kobold Archer Card", "raw": "Kobold_Archer_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1298, "casterName": "Zombie Master", "casterSprite": "ZOMBIE_MASTER", "casterLv": 119, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1036, "targetName": "Ghoul", "targetSprite": "GHOUL", "targetLv": 61, "cards": [{"name": "Ghoul Card", "raw": "Ghoul_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1299, "casterName": "Goblin Leader", "casterSprite": "GOBLIN_LEADER", "casterLv": 55, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1122, "targetName": "Goblin", "targetSprite": "GOBLIN_1", "targetLv": 48, "cards": [{"name": "Goblin Card", "raw": "Goblin_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1299, "casterName": "Goblin Leader", "casterSprite": "GOBLIN_LEADER", "casterLv": 55, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1123, "targetName": "Goblin", "targetSprite": "GOBLIN_2", "targetLv": 44, "cards": [{"name": "Goblin Card", "raw": "Goblin_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1299, "casterName": "Goblin Leader", "casterSprite": "GOBLIN_LEADER", "casterLv": 55, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1124, "targetName": "Goblin", "targetSprite": "GOBLIN_3", "targetLv": 44, "cards": [{"name": "Goblin Card", "raw": "Goblin_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1299, "casterName": "Goblin Leader", "casterSprite": "GOBLIN_LEADER", "casterLv": 55, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1125, "targetName": "Goblin", "targetSprite": "GOBLIN_4", "targetLv": 49, "cards": [{"name": "Goblin Card", "raw": "Goblin_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1299, "casterName": "Goblin Leader", "casterSprite": "GOBLIN_LEADER", "casterLv": 55, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1126, "targetName": "Goblin", "targetSprite": "GOBLIN_5", "targetLv": 56, "cards": [{"name": "Goblin Card", "raw": "Goblin_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1301, "casterName": "Am Mut", "casterSprite": "AM_MUT", "casterLv": 141, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1110, "targetName": "Dokebi", "targetSprite": "DOKEBI", "targetLv": 68, "cards": [{"name": "Dokebi Card", "raw": "Dokebi_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1304, "casterName": "Giant Spider", "casterSprite": "GIANT_SPIDER", "casterLv": 117, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1100, "targetName": "Argos", "targetSprite": "ARGOS", "targetLv": 47, "cards": [{"name": "Argos Card", "raw": "Argos_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1305, "casterName": "Ancient Worm", "casterSprite": "ANCIENT_WORM", "casterLv": 121, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1099, "targetName": "Argiope", "targetSprite": "ARGIOPE", "targetLv": 75, "cards": [{"name": "Argiope Card", "raw": "Argiope_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1306, "casterName": "Leib Olmai", "casterSprite": "LEIB_OLMAI", "casterLv": 118, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1243, "targetName": "Sasquatch", "targetSprite": "SASQUATCH", "targetLv": 72, "cards": [{"name": "Sasquatch Card", "raw": "Sasquatch_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1307, "casterName": "Cat o' Nine Tails", "casterSprite": "CAT_O_NINE_TAIL", "casterLv": 79, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1180, "targetName": "Nine Tail", "targetSprite": "NINE_TAIL", "targetLv": 72, "cards": [{"name": "Nine Tail Card", "raw": "Nine_Tail_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1309, "casterName": "Gajomart", "casterSprite": "GAJOMART", "casterLv": 140, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1129, "targetName": "Horong", "targetSprite": "HORONG", "targetLv": 66, "cards": [{"name": "Horong Card", "raw": "Horong_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1310, "casterName": "Majoruros", "casterSprite": "MAJORUROS", "casterLv": 107, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1149, "targetName": "Minorous", "targetSprite": "MINOROUS", "targetLv": 58, "cards": [{"name": "Minorous Card", "raw": "Minorous_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1311, "casterName": "Gullinbursti", "casterSprite": "GULLINBURSTI", "casterLv": 120, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1166, "targetName": "Savage", "targetSprite": "SAVAGE", "targetLv": 59, "cards": [{"name": "Savage Card", "raw": "Savage_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1366, "casterName": "Lava Golem", "casterSprite": "LAVA_GOLEM", "casterLv": 103, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1367, "targetName": "Blazer", "targetSprite": "BLAZZER", "targetLv": 101, "cards": [{"name": "Blazzer Card", "raw": "Blazzer_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1373, "casterName": "Lord of Death", "casterSprite": "LORD_OF_DEATH", "casterLv": 94, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1179, "targetName": "Whisper", "targetSprite": "WHISPER", "targetLv": 46, "cards": [{"name": "Whisper Card", "raw": "Whisper_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1373, "casterName": "Lord of Death", "casterSprite": "LORD_OF_DEATH", "casterLv": 94, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1508, "targetName": "Quve", "targetSprite": "QUVE", "targetLv": 100, "cards": [{"name": "Quve Card", "raw": "Quve_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1373, "casterName": "Lord of Death", "casterSprite": "LORD_OF_DEATH", "casterLv": 94, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1509, "targetName": "Lude", "targetSprite": "LUDE", "targetLv": 101, "cards": [{"name": "Lude Card", "raw": "Lude_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1388, "casterName": "Archangeling", "casterSprite": "ARCHANGELING", "casterLv": 60, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 7, "targetId": 1246, "targetName": "Christmas Cookie", "targetSprite": "COOKIE_XMAS", "targetLv": 28, "cards": [{"name": "Cookie XMAS Card", "raw": "Cookie_XMAS_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1399, "casterName": "Baphomet", "casterSprite": "EVENT_BAPHO", "casterLv": 68, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1026, "targetName": "Munak", "targetSprite": "MUNAK", "targetLv": 58, "cards": [{"name": "Munak Card", "raw": "Munak_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1399, "casterName": "Baphomet", "casterSprite": "EVENT_BAPHO", "casterLv": 68, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1029, "targetName": "Isis", "targetSprite": "ISIS", "targetLv": 59, "cards": [{"name": "Isis Card", "raw": "Isis_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1399, "casterName": "Baphomet", "casterSprite": "EVENT_BAPHO", "casterLv": 68, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1044, "targetName": "Obeaune", "targetSprite": "OBEAUNE", "targetLv": 53, "cards": [{"name": "Obeaune Card", "raw": "Obeaune_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1399, "casterName": "Baphomet", "casterSprite": "EVENT_BAPHO", "casterLv": 68, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1170, "targetName": "Sohee", "targetSprite": "SOHEE", "targetLv": 64, "cards": [{"name": "Sohee Card", "raw": "Sohee_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1623, "casterName": "RSX 0806", "casterSprite": "RSX_0806", "casterLv": 100, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1617, "targetName": "Waste Stove", "targetSprite": "WASTE_STOVE", "targetLv": 92, "cards": [{"name": "Waste Stove Card", "raw": "Waste_Stove_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1623, "casterName": "RSX 0806", "casterSprite": "RSX_0806", "casterLv": 100, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1620, "targetName": "Noxious", "targetSprite": "NOXIOUS", "targetLv": 87, "cards": [{"name": "Noxious Card", "raw": "Noxious_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1623, "casterName": "RSX 0806", "casterSprite": "RSX_0806", "casterLv": 100, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1621, "targetName": "Venomous", "targetSprite": "VENOMOUS", "targetLv": 87, "cards": [{"name": "Venomous Card", "raw": "Venomous_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1685, "casterName": "Vesper", "casterSprite": "APOCALIPS_H", "casterLv": 128, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1365, "targetName": "Apocalypse", "targetSprite": "APOCALIPS", "targetLv": 121, "cards": [{"name": "Apocalips Card", "raw": "Apocalips_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1685, "casterName": "Vesper", "casterSprite": "APOCALIPS_H", "casterLv": 128, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1669, "targetName": "Dimik", "targetSprite": "DIMIK", "targetLv": 77, "cards": [{"name": "Dimik Card", "raw": "Dimik_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1685, "casterName": "Vesper", "casterSprite": "APOCALIPS_H", "casterLv": 128, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1675, "targetName": "Venatu", "targetSprite": "VENATU", "targetLv": 77, "cards": [{"name": "Venatu Card", "raw": "Venatu_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1686, "casterName": "Orc Baby", "casterSprite": "ORC_BABY", "casterLv": 43, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1023, "targetName": "Orc Warrior", "targetSprite": "ORK_WARRIOR", "targetLv": 44, "cards": [{"name": "Orc Warrior Card", "raw": "Orc_Warrior_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1686, "casterName": "Orc Baby", "casterSprite": "ORC_BABY", "casterLv": 43, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1273, "targetName": "Orc Lady", "targetSprite": "ORC_LADY", "targetLv": 45, "cards": [{"name": "Orc Lady Card", "raw": "Orc_Lady_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1766, "casterName": "Angeling", "casterSprite": "EM_ANGELING", "casterLv": 99, "casterMvp": false, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1031, "targetName": "Poporing", "targetSprite": "POPORING", "targetLv": 14, "cards": [{"name": "Poporing Card", "raw": "Poporing_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1766, "casterName": "Angeling", "casterSprite": "EM_ANGELING", "casterLv": 99, "casterMvp": false, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1062, "targetName": "Santa Poring", "targetSprite": "PORING_", "targetLv": 3, "cards": [{"name": "Poring  Card", "raw": "Poring__Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1839, "casterName": "Byorgue", "casterSprite": "BYORGUE", "casterLv": 135, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1829, "targetName": "Sword Guardian", "targetSprite": "SWORD_GUARDIAN", "targetLv": 133, "cards": [{"name": "Sword Guardian Card", "raw": "Sword_Guardian_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1839, "casterName": "Byorgue", "casterSprite": "BYORGUE", "casterLv": 135, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1830, "targetName": "Bow Guardian", "targetSprite": "BOW_GUARDIAN", "targetLv": 132, "cards": [{"name": "Bow Guardian Card", "raw": "Bow_Guardian_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1870, "casterName": "Necromancer", "casterSprite": "NECROMANCER", "casterLv": 133, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1864, "targetName": "Zombie Slaughter", "targetSprite": "ZOMBIE_SLAUGHTER", "targetLv": 124, "cards": [{"name": "Zombie Slaughter Card", "raw": "Zombie_Slaughter_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1873, "casterName": "Beelzebub", "casterSprite": "BEELZEBUB", "casterLv": 147, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1011, "targetName": "Chonchon", "targetSprite": "CHONCHON", "targetLv": 5, "cards": [{"name": "Chonchon Card", "raw": "Chonchon_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1874, "casterName": "Beelzebub", "casterSprite": "BEELZEBUB_", "casterLv": 147, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 10, "targetId": 1011, "targetName": "Chonchon", "targetSprite": "CHONCHON", "targetLv": 5, "cards": [{"name": "Chonchon Card", "raw": "Chonchon_Card", "rate": 1}], "inPre": true, "inRe": true, "availability": "both"}, {"casterId": 1975, "casterName": "Beholder Master", "casterSprite": "BEHOLDER_MASTER", "casterLv": 70, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1774, "targetName": "Seeker", "targetSprite": "SEEKER", "targetLv": 65, "cards": [{"name": "Seeker Card", "raw": "Seeker_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1978, "casterName": "Hell Apocalips", "casterSprite": "HELL_APOCALIPS", "casterLv": 86, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1365, "targetName": "Apocalypse", "targetSprite": "APOCALIPS", "targetLv": 66, "cards": [{"name": "Apocalips Card", "raw": "Apocalips_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 1979, "casterName": "Zukadam", "casterSprite": "ZAKUDAM", "casterLv": 82, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1668, "targetName": "Archdam", "targetSprite": "ARCHDAM", "targetLv": 79, "cards": [{"name": "Archdam Card", "raw": "Archdam_Card", "rate": 1}], "inPre": true, "inRe": false, "availability": "pre-only"}, {"casterId": 2095, "casterName": "Eddga", "casterSprite": "E_EDDGA", "casterLv": 65, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 1060, "targetName": "Bigfoot", "targetSprite": "BIGFOOT", "targetLv": 29, "cards": [{"name": "BigFoot Card", "raw": "BigFoot_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2096, "casterName": "Osiris", "casterSprite": "E_OSIRIS2", "casterLv": 68, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 7, "targetId": 1029, "targetName": "Isis", "targetSprite": "ISIS", "targetLv": 59, "cards": [{"name": "Isis Card", "raw": "Isis_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2099, "casterName": "Mistress", "casterSprite": "E_MISTRESS", "casterLv": 78, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1156, "targetName": "Petite", "targetSprite": "PETIT_", "targetLv": 79, "cards": [{"name": "Petit  Card", "raw": "Petit__Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2100, "casterName": "Baphomet", "casterSprite": "E_BAPHOMET2", "casterLv": 81, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1101, "targetName": "Baphomet Jr.", "targetSprite": "BAPHOMET_", "targetLv": 57, "cards": [{"name": "Baphomet  Card", "raw": "Baphomet__Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2101, "casterName": "Lord of Death", "casterSprite": "E_LORD_OF_DEATH2", "casterLv": 94, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 6, "targetId": 1179, "targetName": "Whisper", "targetSprite": "WHISPER", "targetLv": 46, "cards": [{"name": "Whisper Card", "raw": "Whisper_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2101, "casterName": "Lord of Death", "casterSprite": "E_LORD_OF_DEATH2", "casterLv": 94, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 6, "targetId": 1508, "targetName": "Quve", "targetSprite": "QUVE", "targetLv": 100, "cards": [{"name": "Quve Card", "raw": "Quve_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2101, "casterName": "Lord of Death", "casterSprite": "E_LORD_OF_DEATH2", "casterLv": 94, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 6, "targetId": 1509, "targetName": "Lude", "targetSprite": "LUDE", "targetLv": 101, "cards": [{"name": "Lude Card", "raw": "Lude_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2106, "casterName": "Vesper", "casterSprite": "E_APOCALIPS_H", "casterLv": 128, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1365, "targetName": "Apocalypse", "targetSprite": "APOCALIPS", "targetLv": 121, "cards": [{"name": "Apocalips Card", "raw": "Apocalips_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2106, "casterName": "Vesper", "casterSprite": "E_APOCALIPS_H", "casterLv": 128, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1669, "targetName": "Dimik", "targetSprite": "DIMIK", "targetLv": 77, "cards": [{"name": "Dimik Card", "raw": "Dimik_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2106, "casterName": "Vesper", "casterSprite": "E_APOCALIPS_H", "casterLv": 128, "casterMvp": true, "category": "event", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1675, "targetName": "Venatu", "targetSprite": "VENATU", "targetLv": 77, "cards": [{"name": "Venatu Card", "raw": "Venatu_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2485, "casterName": "Nightmare Chimera", "casterSprite": "NG_CHIMERA", "casterLv": 140, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 4, "targetId": 1253, "targetName": "Gargoyle", "targetSprite": "GARGOYLE", "targetLv": 100, "cards": [{"name": "Gargoyle Card", "raw": "Gargoyle_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2605, "casterName": "Zombie Master Ringleader", "casterSprite": "C3_ZOMBIE_MASTER", "casterLv": 119, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1298, "targetName": "Zombie Master", "targetSprite": "ZOMBIE_MASTER", "targetLv": 119, "cards": [{"name": "Zombie Master Card", "raw": "Zombie_Master_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2610, "casterName": "Wormtail Ringleader", "casterSprite": "C3_WORM_TAIL", "casterLv": 17, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1024, "targetName": "Wormtail", "targetSprite": "WORM_TAIL", "targetLv": 17, "cards": [{"name": "Worm Tail Card", "raw": "Worm_Tail_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2615, "casterName": "Willow Ringleader", "casterSprite": "C3_WILOW", "casterLv": 8, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1010, "targetName": "Willow", "targetSprite": "WILOW", "targetLv": 8, "cards": [{"name": "Wilow Card", "raw": "Wilow_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2624, "casterName": "Venomous Ringleader", "casterSprite": "C3_VENOMOUS", "casterLv": 87, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1621, "targetName": "Venomous", "targetSprite": "VENOMOUS", "targetLv": 87, "cards": [{"name": "Venomous Card", "raw": "Venomous_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2629, "casterName": "Ungoliant Ringleader", "casterSprite": "C3_UNGOLIANT", "casterLv": 94, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1618, "targetName": "Ungoliant", "targetSprite": "UNGOLIANT", "targetLv": 94, "cards": [{"name": "Ungoliant Card", "raw": "Ungoliant_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2633, "casterName": "Thief Bug Ringleader", "casterSprite": "C3_THIEF_BUG", "casterLv": 21, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1051, "targetName": "Thief Bug", "targetSprite": "THIEF_BUG", "targetLv": 21, "cards": [{"name": "Thief Bug Card", "raw": "Thief_Bug_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2638, "casterName": "Tarou Ringleader", "casterSprite": "C3_TAROU", "casterLv": 22, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1175, "targetName": "Tarou", "targetSprite": "TAROU", "targetLv": 22, "cards": [{"name": "Tarou Card", "raw": "Tarou_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2643, "casterName": "Stapo Ringleader", "casterSprite": "C3_STAPO", "casterLv": 95, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1784, "targetName": "Stapo", "targetSprite": "STAPO", "targetLv": 95, "cards": [{"name": "Stapo Card", "raw": "Stapo_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2648, "casterName": "Soldier Skeleton Ringleader", "casterSprite": "C3_SOLDIER_SKELETON", "casterLv": 34, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1028, "targetName": "Soldier Skeleton", "targetSprite": "SOLDIER_SKELETON", "targetLv": 34, "cards": [{"name": "Soldier Skeleton Card", "raw": "Soldier_Skeleton_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2653, "casterName": "Boa Ringleader", "casterSprite": "C3_SNAKE", "casterLv": 18, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1025, "targetName": "Snake", "targetSprite": "SNAKE", "targetLv": 18, "cards": [{"name": "Snake Card", "raw": "Snake_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2658, "casterName": "Skeleton General Ringleader", "casterSprite": "C3_SKELETON_GENERAL", "casterLv": 139, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1290, "targetName": "Skeleton General", "targetSprite": "SKELETON_GENERAL", "targetLv": 139, "cards": [{"name": "Skeleton General Card", "raw": "Skeleton_General_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2659, "casterName": "Furious Skeleton General", "casterSprite": "C4_SKELETON_GENERAL", "casterLv": 139, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1016, "targetName": "Archer Skeleton", "targetSprite": "ARCHER_SKELETON", "targetLv": 50, "cards": [{"name": "Archer Skeleton Card", "raw": "Archer_Skeleton_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2659, "casterName": "Furious Skeleton General", "casterSprite": "C4_SKELETON_GENERAL", "casterLv": 139, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1028, "targetName": "Soldier Skeleton", "targetSprite": "SOLDIER_SKELETON", "targetLv": 34, "cards": [{"name": "Soldier Skeleton Card", "raw": "Soldier_Skeleton_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2663, "casterName": "Side Winder Ringleader", "casterSprite": "C3_SIDE_WINDER", "casterLv": 70, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1037, "targetName": "Side Winder", "targetSprite": "SIDE_WINDER", "targetLv": 70, "cards": [{"name": "Side Winder Card", "raw": "Side_Winder_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2668, "casterName": "Sea Otter Ringleader", "casterSprite": "C3_SEE_OTTER", "casterLv": 48, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1323, "targetName": "Sea Otter", "targetSprite": "SEE_OTTER", "targetLv": 48, "cards": [{"name": "See Otter Card", "raw": "See_Otter_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2673, "casterName": "Savage Ringleader", "casterSprite": "C3_SAVAGE", "casterLv": 59, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1166, "targetName": "Savage", "targetSprite": "SAVAGE", "targetLv": 59, "cards": [{"name": "Savage Card", "raw": "Savage_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2678, "casterName": "Roda Frog Ringleader", "casterSprite": "C3_RODA_FROG", "casterLv": 13, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1012, "targetName": "Roda Frog", "targetSprite": "RODA_FROG", "targetLv": 13, "cards": [{"name": "Roda Frog Card", "raw": "Roda_Frog_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2683, "casterName": "Dumpling Child Ringleader", "casterSprite": "C3_RICE_CAKE_BOY", "casterLv": 60, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1409, "targetName": "Rice Cake Boy", "targetSprite": "RICE_CAKE_BOY", "targetLv": 60, "cards": [{"name": "Rice Cake Boy Card", "raw": "Rice_Cake_Boy_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2688, "casterName": "Remover Ringleader", "casterSprite": "C3_REMOVAL", "casterLv": 121, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1682, "targetName": "Removal", "targetSprite": "REMOVAL", "targetLv": 121, "cards": [{"name": "Removal Card", "raw": "Removal_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2692, "casterName": "Laurell Weinder Ringleader", "casterSprite": "C3_RAWREL", "casterLv": 133, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1657, "targetName": "Rawrel", "targetSprite": "RAWREL", "targetLv": 133, "cards": [{"name": "Rawrel Card", "raw": "Rawrel_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2696, "casterName": "Poring Ringleader", "casterSprite": "C3_PORING", "casterLv": 1, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1002, "targetName": "Poring", "targetSprite": "PORING", "targetLv": 1, "cards": [{"name": "Poring Card", "raw": "Poring_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2701, "casterName": "Poporing Ringleader", "casterSprite": "C3_POPORING", "casterLv": 30, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1031, "targetName": "Poporing", "targetSprite": "POPORING", "targetLv": 30, "cards": [{"name": "Poporing Card", "raw": "Poporing_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2706, "casterName": "Plasma Ringleader", "casterSprite": "C3_PLASMA_Y", "casterLv": 119, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1693, "targetName": "Plasma", "targetSprite": "PLASMA_Y", "targetLv": 119, "cards": [{"name": "Plasma Card", "raw": "Plasma_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2711, "casterName": "Pinguicula Ringleader", "casterSprite": "C3_PINGUICULA", "casterLv": 105, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1995, "targetName": "Pinguicula", "targetSprite": "PINGUICULA", "targetLv": 105, "cards": [{"name": "Pinguicula Card", "raw": "Pinguicula_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2716, "casterName": "Penomena Ringleader", "casterSprite": "C3_PENOMENA", "casterLv": 85, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1216, "targetName": "Penomena", "targetSprite": "PENOMENA", "targetLv": 85, "cards": [{"name": "Penomena Card", "raw": "Penomena_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2721, "casterName": "Owl Duke Ringleader", "casterSprite": "C3_OWL_DUKE", "casterLv": 92, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1320, "targetName": "Owl Duke", "targetSprite": "OWL_DUKE", "targetLv": 92, "cards": [{"name": "Owl Duke Card", "raw": "Owl_Duke_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2726, "casterName": "Dame of Sentinel Ringleader", "casterSprite": "C3_OBSERVATION", "casterLv": 127, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1700, "targetName": "Observation", "targetSprite": "OBSERVATION", "targetLv": 127, "cards": [{"name": "Observation Card", "raw": "Observation_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2731, "casterName": "Novus Ringleader", "casterSprite": "C3_NOVUS", "casterLv": 90, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1715, "targetName": "Novus", "targetSprite": "NOVUS", "targetLv": 90, "cards": [{"name": "Novus Card", "raw": "Novus_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2736, "casterName": "Necromancer Ringleader", "casterSprite": "C3_NECROMANCER", "casterLv": 133, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1870, "targetName": "Necromancer", "targetSprite": "NECROMANCER", "targetLv": 133, "cards": [{"name": "Necromancer Card", "raw": "Necromancer_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2741, "casterName": "Muka Ringleader", "casterSprite": "C3_MUKA", "casterLv": 23, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1055, "targetName": "Muka", "targetSprite": "MUKA", "targetLv": 23, "cards": [{"name": "Muka Card", "raw": "Muka_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2746, "casterName": "Miyabi Doll Ringleader", "casterSprite": "C3_MIYABI_NINGYO", "casterLv": 85, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1404, "targetName": "Miyabi Ningyo", "targetSprite": "MIYABI_NINGYO", "targetLv": 85, "cards": [{"name": "Miyabi Ningyo Card", "raw": "Miyabi_Ningyo_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2751, "casterName": "Miming Ringleader", "casterSprite": "C3_MIMING", "casterLv": 140, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 2137, "targetName": "Miming", "targetSprite": "MIMING", "targetLv": 140, "cards": [{"name": "Miming Card", "raw": "Miming_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2756, "casterName": "Metaling Ringleader", "casterSprite": "C3_METALING", "casterLv": 81, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1613, "targetName": "Metaling", "targetSprite": "METALING", "targetLv": 81, "cards": [{"name": "Metaling Card", "raw": "Metaling_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2761, "casterName": "Marionette Ringleader", "casterSprite": "C3_MARIONETTE", "casterLv": 90, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1143, "targetName": "Marionette", "targetSprite": "MARIONETTE", "targetLv": 90, "cards": [{"name": "Marionette Card", "raw": "Marionette_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2766, "casterName": "Manananggal Ringleader", "casterSprite": "C3_MANANANGGAL", "casterLv": 107, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 2311, "targetName": "Manananggal", "targetSprite": "MANANANGGAL", "targetLv": 107, "cards": [{"name": "Manananggal Card", "raw": "Manananggal_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2767, "casterName": "Furious Majoruros", "casterSprite": "C4_MAJORUROS", "casterLv": 107, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1149, "targetName": "Minorous", "targetSprite": "MINOROUS", "targetLv": 58, "cards": [{"name": "Minorous Card", "raw": "Minorous_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2771, "casterName": "Lunatic Ringleader", "casterSprite": "C3_LUNATIC", "casterLv": 3, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1063, "targetName": "Lunatic", "targetSprite": "LUNATIC", "targetLv": 3, "cards": [{"name": "Lunatic Card", "raw": "Lunatic_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2776, "casterName": "Baby Poring Ringleader", "casterSprite": "C3_LITTLE_PORING", "casterLv": 1, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 2398, "targetName": "LITTLE_PORING", "targetSprite": "LITTLE_PORING", "targetLv": 1, "cards": [{"name": "Novice Poring Card", "raw": "Novice_Poring_Card", "rate": 100}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2780, "casterName": "Solid Leib Olmai", "casterSprite": "C2_LEIB_OLMAI", "casterLv": 118, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 3, "targetId": 1243, "targetName": "Sasquatch", "targetSprite": "SASQUATCH", "targetLv": 72, "cards": [{"name": "Sasquatch Card", "raw": "Sasquatch_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2781, "casterName": "Leaf Cat Ringleader", "casterSprite": "C3_LEAF_CAT", "casterLv": 64, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1586, "targetName": "Leaf Cat", "targetSprite": "LEAF_CAT", "targetLv": 64, "cards": [{"name": "Leaf Cat Card", "raw": "Leaf_Cat_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2786, "casterName": "Knocker Ringleader", "casterSprite": "C3_KNOCKER", "casterLv": 126, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1838, "targetName": "Knocker", "targetSprite": "KNOCKER", "targetLv": 126, "cards": [{"name": "Knocker Card", "raw": "Knocker_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2791, "casterName": "Isilla Ringleader", "casterSprite": "C3_ISILLA", "casterLv": 124, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1772, "targetName": "Isilla", "targetSprite": "ISILLA", "targetLv": 124, "cards": [{"name": "Isilla Card", "raw": "Isilla_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2796, "casterName": "Yao Jun Ringleader", "casterSprite": "C3_HYEGUN", "casterLv": 87, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1512, "targetName": "Hyegun", "targetSprite": "HYEGUN", "targetLv": 87, "cards": [{"name": "Hyegun Card", "raw": "Hyegun_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2801, "casterName": "Hodremlin Ringleader", "casterSprite": "C3_HODREMLIN", "casterLv": 122, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1773, "targetName": "Hodremlin", "targetSprite": "HODREMLIN", "targetLv": 122, "cards": [{"name": "Hodremlin Card", "raw": "Hodremlin_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2806, "casterName": "Harpy Ringleader", "casterSprite": "C3_HARPY", "casterLv": 83, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1376, "targetName": "Harpy", "targetSprite": "HARPY", "targetLv": 83, "cards": [{"name": "Harpy Card", "raw": "Harpy_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2811, "casterName": "Grand Peco Ringleader", "casterSprite": "C3_GRAND_PECO", "casterLv": 75, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1369, "targetName": "Grand Peco", "targetSprite": "GRAND_PECO", "targetLv": 75, "cards": [{"name": "Grand Peco Card", "raw": "Grand_Peco_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2816, "casterName": "Goat Ringleader", "casterSprite": "C3_GOAT", "casterLv": 80, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1372, "targetName": "Goat", "targetSprite": "GOAT", "targetLv": 80, "cards": [{"name": "Goat Card", "raw": "Goat_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2821, "casterName": "Giant Hornet Ringleader", "casterSprite": "C3_GIANT_HONET", "casterLv": 120, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1303, "targetName": "Giant Hornet", "targetSprite": "GIANT_HONET", "targetLv": 120, "cards": [{"name": "Giant Honet Card", "raw": "Giant_Honet_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2826, "casterName": "Gargoyle Ringleader", "casterSprite": "C3_GARGOYLE", "casterLv": 100, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1253, "targetName": "Gargoyle", "targetSprite": "GARGOYLE", "targetLv": 100, "cards": [{"name": "Gargoyle Card", "raw": "Gargoyle_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2831, "casterName": "Freezer Ringleader", "casterSprite": "C3_FREEZER", "casterLv": 94, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1319, "targetName": "Freezer", "targetSprite": "FREEZER", "targetLv": 94, "cards": [{"name": "Freezer Card", "raw": "Freezer_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2836, "casterName": "Fabre Ringleader", "casterSprite": "C3_FABRE", "casterLv": 6, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1007, "targetName": "Fabre", "targetSprite": "FABRE", "targetLv": 6, "cards": [{"name": "Fabre Card", "raw": "Fabre_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2841, "casterName": "Echio Ringleader", "casterSprite": "C3_ECHIO", "casterLv": 126, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1770, "targetName": "Echio", "targetSprite": "ECHIO", "targetLv": 126, "cards": [{"name": "Echio Card", "raw": "Echio_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2845, "casterName": "Drops Ringleader", "casterSprite": "C3_DROPS", "casterLv": 2, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1113, "targetName": "Drops", "targetSprite": "DROPS", "targetLv": 2, "cards": [{"name": "Drops Card", "raw": "Drops_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2850, "casterName": "Dolomedes Ringleader", "casterSprite": "C3_DOLOMEDES", "casterLv": 132, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 2092, "targetName": "Dolomedes", "targetSprite": "DOLOMEDES", "targetLv": 132, "cards": [{"name": "Dolomedes Card", "raw": "Dolomedes_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2855, "casterName": "Baby Desert Wolf Ringleader", "casterSprite": "C3_DESERT_WOLF_B", "casterLv": 14, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1107, "targetName": "Desert Wolf Baby", "targetSprite": "DESERT_WOLF_B", "targetLv": 14, "cards": [{"name": "Desert Wolf Babe Card", "raw": "Desert_Wolf_Babe_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2860, "casterName": "Death Word Ringleader", "casterSprite": "C3_DEATHWORD", "casterLv": 114, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1698, "targetName": "Deathword", "targetSprite": "DEATHWORD", "targetLv": 114, "cards": [{"name": "Deathword Card", "raw": "Deathword_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2865, "casterName": "Cookie Ringleader", "casterSprite": "C3_COOKIE", "casterLv": 35, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1265, "targetName": "Cookie", "targetSprite": "COOKIE", "targetLv": 35, "cards": [{"name": "Cookie Card", "raw": "Cookie_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2870, "casterName": "Clock Ringleader", "casterSprite": "C3_CLOCK", "casterLv": 81, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1269, "targetName": "Clock", "targetSprite": "CLOCK", "targetLv": 81, "cards": [{"name": "Clock Card", "raw": "Clock_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2875, "casterName": "Celia Ringleader", "casterSprite": "C3_CELIA", "casterLv": 141, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 2223, "targetName": "Celia", "targetSprite": "CELIA", "targetLv": 141, "cards": [{"name": "Ceila Card", "raw": "Ceila_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2880, "casterName": "Breeze Ringleader", "casterSprite": "C3_BREEZE", "casterLv": 92, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1692, "targetName": "Breeze", "targetSprite": "BREEZE", "targetLv": 92, "cards": [{"name": "Breeze Card", "raw": "Breeze_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2884, "casterName": "Bigfoot Ringleader", "casterSprite": "C3_BIGFOOT", "casterLv": 29, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1060, "targetName": "Bigfoot", "targetSprite": "BIGFOOT", "targetLv": 29, "cards": [{"name": "BigFoot Card", "raw": "BigFoot_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2889, "casterName": "Assaulter Ringleader", "casterSprite": "C3_ASSULTER", "casterLv": 100, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1315, "targetName": "Assaulter", "targetSprite": "ASSULTER", "targetLv": 100, "cards": [{"name": "Assulter Card", "raw": "Assulter_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2894, "casterName": "Arclouze Ringleader", "casterSprite": "C3_ARCLOUSE", "casterLv": 107, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1194, "targetName": "Arclouse", "targetSprite": "ARCLOUSE", "targetLv": 107, "cards": [{"name": "Arclouse Card", "raw": "Arclouse_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2903, "casterName": "Ancient Mimic Ringleader", "casterSprite": "C3_ANCIENT_MIMIC", "casterLv": 112, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1699, "targetName": "Ancient Mimic", "targetSprite": "ANCIENT_MIMIC", "targetLv": 112, "cards": [{"name": "Ancient Mimic Card", "raw": "Ancient_Mimic_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2908, "casterName": "Aliza Ringleader", "casterSprite": "C3_ALIZA", "casterLv": 112, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1737, "targetName": "Aliza", "targetSprite": "ALIZA", "targetLv": 112, "cards": [{"name": "Aliza Card", "raw": "Aliza_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2913, "casterName": "Acidus Ringleader", "casterSprite": "C3_ACIDUS_", "casterLv": 130, "casterMvp": false, "category": "ringleader", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 1716, "targetName": "Acidus", "targetSprite": "ACIDUS_", "targetLv": 130, "cards": [{"name": "Acidus  Card", "raw": "Acidus__Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 2923, "casterName": "Owl Marquis", "casterSprite": "OWL_MARQUEES", "casterLv": 170, "casterMvp": false, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 2, "targetId": 2921, "targetName": "Owl Viscount", "targetSprite": "OWL_VISCOUNT", "targetLv": 168, "cards": [{"name": "Owl Viscount Card", "raw": "Owl_Viscount_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}, {"casterId": 3074, "casterName": "Time Holder", "casterSprite": "TIMEHOLDER", "casterLv": 170, "casterMvp": true, "category": "standard", "skill": "NPC_SUMMONSLAVE", "summonCount": 5, "targetId": 2917, "targetName": "Big Bell", "targetSprite": "BIG_BELL", "targetLv": 163, "cards": [{"name": "Big Bell Card", "raw": "Big_Bell_Card", "rate": 1}], "inPre": false, "inRe": true, "availability": "re-only"}];
+
+    const state = {
+      mode: 'pre',       // 'pre' | 're' | 'diff'
+      cat: 'all',        // 'all' | 'standard' | 'ringleader' | 'event'
+      mvpOnly: false,
+      query: '',
+      sortKey: 'casterId',
+      sortDir: 'asc'
+    };
+
+    const tableBody = document.getElementById('tableBody');
+    const cardsList = document.getElementById('cardsList');
+    const emptyState = document.getElementById('emptyState');
+    const statsText = document.getElementById('statsText');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    const mvpOnlyBtn = document.getElementById('mvpOnlyBtn');
+    const toast = document.getElementById('toast');
+
+    let toastTimer = null;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1400);
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast('Copied: ' + text));
+      } else {
+        showToast(text);
+      }
+    }
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    function availBadge(avail) {
+      if (avail === 'both') return '<span class="badge badge-both">Pre-Re &amp; Re</span>';
+      if (avail === 'pre-only') return '<span class="badge badge-pre">Pre-Re Only</span>';
+      return '<span class="badge badge-re">Renewal Only</span>';
+    }
+
+    function filterData() {
+      const q = state.query.trim().toLowerCase();
+      return DATA.filter(r => {
+        if (state.mode === 'pre' && !r.inPre) return false;
+        if (state.mode === 're' && !r.inRe) return false;
+        if (state.mode === 'diff' && r.availability === 'both') return false;
+        if (state.cat !== 'all' && r.category !== state.cat) return false;
+        if (state.mvpOnly && !r.casterMvp) return false;
+        if (q) {
+          const hay = [
+            r.casterId, r.casterName, r.casterSprite,
+            r.targetId, r.targetName, r.targetSprite,
+            ...r.cards.map(c => c.name + ' ' + c.raw)
+          ].join(' ').toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      }).sort((a, b) => {
+        let va, vb;
+        if (state.sortKey === 'card') {
+          va = a.cards[0]?.name || '';
+          vb = b.cards[0]?.name || '';
+        } else {
+          va = a[state.sortKey];
+          vb = b[state.sortKey];
+        }
+        if (typeof va === 'number' && typeof vb === 'number') {
+          return state.sortDir === 'asc' ? va - vb : vb - va;
+        }
+        return state.sortDir === 'asc'
+          ? String(va).localeCompare(String(vb))
+          : String(vb).localeCompare(String(va));
+      });
+    }
+
+    function render() {
+      const rows = filterData();
+      const uniqueCasters = new Set(rows.map(r => r.casterId)).size;
+      const uniqueTargets = new Set(rows.map(r => r.targetId)).size;
+      statsText.innerHTML = `<strong>${rows.length}</strong> pairs · <strong>${uniqueCasters}</strong> casters · <strong>${uniqueTargets}</strong> real mobs`;
+
+      document.querySelectorAll('thead th').forEach(th => {
+        const ind = th.querySelector('.sort-ind');
+        if (th.dataset.sort === state.sortKey) {
+          ind.textContent = state.sortDir === 'asc' ? '▲' : '▼';
+        } else {
+          ind.textContent = '';
+        }
+      });
+
+      if (!rows.length) {
+        tableBody.innerHTML = '';
+        cardsList.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      tableBody.innerHTML = rows.map(r => `
+        <tr>
+          <td>
+            <div class="mob-cell">
+              <div class="mob-top">
+                <span class="id-pill" data-copy="${r.casterId}" title="Copy ID">${r.casterId}</span>
+                <span class="mob-name">${esc(r.casterName)}</span>
+                ${r.casterMvp ? '<span class="badge badge-mvp">MVP</span>' : ''}
+                ${r.category === 'ringleader' ? '<span class="badge badge-ring">Ringleader</span>' : ''}
+              </div>
+              <span class="mob-meta">${esc(r.casterSprite)} · Lv ${r.casterLv}</span>
+            </div>
+          </td>
+          <td>
+            <div class="mob-cell">
+              <div class="mob-top">
+                <span class="id-pill" data-copy="${r.targetId}" title="Copy ID">${r.targetId}</span>
+                <span class="mob-name">${esc(r.targetName)}</span>
+              </div>
+              <span class="mob-meta">${esc(r.targetSprite)} · Lv ${r.targetLv}</span>
+            </div>
+          </td>
+          <td>
+            ${r.cards.map(c => `
+              <span class="card-pill" data-copy="${esc(c.raw)}" title="Copy item name">
+                ${esc(c.name)}
+                <span class="card-rate">${(c.rate / 100).toFixed(2)}%</span>
+              </span>
+            `).join(' ')}
+          </td>
+          <td><span class="mob-meta">Lv ${r.summonCount}</span></td>
+          <td>${availBadge(r.availability)}</td>
+        </tr>
+      `).join('');
+
+      cardsList.innerHTML = rows.map(r => `
+        <article class="m-card">
+          <div class="m-card-head">
+            <div class="mob-cell">
+              <div class="mob-top">
+                <span class="id-pill" data-copy="${r.casterId}">${r.casterId}</span>
+                <span class="mob-name">${esc(r.casterName)}</span>
+                ${r.casterMvp ? '<span class="badge badge-mvp">MVP</span>' : ''}
+              </div>
+              <span class="mob-meta">${esc(r.casterSprite)} · Lv ${r.casterLv}</span>
+            </div>
+            ${availBadge(r.availability)}
+          </div>
+          <div class="m-arrow">↳ Summons (Skill Lv ${r.summonCount})</div>
+          <div class="mob-cell">
+            <div class="mob-top">
+              <span class="id-pill" data-copy="${r.targetId}">${r.targetId}</span>
+              <span class="mob-name">${esc(r.targetName)}</span>
+            </div>
+            <span class="mob-meta">${esc(r.targetSprite)} · Lv ${r.targetLv}</span>
+          </div>
+          <div class="m-card-foot">
+            <div>
+              ${r.cards.map(c => `
+                <span class="card-pill" data-copy="${esc(c.raw)}">
+                  ${esc(c.name)}
+                  <span class="card-rate">${(c.rate / 100).toFixed(2)}%</span>
+                </span>
+              `).join(' ')}
+            </div>
+            ${r.category === 'ringleader' ? '<span class="badge badge-ring">Ringleader</span>' : ''}
+          </div>
+        </article>
+      `).join('');
+    }
+
+    document.querySelectorAll('.segmented button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.segmented button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mode = btn.dataset.mode;
+        render();
+      });
+    });
+
+    document.querySelectorAll('.chip[data-cat]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.chip[data-cat]').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.cat = chip.dataset.cat;
+        render();
+      });
+    });
+
+    mvpOnlyBtn.addEventListener('click', () => {
+      state.mvpOnly = !state.mvpOnly;
+      mvpOnlyBtn.classList.toggle('active', state.mvpOnly);
+      render();
+    });
+
+    searchInput.addEventListener('input', () => {
+      state.query = searchInput.value;
+      clearSearch.classList.toggle('visible', state.query.length > 0);
+      render();
+    });
+
+    clearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      state.query = '';
+      clearSearch.classList.remove('visible');
+      render();
+      searchInput.focus();
+    });
+
+    document.querySelectorAll('thead th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.sortKey = key;
+          state.sortDir = 'asc';
+        }
+        render();
+      });
+    });
+
+    document.addEventListener('click', e => {
+      const el = e.target.closest('[data-copy]');
+      if (el) copyText(el.dataset.copy);
+    });
+
+    render();
+  </script>
+</body>
+</html>
